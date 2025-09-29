@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion Distiller — Demo UI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Print helpers */
+    @media print { .no-print { display: none !important; } }
+    /* Simple focus ring for keyboard nav */
+    :focus-visible { outline: 2px solid #000; outline-offset: 2px; }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+  <!-- Top Bar -->
+  <header class="sticky top-0 z-40 border-b bg-white/80 backdrop-blur">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-14 items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-8 w-8 rounded-full bg-black"></div>
+          <span class="text-sm font-semibold tracking-tight">Orion Distiller</span>
+          <span class="hidden sm:inline text-xs text-gray-500">/ demo UI</span>
+        </div>
+        <div class="flex items-center gap-2 no-print">
+          <button class="inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs hover:bg-gray-50"><i data-lucide="download" class="h-4 w-4"></i>Export</button>
+          <button class="inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs hover:bg-gray-50"><i data-lucide="settings" class="h-4 w-4"></i>Settings</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page -->
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Deal Selector / Upload Row -->
+    <section class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div class="col-span-2">
+        <label class="mb-1 block text-xs font-medium text-gray-600">Active Deal</label>
+        <div class="flex items-center gap-2">
+          <select class="w-full rounded-xl border px-3 py-2 text-sm">
+            <option>Meridian Behavioral Health — $500mm TL</option>
+            <option>Pawsitive Brands — $300mm Facility</option>
+            <option>Queen MergerCo / QXO — Term Loan B</option>
+          </select>
+          <button class="no-print inline-flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-xs font-medium text-white hover:opacity-90"><i data-lucide="plus" class="h-4 w-4"></i>New</button>
+        </div>
+      </div>
+      <div>
+        <label class="mb-1 block text-xs font-medium text-gray-600">Add Files</label>
+        <div class="flex items-center gap-2">
+          <input type="file" class="w-full rounded-xl border px-3 py-2 text-sm" multiple />
+          <button class="no-print inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs hover:bg-gray-50"><i data-lucide="upload" class="h-4 w-4"></i>Upload</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <section class="rounded-2xl border bg-white">
+      <div class="border-b px-3 pt-2">
+        <nav class="-mb-px flex flex-wrap items-center gap-1" role="tablist" aria-label="Distiller sections">
+          <!-- Keep it simple: 5 tabs -->
+          <button data-tab-target="#tab-overview" class="tab active" role="tab" aria-selected="true">Overview</button>
+          <button data-tab-target="#tab-docs" class="tab" role="tab" aria-selected="false">Documents</button>
+          <button data-tab-target="#tab-extract" class="tab" role="tab" aria-selected="false">Extraction</button>
+          <button data-tab-target="#tab-confidence" class="tab" role="tab" aria-selected="false">Confidence</button>
+          <button data-tab-target="#tab-sources" class="tab" role="tab" aria-selected="false">Sources</button>
+        </nav>
+      </div>
+
+      <!-- Panels -->
+      <div class="p-4 sm:p-6">
+        <!-- OVERVIEW -->
+        <section id="tab-overview" role="tabpanel">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <!-- Left: Summary Cards -->
+            <div class="md:col-span-2 space-y-4">
+              <div class="rounded-2xl border p-4">
+                <div class="flex items-center justify-between">
+                  <h2 class="text-sm font-semibold">Deal Snapshot</h2>
+                  <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600"><i data-lucide="zap" class="h-3 w-3"></i>Updated 5m ago</span>
+                </div>
+                <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div class="rounded-xl bg-gray-50 p-3">
+                    <p class="text-[11px] text-gray-500">Facility Size</p>
+                    <p class="text-sm font-semibold">$300,000,000</p>
+                  </div>
+                  <div class="rounded-xl bg-gray-50 p-3">
+                    <p class="text-[11px] text-gray-500">Pricing</p>
+                    <p class="text-sm font-semibold">SOFR + 400bps</p>
+                  </div>
+                  <div class="rounded-xl bg-gray-50 p-3">
+                    <p class="text-[11px] text-gray-500">Tenor</p>
+                    <p class="text-sm font-semibold">5 years</p>
+                  </div>
+                  <div class="rounded-xl bg-gray-50 p-3">
+                    <p class="text-[11px] text-gray-500">Use of Proceeds</p>
+                    <p class="text-sm font-semibold">M&A + Refi</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border p-4">
+                <h3 class="text-sm font-semibold">Key Considerations</h3>
+                <ul class="mt-2 space-y-2 text-sm">
+                  <li class="flex items-start gap-2"><i data-lucide="shield" class="mt-0.5 h-4 w-4"></i><span>Strong recurring revenue base; moderate customer concentration.</span></li>
+                  <li class="flex items-start gap-2"><i data-lucide="triangle-alert" class="mt-0.5 h-4 w-4"></i><span>Leverage tight at 4.9x; covenant headroom 1.1x in Base Case.</span></li>
+                  <li class="flex items-start gap-2"><i data-lucide="file-text" class="mt-0.5 h-4 w-4"></i><span>CA §6.10 Restricted Payments with builder basket; step-downs at 4.25x.</span></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Right: Status & Actions -->
+            <aside class="space-y-4">
+              <div class="rounded-2xl border p-4">
+                <h3 class="text-sm font-semibold">Status</h3>
+                <dl class="mt-2 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                  <div><dt class="text-[11px] text-gray-500">Docs</dt><dd class="font-medium">6 / 6</dd></div>
+                  <div><dt class="text-[11px] text-gray-500">Fields</dt><dd class="font-medium">82 / 96</dd></div>
+                  <div><dt class="text-[11px] text-gray-500">Confidence</dt><dd class="font-medium">High</dd></div>
+                  <div><dt class="text-[11px] text-gray-500">Last Run</dt><dd class="font-medium">09/28 14:32</dd></div>
+                </dl>
+                <div class="mt-3 flex gap-2 no-print">
+                  <button class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-black px-3 py-2 text-xs font-medium text-white hover:opacity-90"><i data-lucide="play" class="h-4 w-4"></i>Run Distiller</button>
+                  <button class="inline-flex w-full items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs hover:bg-gray-50"><i data-lucide="refresh-cw" class="h-4 w-4"></i>Refresh</button>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border p-4">
+                <h3 class="text-sm font-semibold">Strategy Recommendation</h3>
+                <p class="mt-2 text-sm">Primary: CLO 1 (static); Alt: BDC. Rationale: amortizing cash flows, covenant package, asset profile.</p>
+                <button class="no-print mt-3 inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs hover:bg-gray-50"><i data-lucide="wand-sparkles" class="h-4 w-4"></i>Explain</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- DOCUMENTS -->
+        <section id="tab-docs" class="hidden" role="tabpanel" aria-hidden="true">
+          <div class="rounded-2xl border">
+            <div class="flex items-center justify-between border-b p-3">
+              <h2 class="text-sm font-semibold">Document Set</h2>
+              <div class="no-print flex items-center gap-2">
+                <button class="inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs hover:bg-gray-50"><i data-lucide="search" class="h-4 w-4"></i>Locate</button>
+                <button class="inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs hover:bg-gray-50"><i data-lucide="merge" class="h-4 w-4"></i>Merge PDF</button>
+              </div>
+            </div>
+            <div class="divide-y">
+              <!-- Row -->
+              <div class="flex items-center gap-3 p-3">
+                <i data-lucide="file" class="h-4 w-4 text-gray-500"></i>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-medium">Credit Agreement — executed.pdf</p>
+                  <p class="truncate text-xs text-gray-500">Primary source for covenants; sections 1, 2, 6, 7, 9 parsed</p>
+                </div>
+                <span class="rounded-full bg-green-50 px-2 py-0.5 text-[11px] text-green-700">High</span>
+                <button class="no-print rounded-xl border px-2 py-1 text-xs hover:bg-gray-50">Open</button>
+              </div>
+              <div class="flex items-center gap-3 p-3">
+                <i data-lucide="file" class="h-4 w-4 text-gray-500"></i>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-medium">CIM_vFinal.pdf</p>
+                  <p class="truncate text-xs text-gray-500">Business model, market, KPIs; summary pages 8–19</p>
+                </div>
+                <span class="rounded-full bg-yellow-50 px-2 py-0.5 text-[11px] text-yellow-700">Medium</span>
+                <button class="no-print rounded-xl border px-2 py-1 text-xs hover:bg-gray-50">Open</button>
+              </div>
+              <div class="flex items-center gap-3 p-3">
+                <i data-lucide="file" class="h-4 w-4 text-gray-500"></i>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-medium">Lender_Presentation.pdf</p>
+                  <p class="truncate text-xs text-gray-500">KPIs, projections; covenant headroom slides 14–16</p>
+                </div>
+                <span class="rounded-full bg-green-50 px-2 py-0.5 text-[11px] text-green-700">High</span>
+                <button class="no-print rounded-xl border px-2 py-1 text-xs hover:bg-gray-50">Open</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- EXTRACTION -->
+        <section id="tab-extract" class="hidden" role="tabpanel" aria-hidden="true">
+          <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div class="lg:col-span-2 rounded-2xl border">
+              <div class="border-b p-3">
+                <h2 class="text-sm font-semibold">Structured Fields</h2>
+              </div>
+              <div class="overflow-x-auto p-3">
+                <table class="min-w-full text-left text-sm">
+                  <thead>
+                    <tr class="text-xs text-gray-500">
+                      <th class="py-2 pr-4">Field</th>
+                      <th class="py-2 pr-4">Value</th>
+                      <th class="py-2 pr-4">Confidence</th>
+                      <th class="py-2">Source Doc(s)</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y">
+                    <tr>
+                      <td class="py-2 pr-4 font-medium">Debt Amount</td>
+                      <td class="py-2 pr-4">$300,000,000</td>
+                      <td class="py-2 pr-4">High</td>
+                      <td class="py-2">CA §§1.01, 2.01</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 pr-4 font-medium">Pricing</td>
+                      <td class="py-2 pr-4">SOFR + 400 bps; 0.50% floor</td>
+                      <td class="py-2 pr-4">High</td>
+                      <td class="py-2">Term Sheet p.2; CA §2.08</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 pr-4 font-medium">Restricted Payments</td>
+                      <td class="py-2 pr-4">Builder basket w/ RP holiday</td>
+                      <td class="py-2 pr-4">Medium</td>
+                      <td class="py-2">CA §6.10; LP p.15</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 pr-4 font-medium">Financial Covenant</td>
+                      <td class="py-2 pr-4">Total Net Leverage ≤ 5.0x</td>
+                      <td class="py-2 pr-4">High</td>
+                      <td class="py-2">CA §7.03</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="rounded-2xl border p-4">
+                <h3 class="text-sm font-semibold">Quick Add Field</h3>
+                <div class="mt-2 space-y-2">
+                  <input class="w-full rounded-xl border px-3 py-2 text-sm" placeholder="Field name (e.g., Call Protection)" />
+                  <input class="w-full rounded-xl border px-3 py-2 text-sm" placeholder="Value (e.g., 102/101/100)" />
+                  <button class="no-print w-full rounded-xl bg-black px-3 py-2 text-xs font-medium text-white hover:opacity-90">Add</button>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border p-4">
+                <h3 class="text-sm font-semibold">Validation</h3>
+                <ul class="mt-2 space-y-2 text-sm">
+                  <li class="flex items-center gap-2 text-green-700"><i data-lucide="check-circle" class="h-4 w-4"></i> 82 fields verified</li>
+                  <li class="flex items-center gap-2 text-yellow-700"><i data-lucide="help-circle" class="h-4 w-4"></i> 9 require review</li>
+                  <li class="flex items-center gap-2 text-red-700"><i data-lucide="x-circle" class="h-4 w-4"></i> 5 conflicts detected</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CONFIDENCE -->
+        <section id="tab-confidence" class="hidden" role="tabpanel" aria-hidden="true">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="rounded-2xl border p-4">
+              <h3 class="text-sm font-semibold">Coverage</h3>
+              <div class="mt-2">
+                <div class="mb-2 flex items-center justify-between text-xs text-gray-600"><span>Fields populated</span><span>85%</span></div>
+                <div class="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                  <div class="h-full w-[85%] bg-black"></div>
+                </div>
+              </div>
+              <div class="mt-4 space-y-2 text-sm">
+                <div class="flex items-center justify-between"><span>High confidence</span><span class="font-medium">64</span></div>
+                <div class="flex items-center justify-between"><span>Medium confidence</span><span class="font-medium">18</span></div>
+                <div class="flex items-center justify-between"><span>Low confidence</span><span class="font-medium">5</span></div>
+              </div>
+            </div>
+            <div class="rounded-2xl border p-4">
+              <h3 class="text-sm font-semibold">Conflict Log</h3>
+              <ol class="mt-2 list-decimal space-y-2 pl-4 text-sm">
+                <li>Pricing: SOFR floor 0.25% vs 0.50% (CIM p.9 vs CA §2.08)</li>
+                <li>Leverage: 4.75x vs 5.0x cap (LP p.14 vs CA §7.03)</li>
+                <li>RP: Holiday length 6 vs 9 months (CA §6.10 vs TS p.3)</li>
+              </ol>
+              <div class="mt-3 no-print">
+                <button class="inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs hover:bg-gray-50"><i data-lucide="sparkles" class="h-4 w-4"></i>Auto-resolve suggestions</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SOURCES -->
+        <section id="tab-sources" class="hidden" role="tabpanel" aria-hidden="true">
+          <div class="rounded-2xl border">
+            <div class="border-b p-3">
+              <h2 class="text-sm font-semibold">Field → Source Traceability</h2>
+            </div>
+            <div class="overflow-x-auto p-3">
+              <table class="min-w-full text-left text-sm">
+                <thead>
+                  <tr class="text-xs text-gray-500">
+                    <th class="py-2 pr-4">Field</th>
+                    <th class="py-2 pr-4">Extract</th>
+                    <th class="py-2 pr-4">Doc</th>
+                    <th class="py-2">Page / Section</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y">
+                  <tr>
+                    <td class="py-2 pr-4 font-medium">Debt Amount</td>
+                    <td class="py-2 pr-4">"The Initial Term Loans shall be $300,000,000…"</td>
+                    <td class="py-2 pr-4">Credit Agreement</td>
+                    <td class="py-2">§2.01</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-4 font-medium">Pricing</td>
+                    <td class="py-2 pr-4">"…a floor of 0.50% applies…"</td>
+                    <td class="py-2 pr-4">CA</td>
+                    <td class="py-2">§2.08(b)</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-4 font-medium">Leverage Covenant</td>
+                    <td class="py-2 pr-4">"Total Net Leverage Ratio shall not exceed 5.00 to 1.00"</td>
+                    <td class="py-2 pr-4">CA</td>
+                    <td class="py-2">§7.03</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-6 py-6 text-center text-xs text-gray-500">
+      © 2025 Orion / Private‑Credit.ai — Demo UI
+    </footer>
+  </main>
+
+  <script>
+    // Tab behavior (accessible)
+    const tabButtons = document.querySelectorAll('.tab');
+    const tabPanels = document.querySelectorAll('[role="tabpanel"]');
+
+    function activateTab(btn) {
+      tabButtons.forEach((b) => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      const id = btn.getAttribute('data-tab-target');
+      tabPanels.forEach((p) => {
+        const match = '#' + p.id === id;
+        p.classList.toggle('hidden', !match);
+        p.setAttribute('aria-hidden', String(!match));
+      });
+    }
+
+    tabButtons.forEach((btn) => {
+      btn.classList.add('inline-flex','items-center','gap-2','rounded-xl','px-3','py-2','text-xs','font-medium','text-gray-600','hover:bg-gray-50','aria-selected:border-b-2');
+      btn.addEventListener('click', () => activateTab(btn));
+    });
+
+    // Default to first tab
+    if (tabButtons.length) activateTab(tabButtons[0]);
+
+    // Render icons
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
