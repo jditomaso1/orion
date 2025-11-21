@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Borrower Portal — Demo (with Upload Modal)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js (for the little line chart, optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    /* shadcn-esque helpers */
+    .card{ @apply bg-white rounded-2xl shadow-sm border border-slate-200; }
+    .pill-ok{ @apply bg-emerald-100 text-emerald-700; }
+    .pill-warn{ @apply bg-amber-100 text-amber-800; }
+    .pill-bad{ @apply bg-red-100 text-red-700; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900 antialiased">
+  <main class="p-6 md:p-10 max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight">Borrower Portal</h1>
+        <p class="text-slate-600">Pawsitive, Inc. • Facility #DL-2024-118 • Last sync: 3m ago</p>
+      </div>
+      <div class="flex gap-3">
+        <button class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50">
+          <i data-lucide="link-2" class="w-4 h-4"></i>Connect QuickBooks
+        </button>
+        <!-- OPEN MODAL BUTTON -->
+        <button id="newUploadBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>New Upload
+        </button>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <!-- LEFT -->
+      <section class="xl:col-span-2 space-y-6">
+        <!-- Compliance Snapshot -->
+        <section class="card">
+          <div class="flex items-center justify-between p-5 border-b border-slate-200">
+            <h2 class="flex items-center gap-2 text-lg font-semibold">
+              <i data-lucide="activity" class="w-5 h-5"></i>Compliance Snapshot
+            </h2>
+            <div class="flex items-center gap-2 text-sm text-slate-500">
+              <i data-lucide="clock" class="w-4 h-4"></i>Next due: 15 Oct 2025
+            </div>
+          </div>
+          <div class="p-5 overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead class="text-left text-slate-600">
+                <tr>
+                  <th class="py-2 pr-4">Metric</th>
+                  <th class="py-2 pr-4">Threshold</th>
+                  <th class="py-2 pr-4">Actual</th>
+                  <th class="py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody id="cov-body" class="align-top"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Documents & Messages -->
+        <section class="card">
+          <div class="p-5 border-b border-slate-200">
+            <h2 class="flex items-center gap-2 text-lg font-semibold">
+              <i data-lucide="folder-open" class="w-5 h-5"></i>Documents
+            </h2>
+          </div>
+          <div class="p-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Uploader (decorative area) + table -->
+            <div class="lg:col-span-2">
+              <div class="border border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center bg-slate-50">
+                <i data-lucide="upload" class="w-8 h-8 mb-2"></i>
+                <p class="font-medium">Drag & drop files here</p>
+                <p class="text-sm text-slate-600">PDF, Excel, Word • Max 50MB</p>
+                <div class="mt-3">
+                  <button id="openUploadFromDrop" class="px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-sm">
+                    Open Uploader
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-6 overflow-x-auto">
+                <table class="min-w-full text-sm">
+                  <thead class="text-left text-slate-600">
+                    <tr>
+                      <th class="py-2 pr-4">File</th>
+                      <th class="py-2 pr-4 hidden md:table-cell">Size</th>
+                      <th class="py-2 pr-4 hidden md:table-cell">Uploaded</th>
+                      <th class="py-2 hidden md:table-cell">By</th>
+                    </tr>
+                  </thead>
+                  <tbody id="doc-body"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Messages -->
+            <aside class="space-y-4">
+              <h3 class="font-semibold flex items-center gap-2"><i data-lucide="message-square" class="w-5 h-5"></i>Messages</h3>
+              <div id="msg-box" class="h-64 overflow-y-auto rounded-xl border p-3 bg-white text-sm"></div>
+              <div class="flex gap-2">
+                <textarea id="msg-input" class="min-h-[44px] w-full rounded-xl border p-2" placeholder="Write a message…"></textarea>
+                <button id="msg-send" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Send</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </section>
+
+      <!-- RIGHT -->
+      <aside class="space-y-6">
+        <!-- Upcoming -->
+        <section class="card">
+          <div class="p-5 border-b border-slate-200">
+            <h2 class="flex items-center gap-2 text-lg font-semibold">
+              <i data-lucide="clock" class="w-5 h-5"></i>Upcoming
+            </h2>
+          </div>
+          <div id="due-list" class="p-5 space-y-4"></div>
+        </section>
+
+        <!-- Benchmark -->
+        <section class="card">
+          <div class="p-5 border-b border-slate-200">
+            <h2 class="flex items-center gap-2 text-lg font-semibold">
+              <i data-lucide="bar-chart-2" class="w-5 h-5"></i>Benchmark (Leverage)
+            </h2>
+          </div>
+          <div class="p-5">
+            <canvas id="lineChart" height="150"></canvas>
+            <div class="mt-3 text-sm text-slate-600 flex items-center gap-2">
+              <i data-lucide="trending-up" class="w-4 h-4"></i>Your leverage trending down vs peers over last 4 quarters.
+            </div>
+          </div>
+        </section>
+
+        <!-- Integrations -->
+        <section class="card">
+          <div class="p-5 border-b border-slate-200">
+            <h2 class="flex items-center gap-2 text-lg font-semibold">
+              <i data-lucide="link-2" class="w-5 h-5"></i>Integrations
+            </h2>
+          </div>
+          <div class="p-5 space-y-3">
+            <button class="w-full inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50">
+              <i data-lucide="link-2" class="w-4 h-4"></i>Connect QuickBooks
+            </button>
+            <button class="w-full inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50">
+              <i data-lucide="link-2" class="w-4 h-4"></i>Connect NetSuite
+            </button>
+            <button class="w-full inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50">
+              <i data-lucide="link-2" class="w-4 h-4"></i>Connect SFTP
+            </button>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <!-- Tabs (static blurb) -->
+    <section class="mt-8 card">
+      <div class="p-4 border-b border-slate-200">
+        <div class="inline-flex gap-2">
+          <button class="px-3 py-1 rounded-lg bg-slate-900 text-white text-sm">Overview</button>
+          <button class="px-3 py-1 rounded-lg border text-sm">Certificate History</button>
+          <button class="px-3 py-1 rounded-lg border text-sm">Settings</button>
+        </div>
+      </div>
+      <div class="p-5 text-sm text-slate-700">
+        This demo shows the borrower-facing experience. In production, uploads would call Orion’s parser API and update statuses automatically.
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Upload MODAL ===== -->
+  <div id="uploadModal" class="fixed inset-0 z-50 hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-slate-50" aria-hidden="true"></div>
+    <!-- Dialog -->
+    <div class="relative mx-auto mt-24 w-[92%] max-w-xl">
+      <div class="card">
+        <div class="flex items-center justify-between p-5">
+          <h3 class="text-lg font-semibold">Upload Compliance Certificate</h3>
+          <button id="closeModal" class="p-2 rounded-lg hover:bg-slate-100" aria-label="Close">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <div class="p-5">
+          <!-- Your exact working form logic, adapted to modal IDs -->
+          <form id="uploadForm" enctype="multipart/form-data" class="space-y-4">
+            <div>
+              <input id="fileInput" type="file" name="file" required
+                     class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
+                     accept=".pdf,.png,.jpg,.jpeg,.xls,.xlsx,.csv,.doc,.docx,application/pdf,image/*,
+                             application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+                             text/csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+              <div class="text-xs text-slate-500 mt-1">Accepted: PDF / Office / Images. Max ~25MB (configurable).</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800">
+                <i data-lucide="upload" class="w-4 h-4"></i>Submit
+              </button>
+              <span id="result" class="text-sm text-slate-600"></span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // -------- Sample Data (same as before) --------
+    const covenantData = [
+      { metric: "Total Net Leverage", limit: "≤ 4.50x", actual: "4.25x", status: "ok" },
+      { metric: "Interest Coverage",  limit: "≥ 2.50x", actual: "2.8x",  status: "ok" },
+      { metric: "Liquidity (Min)",    limit: "≥ $10m",  actual: "$9.4m", status: "warn" },
+      { metric: "CapEx Limit (LTM)",  limit: "≤ $25m",  actual: "$24.2m",status: "ok" },
+      { metric: "No New Debt (Incurrence)", limit: "N/A", actual: "Clean", status: "ok" },
+    ];
+    const docs = [
+      { name: "Compliance Certificate – Q2 2025.pdf", size: "412 KB",  uploaded: "2025-07-15", by: "CFO" },
+      { name: "Q2 2025 Financials.xlsx",              size: "1.1 MB",  uploaded: "2025-07-15", by: "Controller" },
+      { name: "Bank Statements – Apr-Jun 2025.zip",   size: "22.4 MB", uploaded: "2025-07-15", by: "Treasury" },
+      { name: "Board Minutes – May 2025.pdf",         size: "298 KB",  uploaded: "2025-06-05", by: "Legal" },
+    ];
+    const messagesInit = [
+      { from: "Barings PM", initials: "BP", at: "2025-09-10 09:22", text: "Thanks for the Q2 package. Orion flagged liquidity at $9.4m (<$10m min). Confirm if an RCF draw is planned." },
+      { from: "Pawsitive CFO", initials: "PC", at: "2025-09-10 10:05", text: "RCF draw of $2m requested, settling 9/12. Certificate addendum to follow." },
+      { from: "Barings Ops", initials: "BO", at: "2025-09-10 11:14", text: "Once addendum uploads, Orion will re-evaluate covenants automatically." },
+    ];
+    const dueItems = [
+      { label: "Next Compliance Certificate", due: "2025-10-15", progress: 20 },
+      { label: "Audited FY25 Financials",     due: "2026-03-31", progress: 0  },
+      { label: "Insurance Certificates",      due: "2025-11-01", progress: 60 },
+    ];
+
+    // -------- Render tables & lists --------
+    const covTbody = document.getElementById('cov-body');
+    covenantData.forEach(r => {
+      const icon =
+        r.status === "ok"   ? '<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>' :
+        r.status === "warn" ? '<i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>' :
+                              '<i data-lucide="alert-triangle" class="w-4 h-4 text-red-600"></i>';
+      const pill =
+        r.status === "ok"   ? '<span class="px-3 py-1 rounded-full text-xs font-medium pill-ok">Compliant</span>' :
+        r.status === "warn" ? '<span class="px-3 py-1 rounded-full text-xs font-medium pill-warn">Watch</span>' :
+                              '<span class="px-3 py-1 rounded-full text-xs font-medium pill-bad">Breach</span>';
+      covTbody.insertAdjacentHTML('beforeend', `
+        <tr class="border-t border-slate-200">
+          <td class="py-2 pr-4 font-medium">${r.metric}</td>
+          <td class="py-2 pr-4">${r.limit}</td>
+          <td class="py-2 pr-4">${r.actual}</td>
+          <td class="py-2"><div class="flex items-center gap-2">${icon}${pill}</div></td>
+        </tr>
+      `);
+    });
+
+    const docTbody = document.getElementById('doc-body');
+    function renderDocRow(d) {
+      docTbody.insertAdjacentHTML('beforeend', `
+        <tr class="border-t border-slate-200">
+          <td class="py-2 pr-4">
+            <span class="inline-flex items-center gap-2">
+              <i data-lucide="file-text" class="w-4 h-4"></i>${d.name}
+            </span>
+          </td>
+          <td class="py-2 pr-4 hidden md:table-cell">${d.size || '—'}</td>
+          <td class="py-2 pr-4 hidden md:table-cell">${d.uploaded || '—'}</td>
+          <td class="py-2 hidden md:table-cell">${d.by || 'You'}</td>
+        </tr>
+      `);
+    }
+    docs.forEach(renderDocRow);
+
+    const dueList = document.getElementById('due-list');
+    dueItems.forEach(d => {
+      dueList.insertAdjacentHTML('beforeend', `
+        <div class="rounded-xl border p-3">
+          <div class="flex items-center justify-between mb-2">
+            <div class="font-medium">${d.label}</div>
+            <div class="text-sm text-slate-600">Due ${d.due}</div>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full"><div class="h-2 bg-slate-900 rounded-full" style="width:${d.progress}%"></div></div>
+        </div>
+      `);
+    });
+
+    const msgBox = document.getElementById('msg-box');
+    function renderMsg(m) {
+      msgBox.insertAdjacentHTML('beforeend', `
+        <div class="mb-3">
+          <div class="flex items-center gap-2">
+            <div class="h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-semibold">${m.initials}</div>
+            <div class="text-sm font-medium">${m.from}</div>
+            <div class="text-xs text-slate-500">${m.at}</div>
+          </div>
+          <div class="ml-8 text-sm text-slate-800">${m.text}</div>
+        </div>
+      `);
+    }
+    messagesInit.forEach(renderMsg);
+    document.getElementById('msg-send').addEventListener('click', () => {
+      const t = document.getElementById('msg-input');
+      const v = t.value.trim();
+      if (!v) return;
+      const at = new Date().toISOString().slice(0,16).replace('T',' ');
+      renderMsg({ from:"You", initials:"YO", at, text:v });
+      t.value = ''; msgBox.scrollTop = msgBox.scrollHeight; lucide.createIcons();
+    });
+
+    // -------- Upload Modal wiring --------
+    const modal = document.getElementById('uploadModal');
+    const openBtns = [document.getElementById('newUploadBtn'), document.getElementById('openUploadFromDrop')];
+    const closeBtn = document.getElementById('closeModal');
+    openBtns.forEach(b => b.addEventListener('click', () => { modal.classList.remove('hidden'); }));
+    closeBtn.addEventListener('click', () => { modal.classList.add('hidden'); });
+
+    // Clicking backdrop closes modal
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.add('hidden');
+    });
+
+    // -------- Your existing upload logic (POST /api/upload) --------
+    const form = document.getElementById('uploadForm');
+    const result = document.getElementById('result');
+    const fileInput = document.getElementById('fileInput');
+    const MAX_MB = 25; // client hint; server should enforce too
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = fileInput.files[0];
+      if (!f) { result.textContent = 'Please choose a file.'; return; }
+      if (f.size > MAX_MB * 1024 * 1024) {
+        result.innerHTML = `<span class="text-red-600">File too large (&gt;${MAX_MB}MB).</span>`;
+        return;
+      }
+      result.textContent = 'Uploading…';
+
+      const fd = new FormData();
+      fd.append('file', f);
+
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: fd });
+        const data = await res.json();
+
+        if (data.status === 'ok') {
+          const link = data.file.webViewLink || `https://drive.google.com/file/d/${data.file.id}/view`;
+          result.innerHTML = `<span class="text-emerald-700 font-medium">✅ Upload complete</span> — <a href="${link}" target="_blank" rel="noopener" class="underline">View in Drive</a>`;
+
+          // Add to Documents table immediately
+          renderDocRow({
+            name: (data.file.name || f.name),
+            size: `${(f.size/1024/1024).toFixed(1)} MB`,
+            uploaded: new Date().toISOString().slice(0,10),
+            by: 'You'
+          });
+          lucide.createIcons();
+
+          // Optional: close modal after a short pause
+          setTimeout(() => { modal.classList.add('hidden'); result.textContent=''; fileInput.value=''; }, 900);
+        } else {
+          result.innerHTML = `<span class="text-red-600">❌ ${data.message || 'Upload failed'}</span>`;
+        }
+      } catch (err) {
+        result.innerHTML = `<span class="text-red-600">❌ ${err.message || 'Network error'}</span>`;
+      }
+    });
+
+    // -------- Tiny line chart --------
+    new Chart(document.getElementById('lineChart'), {
+      type: 'line',
+      data: {
+        labels: ["Q3'24","Q4'24","Q1'25","Q2'25"],
+        datasets: [
+          { label: 'Peer', data: [5.1,5.0,4.9,4.8], tension: 0.35 },
+          { label: 'Leverage', data: [4.7,4.5,4.4,4.25], tension: 0.35, pointRadius: 3 }
+        ]
+      },
+      options: {
+        plugins: { legend: { display:false } },
+        scales: { y: { suggestedMin:3.5, suggestedMax:5.5 } }
+      }
+    });
+
+    // Render icons last (and after dynamic inserts too)
+    lucide.createIcons();
+  </script>
+</body>
+</html>
