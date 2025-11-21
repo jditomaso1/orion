@@ -1,193 +1,133 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <title>Pawsitive Brands, Inc. — Tear Sheet | Private Credit AI</title>
-  <meta name="description" content="Tear sheet for Pawsitive Brands, Inc.: $300mm senior secured credit facility. Structure, covenants, leverage, financials, monitoring, comments, and data room sources." />
-  <link rel="canonical" href="https://private-credit.ai/credit-manager-portal/pawsitive-tear-sheet.html" />
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/img/favicon.png?v=8" />
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Tailwind -->
+  <title>Pawsitive Brands, Inc. — Tear Sheet</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Lucide icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- Hide until includes load -->
   <style>
-    body {
-      visibility: hidden;
-      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
     @media print {
       .no-print { display: none !important; }
       body { background: #fff; }
       a[href]:after { content: ""; }
     }
   </style>
-
-  <!-- Styles placeholder (site-wide styles include) -->
-  <style id="styles-placeholder"></style>
 </head>
-
 <body class="min-h-screen bg-gray-50 text-gray-900">
-
-<!-- SITE HEADER INCLUDE -->
-<div id="header-placeholder"></div>
-
-<main class="mx-auto max-w-7xl px-4 sm:px-6 py-6 space-y-6">
-
   <!-- Top bar -->
-  <header class="sticky top-20 z-20 bg-white/80 backdrop-blur border-b rounded-2xl mb-4">
-    <div class="px-4 sm:px-6 py-3 flex items-center gap-3">
+  <header class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 py-3 flex items-center gap-3">
       <a href="./main.html" class="no-print inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black">
         <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
       </a>
       <div class="ml-auto no-print flex items-center gap-2">
-        <!-- Button to portfolio overview -->
-        <a
-          href="./portfolio-overview.html"
-          target="_blank" rel="noopener"
-          class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2"
-        >
+      <!-- NEW: button to portfolio overview -->
+        <a href="./portfolio-overview.html" 
+           target="_blank" rel="noopener"
+           class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2">
           <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Portfolio Overview
         </a>
-
-        <button
-          onclick="window.print()"
-          class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2"
-        >
+        
+        <button onclick="window.print()" class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2">
           <i data-lucide="printer" class="w-4 h-4"></i> Print / PDF
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Title & status -->
-  <section class="flex flex-col gap-3">
-    <div class="flex items-start justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-2">
-          <i data-lucide="file-text" class="w-5 h-5"></i>
-          Pawsitive Brands, Inc. — Tear Sheet
-        </h1>
-        <p class="mt-1 text-sm text-gray-600">$300,000,000 Senior Secured Credit Facility</p>
-      </div>
-      <div class="flex flex-wrap gap-2 items-start">
-        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-green-50 text-green-700">
-          <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> In Compliance
-        </span>
-        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-gray-50">Pet Care</span>
-        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-gray-50">
-          Summit Hill Partners (Sponsor)
-        </span>
-        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-gray-50">Ownership ≥ 51%</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Key metrics cards -->
-  <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-    <metric-card label="Revenue (LTM)" value="$375mm"></metric-card>
-    <metric-card label="EBITDA (LTM)" value="$60mm"></metric-card>
-    <metric-card label="EBITDA Margin" value="16%"></metric-card>
-    <metric-card label="CapEx (LTM)" value="$8mm"></metric-card>
-    <metric-card label="Cash" value="$15mm"></metric-card>
-    <metric-card label="Debt (New)" value="$300mm"></metric-card>
-    <metric-card label="Term" value="7 years"></metric-card>
-    <metric-card label="Pricing" value="SOFR + 525 bps"></metric-card>
-    <metric-card label="Floor" value="2.00% floor"></metric-card>
-    <metric-card label="Leverage (Gross)" value="5.4x"></metric-card>
-    <metric-card label="Leverage (Net)" value="3.69x"></metric-card>
-    <metric-card label="Equity Contrib." value="35%"></metric-card>
-  </section>
-
-  <!-- Deal Overview & Strategy -->
-  <section class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 lg:col-span-8">
-      <div class="rounded-2xl border bg-white p-4 min-h-[440px]">
-        <h2 class="text-lg font-medium flex items-center gap-2 mb-1">
-          <i data-lucide="notebook-text" class="w-5 h-5"></i> Deal Overview
-        </h2>
-        <div class="mt-1 text-sm text-gray-800 space-y-2">
-          <p>
-            <span class="text-gray-500">Company:</span>
-            Pawsitive Brands, Inc. — Manufacturer and distributor of premium pet food and wellness products.
-            The Company serves over 10,000 retail outlets and a rapidly growing DTC channel.
-          </p>
-          <p><span class="text-gray-500">Structure:</span> Term Loan B $250mm; Revolving Credit Facility $50mm.</p>
-          <p><span class="text-gray-500">Use of Proceeds:</span> $175mm refi, $75mm sponsor dividend.</p>
-          <p>
-            <span class="text-gray-500">Security:</span>
-            1st priority lien on substantially all assets incl. AR, inventory, IP, equipment, and equity in subs.
-          </p>
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 py-6 space-y-6">
+    <!-- Title & status -->
+    <section class="flex flex-col gap-3">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-2">
+            <i data-lucide="file-text" class="w-5 h-5"></i>
+            Pawsitive Brands, Inc. — Tear Sheet
+          </h1>
+          <p class="mt-1 text-sm text-gray-600">$300,000,000 Senior Secured Credit Facility</p>
         </div>
-        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div class="rounded-xl border p-3">
-            <div class="text-xs font-medium text-gray-500">Covenants</div>
-            <ul class="mt-2 text-sm space-y-1">
-              <li>Total Net Leverage ≤ <b>5.00x</b></li>
-              <li>Interest Coverage ≥ <b>2.25x</b></li>
-              <li>Liquidity ≥ <b>$15,000,000</b></li>
-            </ul>
+        <div class="flex flex-wrap gap-2 items-start">
+          <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-green-50 text-green-700"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> In Compliance</span>
+          <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-gray-50">Pet Care</span>
+          <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-gray-50">Summit Hill Partners (Sponsor)</span>
+          <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-gray-50">Ownership ≥ 51%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key metrics cards -->
+    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <metric-card label="Revenue (LTM)" value="$375mm"></metric-card>
+      <metric-card label="EBITDA (LTM)" value="$60mm"></metric-card>
+      <metric-card label="EBITDA Margin" value="16%"></metric-card>
+      <metric-card label="CapEx (LTM)" value="$8mm"></metric-card>
+      <metric-card label="Cash" value="$15mm"></metric-card>
+      <metric-card label="Debt (New)" value="$300mm"></metric-card>
+      <metric-card label="Term" value="7 years"></metric-card>
+      <metric-card label="Pricing" value="SOFR + 525 bps"></metric-card>
+      <metric-card label="Floor" value="2.00% floor"></metric-card>
+      <metric-card label="Leverage (Gross)" value="5.4x"></metric-card>
+      <metric-card label="Leverage (Net)" value="3.69x"></metric-card>
+      <metric-card label="Equity Contrib." value="35%"></metric-card>
+    </section>
+
+    <!-- Deal Overview & Strategy -->
+    <section class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 lg:col-span-8">
+        <div class="rounded-2xl border bg-white p-4 min-h-[440px]">
+          <h2 class="text-lg font-medium flex items-center gap-2 mb-1"><i data-lucide="notebook-text" class="w-5 h-5"></i> Deal Overview</h2>
+          <div class="mt-1 text-sm text-gray-800 space-y-2">
+            <p><span class="text-gray-500">Company:</span> Pawsitive Brands, Inc. — Manufacturer and distributor of premium pet food and wellness products. The Company serves over 10,000 retail outlets and a rapidly growing DTC channel.</p>
+            <p><span class="text-gray-500">Structure:</span> Term Loan B $250mm; Revolving Credit Facility $50mm.</p>
+            <p><span class="text-gray-500">Use of Proceeds:</span> $175mm refi, $75mm sponsor dividend.</p>
+            <p><span class="text-gray-500">Security:</span> 1st priority lien on substantially all assets incl. AR, inventory, IP, equipment, and equity in subs.</p>
           </div>
-          <div class="rounded-xl border p-3">
-            <div class="text-xs font-medium text-gray-500">Sponsor & Ownership</div>
-            <ul class="mt-2 text-sm space-y-1">
-              <li>Sponsor: <b>Summit Hill Partners</b></li>
-              <li>Ownership: <b>≥ 51%</b></li>
-            </ul>
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="rounded-xl border p-3">
+              <div class="text-xs font-medium text-gray-500">Covenants</div>
+              <ul class="mt-2 text-sm space-y-1">
+                <li>Total Net Leverage ≤ <b>5.00x</b></li>
+                <li>Interest Coverage ≥ <b>2.25x</b></li>
+                <li>Liquidity ≥ <b>$15,000,000</b></li>
+              </ul>
+            </div>
+            <div class="rounded-xl border p-3">
+              <div class="text-xs font-medium text-gray-500">Sponsor & Ownership</div>
+              <ul class="mt-2 text-sm space-y-1">
+                <li>Sponsor: <b>Summit Hill Partners</b></li>
+                <li>Ownership: <b>≥ 51%</b></li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <aside class="col-span-12 lg:col-span-4 space-y-4">
-      <div class="rounded-2xl border bg-white p-4">
-        <h3 class="text-sm font-medium flex items-center gap-2">
-          <i data-lucide="brain" class="w-4 h-4"></i> Strategy Recommendation
-        </h3>
-        <div class="mt-2 text-sm p-3 rounded-xl bg-purple-50 border text-purple-900">
-          Suggested Strategy: <b>Flexible SMA / Hybrid</b>
+      <aside class="col-span-12 lg:col-span-4 space-y-4">
+        <div class="rounded-2xl border bg-white p-4">
+          <h3 class="text-sm font-medium flex items-center gap-2"><i data-lucide="brain" class="w-4 h-4"></i> Strategy Recommendation</h3>
+          <div class="mt-2 text-sm p-3 rounded-xl bg-purple-50 border text-purple-900">Suggested Strategy: <b>Flexible SMA / Hybrid</b></div>
         </div>
-      </div>
-      <div class="rounded-2xl border bg-white p-4">
-        <h3 class="text-sm font-medium flex items-center gap-2">
-          <i data-lucide="download" class="w-4 h-4"></i> Export
-        </h3>
-        <div class="mt-2 flex flex-wrap gap-2">
-          <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Download JSON</a>
-          <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Download CSV</a>
-          <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Download Text</a>
-          <button
-            onclick="window.print()"
-            class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50"
-          >
-            Download PDF
-          </button>
+        <div class="rounded-2xl border bg-white p-4">
+          <h3 class="text-sm font-medium flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Export</h3>
+          <div class="mt-2 flex flex-wrap gap-2">
+            <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Download JSON</a>
+            <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Download CSV</a>
+            <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Download Text</a>
+            <button onclick="window.print()" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Download PDF</button>
+          </div>
         </div>
-      </div>
-      <div class="rounded-2xl border bg-white p-4">
-        <h3 class="text-sm font-medium flex items-center gap-2">
-          <i data-lucide="paperclip" class="w-4 h-4"></i> Files Used
-        </h3>
-        <ul class="mt-2 text-sm space-y-1 text-gray-700">
-          <li>Pawsitive__2025-09__Compliance_Certificate.pdf</li>
-          <li>Pawsitive_Notes.pdf</li>
-          <li>Pawsitive_Credit_Agreement.pdf</li>
-          <li>Pawsitive_CIM.pdf</li>
-          <li>Pawsitive_Term_Sheet.pdf</li>
-        </ul>
-      </div>
-    </aside>
-  </section>
+        <div class="rounded-2xl border bg-white p-4">
+          <h3 class="text-sm font-medium flex items-center gap-2"><i data-lucide="paperclip" class="w-4 h-4"></i> Files Used</h3>
+          <ul class="mt-2 text-sm space-y-1 text-gray-700">
+            <li>Pawsitive__2025-09__Compliance_Certificate.pdf</li>
+            <li>Pawsitive_Notes.pdf</li>
+            <li>Pawsitive_Credit_Agreement.pdf</li>
+            <li>Pawsitive_CIM.pdf</li>
+            <li>Pawsitive_Term_Sheet.pdf</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
 
   <!-- Financials, Structure & Covenants -->
   <section class="grid grid-cols-12 gap-4 items-stretch">
@@ -207,41 +147,16 @@
             </tr>
           </thead>
           <tbody class="divide-y">
-            <tr>
-              <td class="py-2 text-gray-500">Revenue ($mm)</td>
-              <td class="py-2 text-right">340</td>
-              <td class="py-2 text-right">360</td>
-              <td class="py-2 text-right font-medium">375</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">EBITDA ($mm)</td>
-              <td class="py-2 text-right">52</td>
-              <td class="py-2 text-right">57</td>
-              <td class="py-2 text-right font-medium">60</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">EBITDA Margin (%)</td>
-              <td class="py-2 text-right">15%</td>
-              <td class="py-2 text-right">15.5%</td>
-              <td class="py-2 text-right font-medium">16%</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">CapEx ($mm)</td>
-              <td class="py-2 text-right">7</td>
-              <td class="py-2 text-right">8</td>
-              <td class="py-2 text-right font-medium">8</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">Cash ($mm)</td>
-              <td class="py-2 text-right">12</td>
-              <td class="py-2 text-right">14</td>
-              <td class="py-2 text-right font-medium">15</td>
-            </tr>
+            <tr><td class="py-2 text-gray-500">Revenue ($mm)</td><td class="py-2 text-right">340</td><td class="py-2 text-right">360</td><td class="py-2 text-right font-medium">375</td></tr>
+            <tr><td class="py-2 text-gray-500">EBITDA ($mm)</td><td class="py-2 text-right">52</td><td class="py-2 text-right">57</td><td class="py-2 text-right font-medium">60</td></tr>
+            <tr><td class="py-2 text-gray-500">EBITDA Margin (%)</td><td class="py-2 text-right">15%</td><td class="py-2 text-right">15.5%</td><td class="py-2 text-right font-medium">16%</td></tr>
+            <tr><td class="py-2 text-gray-500">CapEx ($mm)</td><td class="py-2 text-right">7</td><td class="py-2 text-right">8</td><td class="py-2 text-right font-medium">8</td></tr>
+            <tr><td class="py-2 text-gray-500">Cash ($mm)</td><td class="py-2 text-right">12</td><td class="py-2 text-right">14</td><td class="py-2 text-right font-medium">15</td></tr>
           </tbody>
         </table>
       </div>
     </div>
-
+  
     <!-- Right: Structure & Terms -->
     <div class="col-span-12 lg:col-span-6">
       <div class="rounded-2xl border bg-white p-4">
@@ -250,51 +165,20 @@
         </h2>
         <table class="mt-1 w-full text-sm">
           <tbody class="divide-y">
-            <tr>
-              <td class="py-2 text-gray-500">Debt Amount (New)</td>
-              <td class="py-2 text-right font-medium">$300mm</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">Use of Proceeds</td>
-              <td class="py-2 text-right font-medium">$175mm refi / $75mm dividend</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">Term</td>
-              <td class="py-2 text-right font-medium">7 years</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">Pricing</td>
-              <td class="py-2 text-right font-medium">
-                TLB: SOFR + 525 bps (1.00% floor); RCF: SOFR + 375 bps
-              </td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">Structure</td>
-              <td class="py-2 text-right font-medium">TLB $250mm / RCF $50mm</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">Equity Contribution</td>
-              <td class="py-2 text-right font-medium">35%</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">Leverage (Gross / Net)</td>
-              <td class="py-2 text-right font-medium">5.4x / 3.69x</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">Security</td>
-              <td class="py-2 text-right font-medium">1st lien on substantially all assets</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">Covenants</td>
-              <td class="py-2 text-right font-medium">
-                Net Lev ≤ 5.00x; IC ≥ 2.25x; Liquidity ≥ $15mm
-              </td>
-            </tr>
+            <tr><td class="py-2 text-gray-500">Debt Amount (New)</td><td class="py-2 text-right font-medium">$300mm</td></tr>
+            <tr><td class="py-2 text-gray-500">Use of Proceeds</td><td class="py-2 text-right font-medium">$175mm refi / $75mm dividend</td></tr>
+            <tr><td class="py-2 text-gray-500">Term</td><td class="py-2 text-right font-medium">7 years</td></tr>
+            <tr><td class="py-2 text-gray-500">Pricing</td><td class="py-2 text-right font-medium">TLB: SOFR + 525 bps (1.00% floor); RCF: SOFR + 375 bps</td></tr>
+            <tr><td class="py-2 text-gray-500">Structure</td><td class="py-2 text-right font-medium">TLB $250mm / RCF $50mm</td></tr>
+            <tr><td class="py-2 text-gray-500">Equity Contribution</td><td class="py-2 text-right font-medium">35%</td></tr>
+            <tr><td class="py-2 text-gray-500">Leverage (Gross / Net)</td><td class="py-2 text-right font-medium">5.4x / 3.69x</td></tr>
+            <tr><td class="py-2 text-gray-500">Security</td><td class="py-2 text-right font-medium">1st lien on substantially all assets</td></tr>
+            <tr><td class="py-2 text-gray-500">Covenants</td><td class="py-2 text-right font-medium">Net Lev ≤ 5.00x; IC ≥ 2.25x; Liquidity ≥ $15mm</td></tr>
           </tbody>
         </table>
       </div>
     </div>
-
+  
     <!-- Left below Financials: Covenant Metrics -->
     <div class="col-span-12 lg:col-span-6">
       <div class="rounded-2xl border bg-white p-4">
@@ -311,72 +195,49 @@
             </tr>
           </thead>
           <tbody class="divide-y">
-            <tr>
-              <td class="py-2 text-gray-500">Total Net Leverage</td>
-              <td class="py-2 text-right">4.9x</td>
-              <td class="py-2 text-right">5.1x</td>
-              <td class="py-2 text-right font-medium">5.0x</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">Interest Coverage</td>
-              <td class="py-2 text-right">2.3x</td>
-              <td class="py-2 text-right">2.4x</td>
-              <td class="py-2 text-right font-medium">2.25x</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-gray-500">Liquidity ($mm)</td>
-              <td class="py-2 text-right">$16</td>
-              <td class="py-2 text-right">$17</td>
-              <td class="py-2 text-right font-medium">$15</td>
-            </tr>
+            <tr><td class="py-2 text-gray-500">Total Net Leverage</td><td class="py-2 text-right">4.9x</td><td class="py-2 text-right">5.1x</td><td class="py-2 text-right font-medium">5.0x</td></tr>
+            <tr><td class="py-2 text-gray-500">Interest Coverage</td><td class="py-2 text-right">2.3x</td><td class="py-2 text-right">2.4x</td><td class="py-2 text-right font-medium">2.25x</td></tr>
+            <tr><td class="py-2 text-gray-500">Liquidity ($mm)</td><td class="py-2 text-right">$16</td><td class="py-2 text-right">$17</td><td class="py-2 text-right font-medium">$15</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <!-- Analysis -->
-  <section class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 lg:col-span-8">
-      <div class="rounded-2xl border bg-white p-4">
-        <h2 class="text-lg font-medium flex items-center gap-2">
-          <i data-lucide="analysis" class="w-5 h-5"></i> Analysis & Commentary
-        </h2>
-        <div class="mt-3 grid md:grid-cols-2 gap-3 text-sm">
-          <div class="rounded-xl border p-3">
-            <div class="text-xs font-medium text-gray-500">Key Strengths</div>
-            <ul class="mt-2 list-disc list-inside space-y-1">
-              <li>Brand loyalty and trust</li>
-              <li>Clean-label ingredients</li>
-              <li>Recurring DTC revenue</li>
-              <li>High customer retention</li>
-            </ul>
+    <!-- Analysis -->
+    <section class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 lg:col-span-8">
+        <div class="rounded-2xl border bg-white p-4">
+          <h2 class="text-lg font-medium flex items-center gap-2"><i data-lucide="analysis" class="w-5 h-5"></i> Analysis & Commentary</h2>
+          <div class="mt-3 grid md:grid-cols-2 gap-3 text-sm">
+            <div class="rounded-xl border p-3">
+              <div class="text-xs font-medium text-gray-500">Key Strengths</div>
+              <ul class="mt-2 list-disc list-inside space-y-1">
+                <li>Brand loyalty and trust</li>
+                <li>Clean-label ingredients</li>
+                <li>Recurring DTC revenue</li>
+                <li>High customer retention</li>
+              </ul>
+            </div>
+            <div class="rounded-xl border p-3">
+              <div class="text-xs font-medium text-gray-500">Key Risks</div>
+              <ul class="mt-2 list-disc list-inside space-y-1">
+                <li>Non-payment / covenant breach</li>
+                <li>Insolvency or bankruptcy events</li>
+                <li>Cross-default to other indebtedness</li>
+                <li>MAC (material adverse change)</li>
+              </ul>
+            </div>
           </div>
-          <div class="rounded-xl border p-3">
-            <div class="text-xs font-medium text-gray-500">Key Risks</div>
-            <ul class="mt-2 list-disc list-inside space-y-1">
-              <li>Non-payment / covenant breach</li>
-              <li>Insolvency or bankruptcy events</li>
-              <li>Cross-default to other indebtedness</li>
-              <li>MAC (material adverse change)</li>
-            </ul>
-          </div>
+          <p class="mt-3 text-sm text-gray-700">Notes: This document is a summary and not legally binding. Refer to the full executed Credit Agreement for definitive terms and conditions.</p>
         </div>
-        <p class="mt-3 text-sm text-gray-700">
-          Notes: This document is a summary and not legally binding. Refer to the full executed Credit Agreement
-          for definitive terms and conditions.
-        </p>
       </div>
-    </div>
-
-    <div class="col-span-12 lg:col-span-4">
-      <div class="rounded-2xl border bg-white p-4">
-        <h3 class="text-sm font-medium flex items-center gap-2">
-          <i data-lucide="code" class="w-4 h-4"></i> Final JSON (view)
-        </h3>
-        <details class="mt-2 text-xs">
-          <summary class="cursor-pointer select-none text-gray-600">Toggle JSON</summary>
-          <pre class="mt-2 p-3 bg-gray-50 rounded-xl overflow-x-auto">{
+      <div class="col-span-12 lg:col-span-4">
+        <div class="rounded-2xl border bg-white p-4">
+          <h3 class="text-sm font-medium flex items-center gap-2"><i data-lucide="code" class="w-4 h-4"></i> Final JSON (view)</h3>
+          <details class="mt-2 text-xs">
+            <summary class="cursor-pointer select-none text-gray-600">Toggle JSON</summary>
+            <pre class="mt-2 p-3 bg-gray-50 rounded-xl overflow-x-auto">{
   "Deal Title": "$300,000,000 Senior Secured Credit Facility",
   "Company Name": "Pawsitive Brands, Inc.",
   "Industry": "Pet Care",
@@ -404,420 +265,338 @@
   "Notes / Commentary": "This document is a summary and not legally binding. Refer to the full executed Credit Agreement for definitive terms and conditions"
 }</pre>
         </details>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Comments & Approvals -->
-  <section id="comments" class="grid grid-cols-12 gap-4">
-    <div class="col-span-12">
-      <div class="rounded-2xl border bg-white p-4">
-        <h2 class="text-lg font-medium flex items-center gap-2">
-          <i data-lucide="messages-square" class="w-5 h-5"></i> Comments & Approvals
-        </h2>
-
-        <p class="mt-1 text-sm text-gray-500">
-          Centralized notes by role. (Static mock; wiring to a backend can come later.)
-        </p>
-
-        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Analyst Comments -->
-          <div class="rounded-xl border p-3">
-            <div class="flex items-center justify-between">
-              <div class="text-sm font-medium flex items-center gap-2">
-                <i data-lucide="user-pen" class="w-4 h-4"></i> Analyst Comments
+    <!-- Comments & Approvals (drop this anywhere below your tables, e.g., before </main>) -->
+    <section id="comments" class="grid grid-cols-12 gap-4">
+      <div class="col-span-12">
+        <div class="rounded-2xl border bg-white p-4">
+          <h2 class="text-lg font-medium flex items-center gap-2">
+            <i data-lucide="messages-square" class="w-5 h-5"></i> Comments & Approvals
+          </h2>
+    
+          <!-- Optional: light intro / instructions -->
+          <p class="mt-1 text-sm text-gray-500">
+            Centralized notes by role. (Static mock; wiring to a backend can come later.)
+          </p>
+    
+          <!-- Four comment buckets -->
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- 1) Analyst Comments -->
+            <div class="rounded-xl border p-3">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-medium flex items-center gap-2">
+                  <i data-lucide="user-pen" class="w-4 h-4"></i> Analyst Comments
+                </div>
+                <span class="text-xs rounded-full border px-2 py-0.5 bg-gray-50">3</span>
               </div>
-              <span class="text-xs rounded-full border px-2 py-0.5 bg-gray-50">3</span>
+              <ul class="mt-2 space-y-3">
+                <!-- Comment item -->
+                <li class="text-sm">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">JS</div>
+                    <div class="text-xs text-gray-500">Jake S • 2025-09-24</div>
+                  </div>
+                  <p class="mt-1">Margin stability supported by pricing power and mix. Watch input costs into Q4.</p>
+                </li>
+                <li class="text-sm">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">AK</div>
+                    <div class="text-xs text-gray-500">Anita K • 2025-09-26</div>
+                  </div>
+                  <p class="mt-1">Customer concentration below 15% across top 5—comfortable for category.</p>
+                </li>
+                <li class="text-sm">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">RM</div>
+                    <div class="text-xs text-gray-500">Ravi M • 2025-09-27</div>
+                  </div>
+                  <p class="mt-1">LTM cash conversion ≈ 85%; inventory rebuild explains near-term WC drag.</p>
+                </li>
+              </ul>
             </div>
-            <ul class="mt-2 space-y-3">
-              <li class="text-sm">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">JS</div>
-                  <div class="text-xs text-gray-500">Jake S • 2025-09-24</div>
+    
+            <!-- 2) Credit Approval (underwriter / approver notes) -->
+            <div class="rounded-xl border p-3">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-medium flex items-center gap-2">
+                  <i data-lucide="check-circle-2" class="w-4 h-4"></i> Credit Approval
                 </div>
-                <p class="mt-1">
-                  Margin stability supported by pricing power and mix. Watch input costs into Q4.
-                </p>
-              </li>
-              <li class="text-sm">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">AK</div>
-                  <div class="text-xs text-gray-500">Anita K • 2025-09-26</div>
+                <span class="text-xs rounded-full border px-2 py-0.5 bg-gray-50">2</span>
+              </div>
+              <ul class="mt-2 space-y-3">
+                <li class="text-sm">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">LG</div>
+                    <div class="text-xs text-gray-500">Liam G • 2025-09-27</div>
+                  </div>
+                  <p class="mt-1">Approve at proposed terms. Require quarterly KPI pack and annual supplier audit.</p>
+                </li>
+                <li class="text-sm">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">MS</div>
+                    <div class="text-xs text-gray-500">Maya S • 2025-09-27</div>
+                  </div>
+                  <p class="mt-1">Add springing cash sweep if Net Lev &gt; 5.0x for 2 consecutive quarters.</p>
+                </li>
+              </ul>
+            </div>
+    
+            <!-- 3) Historical Comments -->
+            <div class="rounded-xl border p-3">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-medium flex items-center gap-2">
+                  <i data-lucide="clock" class="w-4 h-4"></i> Historical Comments
                 </div>
-                <p class="mt-1">
-                  Customer concentration below 15% across top 5—comfortable for category.
-                </p>
-              </li>
-              <li class="text-sm">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">RM</div>
-                  <div class="text-xs text-gray-500">Ravi M • 2025-09-27</div>
+                <span class="text-xs rounded-full border px-2 py-0.5 bg-gray-50">4</span>
+              </div>
+              <ul class="mt-2 space-y-3">
+                <li class="text-sm">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">EC</div>
+                    <div class="text-xs text-gray-500">2025-06-15</div>
+                  </div>
+                  <p class="mt-1">Closed FY24 with outperformance vs plan; DTC mix +300 bps YoY.</p>
+                </li>
+                <li class="text-sm">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">TR</div>
+                    <div class="text-xs text-gray-500">2025-03-28</div>
+                  </div>
+                  <p class="mt-1">Temporary logistics surcharge rolled off; expect +50bps margin tailwind.</p>
+                </li>
+                <li class="text-sm">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">AK</div>
+                    <div class="text-xs text-gray-500">2024-12-08</div>
+                  </div>
+                  <p class="mt-1">Covenant headroom widened post refi; liquidity buffer now &gt; $15mm.</p>
+                </li>
+                <li class="text-sm">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">JS</div>
+                    <div class="text-xs text-gray-500">2024-08-31</div>
+                  </div>
+                  <p class="mt-1">Added new pet wellness SKU line; early sell-through promising.</p>
+                </li>
+              </ul>
+            </div>
+    
+            <!-- 4) Credit Committee Comments -->
+            <div class="rounded-xl border p-3">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-medium flex items-center gap-2">
+                  <i data-lucide="gavel" class="w-4 h-4"></i> Credit Committee
                 </div>
-                <p class="mt-1">
-                  LTM cash conversion ≈ 85%; inventory rebuild explains near-term WC drag.
-                </p>
-              </li>
-            </ul>
+                <span class="text-xs rounded-full border px-2 py-0.5 bg-gray-50">1</span>
+              </div>
+              <ul class="mt-2 space-y-3">
+                <li class="text-sm">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">CC</div>
+                    <div class="text-xs text-gray-500">2025-09-27</div>
+                  </div>
+                  <p class="mt-1">Approved as presented. Include monitoring of DTC retention and raw-material volatility as standing agenda items.</p>
+                </li>
+              </ul>
+            </div>
           </div>
-
-          <!-- Credit Approval -->
-          <div class="rounded-xl border p-3">
-            <div class="flex items-center justify-between">
-              <div class="text-sm font-medium flex items-center gap-2">
-                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Credit Approval
-              </div>
-              <span class="text-xs rounded-full border px-2 py-0.5 bg-gray-50">2</span>
+    
+          <!-- Optional: simple add-a-comment form (static mock) -->
+          <form class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-2">
+            <div class="md:col-span-1">
+              <label class="text-xs text-gray-500">Category</label>
+              <select class="w-full mt-1 border rounded-lg px-2 py-1 text-sm">
+                <option>Analyst</option>
+                <option>Credit Approval</option>
+                <option>Historical</option>
+                <option>Credit Committee</option>
+              </select>
             </div>
-            <ul class="mt-2 space-y-3">
-              <li class="text-sm">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">LG</div>
-                  <div class="text-xs text-gray-500">Liam G • 2025-09-27</div>
-                </div>
-                <p class="mt-1">
-                  Approve at proposed terms. Require quarterly KPI pack and annual supplier audit.
-                </p>
-              </li>
-              <li class="text-sm">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">MS</div>
-                  <div class="text-xs text-gray-500">Maya S • 2025-09-27</div>
-                </div>
-                <p class="mt-1">
-                  Add springing cash sweep if Net Lev &gt; 5.0x for 2 consecutive quarters.
-                </p>
-              </li>
-            </ul>
+            <div class="md:col-span-3">
+              <label class="text-xs text-gray-500">Comment</label>
+              <textarea class="w-full mt-1 border rounded-lg px-3 py-2 text-sm" rows="2" placeholder="Add a note (mock UI)…"></textarea>
+            </div>
+            <div class="md:col-span-4 flex justify-end">
+              <button type="button" class="text-xs border rounded-lg px-3 py-1.5 hover:bg-gray-50">Add Comment</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+    <!-- Data Room / Source Files (placeholder for future Drive integration) -->
+    <section id="dataroom" class="grid grid-cols-12 gap-4">
+      <div class="col-span-12">
+        <div class="rounded-2xl border bg-white p-4">
+          <h2 class="text-lg font-medium flex items-center gap-2">
+            <i data-lucide="folder-open" class="w-5 h-5"></i> Data Room & Source Files
+          </h2>
+          <p class="mt-1 text-sm text-gray-500">
+            Connected drive view. Files from the primary deal folder.
+          </p>
+    
+          <!-- Top row: path + actions -->
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <div class="text-xs px-2 py-1 rounded-full border bg-gray-50">/Deals/Pawsitive/Execution/Final</div>
+            <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Open in Drive</a>
+            <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Sync</a>
+            <span class="ml-auto text-xs text-gray-500">Last synced: 2025-09-27 10:32</span>
           </div>
-
-          <!-- Historical Comments -->
-          <div class="rounded-xl border p-3">
-            <div class="flex items-center justify-between">
-              <div class="text-sm font-medium flex items-center gap-2">
-                <i data-lucide="clock" class="w-4 h-4"></i> Historical Comments
+    
+          <!-- File list -->
+          <div class="mt-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div class="rounded-xl border p-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <div class="text-sm font-medium">Pawsitive_Credit_Agreement.pdf</div>
               </div>
-            <span class="text-xs rounded-full border px-2 py-0.5 bg-gray-50">4</span>
+              <div class="mt-1 text-xs text-gray-500">vFinal • 2.8MB • uploaded 2025-09-20</div>
             </div>
-            <ul class="mt-2 space-y-3">
-              <li class="text-sm">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">EC</div>
-                  <div class="text-xs text-gray-500">2025-06-15</div>
-                </div>
-                <p class="mt-1">
-                  Closed FY24 with outperformance vs plan; DTC mix +300 bps YoY.
-                </p>
-              </li>
-              <li class="text-sm">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">TR</div>
-                  <div class="text-xs text-gray-500">2025-03-28</div>
-                </div>
-                <p class="mt-1">
-                  Temporary logistics surcharge rolled off; expect +50bps margin tailwind.
-                </p>
-              </li>
-              <li class="text-sm">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">AK</div>
-                  <div class="text-xs text-gray-500">2024-12-08</div>
-                </div>
-                <p class="mt-1">
-                  Covenant headroom widened post refi; liquidity buffer now &gt; $15mm.
-                </p>
-              </li>
-              <li class="text-sm">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">JS</div>
-                  <div class="text-xs text-gray-500">2024-08-31</div>
-                </div>
-                <p class="mt-1">
-                  Added new pet wellness SKU line; early sell-through promising.
-                </p>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Credit Committee -->
-          <div class="rounded-xl border p-3">
-            <div class="flex items-center justify-between">
-              <div class="text-sm font-medium flex items-center gap-2">
-                <i data-lucide="gavel" class="w-4 h-4"></i> Credit Committee
+    
+            <div class="rounded-xl border p-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <div class="text-sm font-medium">Pawsitive_Term_Sheet.pdf</div>
               </div>
-              <span class="text-xs rounded-full border px-2 py-0.5 bg-gray-50">1</span>
+              <div class="mt-1 text-xs text-gray-500">v3 • 0.7MB • uploaded 2025-09-18</div>
             </div>
-            <ul class="mt-2 space-y-3">
-              <li class="text-sm">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-gray-200 grid place-content-center text-[10px]">CC</div>
-                  <div class="text-xs text-gray-500">2025-09-27</div>
-                </div>
-                <p class="mt-1">
-                  Approved as presented. Include monitoring of DTC retention and raw-material volatility as
-                  standing agenda items.
-                </p>
-              </li>
-            </ul>
+    
+            <div class="rounded-xl border p-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <div class="text-sm font-medium">Pawsitive_CIM.pdf</div>
+              </div>
+              <div class="mt-1 text-xs text-gray-500">v2 • 5.1MB • uploaded 2025-09-10</div>
+            </div>
+    
+            <div class="rounded-xl border p-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <div class="text-sm font-medium">Pawsitive_Notes.pdf</div>
+              </div>
+              <div class="mt-1 text-xs text-gray-500">0.9MB • uploaded 2025-09-08</div>
+            </div>
+    
+            <div class="rounded-xl border p-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <div class="text-sm font-medium">Pawsitive__2025-09__Compliance_Certificate.pdf</div>
+              </div>
+              <div class="mt-1 text-xs text-gray-500">0.4MB • uploaded 2025-09-25</div>
+            </div>
+    
+            <div class="rounded-xl border p-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="image" class="w-4 h-4"></i>
+                <div class="text-sm font-medium">Brand_Assets.zip</div>
+              </div>
+              <div class="mt-1 text-xs text-gray-500">12.3MB • uploaded 2025-09-05</div>
+            </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <!-- Add-a-comment form (static mock) -->
-        <form class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-2">
-          <div class="md:col-span-1">
-            <label class="text-xs text-gray-500">Category</label>
-            <select class="w-full mt-1 border rounded-lg px-2 py-1 text-sm">
-              <option>Analyst</option>
-              <option>Credit Approval</option>
-              <option>Historical</option>
-              <option>Credit Committee</option>
+    <!-- Client Communications (placeholder for future messaging integration) -->
+    <section id="client-comms" class="grid grid-cols-12 gap-4">
+      <div class="col-span-12">
+        <div class="rounded-2xl border bg-white p-4">
+          <h2 class="text-lg font-medium flex items-center gap-2">
+            <i data-lucide="messages-square" class="w-5 h-5"></i> Client Communications
+          </h2>
+          <p class="mt-1 text-sm text-gray-500">
+            Timeline of borrower comms. Pull from portal messages.
+          </p>
+    
+          <!-- Filters / actions -->
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <select class="text-xs border rounded-lg px-2 py-1">
+              <option>All</option>
+              <option>Emails</option>
+              <option>Portal Messages</option>
+              <option>Calls / Meetings</option>
             </select>
+            <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Export CSV</a>
+            <span class="ml-auto text-xs text-gray-500">Borrower: Pawsitive Brands, Inc.</span>
           </div>
-          <div class="md:col-span-3">
-            <label class="text-xs text-gray-500">Comment</label>
-            <textarea
-              class="w-full mt-1 border rounded-lg px-3 py-2 text-sm"
-              rows="2"
-              placeholder="Add a note (mock UI)…"
-            ></textarea>
-          </div>
-          <div class="md:col-span-4 flex justify-end">
-            <button
-              type="button"
-              class="text-xs border rounded-lg px-3 py-1.5 hover:bg-gray-50"
-            >
-              Add Comment
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </section>
-
-  <!-- Data Room / Source Files -->
-  <section id="dataroom" class="grid grid-cols-12 gap-4">
-    <div class="col-span-12">
-      <div class="rounded-2xl border bg-white p-4">
-        <h2 class="text-lg font-medium flex items-center gap-2">
-          <i data-lucide="folder-open" class="w-5 h-5"></i> Data Room & Source Files
-        </h2>
-        <p class="mt-1 text-sm text-gray-500">
-          Connected drive view. Files from the primary deal folder.
-        </p>
-
-        <div class="mt-3 flex flex-wrap items-center gap-2">
-          <div class="text-xs px-2 py-1 rounded-full border bg-gray-50">
-            /Deals/Pawsitive/Execution/Final
-          </div>
-          <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Open in Drive</a>
-          <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Sync</a>
-          <span class="ml-auto text-xs text-gray-500">Last synced: 2025-09-27 10:32</span>
-        </div>
-
-        <div class="mt-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          <div class="rounded-xl border p-3">
-            <div class="flex items-center gap-2">
-              <i data-lucide="file-text" class="w-4 h-4"></i>
-              <div class="text-sm font-medium">Pawsitive_Credit_Agreement.pdf</div>
-            </div>
-            <div class="mt-1 text-xs text-gray-500">vFinal • 2.8MB • uploaded 2025-09-20</div>
-          </div>
-
-          <div class="rounded-xl border p-3">
-            <div class="flex items-center gap-2">
-              <i data-lucide="file-text" class="w-4 h-4"></i>
-              <div class="text-sm font-medium">Pawsitive_Term_Sheet.pdf</div>
-            </div>
-            <div class="mt-1 text-xs text-gray-500">v3 • 0.7MB • uploaded 2025-09-18</div>
-          </div>
-
-          <div class="rounded-xl border p-3">
-            <div class="flex items-center gap-2">
-              <i data-lucide="file-text" class="w-4 h-4"></i>
-              <div class="text-sm font-medium">Pawsitive_CIM.pdf</div>
-            </div>
-            <div class="mt-1 text-xs text-gray-500">v2 • 5.1MB • uploaded 2025-09-10</div>
-          </div>
-
-          <div class="rounded-xl border p-3">
-            <div class="flex items-center gap-2">
-              <i data-lucide="file-text" class="w-4 h-4"></i>
-              <div class="text-sm font-medium">Pawsitive_Notes.pdf</div>
-            </div>
-            <div class="mt-1 text-xs text-gray-500">0.9MB • uploaded 2025-09-08</div>
-          </div>
-
-          <div class="rounded-xl border p-3">
-            <div class="flex items-center gap-2">
-              <i data-lucide="file-text" class="w-4 h-4"></i>
-              <div class="text-sm font-medium">
-                Pawsitive__2025-09__Compliance_Certificate.pdf
+    
+          <!-- Timeline -->
+          <ol class="mt-4 space-y-4">
+            <!-- Item -->
+            <li class="rounded-xl border p-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="mail" class="w-4 h-4"></i>
+                  <div class="text-sm font-medium">Term Sheet sent to CFO</div>
+                </div>
+                <div class="text-xs text-gray-500">2025-09-19 • Email</div>
               </div>
-            </div>
-            <div class="mt-1 text-xs text-gray-500">0.4MB • uploaded 2025-09-25</div>
-          </div>
-
-          <div class="rounded-xl border p-3">
-            <div class="flex items-center gap-2">
-              <i data-lucide="image" class="w-4 h-4"></i>
-              <div class="text-sm font-medium">Brand_Assets.zip</div>
-            </div>
-            <div class="mt-1 text-xs text-gray-500">12.3MB • uploaded 2025-09-05</div>
-          </div>
+              <p class="mt-1 text-sm">Shared redline of TLB pricing and covenants; requested signatures by 9/23.</p>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">Owner: J. Smith</span>
+                <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">Status: Sent</span>
+                <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">Attachment: Term_Sheet_v3.pdf</span>
+              </div>
+            </li>
+    
+            <li class="rounded-xl border p-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="phone" class="w-4 h-4"></i>
+                  <div class="text-sm font-medium">Diligence call w/ Ops & Supply Chain</div>
+                </div>
+                <div class="text-xs text-gray-500">2025-09-22 • Call</div>
+              </div>
+              <p class="mt-1 text-sm">Discussed input cost hedging and inventory normalization; no material risks flagged.</p>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">Participants: CFO, COO, AP team</span>
+                <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">Notes: added follow-ups</span>
+              </div>
+            </li>
+    
+            <li class="rounded-xl border p-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="message-square" class="w-4 h-4"></i>
+                  <div class="text-sm font-medium">Portal message: Compliance Certificate upload</div>
+                </div>
+                <div class="text-xs text-gray-500">2025-09-25 • Portal</div>
+              </div>
+              <p class="mt-1 text-sm">Borrower uploaded Sep certificate; leverage 5.0x, IC 2.25x, liquidity $15mm.</p>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span class="text-[11px] px-2 py-0.5 rounded-full border bg-green-50 text-green-700">On-time</span>
+                <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">File: Pawsitive__2025-09__Compliance_Certificate.pdf</span>
+              </div>
+            </li>
+          </ol>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+    
+  </main>
 
-  <!-- Client Communications -->
-  <section id="client-comms" class="grid grid-cols-12 gap-4">
-    <div class="col-span-12">
-      <div class="rounded-2xl border bg-white p-4">
-        <h2 class="text-lg font-medium flex items-center gap-2">
-          <i data-lucide="messages-square" class="w-5 h-5"></i> Client Communications
-        </h2>
-        <p class="mt-1 text-sm text-gray-500">
-          Timeline of borrower comms. Pull from portal messages.
-        </p>
+  <footer class="py-6 text-center text-xs text-gray-500">Pawsitive Brands — Tear Sheet • Static HTML demo</footer>
 
-        <div class="mt-3 flex flex-wrap items-center gap-2">
-          <select class="text-xs border rounded-lg px-2 py-1">
-            <option>All</option>
-            <option>Emails</option>
-            <option>Portal Messages</option>
-            <option>Calls / Meetings</option>
-          </select>
-          <a href="#" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Export CSV</a>
-          <span class="ml-auto text-xs text-gray-500">Borrower: Pawsitive Brands, Inc.</span>
-        </div>
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+  </script>
 
-        <ol class="mt-4 space-y-4">
-          <li class="rounded-xl border p-3">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <i data-lucide="mail" class="w-4 h-4"></i>
-                <div class="text-sm font-medium">Term Sheet sent to CFO</div>
-              </div>
-              <div class="text-xs text-gray-500">2025-09-19 • Email</div>
-            </div>
-            <p class="mt-1 text-sm">
-              Shared redline of TLB pricing and covenants; requested signatures by 9/23.
-            </p>
-            <div class="mt-2 flex flex-wrap gap-2">
-              <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">Owner: J. Smith</span>
-              <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">Status: Sent</span>
-              <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">
-                Attachment: Term_Sheet_v3.pdf
-              </span>
-            </div>
-          </li>
-
-          <li class="rounded-xl border p-3">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <i data-lucide="phone" class="w-4 h-4"></i>
-                <div class="text-sm font-medium">Diligence call w/ Ops &amp; Supply Chain</div>
-              </div>
-              <div class="text-xs text-gray-500">2025-09-22 • Call</div>
-            </div>
-            <p class="mt-1 text-sm">
-              Discussed input cost hedging and inventory normalization; no material risks flagged.
-            </p>
-            <div class="mt-2 flex flex-wrap gap-2">
-              <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">
-                Participants: CFO, COO, AP team
-              </span>
-              <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">
-                Notes: added follow-ups
-              </span>
-            </div>
-          </li>
-
-          <li class="rounded-xl border p-3">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <i data-lucide="message-square" class="w-4 h-4"></i>
-                <div class="text-sm font-medium">Portal message: Compliance Certificate upload</div>
-              </div>
-              <div class="text-xs text-gray-500">2025-09-25 • Portal</div>
-            </div>
-            <p class="mt-1 text-sm">
-              Borrower uploaded Sep certificate; leverage 5.0x, IC 2.25x, liquidity $15mm.
-            </p>
-            <div class="mt-2 flex flex-wrap gap-2">
-              <span class="text-[11px] px-2 py-0.5 rounded-full border bg-green-50 text-green-700">
-                On-time
-              </span>
-              <span class="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50">
-                File: Pawsitive__2025-09__Compliance_Certificate.pdf
-              </span>
-            </div>
-          </li>
-        </ol>
-      </div>
-    </div>
-  </section>
-
-  <footer class="py-6 text-center text-xs text-gray-500">
-    Pawsitive Brands — Tear Sheet • Static HTML demo
-  </footer>
-
-</main>
-
-<!-- SITE FOOTER INCLUDE -->
-<div id="footer-placeholder"></div>
-
-<!-- Inject includes + icons -->
-<script>
-async function inject(path, targetId) {
-  try {
-    const res = await fetch(path);
-    if (!res.ok) throw new Error("Failed loading: " + path);
-    document.getElementById(targetId).innerHTML = await res.text();
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-(async () => {
-  await inject('/includes/styles.html', 'styles-placeholder');
-  await inject('/includes/header.html', 'header-placeholder');
-  await inject('/includes/footer2.html', 'footer-placeholder');
-
-  if (window.lucide) {
-    window.lucide.createIcons();
-  }
-
-  document.body.style.visibility = 'visible';
-})();
-</script>
-
-<!-- Metric card custom element -->
-<script>
-customElements.define('metric-card', class extends HTMLElement {
-  connectedCallback() {
-    const label = this.getAttribute('label') || '';
-    const value = this.getAttribute('value') || '';
-    this.innerHTML = `
-      <div class="rounded-2xl border bg-white p-3">
-        <div class="text-xs text-gray-500">${label}</div>
-        <div class="text-lg font-semibold">${value}</div>
-      </div>`;
-  }
-});
-function Metric(){return null}
-</script>
-
-<!-- JSON-LD -->
-<script type="application/ld+json">
-{
-  "@context":"https://schema.org",
-  "@type":"WebPage",
-  "@id":"https://private-credit.ai/credit-manager-portal/pawsitive-tear-sheet.html",
-  "name":"Pawsitive Brands, Inc. — Tear Sheet | Private Credit AI",
-  "description":"Tear sheet for Pawsitive Brands, Inc.: $300mm senior secured credit facility with structure, covenants, leverage, financials, monitoring, comments, and source files.",
-  "url":"https://private-credit.ai/credit-manager-portal/pawsitive-tear-sheet.html"
-}
-</script>
-
+  <!-- Tiny inline component helper for metrics (works in static HTML via custom elements) -->
+  <script>
+    customElements.define('metric-card', class extends HTMLElement {
+      connectedCallback(){
+        const label = this.getAttribute('label')||'';
+        const value = this.getAttribute('value')||'';
+        this.innerHTML = `
+          <div class="rounded-2xl border bg-white p-3">
+            <div class="text-xs text-gray-500">${label}</div>
+            <div class="text-lg font-semibold">${value}</div>
+          </div>`;
+      }
+    });
+    function Metric(){return null}
+  </script>
 </body>
 </html>
