@@ -1,7 +1,7 @@
-<!-- Sidebar -->
+<!-- FIXED LEFT SIDEBAR -->
 <aside class="w-64 h-screen bg-white border-r shadow-sm fixed top-0 left-0 z-50 flex flex-col">
-  
-  <!-- Logo -->
+
+  <!-- Logo / Title -->
   <div class="p-6 text-lg font-semibold border-b">
     Orion Credit Manager
   </div>
@@ -11,49 +11,29 @@
 
     <!-- CORE -->
     <p class="text-xs text-gray-500 uppercase mt-4 mb-2">Core</p>
-    <a href="/credit-manager-portal/main.html" class="nav-link">Dashboard</a>
-    <a href="/credit-manager-portal/tear-sheet.html" class="nav-link">Tear Sheet</a>
-    <a href="/credit-manager-portal/deal-comp.html" class="nav-link">Deal Compare</a>
-    <a href="/credit-manager-portal/portfolio-overview.html" class="nav-link">Portfolio Overview</a>
+    <a href="main.html" class="block px-3 py-2 rounded hover:bg-gray-100">Dashboard</a>
+    <a href="tear-sheet.html" class="block px-3 py-2 rounded hover:bg-gray-100">Tear Sheet</a>
+    <a href="deal-comp.html" class="block px-3 py-2 rounded hover:bg-gray-100">Deal Compare</a>
+    <a href="portfolio-overview.html" class="block px-3 py-2 rounded hover:bg-gray-100">Portfolio Overview</a>
 
     <!-- RISK -->
     <p class="text-xs text-gray-500 uppercase mt-4 mb-2">Risk</p>
-    <a href="/credit-manager-portal/ratings-drift.html" class="nav-link">Ratings Drift</a>
-    <a href="/credit-manager-portal/monitoring.html" class="nav-link">Monitoring & KPIs</a>
-    <a href="/credit-manager-portal/legal-structure.html" class="nav-link">Legal Structure</a>
+    <a href="ratings-drift.html" class="block px-3 py-2 rounded hover:bg-gray-100">Ratings Drift</a>
+    <a href="monitoring.html" class="block px-3 py-2 rounded hover:bg-gray-100">Monitoring & KPIs</a>
+    <a href="legal-structure.html" class="block px-3 py-2 rounded hover:bg-gray-100">Legal Structure</a>
 
     <!-- WORKFLOW -->
     <p class="text-xs text-gray-500 uppercase mt-4 mb-2">Workflow</p>
-    <a href="/credit-manager-portal/approvals.html" class="nav-link">Approvals</a>
-    <a href="/credit-manager-portal/closing-queue.html" class="nav-link">Closing Queue</a>
-    <a href="/credit-manager-portal/borrower-portal.html" class="nav-link">Borrower Portal</a>
+    <a href="approvals.html" class="block px-3 py-2 rounded hover:bg-gray-100">Approvals</a>
+    <a href="closing-queue.html" class="block px-3 py-2 rounded hover:bg-gray-100">Closing Queue</a>
+    <a href="borrower-portal.html" class="block px-3 py-2 rounded hover:bg-gray-100">Borrower Portal</a>
 
     <!-- DATA -->
     <p class="text-xs text-gray-500 uppercase mt-4 mb-2">Data</p>
-    <a href="/credit-manager-portal/data-room.html" class="nav-link">Data Room</a>
+    <a href="data-room.html" class="block px-3 py-2 rounded hover:bg-gray-100">Data Room</a>
 
   </nav>
 </aside>
 
-<!-- CONTENT WRAPPER (shifts content right) -->
-<div class="ml-64 p-6">
-  <!-- All page content goes here -->
-</div>
-
-<style>
-  .nav-link {
-    display: block;
-    padding: 10px 12px;
-    border-radius: 6px;
-    color: #333;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .nav-link:hover {
-    background: #f0f0f0;
-  }
-  .nav-link.active {
-    background: #e5e5e5;
-    font-weight: 600;
-  }
-</style>
+<!-- WRAP PAGE CONTENT WITH THIS DIV -->
+<div class="ml-64">
