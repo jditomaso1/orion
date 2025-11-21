@@ -1,49 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <title>Credit Manager Portal | Private Credit AI</title>
-  <meta name="description" content="Static mock of a Credit Manager Portal for post-closing workflows: closing queue, CP tracker, approvals, funding, onboarding, and handoff to monitoring." />
-  <link rel="canonical" href="https://private-credit.ai/credit-manager-portal/" />
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/img/favicon.png?v=8" />
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
+  <title>Credit Manager Portal — Static HTML v0</title>
   <!-- Tailwind (CDN for quick mockups) -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Lucide icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- Hide until header/footer/styles load -->
   <style>
-    body { visibility: hidden; font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-
     /* Basic scrollbar polish (optional) */
-    ::-webkit-scrollbar{height:10px;width:10px}
-    ::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:9999px}
-    ::-webkit-scrollbar-thumb:hover{background:#d1d5db}
+    ::-webkit-scrollbar{height:10px;width:10px}::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:9999px}::-webkit-scrollbar-thumb:hover{background:#d1d5db}
   </style>
-
-  <!-- Styles placeholder (site-wide styles include) -->
-  <style id="styles-placeholder"></style>
+  <!-- Lucide icons (tiny helper script, safe for static sites) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-
 <body class="min-h-screen w-full bg-gray-50 text-gray-900">
-
-<!-- SITE HEADER INCLUDE -->
-<div id="header-placeholder"></div>
-
-<!-- PAGE CONTENT -->
-<div class="mx-auto max-w-7xl px-4 sm:px-6 py-4">
-  <!-- App Header -->
-  <header class="sticky top-20 z-20 bg-white/80 backdrop-blur border rounded-2xl mb-4">
-    <div class="px-4 sm:px-6 py-3 flex items-center gap-4">
+  <!-- Header -->
+  <header class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 py-3 flex items-center gap-4">
       <div class="flex items-center gap-2">
         <div class="h-9 w-9 rounded-xl bg-black flex items-center justify-center text-white">
           <i data-lucide="shield" class="w-4 h-4"></i>
@@ -69,7 +42,7 @@
     </div>
   </header>
 
-  <div class="grid grid-cols-12 gap-4">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 grid grid-cols-12 gap-4 py-4">
     <!-- Sidebar -->
     <aside class="col-span-12 md:col-span-3 lg:col-span-3 space-y-4">
       <nav class="space-y-2">
@@ -103,18 +76,9 @@
       <div class="p-4 rounded-2xl border bg-white">
         <div class="text-sm font-medium mb-3">Upcoming Key Dates</div>
         <ul class="space-y-2">
-          <li class="flex items-center justify-between text-sm">
-            <span class="truncate mr-2">Pawsitive Brands, Inc.</span>
-            <span class="text-xs text-gray-500">2025-10-03</span>
-          </li>
-          <li class="flex items-center justify-between text-sm">
-            <span class="truncate mr-2">Meridian Behavioral Health</span>
-            <span class="text-xs text-gray-500">2025-10-10</span>
-          </li>
-          <li class="flex items-center justify-between text-sm">
-            <span class="truncate mr-2">Atlas Logistics Holdings</span>
-            <span class="text-xs text-gray-500">2025-10-01</span>
-          </li>
+          <li class="flex items-center justify-between text-sm"><span class="truncate mr-2">Pawsitive Brands, Inc.</span><span class="text-xs text-gray-500">2025-10-03</span></li>
+          <li class="flex items-center justify-between text-sm"><span class="truncate mr-2">Meridian Behavioral Health</span><span class="text-xs text-gray-500">2025-10-10</span></li>
+          <li class="flex items-center justify-between text-sm"><span class="truncate mr-2">Atlas Logistics Holdings</span><span class="text-xs text-gray-500">2025-10-01</span></li>
         </ul>
       </div>
     </aside>
@@ -144,9 +108,7 @@
               <tr class="border-b last:border-b-0 hover:bg-gray-50/70">
                 <td class="px-4 py-3 align-top">DL-001</td>
                 <td class="px-4 py-3 align-top">
-                  <div class="font-medium flex items-center gap-2">
-                    <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Pawsitive Brands, Inc.
-                  </div>
+                  <div class="font-medium flex items-center gap-2"><i data-lucide="building-2" class="w-3.5 h-3.5"></i> Pawsitive Brands, Inc.</div>
                   <div class="text-xs text-gray-500">Sponsor: RiverPeak Capital</div>
                 </td>
                 <td class="px-4 py-3 align-top">
@@ -159,15 +121,11 @@
                     <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> CP Tracker
                   </span>
                 </td>
-                <td class="px-4 py-3 align-top whitespace-nowrap">
-                  <i data-lucide="clock" class="inline w-3.5 h-3.5 mr-1"></i>2025-10-03
-                </td>
+                <td class="px-4 py-3 align-top whitespace-nowrap"><i data-lucide="clock" class="inline w-3.5 h-3.5 mr-1"></i>2025-10-03</td>
                 <td class="px-4 py-3 align-top text-right">
-                  <a
-                    href="https://private-credit.ai/credit-manager-portal/pawsitive-tear-sheet.html"
-                    target="_blank"
-                    class="text-xs inline-flex items-center gap-1 border rounded-lg px-2 py-1 hover:bg-gray-50"
-                  >
+                  <a href="https://private-credit.ai/credit-manager-portal/pawsitive-tear-sheet.html"
+                     target="_blank"
+                     class="text-xs inline-flex items-center gap-1 border rounded-lg px-2 py-1 hover:bg-gray-50">
                     Open <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
                   </a>
                 </td>
@@ -176,9 +134,7 @@
               <tr class="border-b last:border-b-0 hover:bg-gray-50/70">
                 <td class="px-4 py-3 align-top">DL-002</td>
                 <td class="px-4 py-3 align-top">
-                  <div class="font-medium flex items-center gap-2">
-                    <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Meridian Behavioral Health
-                  </div>
+                  <div class="font-medium flex items-center gap-2"><i data-lucide="building-2" class="w-3.5 h-3.5"></i> Meridian Behavioral Health</div>
                   <div class="text-xs text-gray-500">Sponsor: Apollo Growth Partners</div>
                 </td>
                 <td class="px-4 py-3 align-top">
@@ -191,9 +147,7 @@
                     <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Approvals
                   </span>
                 </td>
-                <td class="px-4 py-3 align-top whitespace-nowrap">
-                  <i data-lucide="clock" class="inline w-3.5 h-3.5 mr-1"></i>2025-10-10
-                </td>
+                <td class="px-4 py-3 align-top whitespace-nowrap"><i data-lucide="clock" class="inline w-3.5 h-3.5 mr-1"></i>2025-10-10</td>
                 <td class="px-4 py-3 align-top text-right">
                   <button class="text-xs inline-flex items-center gap-1 border rounded-lg px-2 py-1 hover:bg-gray-50">
                     Open <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
@@ -204,9 +158,7 @@
               <tr class="border-b last:border-b-0 hover:bg-gray-50/70">
                 <td class="px-4 py-3 align-top">DL-003</td>
                 <td class="px-4 py-3 align-top">
-                  <div class="font-medium flex items-center gap-2">
-                    <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Atlas Logistics Holdings
-                  </div>
+                  <div class="font-medium flex items-center gap-2"><i data-lucide="building-2" class="w-3.5 h-3.5"></i> Atlas Logistics Holdings</div>
                   <div class="text-xs text-gray-500">Sponsor: Northshore Equity</div>
                 </td>
                 <td class="px-4 py-3 align-top">
@@ -219,9 +171,7 @@
                     <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Legal QC
                   </span>
                 </td>
-                <td class="px-4 py-3 align-top whitespace-nowrap">
-                  <i data-lucide="clock" class="inline w-3.5 h-3.5 mr-1"></i>2025-10-01
-                </td>
+                <td class="px-4 py-3 align-top whitespace-nowrap"><i data-lucide="clock" class="inline w-3.5 h-3.5 mr-1"></i>2025-10-01</td>
                 <td class="px-4 py-3 align-top text-right">
                   <button class="text-xs inline-flex items-center gap-1 border rounded-lg px-2 py-1 hover:bg-gray-50">
                     Open <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
@@ -353,9 +303,7 @@
             </div>
 
             <div class="rounded-xl border p-4">
-              <div class="font-medium mb-2 flex items-center gap-2">
-                <i data-lucide="message-square" class="w-4 h-4"></i> Notes
-              </div>
+              <div class="font-medium mb-2 flex items-center gap-2"><i data-lucide="message-square" class="w-4 h-4"></i> Notes</div>
               <ul class="space-y-2 text-sm">
                 <li class="p-2 rounded-lg bg-gray-50">Legal flagged MFN clause—threshold confirmed at 50bps.</li>
                 <li class="p-2 rounded-lg bg-gray-50">Ops to verify borrower wire instructions by EOD.</li>
@@ -367,55 +315,16 @@
           </div>
         </div>
       </section>
-
-      <footer class="py-4 text-center text-xs text-gray-500">
-        Mock v0 • Static HTML demo (no live interactions)
-      </footer>
     </main>
   </div>
-</div>
 
-<!-- SITE FOOTER INCLUDE -->
-<div id="footer-placeholder"></div>
+  <footer class="py-6 text-center text-xs text-gray-500">Mock v0 • Static HTML demo (no live interactions)</footer>
 
-<!-- Inject includes -->
-<script>
-async function inject(path, targetId) {
-  try {
-    const res = await fetch(path);
-    if (!res.ok) throw new Error("Failed loading: " + path);
-    document.getElementById(targetId).innerHTML = await res.text();
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-(async () => {
-  await inject('/includes/styles.html', 'styles-placeholder');
-  await inject('/includes/header.html', 'header-placeholder');
-  await inject('/includes/footer2.html', 'footer-placeholder');
-
-  // Reveal page once includes are loaded
-  document.body.style.visibility = 'visible';
-
-  // Render Lucide icons
-  if (window.lucide) {
-    window.lucide.createIcons();
-  }
-})();
-</script>
-
-<!-- JSON-LD (optional basic page descriptor) -->
-<script type="application/ld+json">
-{
-  "@context":"https://schema.org",
-  "@type":"WebPage",
-  "@id":"https://private-credit.ai/credit-manager-portal/",
-  "name":"Credit Manager Portal | Private Credit AI",
-  "description":"Static mock of a Credit Manager Portal for post-closing workflows: closing queue, CP tracker, approvals, funding, onboarding, and handoff to monitoring.",
-  "url":"https://private-credit.ai/credit-manager-portal/"
-}
-</script>
-
+  <script>
+    // Render icons
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
