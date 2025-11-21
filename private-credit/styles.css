@@ -1,0 +1,82 @@
+/* ================================
+   GLOBAL BRAND OVERRIDES
+   ================================ */
+
+html, body {
+  font-family: 'Poppins', sans-serif !important;
+  color: #333;
+  background: #F4F4F4;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+  font-weight: 600;
+  color: #1A2433;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: #FFFFFF;
+  border-right: 1px solid #E5E7EB;
+  color: #1A2433;
+  padding-top: 20px;
+}
+
+.sidebar a {
+  display: block;
+  padding: 10px 20px;
+  color: #1A2433;
+  font-weight: 500;
+}
+
+.sidebar a:hover {
+  background: #F4F4F4;
+}
+
+/* Cards */
+.card {
+  background: #FFFFFF;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+  padding: 20px;
+}
+
+/* Buttons */
+.btn-primary {
+  background: #1A2433;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background: #131a25;
+}
+
+.btn-secondary {
+  background: #E5E7EB;
+  color: #1A2433;
+  padding: 10px 18px;
+  border-radius: 6px;
+}
+
+.btn-secondary:hover {
+  background: #d4d4d4;
+}
+
+/* Navigation items (if using top nav also) */
+.nav-item {
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+}
+.nav-item:hover {
+  color: #000;
+}
+.nav-item.active {
+  border-bottom: 2px solid #000;
+  color: #000;
+}
