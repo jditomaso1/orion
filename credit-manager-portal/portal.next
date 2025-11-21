@@ -1,0 +1,330 @@
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Upload, FileText, Activity, MessageSquare, CheckCircle2, AlertTriangle, Clock, Link2, PlusCircle, BarChart2, TrendingUp, FolderOpen } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+
+// ---------- Sample Data ----------
+const covenantData = [
+  { metric: "Total Net Leverage", limit: "≤ 4.50x", actual: "4.25x", status: "ok" },
+  { metric: "Interest Coverage", limit: ">= 2.50x", actual: "2.8x", status: "ok" },
+  { metric: "Liquidity (Min)", limit: ">= $10m", actual: "$9.4m", status: "warn" },
+  { metric: "CapEx Limit (LTM)", limit: "≤ $25m", actual: "$24.2m", status: "ok" },
+  { metric: "No New Debt (Incurrence)", limit: "N/A", actual: "Clean", status: "ok" },
+];
+
+const docs = [
+  { name: "Compliance Certificate – Q2 2025.pdf", size: "412 KB", uploaded: "2025-07-15", by: "CFO" },
+  { name: "Q2 2025 Financials.xlsx", size: "1.1 MB", uploaded: "2025-07-15", by: "Controller" },
+  { name: "Bank Statements – Apr-Jun 2025.zip", size: "22.4 MB", uploaded: "2025-07-15", by: "Treasury" },
+  { name: "Board Minutes – May 2025.pdf", size: "298 KB", uploaded: "2025-06-05", by: "Legal" },
+];
+
+const benchmarks = [
+  { quarter: "Q3'24", leverage: 4.7, peer: 5.1 },
+  { quarter: "Q4'24", leverage: 4.5, peer: 5.0 },
+  { quarter: "Q1'25", leverage: 4.4, peer: 4.9 },
+  { quarter: "Q2'25", leverage: 4.25, peer: 4.8 },
+];
+
+const messagesInit = [
+  { from: "Barings PM", initials: "BP", at: "2025-09-10 09:22", text: "Thanks for the Q2 package. Orion flagged liquidity at $9.4m (< $10m min). Please confirm if an RCF draw is planned." },
+  { from: "Pawsitive CFO", initials: "PC", at: "2025-09-10 10:05", text: "RCF draw of $2m requested, settling 9/12. Certificate addendum to follow." },
+  { from: "Barings Ops", initials: "BO", at: "2025-09-10 11:14", text: "Received. Once addendum uploads, Orion will re-evaluate covenants automatically." },
+];
+
+const dueItems = [
+  { label: "Next Compliance Certificate", due: "2025-10-15", progress: 20 },
+  { label: "Audited FY25 Financials", due: "2026-03-31", progress: 0 },
+  { label: "Insurance Certificates", due: "2025-11-01", progress: 60 },
+];
+
+// ---------- Helper UI ----------
+function StatusPill({ status }: { status: "ok" | "warn" | "breach" }) {
+  const map = {
+    ok: { label: "Compliant", className: "bg-emerald-100 text-emerald-700" },
+    warn: { label: "Watch", className: "bg-amber-100 text-amber-800" },
+    breach: { label: "Breach", className: "bg-red-100 text-red-700" },
+  } as const;
+  const s = map[status];
+  return <Badge className={`rounded-full px-3 py-1 text-xs font-medium ${s.className}`}>{s.label}</Badge>;
+}
+
+// ---------- Main Component ----------
+export default function BorrowerPortalDemo() {
+  const [messages, setMessages] = useState(messagesInit);
+  const [newMsg, setNewMsg] = useState("");
+
+  const sendMessage = () => {
+    if (!newMsg.trim()) return;
+    setMessages((m) => [
+      ...m,
+      {
+        from: "You",
+        initials: "YO",
+        at: new Date().toISOString().slice(0, 16).replace("T", " "),
+        text: newMsg.trim(),
+      },
+    ]);
+    setNewMsg("");
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white p-6 md:p-10">
+      <header className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Borrower Portal</h1>
+          <p className="text-slate-600">Pawsitive, Inc. • Facility #DL-2024-118 • Last sync: 3m ago</p>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="secondary" className="gap-2"><Link2 className="h-4 w-4"/>Connect QuickBooks</Button>
+          <Button className="gap-2"><PlusCircle className="h-4 w-4"/>New Upload</Button>
+        </div>
+      </header>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Left column */}
+        <div className="xl:col-span-2 space-y-6">
+          {/* Compliance Snapshot */}
+          <Card className="shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2"><Activity className="h-5 w-5"/>Compliance Snapshot</CardTitle>
+              <div className="flex items-center gap-2 text-sm text-slate-500"><Clock className="h-4 w-4"/>Next due: 15 Oct 2025</div>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Metric</TableHead>
+                    <TableHead>Threshold</TableHead>
+                    <TableHead>Actual</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {covenantData.map((row) => (
+                    <TableRow key={row.metric}>
+                      <TableCell className="font-medium">{row.metric}</TableCell>
+                      <TableCell>{row.limit}</TableCell>
+                      <TableCell>{row.actual}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {row.status === "ok" && <CheckCircle2 className="h-4 w-4 text-emerald-600"/>}
+                          {row.status === "warn" && <AlertTriangle className="h-4 w-4 text-amber-600"/>}
+                          {row.status === "breach" && <AlertTriangle className="h-4 w-4 text-red-600"/>}
+                          <StatusPill status={row.status as any} />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Documents & Uploads */}
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><FolderOpen className="h-5 w-5"/>Documents</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  <div className="border border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center bg-slate-50">
+                    <Upload className="h-8 w-8 mb-2"/>
+                    <p className="font-medium">Drag & drop files here</p>
+                    <p className="text-sm text-slate-600">PDF, Excel, Word • Max 50MB</p>
+                    <div className="mt-3"><Input type="file" multiple /></div>
+                  </div>
+
+                  <div className="mt-6">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>File</TableHead>
+                          <TableHead className="hidden md:table-cell">Size</TableHead>
+                          <TableHead className="hidden md:table-cell">Uploaded</TableHead>
+                          <TableHead className="hidden md:table-cell">By</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {docs.map((d) => (
+                          <TableRow key={d.name}>
+                            <TableCell className="flex items-center gap-2"><FileText className="h-4 w-4"/>{d.name}</TableCell>
+                            <TableCell className="hidden md:table-cell">{d.size}</TableCell>
+                            <TableCell className="hidden md:table-cell">{d.uploaded}</TableCell>
+                            <TableCell className="hidden md:table-cell">{d.by}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+
+                {/* Right side: Messages */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold flex items-center gap-2"><MessageSquare className="h-5 w-5"/>Messages</h3>
+                  <div className="h-64 overflow-y-auto rounded-xl border p-3 bg-white">
+                    {messages.map((m, i) => (
+                      <div key={i} className="mb-3">
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6"><AvatarFallback>{m.initials}</AvatarFallback></Avatar>
+                          <div className="text-sm font-medium">{m.from}</div>
+                          <div className="text-xs text-slate-500">{m.at}</div>
+                        </div>
+                        <div className="ml-8 text-sm text-slate-800">{m.text}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Textarea value={newMsg} onChange={(e) => setNewMsg(e.target.value)} placeholder="Write a message…" className="min-h-[44px]"/>
+                    <Button onClick={sendMessage} className="shrink-0">Send</Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right column */}
+        <div className="space-y-6">
+          {/* Due dates */}
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Clock className="h-5 w-5"/>Upcoming</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {dueItems.map((d) => (
+                <div key={d.label} className="rounded-xl border p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="font-medium">{d.label}</div>
+                    <div className="text-sm text-slate-600">Due {d.due}</div>
+                  </div>
+                  <Progress value={d.progress} />
+                </div>
+              ))}
+              <Button variant="secondary" className="w-full">View All Tasks</Button>
+            </CardContent>
+          </Card>
+
+          {/* Benchmarks */}
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><BarChart2 className="h-5 w-5"/>Benchmark (Leverage)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-44">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={benchmarks} margin={{ left: 10, right: 10, top: 10, bottom: 0 }}>
+                    <XAxis dataKey="quarter" tick={{ fontSize: 12 }} />
+                    <YAxis tick={{ fontSize: 12 }} domain={[3.5, 5.5]} />
+                    <Tooltip cursor={{ strokeDasharray: "3 3" }} />
+                    <Line type="monotone" dataKey="peer" strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="leverage" strokeWidth={2} dot />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-3 text-sm text-slate-600 flex items-center gap-2"><TrendingUp className="h-4 w-4"/>Your leverage trending down vs peers over last 4 quarters.</div>
+            </CardContent>
+          </Card>
+
+          {/* Quick links */}
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Link2 className="h-5 w-5"/>Integrations</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button variant="outline" className="w-full justify-start"><Link2 className="h-4 w-4 mr-2"/>Connect QuickBooks</Button>
+              <Button variant="outline" className="w-full justify-start"><Link2 className="h-4 w-4 mr-2"/>Connect NetSuite</Button>
+              <Button variant="outline" className="w-full justify-start"><Link2 className="h-4 w-4 mr-2"/>Connect SFTP</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Tabs for Additional Views */}
+      <div className="mt-8">
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="history">Certificate History</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="pt-4">
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle>Overview Notes</CardTitle>
+              </CardHeader>
+              <CardContent className="text-slate-700 text-sm">
+                This demo shows the borrower-facing experience: drag-and-drop uploads, real-time covenant status, messages with the lender team, upcoming tasks, and peer benchmarking. In production, uploads would call Orion's parser API and update statuses automatically.
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="history" className="pt-4">
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle>Certificates</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Period</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Uploaded</TableHead>
+                      <TableHead>By</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {["Q2 2025","Q1 2025","Q4 2024","Q3 2024"].map((p, idx) => (
+                      <TableRow key={p}>
+                        <TableCell className="font-medium">{p}</TableCell>
+                        <TableCell><StatusPill status={idx===0?"warn":"ok" as any} /></TableCell>
+                        <TableCell>{idx===0?"2025-07-15":"—"}</TableCell>
+                        <TableCell>{idx===0?"CFO":"—"}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="settings" className="pt-4">
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle>Portal Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Notification Emails</label>
+                    <Input placeholder="cfo@pawsitive.com, controller@pawsitive.com" />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Due Date (Monthly)</label>
+                    <Input type="date" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-sm font-medium">Instructions</label>
+                    <Textarea placeholder="Upload the monthly certificate and supporting schedules. Orion will auto-evaluate within minutes." />
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Button>Save Changes</Button>
+                  <Button variant="secondary">Preview Borrower View</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
