@@ -6,18 +6,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-  
-<div id="sidebar-placeholder"></div>
 
-<script>
-  fetch("sidebar.html")
-    .then(res => res.text())
-    .then(html => {
-      document.getElementById("sidebar-placeholder").innerHTML = html;
-    });
-</script>
 <body class="bg-gray-100 text-gray-800">
 
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+    fetch("sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar-placeholder").innerHTML = html;
+      });
+  </script>
+
+  <!-- PAGE WRAPPER -->
+  <div class="ml-64 p-8">
+      <!-- everything else you've written goes here -->
+  </div>
   <!-- MAIN WRAPPER (assuming you add a sidebar later) -->
   <div class="ml-64 p-8">
 
