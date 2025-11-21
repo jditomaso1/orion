@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>X-Ray Comparison — Credit Agreement Structure</title>
+  <!-- Tailwind (CDN for quick mockups) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @media print {.no-print{display:none!important} a[href]:after{content:""} body{background:#fff}}
+    .heat { transition: background-color .15s ease, color .15s ease; }
+    /* chip helper (no @apply when using CDN) */
+    .chip {
+      display:inline-flex; align-items:center; gap:.25rem;
+      font-size:.75rem; line-height:1rem;
+      padding:.125rem .5rem; border:1px solid rgb(229 231 235); border-radius:.5rem;
+      background:#f9fafb;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 py-3 flex items-center gap-3">
+      <a href="./main.html" class="no-print inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
+      </a>
+      <nav class="ml-2 flex items-center gap-1 text-sm">
+        <span class="px-2 py-1 rounded-lg bg-gray-100">X-Ray Comparison</span>
+        <a href="./portfolio-overview.html" class="px-2 py-1 rounded-lg hover:bg-gray-100 text-gray-600">Portfolio Overview</a>
+        <a href="./pawsitive-tear-sheet.html" class="px-2 py-1 rounded-lg hover:bg-gray-100 text-gray-600">Deal Tear Sheet</a>
+      </nav>
+      <div class="ml-auto no-print flex items-center gap-2">
+        <button id="btnExportJSON" class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2">
+          <i data-lucide="download" class="w-4 h-4"></i> Export JSON
+        </button>
+        <button id="btnExportCSV" class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2">
+          <i data-lucide="table" class="w-4 h-4"></i> Export CSV
+        </button>
+        <button onclick="window.print()" class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2">
+          <i data-lucide="printer" class="w-4 h-4"></i> Print / PDF
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 py-6 space-y-6">
+    <!-- Title & filters -->
+    <section class="flex flex-col gap-3">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-2">
+            <i data-lucide="scan-search" class="w-5 h-5"></i>
+            X-Ray Comparison — Covenant & Structure Benchmark
+          </h1>
+          <p class="mt-1 text-sm text-gray-600">Rank and benchmark documentation strength across your portfolio. Static mock data; weights are live.</p>
+        </div>
+        <div class="no-print flex flex-wrap gap-2">
+          <span class="chip"><i data-lucide="layers" class="w-3.5 h-3.5"></i> Deals: <b class="ml-1" id="kpiDeals">–</b></span>
+          <span class="chip"><i data-lucide="gauge" class="w-3.5 h-3.5"></i> Avg Score: <b class="ml-1" id="kpiAvg">–</b></span>
+          <span class="chip"><i data-lucide="shield" class="w-3.5 h-3.5"></i> Strongest: <b class="ml-1" id="kpiBest">–</b></span>
+          <span class="chip"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Weakest: <b class="ml-1" id="kpiWorst">–</b></span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 lg:col-span-8 rounded-2xl border bg-white p-4">
+          <div class="flex items-center justify-between mb-2">
+            <div class="font-medium">Weighting (live)</div>
+            <button id="btnReset" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Reset</button>
+          </div>
+          <div id="weights" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm"></div>
+          <p class="mt-3 text-xs text-gray-500">Weights auto-normalize to 100%. Score = Σ(weight × category score). Categories align to your rubric: Guardrails, Maintenance, EBITDA Def, RP, Debt, Transfers/Collat, MFN, Reporting, Sponsor/Transfer.</p>
+        </div>
+
+        <div class="col-span-12 lg:col-span-4 rounded-2xl border bg-white p-4">
+          <div class="font-medium mb-2">Quick Filters</div>
+          <div class="grid grid-cols-2 gap-2 text-sm">
+            <select id="fSector" class="border rounded-lg px-2 py-1">
+              <option value="">All Sectors</option>
+              <option>Software</option>
+              <option>Healthcare</option>
+              <option>Consumer</option>
+              <option>Industrials</option>
+            </select>
+            <select id="fVintage" class="border rounded-lg px-2 py-1">
+              <option value="">All Vintages</option>
+              <option>2023</option>
+              <option>2024</option>
+              <option>2025</option>
+            </select>
+            <input id="fSearch" class="col-span-2 border rounded-lg px-2 py-1" placeholder="Search borrower / sponsor / ID"/>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="chip"><input type="checkbox" id="onlyLow"/> <label for="onlyLow">Show ≤ 65 only</label></span>
+            <span class="chip"><input type="checkbox" id="onlyHigh"/> <label for="onlyHigh">Show ≥ 80 only</label></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Heatmap -->
+    <section class="rounded-2xl border bg-white overflow-hidden">
+      <div class="px-4 py-3 border-b flex items-center justify-between">
+        <div class="font-medium">Portfolio Heatmap</div>
+        <div class="flex items-center gap-3 text-xs text-gray-500">
+          <span class="whitespace-nowrap">Palette</span>
+          <!-- Static legend for FWUXDS palette -->
+          <div class="h-3 w-40 rounded overflow-hidden border">
+            <div style="height:100%;background:linear-gradient(90deg,#9DC5CA,#65C581,#4695C8,#187ABA,#002B51)"></div>
+          </div>
+          <span>Normalized 0–100</span>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm" id="heatmap"></table>
+      </div>
+    </section>
+
+    <!-- Rankings + Drilldown -->
+    <section class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 lg:col-span-7 rounded-2xl border bg-white p-4">
+        <div class="flex items-center justify-between mb-2">
+          <div class="font-medium">Ranked List (weakest → strongest)</div>
+          <div class="text-xs text-gray-500" id="rankMeta">–</div>
+        </div>
+        <ol id="rankList" class="space-y-2"></ol>
+      </div>
+
+      <aside class="col-span-12 lg:col-span-5 rounded-2xl border bg-white p-4">
+        <div class="flex items-center justify-between">
+          <div class="font-medium flex items-center gap-2">
+            <i data-lucide="panel-right-open" class="w-4 h-4"></i> Deal Drill-down
+          </div>
+          <span class="text-xs text-gray-500">Select any row</span>
+        </div>
+        <div id="detail" class="mt-3 text-sm text-gray-700 space-y-3">
+          <p class="text-gray-500">Nothing selected.</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="py-6 text-center text-xs text-gray-500">
+    X-Ray Comparison • Static HTML demo (weights & ranking live)
+  </footer>
+
+  <script>
+  // ------------------ Mock data (pre-normalized 0..1 category scores) ------------------
+  const CATS = [
+    ["guardrails","Guardrails"],
+    ["maintenance","Maintenance"],
+    ["ebitda_def","EBITDA Def"],
+    ["rp","Restricted Payments"],
+    ["debt","Debt Incurrence"],
+    ["transfers_collat","Transfers/Collat"],
+    ["mfn","MFN"],
+    ["reporting","Reporting"],
+    ["sponsor_transfer","Sponsor/Transfer"]
+  ];
+
+  const DEFAULT_WEIGHTS = {
+    guardrails:0.25, maintenance:0.20, ebitda_def:0.15, rp:0.10, debt:0.10,
+    transfers_collat:0.08, mfn:0.05, reporting:0.04, sponsor_transfer:0.03
+  };
+
+  const MOCK_DEALS = [
+    { id:"DL-001", borrower:"Pawsitive Brands, Inc.", sponsor:"Summit Hill Partners", sector:"Consumer",   vintage:"2025",
+      notes:"No maintenance (springing only); MFN @50 bps; RP builder moderate.",
+      drivers:["No full maintenance covenant","RP builder w/ starters","MFN 50 bps (ok)"],
+      scores:{guardrails:.72, maintenance:.50, ebitda_def:.78, rp:.62, debt:.70, transfers_collat:.74, mfn:.85, reporting:.80, sponsor_transfer:.70} },
+    { id:"DL-002", borrower:"Meridian Behavioral Health", sponsor:"Apollo Growth Partners", sector:"Healthcare", vintage:"2025",
+      notes:"Unitranche; maintenance present; EBITDA add-backs capped @20%; MFN 25 bps.",
+      drivers:["Maintenance present","EBITDA add-backs capped","MFN only 25 bps"],
+      scores:{guardrails:.82, maintenance:1.00, ebitda_def:.85, rp:.74, debt:.65, transfers_collat:.80, mfn:.60, reporting:.85, sponsor_transfer:.80} },
+    { id:"DL-003", borrower:"Atlas Logistics Holdings", sponsor:"Northshore Equity", sector:"Industrials", vintage:"2024",
+      notes:"Loose RP; portability allowed; MFN carve-outs; high leakage.",
+      drivers:["Loose RP with large starters","Debt portability","Collateral leakage"],
+      scores:{guardrails:.60, maintenance:.40, ebitda_def:.70, rp:.35, debt:.45, transfers_collat:.40, mfn:.40, reporting:.70, sponsor_transfer:.30} },
+    { id:"DL-004", borrower:"NorthPeak SaaS", sponsor:"RiverPeak Capital", sector:"Software", vintage:"2024",
+      notes:"Aggressive EBITDA synergies (25%); no MFN; ratio debt sidecar.",
+      drivers:["Aggressive EBITDA add-backs","No MFN","Sidecar ratio debt"],
+      scores:{guardrails:.68, maintenance:.50, ebitda_def:.45, rp:.55, debt:.40, transfers_collat:.62, mfn:.00, reporting:.75, sponsor_transfer:.55} },
+    { id:"DL-005", borrower:"VetWell Group", sponsor:"Summit Hill Partners", sector:"Healthcare", vintage:"2023",
+      notes:"Strong liens; tight RP; MFN 50bps broad; maintenance present.",
+      drivers:["Tight RP rules","MFN 50 bps broad scope","Maintenance present"],
+      scores:{guardrails:.86, maintenance:1.00, ebitda_def:.80, rp:.88, debt:.78, transfers_collat:.90, mfn:.90, reporting:.90, sponsor_transfer:.80} },
+    { id:"DL-006", borrower:"Everrail Holdings", sponsor:"Harbor Ridge", sector:"Industrials", vintage:"2023",
+      notes:"High leverage; springing maintenance; RP free-and-clear; MFN short window.",
+      drivers:["High leverage vs peers","Springing only","RP free-and-clear"],
+      scores:{guardrails:.48, maintenance:.45, ebitda_def:.62, rp:.30, debt:.50, transfers_collat:.55, mfn:.35, reporting:.65, sponsor_transfer:.50} }
+  ];
+
+  // ------------------ Utilities ------------------
+  const clamp01 = v => Math.max(0, Math.min(1, v));
+
+  // FWUXDS / Morgan Stanley gradient: Ocean → Jade → Blue → Navy
+  // ---- HEATMAP COLORS: Blue → Navy ----
+  // v in [0..1]; low = light blue, high = deep navy
+  function heatColor(v){
+    v = Math.max(0, Math.min(1, v));
+  
+    // FWUXDS Blue & Navy palette combined
+    // Blue-20%  #D1E4F1
+    // Blue-40%  #A3CAE3
+    // Blue-80%  #4695C8
+    // Blue      #187ABA
+    // Navy-20%  #CCD5DC
+    // Navy-40%  #99AAB9
+    // Navy-80%  #335574
+    // Navy      #002B51
+    const stops = [
+      { t: 0.00, rgb: [209, 228, 241] }, // Blue-20%
+      { t: 0.15, rgb: [163, 202, 227] }, // Blue-40%
+      { t: 0.30, rgb: [ 70, 149, 200] }, // Blue-80%
+      { t: 0.45, rgb: [ 24, 122, 186] }, // Blue
+      { t: 0.65, rgb: [204, 213, 220] }, // Navy-20%
+      { t: 0.80, rgb: [153, 170, 185] }, // Navy-40%
+      { t: 0.90, rgb: [ 51,  85, 116] }, // Navy-80%
+      { t: 1.00, rgb: [  0,  43,  81] }  // Navy
+    ];
+  
+    // interpolate between stops
+    for (let i = 0; i < stops.length - 1; i++) {
+      const a = stops[i], b = stops[i + 1];
+      if (v >= a.t && v <= b.t) {
+        const t = (v - a.t) / (b.t - a.t);
+        const r = Math.round(a.rgb[0] + (b.rgb[0] - a.rgb[0]) * t);
+        const g = Math.round(a.rgb[1] + (b.rgb[1] - a.rgb[1]) * t);
+        const bch = Math.round(a.rgb[2] + (b.rgb[2] - a.rgb[2]) * t);
+        return `rgb(${r},${g},${bch})`;
+      }
+    }
+  
+    // fallback (lightest blue)
+    return "rgb(209,228,241)";
+  }
+  
+  // ---- Adaptive text color for contrast ----
+  function textColorFor(v){
+    const rgb = heatColor(v).match(/\d+/g).map(Number);
+    const brightness = (rgb[0]*299 + rgb[1]*587 + rgb[2]*114) / 1000;
+    return brightness < 145 ? 'text-white' : 'text-gray-900';
+  }
+
+  // Choose readable text color over heat cell
+  function textColorFor(v){
+    return v > 0.60 ? 'text-white' : 'text-gray-900';
+  }
+
+  function normalizeWeights(obj){
+    const sum = Object.values(obj).reduce((a,b)=>a+Number(b||0),0) || 1;
+    const out = {};
+    for (const k of Object.keys(obj)) out[k]=Number(obj[k])/sum;
+    return out;
+  }
+
+  function scoreDeal(deal, weights){
+    let s = 0;
+    for(const [key] of CATS){
+      s += (weights[key]||0) * (deal.scores[key]||0);
+    }
+    return s; // 0..1
+  }
+
+  function filteredDeals(){
+    const sector = document.getElementById('fSector').value;
+    const vintage = document.getElementById('fVintage').value;
+    const q = document.getElementById('fSearch').value.trim().toLowerCase();
+    const onlyLow = document.getElementById('onlyLow').checked;
+    const onlyHigh = document.getElementById('onlyHigh').checked;
+    const weights = getWeights();
+    return MOCK_DEALS
+      .map(d => ({...d, _score: scoreDeal(d, weights)}))
+      .filter(d => !sector || d.sector===sector)
+      .filter(d => !vintage || d.vintage===vintage)
+      .filter(d => !q || [d.borrower,d.sponsor,d.id].join(" ").toLowerCase().includes(q))
+      .filter(d => !onlyLow || d._score<=0.65)
+      .filter(d => !onlyHigh || d._score>=0.80);
+  }
+
+  // ------------------ Render: Weights ------------------
+  function renderWeightSliders(){
+    const wrap = document.getElementById('weights');
+    wrap.innerHTML = '';
+    for(const [key,label] of CATS){
+      const row = document.createElement('div');
+      row.innerHTML = `
+        <label class="block text-gray-700">${label}</label>
+        <div class="flex items-center gap-3">
+          <input type="range" min="0" max="100" step="1" value="${DEFAULT_WEIGHTS[key]*100}"
+            data-key="${key}" class="w-full accent-[#002B51] bg-[#002B51]/20">
+          <span class="w-14 text-right text-xs text-gray-600"><b id="w_${key}">${(DEFAULT_WEIGHTS[key]*100).toFixed(0)}</b>%</span>
+        </div>`;
+      wrap.appendChild(row);
+    }
+    wrap.querySelectorAll('input[type="range"]').forEach(el=>{
+      el.addEventListener('input',()=>{
+        document.getElementById(`w_${el.dataset.key}`).textContent = el.value;
+        updateAll();
+      });
+    });
+    document.getElementById('btnReset').onclick = ()=>{
+      wrap.querySelectorAll('input[type="range"]').forEach(el=>{
+        el.value = DEFAULT_WEIGHTS[el.dataset.key]*100;
+        document.getElementById(`w_${el.dataset.key}`).textContent = (DEFAULT_WEIGHTS[el.dataset.key]*100).toFixed(0);
+      });
+      updateAll();
+    };
+  }
+
+  function getWeights(){
+    const inputs = document.querySelectorAll('#weights input[type="range"]');
+    const raw = {};
+    inputs.forEach(el=> raw[el.dataset.key]=Number(el.value)/100 );
+    return normalizeWeights(raw);
+  }
+
+  // ------------------ Render: Heatmap ------------------
+  function renderHeatmap(){
+    const tbl = document.getElementById('heatmap');
+    const deals = filteredDeals();
+
+    // header
+    tbl.innerHTML = `
+      <thead>
+        <tr class="text-left text-gray-500 border-b">
+          <th class="px-4 py-2 text-xs font-medium whitespace-nowrap">ID</th>
+          <th class="px-4 py-2 text-xs font-medium whitespace-nowrap">Borrower</th>
+          ${CATS.map(([k,l])=>`<th class="px-2 py-2 text-xs font-medium text-center whitespace-nowrap">${l}</th>`).join('')}
+          <th class="px-4 py-2 text-xs font-medium text-right whitespace-nowrap">Score</th>
+        </tr>
+      </thead>
+      <tbody id="hmBody"></tbody>`;
+    const body = tbl.querySelector('#hmBody');
+
+    const weights = getWeights();
+
+    deals.forEach(d=>{
+      const tr = document.createElement('tr');
+      tr.className = "border-b last:border-b-0 hover:bg-gray-50/60 cursor-pointer";
+      tr.onclick = ()=> renderDetail(d);
+      const score = scoreDeal(d, weights);
+      tr.innerHTML = `
+        <td class="px-4 py-3 align-top whitespace-nowrap">${d.id}</td>
+        <td class="px-4 py-3 align-top">
+          <div class="font-medium flex items-center gap-2"><i data-lucide="building-2" class="w-3.5 h-3.5"></i> ${d.borrower}</div>
+          <div class="text-xs text-gray-500">Sponsor: ${d.sponsor} • ${d.sector} • ${d.vintage}</div>
+        </td>
+        ${CATS.map(([k])=>{
+          const v = clamp01(d.scores[k]||0);
+          const bg = heatColor(v);
+          const txt = textColorFor(v);
+          return `<td class="px-2 py-2 text-center">
+            <div class="heat rounded-md px-1.5 py-1 ${txt}" style="background:${bg}">${Math.round(v*100)}</div>
+          </td>`;
+        }).join('')}
+        <td class="px-4 py-3 align-top text-right font-medium">${Math.round(score*100)}</td>`;
+      body.appendChild(tr);
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // ------------------ Render: Rankings ------------------
+  function renderRankings(){
+    const wrap = document.getElementById('rankList');
+    const meta = document.getElementById('rankMeta');
+    const weights = getWeights();
+    const arr = filteredDeals()
+      .map(d => ({...d, _score: scoreDeal(d, weights)}))
+      .sort((a,b)=> a._score - b._score);
+
+    wrap.innerHTML = '';
+    arr.forEach((d, idx)=>{
+      const li = document.createElement('li');
+      li.className = "rounded-xl border p-3 hover:bg-gray-50 cursor-pointer";
+      li.onclick = ()=> renderDetail(d);
+      const tier = d._score>=0.80 ? 'Lender-protective' : d._score>=0.65 ? 'Balanced' : d._score>=0.50 ? 'Loose' : 'Aggressive';
+      const tierColor = d._score>=0.80 ? 'bg-green-50 text-green-700' :
+                        d._score>=0.65 ? 'bg-blue-50 text-blue-700' :
+                        d._score>=0.50 ? 'bg-amber-50 text-amber-700' : 'bg-rose-50 text-rose-700';
+      li.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="font-medium">${idx+1}. ${d.borrower} <span class="text-xs text-gray-500">(${d.id})</span></div>
+            <div class="mt-1 flex flex-wrap gap-2">
+              ${d.drivers.slice(0,3).map(t=>`<span class="chip">${t}</span>`).join('')}
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-lg font-semibold">${Math.round(d._score*100)}</div>
+            <div class="text-xs mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${tierColor}">
+              ${tier}
+            </div>
+          </div>
+        </div>`;
+      wrap.appendChild(li);
+    });
+    meta.textContent = `${arr.length} deals • live weights`;
+  }
+
+  // ------------------ Render: Detail ------------------
+  function renderDetail(d){
+    const weights = getWeights();
+    const score = Math.round(scoreDeal(d, weights)*100);
+    const el = document.getElementById('detail');
+    el.innerHTML = `
+      <div class="flex items-start justify-between">
+        <div>
+          <div class="font-medium flex items-center gap-2">
+            <i data-lucide="file-text" class="w-4 h-4"></i> ${d.borrower}
+          </div>
+          <div class="text-xs text-gray-500">${d.id} • Sponsor: ${d.sponsor} • ${d.sector} • ${d.vintage}</div>
+        </div>
+        <div class="text-right">
+          <div class="text-2xl font-semibold">${score}</div>
+          <div class="text-xs text-gray-500">Structure Score</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 mt-3">
+        ${CATS.map(([k,l])=>{
+          const v = Math.round((d.scores[k]||0)*100);
+          return `<div class="rounded-lg border p-2">
+            <div class="text-[11px] text-gray-500">${l}</div>
+            <div class="text-sm font-medium">${v}</div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <div class="mt-3">
+        <div class="text-xs font-medium text-gray-500 mb-1">Top Drivers</div>
+        <div class="flex flex-wrap gap-2">
+          ${d.drivers.map(t=>`<span class="chip">${t}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="mt-3 rounded-xl border p-3 bg-gray-50">
+        <div class="text-xs font-medium text-gray-500">Clause Notes (mock)</div>
+        <ul class="mt-1 list-disc list-inside text-sm space-y-1">
+          <li>${d.notes}</li>
+          <li>Clicking a heatmap cell would deep-link to the exact clause span (future: source doc anchors).</li>
+        </ul>
+        <div class="mt-2 flex flex-wrap gap-2">
+          <a class="text-xs border rounded-lg px-2 py-1 hover:bg-white" href="#" title="mock">Open Credit Agreement</a>
+          <a class="text-xs border rounded-lg px-2 py-1 hover:bg-white" href="#" title="mock">Open Term Sheet</a>
+          <a class="text-xs border rounded-lg px-2 py-1 hover:bg-white" href="#" title="mock">Amendments</a>
+        </div>
+      </div>
+    `;
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // ------------------ KPIs ------------------
+  function renderKPIs(){
+    const weights = getWeights();
+    const arr = filteredDeals().map(d=>scoreDeal(d, weights));
+    const cnt = arr.length;
+    const avg = cnt? (arr.reduce((a,b)=>a+b,0)/cnt)*100 : 0;
+    const best = cnt? Math.max(...arr)*100 : 0;
+    const worst = cnt? Math.min(...arr)*100 : 0;
+    document.getElementById('kpiDeals').textContent = cnt;
+    document.getElementById('kpiAvg').textContent = Math.round(avg);
+    document.getElementById('kpiBest').textContent = Math.round(best);
+    document.getElementById('kpiWorst').textContent = Math.round(worst);
+  }
+
+  // ------------------ Export ------------------
+  function exportJSON(){
+    const weights = getWeights();
+    const rows = filteredDeals().map(d=>({
+      id:d.id, borrower:d.borrower, sponsor:d.sponsor, sector:d.sector, vintage:d.vintage,
+      score: Math.round(scoreDeal(d,weights)*100),
+      ...Object.fromEntries(CATS.map(([k])=>[k, Math.round((d.scores[k]||0)*100)]))
+    }));
+    const blob = new Blob([JSON.stringify({weights, rows}, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download='xray_export.json'; a.click();
+    URL.revokeObjectURL(url);
+  }
+  function exportCSV(){
+    const weights = getWeights();
+    const header = ['id','borrower','sponsor','sector','vintage','score',...CATS.map(([k])=>k)];
+    const lines = [header.join(',')];
+    filteredDeals().forEach(d=>{
+      const row = [
+        d.id, `"${d.borrower.replace(/"/g,'""')}"`, `"${d.sponsor.replace(/"/g,'""')}"`, d.sector, d.vintage,
+        Math.round(scoreDeal(d,weights)*100),
+        ...CATS.map(([k])=> Math.round((d.scores[k]||0)*100))
+      ];
+      lines.push(row.join(','));
+    });
+    const blob = new Blob([lines.join('\n')], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download='xray_export.csv'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ------------------ Init / events ------------------
+  function updateAll(){
+    renderHeatmap();
+    renderRankings();
+    renderKPIs();
+  }
+
+  window.addEventListener('DOMContentLoaded', ()=>{
+    if (window.lucide) window.lucide.createIcons();
+    renderWeightSliders();
+    ['fSector','fVintage','fSearch','onlyLow','onlyHigh'].forEach(id=>{
+      const ev = id==='fSearch' ? 'input' : 'change';
+      document.getElementById(id).addEventListener(ev, updateAll);
+    });
+    document.getElementById('btnExportJSON').onclick = exportJSON;
+    document.getElementById('btnExportCSV').onclick = exportCSV;
+    updateAll();
+  });
+  </script>
+</body>
+</html>
