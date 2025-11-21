@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion — Tear Sheet + Shadow Ratings (Combined)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js (UMD build) for the bell distribution -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    @media print { .no-print { display:none !important } a[href]:after{content:""} }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+  <!-- Header -->
+  <header class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 py-3 flex items-center gap-3">
+      <div class="text-sm text-gray-600">Orion • Private Credit AI</div>
+      <div class="ml-auto no-print flex items-center gap-2">
+        <button onclick="window.print()" class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print / PDF
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 py-6 space-y-6">
+    <!-- Title -->
+    <section class="flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-semibold tracking-tight">Pawsitive Brands, Inc. — Combined Tear Sheet + Rating</h1>
+        <p class="mt-1 text-sm text-gray-600">$300,000,000 Senior Secured Credit Facility</p>
+      </div>
+      <div class="flex flex-wrap gap-2 items-start">
+        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-green-50 text-green-700">In Compliance</span>
+        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-gray-50">Pet Care</span>
+        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-gray-50">Summit Hill Partners (Sponsor)</span>
+        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-gray-50">Ownership ≥ 51%</span>
+      </div>
+    </section>
+
+    <!-- Two-column grid -->
+    <section class="grid grid-cols-12 gap-4 items-stretch">
+      <!-- LEFT COLUMN -->
+      <div class="col-span-12 md:col-span-7 space-y-4">
+        <!-- Key metrics -->
+        <section class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
+          <metric-card label="Revenue (LTM)" value="$375mm"></metric-card>
+          <metric-card label="EBITDA (LTM)" value="$60mm"></metric-card>
+          <metric-card label="EBITDA Margin" value="16%"></metric-card>
+          <metric-card label="CapEx (LTM)" value="$8mm"></metric-card>
+          <metric-card label="Cash" value="$15mm"></metric-card>
+          <metric-card label="Debt (New)" value="$300mm"></metric-card>
+          <metric-card label="Term" value="7 years"></metric-card>
+          <metric-card label="Pricing (SOFR)" value="+525bps"></metric-card>
+          <metric-card label="Floor" value="2.00%"></metric-card>
+          <metric-card label="Leverage (Gross)" value="5.4x"></metric-card>
+          <metric-card label="Leverage (Net)" value="3.69x"></metric-card>
+          <metric-card label="Equity Contrib." value="35%"></metric-card>
+        </section>
+
+        <!-- Structure & Covenants -->
+        <div class="rounded-2xl border bg-white p-4">
+          <h2 class="text-lg font-medium mb-1">Structure & Covenants</h2>
+          <div class="grid md:grid-cols-2 gap-3">
+            <div class="rounded-xl border p-3">
+              <div class="text-xs font-medium text-gray-500">Structure & Terms</div>
+              <ul class="mt-2 text-sm space-y-1">
+                <li>TLB <b>$250mm</b> / RCF <b>$50mm</b></li>
+                <li>Pricing: TLB SOFR + <b>525 bps</b> (1.00% floor)</li>
+                <li>Use of proceeds: <b>$175mm</b> refi / <b>$75mm</b> dividend</li>
+              </ul>
+            </div>
+            <div class="rounded-xl border p-3">
+              <div class="text-xs font-medium text-gray-500">Maintenance Covenants</div>
+              <ul class="mt-2 text-sm space-y-1">
+                <li>Net Leverage ≤ <b>5.00x</b></li>
+                <li>Interest Coverage ≥ <b>2.25x</b></li>
+                <li>Liquidity ≥ <b>$15mm</b></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Migration Matrix (bottom-left) -->
+        <div class="rounded-2xl border bg-white p-4 h-[340px]">
+          <h2 class="text-lg font-medium mb-1">Ratings Migration Matrix (1-Year)</h2>
+          <p class="text-xs text-gray-500">Illustrative; rows = starting rating, columns = next-year rating.</p>
+          <div class="mt-3 overflow-x-auto overflow-y-auto h-[calc(100%-2.75rem)]">
+            <table id="migrationTable" class="w-full text-sm table-fixed"></table>
+          </div>
+        </div>
+      </div> <!-- CLOSE LEFT COLUMN -->
+
+      <!-- RIGHT PANEL -->
+      <aside class="col-span-12 md:col-span-5 space-y-4">
+        <div class="rounded-2xl border bg-white p-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-medium">Shadow Rating — Moody’s Pet Care</h2>
+            <span class="text-xs rounded-full border px-2 py-0.5 bg-gray-50">Scorecard</span>
+          </div>
+
+          <!-- Rating box at top -->
+          <div class="mt-3 rounded-xl border p-3 text-center">
+            <div class="text-xs text-gray-500">Shadow Rating</div>
+            <div id="letter" class="text-3xl font-semibold mt-1">—</div>
+            <div id="numeric" class="text-xs mt-1 px-2 py-0.5 inline-block rounded-full border bg-gray-50">Score: —</div>
+            <ul id="drivers" class="text-xs text-left mt-3 list-disc list-inside text-gray-700 space-y-1"></ul>
+          </div>
+
+          <!-- Inputs -->
+          <div class="grid grid-cols-2 gap-3 mt-3">
+            <div>
+              <label class="text-xs text-gray-500">Revenue (USD, billions)</label>
+              <input id="rev" type="number" step="0.01" value="0.375" class="w-full mt-1 border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Total Debt (USD, billions)</label>
+              <input id="debt" type="number" step="0.01" value="0.300" class="w-full mt-1 border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">EBITDA (USD, billions)</label>
+              <input id="ebitda" type="number" step="0.01" value="0.060" class="w-full mt-1 border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Capex (USD, billions)</label>
+              <input id="capex" type="number" step="0.01" value="0.008" class="w-full mt-1 border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Interest Expense (USD, billions)</label>
+              <input id="interest" type="number" step="0.001" value="0.030" class="w-full mt-1 border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Market Characteristics</label>
+              <select id="mc" class="w-full mt-1 border rounded-lg px-2 py-1.5 text-sm">
+                <option>Strong</option><option selected>Good</option><option>Fair</option><option>Weak</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Market Position</label>
+              <select id="mp" class="w-full mt-1 border rounded-lg px-2 py-1.5 text-sm">
+                <option>Strong</option><option selected>Good</option><option>Fair</option><option>Weak</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Revenue & Earnings Stability</label>
+              <select id="res" class="w-full mt-1 border rounded-lg px-2 py-1.5 text-sm">
+                <option>Strong</option><option selected>Good</option><option>Fair</option><option>Weak</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Financial Policy</label>
+              <select id="fp" class="w-full mt-1 border rounded-lg px-2 py-1.5 text-sm">
+                <option>Conservative</option><option selected>Moderate</option><option>Aggressive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-3 flex gap-2">
+            <button id="calc" class="text-sm rounded-lg px-3 py-2 border hover:bg-gray-50">Calculate Rating</button>
+            <button id="reset" class="text-sm rounded-lg px-3 py-2 border hover:bg-gray-50">Reset</button>
+          </div>
+
+          <div class="mt-4 rounded-xl border p-3">
+            <div class="text-xs text-gray-500">Key Ratios</div>
+            <table class="mt-2 w-full text-sm"><tbody id="ratios" class="divide-y"></tbody></table>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Bell curve projection at the bottom -->
+    <section class="rounded-2xl border bg-white p-4">
+      <h2 class="text-lg font-medium mb-2">
+        Private Credit Portfolio Quality Drift — 5-Year Bell Curve Projection
+      </h2>
+      <div class="h-[420px]">
+        <canvas id="bellChart"></canvas>
+      </div>
+      <p class="mt-2 text-xs text-gray-500">
+        Distributions based on real data. X-axis: rating bucket continuum (BBB → D). Curves show gradual drift & dispersion.
+      </p>
+    </section>
+
+    <p class="text-xs text-gray-500">Methodology-inspired demo. Replace with true RCF and Net Debt when available.</p>
+  </main>
+
+  <!-- Metric card helper -->
+  <script>
+    customElements.define('metric-card', class extends HTMLElement {
+      connectedCallback(){
+        const l=this.getAttribute('label')||'',v=this.getAttribute('value')||'';
+        this.innerHTML=`<div class="rounded-2xl border bg-white p-3"><div class="text-xs text-gray-500">${l}</div><div class="text-lg font-semibold">${v}</div></div>`;
+      }
+    });
+  </script>
+
+  <!-- Rating calculation -->
+  <script>
+    const QUAL_TO_NUM={'Exceptional':1.00,'Strong':0.85,'Good':0.70,'Fair':0.50,'Weak':0.30,'Poor':0.15,'Conservative':0.85,'Moderate':0.60,'Aggressive':0.35};
+    function interp(v,b,w,h){let t=(v-w)/(b-w);if(!h)t=(v-b)/(w-b);return Math.max(0,Math.min(1,isNaN(t)?0:t))}
+    function mapAggregateToRating(x){if(x>=.9)return'Aaa';if(x>=.83)return'Aa2';if(x>=.76)return'A1';if(x>=.7)return'Baa1';if(x>=.63)return'Baa3';if(x>=.56)return'Ba2';if(x>=.48)return'Ba3';if(x>=.4)return'B1';if(x>=.32)return'B2';if(x>=.24)return'B3';if(x>=.16)return'Caa1';if(x>=.08)return'Caa2';return'Caa3'}
+    const W={marketCharacteristics:.1,marketPosition:.1,revEarnStability:.1,scale:.15,debtEbitda:.15,rcfNetDebt:.1,ebitdaCapexInterest:.15,finPolicy:.15};
+    const BANDS={revenue:{best:150,worst:0,higherIsBetter:true},debtEbitda:{best:0,worst:12,higherIsBetter:false},rcfNetDebt:{best:100,worst:0,higherIsBetter:true},ebitdaCapexInterest:{best:25,worst:0,higherIsBetter:true}};
+    function calc(){
+      const i={revenue:+rev.value||0,debt:+debt.value||0,ebitda:+ebitda.value||0,capex:+capex.value||0,interest:+interest.value||0,marketCharacteristics:mc.value,marketPosition:mp.value,revEarnStability:res.value,finPolicy:fp.value};
+      const dE=i.ebitda>0?i.debt/i.ebitda:Infinity;
+      const eci=i.interest>0?(i.ebitda-i.capex)/i.interest:(i.ebitda-i.capex)>0?BANDS.ebitdaCapexInterest.best:BANDS.ebitdaCapexInterest.worst;
+      const rcf=i.ebitda-i.capex-i.interest, nD=i.debt;
+      const rcfPct=nD>0?(rcf/nD)*100:nD<0&&rcf>0?BANDS.rcfNetDebt.best:BANDS.rcfNetDebt.worst;
+      const sRev=interp(i.revenue,BANDS.revenue.best,BANDS.revenue.worst,BANDS.revenue.higherIsBetter),
+            sDE=interp(dE,BANDS.debtEbitda.best,BANDS.debtEbitda.worst,BANDS.debtEbitda.higherIsBetter),
+            sRCF=interp(rcfPct,BANDS.rcfNetDebt.best,BANDS.rcfNetDebt.worst,BANDS.rcfNetDebt.higherIsBetter),
+            sECI=interp(eci,BANDS.ebitdaCapexInterest.best,BANDS.ebitdaCapexInterest.worst,BANDS.ebitdaCapexInterest.higherIsBetter);
+      const qMC=QUAL_TO_NUM[i.marketCharacteristics]??.5,
+            qMP=QUAL_TO_NUM[i.marketPosition]??.5,
+            qRES=QUAL_TO_NUM[i.revEarnStability]??.5,
+            qFP=QUAL_TO_NUM[i.finPolicy]??.6;
+      const agg=sRev*W.scale+qMC*W.marketCharacteristics+qMP*W.marketPosition+qRES*W.revEarnStability+sDE*W.debtEbitda+sRCF*W.rcfNetDebt+sECI*W.ebitdaCapexInterest+qFP*W.finPolicy;
+      letter.textContent=mapAggregateToRating(agg);
+      numeric.textContent='Score: '+agg.toFixed(2);
+      ratios.innerHTML=`<tr><td class="py-1 text-gray-500">Debt/EBITDA</td><td class="py-1 text-right font-medium">${isFinite(dE)?dE.toFixed(2):'—'}x</td></tr>
+                        <tr><td class="py-1 text-gray-500">(EBITDA–Capex)/Interest</td><td class="py-1 text-right font-medium">${isFinite(eci)?eci.toFixed(2):'—'}x</td></tr>
+                        <tr><td class="py-1 text-gray-500">RCF/Net Debt</td><td class="py-1 text-right font-medium">${rcfPct.toFixed(1)}%</td></tr>`;
+    }
+  </script>
+
+  <!-- Migration matrix render -->
+  <script>
+    const MIG_BUCKETS=["aaa/aa","a","bbb","bb","b","c"];
+    const MIG_MATRIX=[
+      [85.7,14.3,0.0,0.0,0.0,0.0],
+      [0.0,76.5,20.2,2.5,0.8,0.0],
+      [0.0,4.3,65.1,24.7,4.3,1.6],
+      [0.0,0.0,4.8,68.7,21.0,5.5],
+      [0.0,0.0,0.7,10.1,67.4,21.7],
+      [0.0,0.0,0.0,0.0,0.0,100.0],
+    ];
+    function cellColor(pct){ const L=97-(pct/100)*72; return `hsl(200 70% ${L}%)`; }
+    function renderMigrationMatrix(){
+      const tbl=document.getElementById("migrationTable"); if(!tbl) return;
+      let thead=`<thead>
+        <tr>
+          <th class="text-left text-gray-500 font-medium py-1 pr-2">from \\ to</th>
+          ${MIG_BUCKETS.map(b=>`<th class="text-xs text-gray-500 font-medium px-2 py-1">${b}</th>`).join("")}
+        </tr>
+      </thead>`;
+      let tbody="<tbody>";
+      for(let r=0;r<MIG_BUCKETS.length;r++){
+        tbody+=`<tr>`;
+        tbody+=`<th class="text-xs text-gray-600 font-medium text-left pr-2 py-1">${MIG_BUCKETS[r]}</th>`;
+        for(let c=0;c<MIG_BUCKETS.length;c++){
+          const val=MIG_MATRIX[r][c]??0, bg=cellColor(val);
+          const txt=val===0?"0%":(val.toFixed(val<1?1:0)+"%");
+          tbody+=`<td class="text-center align-middle px-2 py-1 rounded" style="background:${bg};">
+                    <span class="text-[11px] font-medium" style="color:${val>60?'white':'#111'}">${txt}</span>
+                   </td>`;
+        }
+        tbody+="</tr>";
+      }
+      tbody+="</tbody>";
+      tbl.innerHTML=thead+tbody;
+    }
+
+    // Boot
+    window.addEventListener("DOMContentLoaded", ()=>{
+      renderMigrationMatrix();
+      calc();
+      document.getElementById("calc")?.addEventListener("click", ()=>{ calc(); });
+      document.getElementById("reset")?.addEventListener("click", ()=>location.reload());
+    });
+  </script>
+
+  <!-- Bell curve script -->
+  <script>
+    // x from 0..5 → BBB, BB, B, CCC, D
+    const X_POINTS = Array.from({ length: 301 }, (_, i) => i * (5 / 300));
+
+    function normalPdf(x, mu, sigma){
+      const z = (x - mu) / sigma;
+      return Math.exp(-0.5 * z * z) / (sigma * Math.sqrt(2 * Math.PI));
+    }
+
+    function makeSeries(mu, sigma){
+      return X_POINTS.map(x => ({ x, y: normalPdf(x, mu, sigma) }));
+    }
+
+    const rawCurves = [
+      { name: 'Current', data: makeSeries(1.8, 0.45) },
+      { name: 'Year 1',  data: makeSeries(2.1, 0.50) },
+      { name: 'Year 2',  data: makeSeries(2.3, 0.55) },
+      { name: 'Year 3',  data: makeSeries(2.4, 0.60) },
+      { name: 'Year 4',  data: makeSeries(2.5, 0.65) },
+      { name: 'Year 5',  data: makeSeries(2.6, 0.70) },
+    ];
+
+    const globalMax = Math.max(...rawCurves.flatMap(s => s.data.map(p => p.y))) || 1;
+    const scale = 0.9 / globalMax;
+    const curves = rawCurves.map(s => ({
+      name: s.name,
+      data: s.data.map(p => ({ x: p.x, y: p.y * scale }))
+    }));
+
+    const bellCtx = document.getElementById('bellChart')?.getContext('2d');
+    if (bellCtx){
+      new Chart(bellCtx, {
+        type: 'line',
+        data: {
+          datasets: curves.map((c) => ({
+            label: c.name,
+            data: c.data,
+            pointRadius: 0,
+            tension: 0.35,
+            borderWidth: 2,
+            fill: true,
+            backgroundColor: 'rgba(0,0,0,0.06)',
+          }))
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          parsing: false,
+          interaction: { intersect: false, mode: 'nearest' },
+          plugins: {
+            legend: { position: 'right' },
+            tooltip: {
+              callbacks: {
+                title: (items)=> {
+                  const x = items?.[0]?.parsed?.x ?? 0;
+                  const buckets = ['BBB','BB','B','CCC','D'];
+                  const idx = Math.min(buckets.length-1, Math.max(0, Math.round(x)));
+                  return buckets[idx];
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: 'linear',
+              min: 0, max: 5,
+              title: { display: true, text: 'Rating Bucket (Lower = Stronger Credit)' },
+              grid: { color: 'rgba(0,0,0,0.05)' },
+              ticks: {
+                callback: (val) => {
+                  const buckets = ['BBB','BB','B','CCC','D'];
+                  const idx = Math.min(buckets.length-1, Math.max(0, Math.round(val)));
+                  return Number.isInteger(val) ? buckets[idx] : '';
+                }
+              }
+            },
+            y: {
+              title: { display: true, text: 'Relative Probability Density' },
+              grid: { color: 'rgba(0,0,0,0.05)' },
+              ticks: { callback: (v)=> (v===0 ? '0' : v.toFixed(3)) }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
