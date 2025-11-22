@@ -268,7 +268,9 @@
           type: "linear",
           min: 0.5,
           max: 5.5,
+          offset: true,
           ticks: {
+            display: false, // Hides duplicate default labels
             callback: (v) => {
               if (v > 4.5) return "Tech";
               if (v > 3.5) return "Healthcare";
@@ -278,7 +280,7 @@
               return "";
             },
             color: "#6b7280",
-            font: { size: 12 }
+            font: { size: 14 }
           },
           grid: { display: true }
         }
