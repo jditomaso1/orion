@@ -14,6 +14,11 @@
       font-family: 'Poppins', sans-serif;
       background: #f5f6f8;
     }
+
+    /* Match Market page chart heights */
+    canvas {
+      max-height: 350px !important;
+    }
   </style>
 </head>
 
@@ -95,8 +100,8 @@
     <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Issuance Trends</h2>
 
-      <div class="relative w-full h-64">
-        <canvas id="issuanceTrendsChart" width="900" height="300"></canvas>
+      <div class="relative w-full h-80">
+        <canvas id="issuanceTrendsChart"></canvas>
       </div>
     </div>
 
@@ -106,8 +111,8 @@
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Sector Breakdown</h2>
 
-        <div class="relative w-full h-48">
-          <canvas id="sectorBreakdownChart" width="600" height="240"></canvas>
+        <div class="relative w-full h-72">
+          <canvas id="sectorBreakdownChart"></canvas>
         </div>
 
         <ul class="mt-4 text-sm text-gray-700 space-y-1">
@@ -128,8 +133,8 @@
           <li>📈 Trend: Sponsor mix rising</li>
         </ul>
 
-        <div class="relative w-full h-48 mt-4">
-          <canvas id="sponsorMixChart" width="600" height="240"></canvas>
+        <div class="relative w-full h-72 mt-4">
+          <canvas id="sponsorMixChart"></canvas>
         </div>
       </div>
 
