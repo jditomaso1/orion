@@ -80,3 +80,31 @@ h1, h2, h3, h4 {
   border-bottom: 2px solid #000;
   color: #000;
 }
+
+/* Sidebar base font */
+aside {
+  font-family: "Poppins", sans-serif;
+}
+
+/* Section headers (Originations, Core, Risk, etc.) */
+aside p.text-sm {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #6b7280; /* gray-500 */
+  text-transform: uppercase;
+}
+
+/* All sidebar links */
+aside a {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1f2937; /* gray-800 */
+}
+
+/* Hover styling */
+aside a:hover {
+  background: #f3f4f6; /* gray-100 */
+  border-radius: 6px;
+}
+
