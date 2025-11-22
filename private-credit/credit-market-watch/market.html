@@ -27,7 +27,7 @@
 
   <script>
     async function injectSidebar() {
-      const res = await fetch("/private-credit/sidebar.html");
+      const res = await fetch("../sidebar.html");
       document.getElementById("sidebar-placeholder").innerHTML = await res.text();
     }
     injectSidebar();
