@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Closing Queue — Private Credit</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Styling -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+    .status-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+    // GLOBAL DROPDOWN HANDLER
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    // RESTORE
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const section = document.getElementById(last);
+      const icon = document.getElementById("icon-" + last);
+      if (section && icon) {
+        section.classList.remove("hidden");
+        icon.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- HEADER -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2">Closing Queue</h1>
+    <p class="text-gray-500 text-[15px] mb-8">
+      Final documentation, signatures, funding steps, and conditions precedent tracking for active deals.
+    </p>
+
+    <!-- CREATE NEW CLOSING -->
+    <div class="mb-6">
+      <button class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm text-sm">
+        + Add Deal to Closing Queue
+      </button>
+    </div>
+
+
+    <!-- ACTIVE CLOSINGS -->
+    <div class="bg-white rounded-xl shadow-sm p-6 border mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Deals in Closing</h2>
+
+      <div class="space-y-5">
+
+        <!-- Closing Item -->
+        <div class="p-5 bg-gray-50 rounded-xl border hover:bg-gray-100 transition cursor-pointer flex justify-between items-center">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">Pawsitive Brands — $300MM Term Loan</h3>
+            <p class="text-gray-600 text-sm mt-1">Sponsor: Summit Hill Partners</p>
+
+            <div class="flex items-center gap-3 mt-3 text-xs">
+
+              <span class="status-badge bg-yellow-200 text-yellow-800">
+                Docs Outstanding
+              </span>
+
+              <span class="status-badge bg-blue-200 text-blue-800">
+                KYC Pending
+              </span>
+
+              <span class="status-badge bg-gray-200 text-gray-700">
+                6 of 12 CPs Complete
+              </span>
+
+            </div>
+          </div>
+
+          <span class="text-blue-600 font-semibold text-xl">→</span>
+        </div>
+
+
+        <!-- Closing Item -->
+        <div class="p-5 bg-gray-50 rounded-xl border hover:bg-gray-100 transition cursor-pointer flex justify-between items-center">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">Healthcare Rollup — $150MM Delayed Draw TL</h3>
+            <p class="text-gray-600 text-sm mt-1">Sponsor: Eastbridge Capital</p>
+
+            <div class="flex items-center gap-3 mt-3 text-xs">
+
+              <span class="status-badge bg-green-200 text-green-800">
+                Ready to Fund
+              </span>
+
+              <span class="status-badge bg-gray-200 text-gray-700">
+                11 of 11 CPs Complete
+              </span>
+
+            </div>
+          </div>
+
+          <span class="text-blue-600 font-semibold text-xl">→</span>
+        </div>
+
+
+        <!-- Closing Item -->
+        <div class="p-5 bg-gray-50 rounded-xl border hover:bg-gray-100 transition cursor-pointer flex justify-between items-center">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">SoftwareCo — $425MM Unitranche</h3>
+            <p class="text-gray-600 text-sm mt-1">Sponsor: Arcadia Ventures</p>
+
+            <div class="flex items-center gap-3 mt-3 text-xs">
+
+              <span class="status-badge bg-red-200 text-red-800">
+                Signature Delays
+              </span>
+
+              <span class="status-badge bg-gray-200 text-gray-700">
+                4 of 10 CPs Complete
+              </span>
+
+            </div>
+          </div>
+
+          <span class="text-blue-600 font-semibold text-xl">→</span>
+        </div>
+
+      </div>
+    </div>
+
+
+
+
+    <!-- CONDITIONS PRECEDENT -->
+    <div class="bg-white rounded-xl shadow-sm p-6 border mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Conditions Precedent Tracker</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        <!-- CP Card -->
+        <div class="p-5 bg-gray-50 rounded-xl border">
+          <h3 class="text-lg font-semibold text-gray-900">Borrower KYC</h3>
+          <p class="text-sm text-gray-600 mt-1">Required by closing counsel</p>
+          <span class="status-badge bg-red-200 text-red-800 mt-3 inline-block">Outstanding</span>
+        </div>
+
+        <div class="p-5 bg-gray-50 rounded-xl border">
+          <h3 class="text-lg font-semibold text-gray-900">Officer’s Certificate</h3>
+          <p class="text-sm text-gray-600 mt-1">Awaiting CFO signature</p>
+          <span class="status-badge bg-yellow-200 text-yellow-800 mt-3 inline-block">In Progress</span>
+        </div>
+
+        <div class="p-5 bg-gray-50 rounded-xl border">
+          <h3 class="text-lg font-semibold text-gray-900">Legal Opinion</h3>
+          <p class="text-sm text-gray-600 mt-1">Counsel review underway</p>
+          <span class="status-badge bg-blue-200 text-blue-800 mt-3 inline-block">Pending Counsel</span>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- RECENT ACTIVITY -->
+    <div class="bg-white rounded-xl shadow-sm p-6 border">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Closing Activity</h2>
+
+      <div class="space-y-5">
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900"><strong>Operations</strong> marked 3 CPs as completed for Pawsitive Brands.</p>
+          <p class="text-xs text-gray-400 mt-1">2 hours ago</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900"><strong>Legal</strong> uploaded the final draft of the Credit Agreement.</p>
+          <p class="text-xs text-gray-400 mt-1">Yesterday</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900"><strong>Borrower</strong> submitted updated KYC documents.</p>
+          <p class="text-xs text-gray-400 mt-1">2 days ago</p>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>
