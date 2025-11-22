@@ -19,6 +19,13 @@
       font-family: 'Poppins', sans-serif;
       background: #f5f6f8;
     }
+    /* HARD FIX: Prevent canvas from expanding infinitely */
+    canvas {
+      max-height: 350px !important;
+    }
+    #heatmapChart {
+      max-height: 420px !important;
+    }
   </style>
 </head>
 
@@ -31,8 +38,7 @@
   async function injectSidebar() {
     const res = await fetch("/private-credit/sidebar.html");
     document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-  
-    // GLOBAL DROPDOWN HANDLER
+
     window.toggleSection = function (id) {
       const section = document.getElementById(id);
       const icon = document.getElementById("icon-" + id);
@@ -43,7 +49,7 @@
         : "rotate(90deg)";
       localStorage.setItem("sidebar-open-section", id);
     };
-  
+
     const last = localStorage.getItem("sidebar-open-section");
     if (last) {
       const section = document.getElementById(last);
@@ -73,50 +79,50 @@
       <!-- Spread History -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Historical Spread Trends</h2>
-        <canvas id="spreadHistoryChart" class="w-full h-64"></canvas>
+        <canvas id="spreadHistoryChart" style="width: 100%; height: 300px;"></canvas>
       </div>
 
       <!-- New Issuance Volume -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">New Issuance Volume</h2>
-        <canvas id="issuanceVolumeChart" class="w-full h-64"></canvas>
+        <canvas id="issuanceVolumeChart" style="width: 100%; height: 300px;"></canvas>
       </div>
 
       <!-- Default & Distress Indicators -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Default & Distress Indicators</h2>
-        <canvas id="distressChart" class="w-full h-64"></canvas>
+        <canvas id="distressChart" style="width: 100%; height: 300px;"></canvas>
       </div>
 
       <!-- Sector Spread Comparison -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Sector Spread Comparison</h2>
-        <canvas id="sectorSpreadChart" class="w-full h-64"></canvas>
+        <canvas id="sectorSpreadChart" style="width: 100%; height: 300px;"></canvas>
       </div>
 
       <!-- Heatmap -->
       <div class="bg-white rounded-xl shadow-sm p-6 border lg:col-span-2">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Risk Signal Heatmap</h2>
-        <canvas id="heatmapChart" class="w-full h-72"></canvas>
+        <canvas id="heatmapChart" style="width: 100%; height: 400px;"></canvas>
       </div>
 
       <!-- Credit Conditions -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Credit Conditions Index</h2>
-        <canvas id="creditConditionsChart" class="w-full h-64"></canvas>
+        <canvas id="creditConditionsChart" style="width: 100%; height: 300px;"></canvas>
       </div>
 
       <!-- Volatility Dashboard -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Volatility Dashboard</h2>
-        <canvas id="volatilityChart" class="w-full h-64"></canvas>
+        <canvas id="volatilityChart" style="width: 100%; height: 300px;"></canvas>
       </div>
 
     </div>
 
   </main>
 
-  <!-- CHART.JS SCRIPTS -->
+  <!-- CHARTS -->
   <script>
   const navy = "#1f3b66";
   const steel = "#4b647d";
@@ -170,7 +176,7 @@
     options: { responsive:true, maintainAspectRatio:false }
   });
 
-  // 4 — Multi-series (Sector spreads)
+  // 4 — Multi-series Line Chart
   new Chart(document.getElementById("sectorSpreadChart"), {
     type: "line",
     data: {
@@ -183,7 +189,7 @@
     options: { responsive:true, maintainAspectRatio:false }
   });
 
-  // 5 — Heatmap (simple mock)
+  // 5 — Heatmap 
   const heatmapData = {
     labels: ["Jan","Feb","Mar","Apr","May","Jun"],
     datasets: [{
@@ -203,13 +209,20 @@
       }
     }]
   };
+
   new Chart(document.getElementById("heatmapChart"), {
     type: "bubble",
     data: heatmapData,
     options: {
       responsive:true,
       maintainAspectRatio:false,
-      scales:{ x:{ type:"category" }, y:{ type:"category" } },
+      scales:{
+        x:{ type:"category" },
+        y:{ 
+          type:"category",
+          labels:["Tech","Healthcare"] 
+        }
+      },
       plugins:{ legend:{ display:false } }
     }
   });
@@ -235,7 +248,7 @@
   new Chart(document.getElementById("volatilityChart"), {
     type:"bar",
     data:{
-      labels:["HY", "LL", "VIX"],
+      labels:["HY","LL","VIX"],
       datasets:[{
         label:"Volatility",
         data:[5.2,2.1,19.4],
