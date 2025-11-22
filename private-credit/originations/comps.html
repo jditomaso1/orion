@@ -11,11 +11,18 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Base Page Styling -->
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       background: #f5f6f8;
+    }
+
+    /* Ensures consistent chart sizing */
+    .chart-box {
+      height: 260px;
     }
   </style>
 </head>
@@ -57,7 +64,6 @@
   <!-- MAIN CONTENT -->
   <main class="flex-1 ml-64 p-8">
 
-    <!-- PAGE TITLE -->
     <h1 class="text-3xl font-semibold text-gray-900 tracking-tight mb-2">
       Comps Analysis
     </h1>
@@ -66,10 +72,9 @@
       Comparable company benchmarking for leverage, spreads, valuation, and sector positioning.
     </p>
 
-    <!-- GRID: COMPS SUMMARY METRICS -->
+    <!-- SUMMARY METRICS -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      <!-- Leverage -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Leverage Benchmarks</h2>
         <ul class="text-sm text-gray-700 space-y-2">
@@ -80,7 +85,6 @@
         </ul>
       </div>
 
-      <!-- Spread Benchmarks -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Spread Benchmarks</h2>
         <ul class="text-sm text-gray-700 space-y-2">
@@ -91,7 +95,6 @@
         </ul>
       </div>
 
-      <!-- Valuation Benchmarks -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Valuation Multiples</h2>
         <ul class="text-sm text-gray-700 space-y-2">
@@ -104,49 +107,124 @@
 
     </div>
 
-    <!-- BIG CHART: COMPS TRENDS -->
+    <!-- COMPS TREND CHART -->
     <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Comps Trend Overview</h2>
-      <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
-        Chart Placeholder (Leverage, Spreads, Valuation)
+      <div class="chart-box">
+        <canvas id="compsTrendChart"></canvas>
       </div>
     </div>
 
     <!-- SPLIT ROW -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
 
-      <!-- Sector Spread Comparison -->
+      <!-- SECTOR SPREAD -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Sector Spread Comparison</h2>
-        <ul class="text-sm text-gray-700 space-y-2">
-          <li>• Tech: <strong>L+ 495</strong></li>
-          <li>• Healthcare: <strong>L+ 505</strong></li>
-          <li>• Industrials: <strong>L+ 540</strong></li>
-          <li>• Business Services: <strong>L+ 520</strong></li>
-        </ul>
-        <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 mt-4">
-          Bar Chart Placeholder
+        <div class="chart-box mt-2">
+          <canvas id="sectorSpreadChart"></canvas>
         </div>
       </div>
 
-      <!-- Valuation Distribution -->
+      <!-- VALUATION DISTRIBUTION -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Valuation Distribution</h2>
-        <ul class="text-sm text-gray-700 space-y-2">
-          <li>🔹 10–12x: <strong>34%</strong></li>
-          <li>🔹 12–14x: <strong>29%</strong></li>
-          <li>🔹 14–16x: <strong>18%</strong></li>
-          <li>🔹 &gt;16x: <strong>9%</strong></li>
-          <li>🔹 Other: <strong>10%</strong></li>
-        </ul>
-        <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 mt-4">
-          Pie Chart Placeholder
+        <div class="chart-box mt-2">
+          <canvas id="valuationPieChart"></canvas>
         </div>
       </div>
 
     </div>
 
   </main>
+
+  <script>
+    const palette = {
+      blue: "#3B82F6",
+      purple: "#8B5CF6",
+      teal: "#14B8A6",
+      amber: "#F59E0B",
+      rose: "#F43F5E",
+      gray: "#9CA3AF"
+    };
+
+    /* --- Comps Trend Chart --- */
+    new Chart(document.getElementById("compsTrendChart"), {
+      type: "line",
+      data: {
+        labels: ["Tech", "Healthcare", "Industrials"],
+        datasets: [
+          {
+            label: "Leverage (x)",
+            data: [4.6, 4.1, 3.7],
+            borderColor: palette.blue,
+            backgroundColor: palette.blue + "33",
+            tension: 0.35,
+            borderWidth: 2
+          },
+          {
+            label: "Spread (bps)",
+            data: [640, 515, 540],
+            borderColor: palette.purple,
+            backgroundColor: palette.purple + "33",
+            tension: 0.35,
+            borderWidth: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: "bottom" } },
+        scales: {
+          y: { grid: { color: "#e5e7eb" } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    /* --- Sector Spread Bar Chart --- */
+    new Chart(document.getElementById("sectorSpreadChart"), {
+      type: "bar",
+      data: {
+        labels: ["Tech", "Healthcare", "Industrials", "Business Services"],
+        datasets: [{
+          label: "Spread (bps)",
+          data: [495, 505, 540, 520],
+          backgroundColor: [palette.blue, palette.teal, palette.purple, palette.amber],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { grid: { color: "#e5e7eb" } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    /* --- Valuation Pie Chart --- */
+    new Chart(document.getElementById("valuationPieChart"), {
+      type: "pie",
+      data: {
+        labels: ["10–12x", "12–14x", "14–16x", ">16x", "Other"],
+        datasets: [{
+          data: [34, 29, 18, 9, 10],
+          backgroundColor: [
+            palette.blue,
+            palette.purple,
+            palette.teal,
+            palette.amber,
+            palette.rose
+          ]
+        }]
+      },
+      options: {
+        plugins: { legend: { position: "right" } }
+      }
+    });
+  </script>
 
 </body>
 </html>
