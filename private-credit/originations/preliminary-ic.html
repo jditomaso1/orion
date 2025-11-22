@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Originations — Preliminary IC</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base Page Styling -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden")
+        ? "rotate(0deg)"
+        : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const section = document.getElementById(last);
+      const icon = document.getElementById("icon-" + last);
+      if (section && icon) {
+        section.classList.remove("hidden");
+        icon.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT WRAPPER -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- PAGE TITLE -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
+      Preliminary IC
+    </h1>
+
+    <p class="text-gray-500 text-[15px] mb-8">
+      Early investment committee stage evaluating deal viability, sponsor alignment, and initial structuring.
+    </p>
+
+    <!-- GRID: KEY METRICS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Deals Reaching IC -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">IC Pipeline</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>📄 <strong>32</strong> deals submitted MTD</li>
+          <li>📈 <strong>+10%</strong> vs prior month</li>
+          <li>🏦 <strong>74%</strong> sponsor-backed</li>
+          <li>📉 <strong>-4%</strong> YoY</li>
+        </ul>
+      </div>
+
+      <!-- IC Outcomes -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">IC Outcomes</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>🟢 Advanced to full IC: <strong>41%</strong></li>
+          <li>🟡 Hold / Rework: <strong>28%</strong></li>
+          <li>🔴 Declined: <strong>31%</strong></li>
+        </ul>
+      </div>
+
+      <!-- Sector Distribution -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Sector Distribution</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>• Healthcare: <strong>27%</strong></li>
+          <li>• Tech: <strong>25%</strong></li>
+          <li>• Industrials: <strong>21%</strong></li>
+          <li>• Services: <strong>15%</strong></li>
+          <li>• Other: <strong>12%</strong></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- BIG CHART SECTION -->
+    <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">IC Decision Trends</h2>
+      <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
+        Chart Placeholder (Approvals, Declines, Sector Shifts)
+      </div>
+    </div>
+
+    <!-- SPLIT ROW -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
+
+      <!-- Key Risk Themes -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Key Risk Themes</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>⚠️ Leverage push / elevated debt loads</li>
+          <li>📉 Margin compression risk</li>
+          <li>💼 Sponsor selectivity & track record review</li>
+          <li>🏭 Industry cyclicality</li>
+          <li>📊 Limited financial visibility</li>
+        </ul>
+        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
+          Bar Chart Placeholder
+        </div>
+      </div>
+
+      <!-- IC Prep Status -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">IC Prep Status</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>📝 Models received: <strong>78%</strong></li>
+          <li>📂 Diligence materials complete: <strong>65%</strong></li>
+          <li>📣 Sponsor calls completed: <strong>82%</strong></li>
+          <li>🕒 Avg time to IC decision: <strong>6.2 days</strong></li>
+        </ul>
+        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
+          Progress Chart Placeholder
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</body>
+</html>
