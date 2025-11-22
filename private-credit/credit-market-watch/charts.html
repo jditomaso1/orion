@@ -1,1 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Credit Market Watch — Charts</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base Page Styles -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- PAGE TITLE -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
+      Credit Market Watch — Charts
+    </h1>
+
+    <p class="text-gray-500 text-[15px] mb-8">
+      Visual benchmarks across spreads, issuance, volatility, distress, and sector flows.
+    </p>
+
+    <!-- GRID OF CHART MODULES -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <!-- Spread History -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Historical Spread Trends</h2>
+        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+          Line Chart Placeholder
+        </div>
+      </div>
+
+      <!-- New Issuance Volume -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">New Issuance Volume</h2>
+        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+          Bar Chart Placeholder
+        </div>
+      </div>
+
+      <!-- Default & Distress Indicators -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Default & Distress Indicators</h2>
+        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+          Area Chart Placeholder
+        </div>
+      </div>
+
+      <!-- Sector Spread Comparison -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Sector Spread Comparison</h2>
+        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+          Multi-Series Chart Placeholder
+        </div>
+      </div>
+
+      <!-- Heatmap: Risk Signals -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border lg:col-span-2">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Risk Signal Heatmap</h2>
+        <div class="w-full h-72 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+          Heatmap Placeholder
+        </div>
+      </div>
+
+      <!-- Credit Conditions -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Credit Conditions Index</h2>
+        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+          Composite Index Placeholder
+        </div>
+      </div>
+
+      <!-- Volatility Dashboard -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Volatility Dashboard</h2>
+        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+          Volatility Chart Placeholder
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+</html>
 
