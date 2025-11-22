@@ -29,27 +29,17 @@
   async function injectSidebar() {
     const res = await fetch("/private-credit/sidebar.html");
     document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-  
-    // GLOBAL DROPDOWN HANDLER - REQUIRED
+
     window.toggleSection = function (id) {
       const section = document.getElementById(id);
       const icon = document.getElementById("icon-" + id);
-  
       if (!section || !icon) return;
-  
+
       section.classList.toggle("hidden");
-  
-      if (section.classList.contains("hidden")) {
-        icon.style.transform = "rotate(0deg)";
-      } else {
-        icon.style.transform = "rotate(90deg)";
-      }
-  
-      // Remember open section
+      icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
       localStorage.setItem("sidebar-open-section", id);
     };
-  
-    // Restore last open section
+
     const last = localStorage.getItem("sidebar-open-section");
     if (last) {
       const section = document.getElementById(last);
@@ -60,15 +50,12 @@
       }
     }
   }
-  
   injectSidebar();
   </script>
 
-
   <!-- MAIN CONTENT WRAPPER -->
-  <main class="flex-1 ml-64 p-8">  
+  <main class="flex-1 ml-64 p-8">
 
-    <!-- PAGE TITLE -->
     <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
       Credit Market Watch
     </h1>
@@ -77,14 +64,12 @@
       Real-time spreads, issuance trends, volatility, and market signals.
     </p>
 
-
-    <!-- GRID LAYOUT -->
+    <!-- GRID: SNAPSHOTS -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
       <!-- Market Spread Snapshot -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Spread Snapshot</h2>
-
         <ul class="text-sm text-gray-700 space-y-2">
           <li>📌 <strong>L+ 525</strong> — Avg. 1st Lien Spread</li>
           <li>📈 <strong>L+ 975</strong> — Distressed Spread Index</li>
@@ -93,11 +78,9 @@
         </ul>
       </div>
 
-
       <!-- New Issuance -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">New Issuance</h2>
-
         <ul class="text-sm text-gray-700 space-y-2">
           <li>💰 <strong>$12.4B</strong> new LBO issuance MTD</li>
           <li>📊 <strong>62%</strong> sponsor-backed</li>
@@ -105,11 +88,9 @@
         </ul>
       </div>
 
-
       <!-- Market Volatility -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Market Volatility</h2>
-
         <ul class="text-sm text-gray-700 space-y-2">
           <li>📉 <strong>5.2%</strong> HY Volatility</li>
           <li>📉 <strong>2.1%</strong> Leveraged Loan Volatility</li>
@@ -119,21 +100,13 @@
 
     </div>
 
-
-    <!-- BIG CHART SECTION -->
+    <!-- BIG CHART -->
     <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Historical Spread Trends</h2>
-
-      <!--<div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
-        <!-- Placeholder where your chart will go -->
-        <!--Chart Placeholder (Embed JS chart or static SVG later)-->
       <div class="w-full h-64">
         <canvas id="spreadChart"></canvas>
       </div>
-
-      </div>
     </div>
-
 
     <!-- ISSUANCE + DEFAULTS ROW -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
@@ -142,8 +115,8 @@
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Issuance Breakdown</h2>
 
-        <div class="w-full h-48 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
-          Pie Chart Placeholder
+        <div class="w-full h-48">
+          <canvas id="issuancePie"></canvas>
         </div>
 
         <ul class="mt-4 text-sm text-gray-700 space-y-1">
@@ -153,7 +126,6 @@
           <li>• Misc: <strong>6%</strong></li>
         </ul>
       </div>
-
 
       <!-- Defaults / Distress -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
@@ -166,59 +138,83 @@
           <li>📉 Recovery expectations: <strong>41% secured</strong></li>
         </ul>
 
-        <div class="w-full h-48 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400 mt-4">
-          Bar Chart Placeholder
+        <div class="w-full h-48 mt-4">
+          <canvas id="defaultsBar"></canvas>
         </div>
       </div>
 
     </div>
 
   </main>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-  const ctx = document.getElementById("spreadChart");
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"],
-      datasets: [
-        {
-          label: "Avg. 1st Lien Spread (bps)",
-          data: [520, 525, 530, 518, 512, 505, 495, 500, 508],
-          borderWidth: 2,
-          tension: 0.35,
-        },
-        {
-          label: "Private Credit Composite (bps)",
-          data: [410, 415, 420, 430, 425, 418, 410, 412, 415],
-          borderWidth: 2,
-          tension: 0.35,
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: {
-          beginAtZero: false,
-          ticks: { color: "#555" }
-        },
-        x: {
-          ticks: { color: "#555" }
-        }
+  <!-- CHART LOGIC -->
+  <script>
+    // Historical Line Chart (existing)
+    const ctx = document.getElementById("spreadChart");
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"],
+        datasets: [
+          {
+            label: "Avg. 1st Lien Spread (bps)",
+            data: [520,525,530,518,512,505,495,500,508],
+            borderWidth: 2,
+            borderColor: "#3b82f6",
+            tension: 0.35
+          },
+          {
+            label: "Private Credit Composite (bps)",
+            data: [410,415,420,430,425,418,410,412,415],
+            borderWidth: 2,
+            borderColor: "#10b981",
+            tension: 0.35
+          }
+        ]
       },
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: { boxWidth: 12 }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } }
+      }
+    });
+
+    // PIE CHART — Issuance Breakdown
+    new Chart(document.getElementById("issuancePie"), {
+      type: "pie",
+      data: {
+        labels: ["LBO", "Refinancing", "Recap", "Misc"],
+        datasets: [{
+          data: [44, 38, 12, 6],
+          backgroundColor: ["#3b82f6","#10b981","#f59e0b","#6b7280"]
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // BAR CHART — Defaults & Distress
+    new Chart(document.getElementById("defaultsBar"), {
+      type: "bar",
+      data: {
+        labels: ["Default Rate", "Distress Ratio", "Expected 12-mo Default", "Recovery"],
+        datasets: [{
+          label: "Percent",
+          data: [3.2, 9.4, 4.1, 41],
+          backgroundColor: ["#ef4444","#fbbf24","#3b82f6","#10b981"]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true }
         }
       }
-    }
-  });
-</script>
+    });
+  </script>
 
 </body>
 </html>
