@@ -269,20 +269,27 @@
           min: 0.5,
           max: 5.5,
           offset: true,
+        
+          // FIX: Show ticks, but override ALL values
           ticks: {
-            display: false, // Hides duplicate default labels
-            callback: (v) => {
-              if (v > 4.5) return "Tech";
-              if (v > 3.5) return "Healthcare";
-              if (v > 2.5) return "Industrials";
-              if (v > 1.5) return "Pet Care";
-              if (v > 0.5) return "Pharmaceuticals";
-              return "";
+            display: true,
+            stepSize: 1,       // ensures one tick per row
+            callback: (value) => {
+              const labels = {
+                5: "Tech",
+                4: "Healthcare",
+                3: "Industrials",
+                2: "Pet Care",
+                1: "Pharmaceuticals"
+              };
+              return labels[value] || "";
             },
             color: "#6b7280",
             font: { size: 14 }
           },
+        
           grid: { display: true }
+        }
         }
       },
       plugins: {
