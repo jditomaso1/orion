@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Email — Orion</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+
+    /* Smooth scroll for inbox window */
+    #emailList::-webkit-scrollbar,
+    #emailView::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #emailList::-webkit-scrollbar-thumb,
+    #emailView::-webkit-scrollbar-thumb {
+      background: rgb(203 213 225);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 flex flex-col">
+
+    <!-- PAGE HEADER -->
+    <h1 class="text-3xl font-semibold text-gray-900 tracking-tight mb-2">
+      Email Portal
+    </h1>
+
+    <p class="text-gray-500 text-[15px] mb-6">
+      Internal communications hub — inbox, sent messages, and deal-specific notes.
+    </p>
+
+    <!-- MAIN EMAIL LAYOUT -->
+    <div class="flex-1 bg-white rounded-xl shadow-sm border flex overflow-hidden">
+
+      <!-- LEFT NAV (Folders) -->
+      <div class="w-56 border-r bg-gray-50 p-4 space-y-4">
+
+        <button id="composeBtn" 
+          class="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition">
+          Compose
+        </button>
+
+        <div class="space-y-2 text-sm">
+          <div class="cursor-pointer px-3 py-2 rounded-lg bg-white border">Inbox</div>
+          <div class="cursor-pointer px-3 py-2 rounded-lg hover:bg-white">Sent</div>
+          <div class="cursor-pointer px-3 py-2 rounded-lg hover:bg-white">Drafts</div>
+          <div class="cursor-pointer px-3 py-2 rounded-lg hover:bg-white">Team Notes</div>
+        </div>
+
+      </div>
+
+      <!-- INBOX LIST -->
+      <div id="emailList" class="w-80 border-r overflow-y-auto">
+
+        <!-- Email item -->
+        <div class="p-4 border-b cursor-pointer hover:bg-gray-100">
+          <div class="font-semibold text-gray-800">Scott — LSTA</div>
+          <div class="text-sm text-gray-600 truncate">Following up on Monday’s call...</div>
+          <div class="text-xs text-gray-400 mt-1">10:22 AM</div>
+        </div>
+
+        <div class="p-4 border-b cursor-pointer hover:bg-gray-100">
+          <div class="font-semibold text-gray-800">Ares Capital</div>
+          <div class="text-sm text-gray-600 truncate">Appreciate you sending the materials...</div>
+          <div class="text-xs text-gray-400 mt-1">Yesterday</div>
+        </div>
+
+        <div class="p-4 border-b cursor-pointer hover:bg-gray-100">
+          <div class="font-semibold text-gray-800">Moody’s</div>
+          <div class="text-sm text-gray-600 truncate">Our credit methodology session...</div>
+          <div class="text-xs text-gray-400 mt-1">Nov 19</div>
+        </div>
+
+      </div>
+
+      <!-- EMAIL VIEW -->
+      <div id="emailView" class="flex-1 p-6 overflow-y-auto">
+
+        <!-- Placeholder when nothing selected -->
+        <div id="emptyView" class="text-gray-400 text-center mt-20">
+          Select an email to view its contents
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- COMPOSE MODAL -->
+  <div id="composeModal" 
+    class="hidden fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center p-4">
+
+    <div class="bg-white w-full max-w-xl rounded-xl shadow-lg p-6 space-y-4 border">
+
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-gray-800">New Message</h2>
+        <button onclick="closeCompose()" class="text-gray-500 text-lg">&times;</button>
+      </div>
+
+      <input type="text" placeholder="To" 
+             class="w-full px-3 py-2 border rounded-lg text-sm">
+
+      <input type="text" placeholder="Subject" 
+             class="w-full px-3 py-2 border rounded-lg text-sm">
+
+      <textarea rows="8" placeholder="Write your message..."
+        class="w-full px-3 py-2 border rounded-lg text-sm"></textarea>
+
+      <div class="flex justify-end">
+        <button class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+          Send
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script>
+    const composeBtn = document.getElementById("composeBtn");
+    const composeModal = document.getElementById("composeModal");
+
+    composeBtn.onclick = () => {
+      composeModal.classList.remove("hidden");
+    };
+
+    function closeCompose() {
+      composeModal.classList.add("hidden");
+    }
+  </script>
+
+</body>
+</html>
