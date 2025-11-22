@@ -11,18 +11,23 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="bg-gray-100 text-gray-800">
+<script>
+fetch("sidebar.html")
+  .then(res => res.text())
+  .then(html => {
+    const container = document.getElementById("sidebar-placeholder");
+    container.innerHTML = html;
 
-  <!-- SIDEBAR -->
-  <div id="sidebar-placeholder"></div>
-  
-  <script>
-    fetch("sidebar.html")
-      .then(res => res.text())
-      .then(html => document.getElementById("sidebar-placeholder").innerHTML = html);
-  </script>
-  
-  <div class="ml-64">
+    // execute <script> tags inside the loaded sidebar
+    const scripts = container.querySelectorAll("script");
+    scripts.forEach(oldScript => {
+      const newScript = document.createElement("script");
+      newScript.textContent = oldScript.textContent;
+      document.body.appendChild(newScript);
+    });
+  });
+</script>
+
 
   <!-- MAIN WRAPPER -->
   <div class="p-8">
