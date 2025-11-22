@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Compliance Dashboard — Private Credit</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Styles -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+    .badge {
+      padding: 3px 10px;
+      font-size: 11px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const s = document.getElementById(last);
+      const i = document.getElementById("icon-" + last);
+      if (s && i) {
+        s.classList.remove("hidden");
+        i.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- HEADER -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2">Compliance Dashboard</h1>
+    <p class="text-gray-500 text-[15px] mb-8">
+      Investment mandate compliance, eligibility testing, concentration limits, and exception monitoring.
+    </p>
+
+
+    <!-- KPI ROW -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+
+      <div class="p-6 bg-white border rounded-xl shadow-sm">
+        <div class="text-2xl font-semibold text-gray-900">92%</div>
+        <div class="text-sm text-gray-500 mt-1">Portfolio Compliance Score</div>
+      </div>
+
+      <div class="p-6 bg-white border rounded-xl shadow-sm">
+        <div class="text-2xl font-semibold text-gray-900">3</div>
+        <div class="text-sm text-gray-500 mt-1">Active Exceptions</div>
+      </div>
+
+      <div class="p-6 bg-white border rounded-xl shadow-sm">
+        <div class="text-2xl font-semibold text-gray-900">14%</div>
+        <div class="text-sm text-gray-500 mt-1">Largest Position Exposure</div>
+      </div>
+
+      <div class="p-6 bg-white border rounded-xl shadow-sm">
+        <div class="text-2xl font-semibold text-gray-900">$58MM</div>
+        <div class="text-sm text-gray-500 mt-1">Undrawn DDTL Capacity</div>
+      </div>
+
+    </div>
+
+
+
+    <!-- MANDATE CHECKS -->
+    <div class="bg-white border rounded-xl shadow-sm p-6 mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Mandate Compliance</h2>
+
+      <div class="space-y-4">
+
+        <!-- Rule Row -->
+        <div class="flex justify-between items-center p-4 bg-gray-50 border rounded-lg hover:bg-gray-100 cursor-pointer">
+          <div>
+            <h3 class="font-semibold text-gray-900">Single Borrower Limit</h3>
+            <p class="text-xs text-gray-500 mt-1">Max 15% of NAV</p>
+          </div>
+          <span class="badge bg-green-200 text-green-800">Compliant (14%)</span>
+        </div>
+
+        <div class="flex justify-between items-center p-4 bg-gray-50 border rounded-lg hover:bg-gray-100 cursor-pointer">
+          <div>
+            <h3 class="font-semibold text-gray-900">Industry Concentration</h3>
+            <p class="text-xs text-gray-500 mt-1">Max 35% per sector</p>
+          </div>
+          <span class="badge bg-yellow-200 text-yellow-800">Watchlist (33%)</span>
+        </div>
+
+        <div class="flex justify-between items-center p-4 bg-gray-50 border rounded-lg hover:bg-gray-100 cursor-pointer">
+          <div>
+            <h3 class="font-semibold text-gray-900">Non-Qualifying Assets</h3>
+            <p class="text-xs text-gray-500 mt-1">Max 10% of portfolio</p>
+          </div>
+          <span class="badge bg-red-200 text-red-800">Breach (12.4%)</span>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- ELIGIBILITY TESTING -->
+    <div class="bg-white border rounded-xl shadow-sm p-6 mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Eligibility Tests</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        <div class="p-5 bg-gray-50 border rounded-xl hover:bg-gray-100 cursor-pointer">
+          <h3 class="font-semibold text-gray-900">First Lien Only</h3>
+          <p class="text-sm text-gray-600 mt-2">87% of positions eligible</p>
+          <span class="badge bg-green-200 text-green-800 mt-3 inline-block">Pass</span>
+        </div>
+
+        <div class="p-5 bg-gray-50 border rounded-xl hover:bg-gray-100 cursor-pointer">
+          <h3 class="font-semibold text-gray-900">Minimum EBITDA Threshold</h3>
+          <p class="text-sm text-gray-600 mt-2">Borrowers below $15MM EBITDA</p>
+          <span class="badge bg-yellow-200 text-yellow-800 mt-3 inline-block">Borderline</span>
+        </div>
+
+        <div class="p-5 bg-gray-50 border rounded-xl hover:bg-gray-100 cursor-pointer">
+          <h3 class="font-semibold text-gray-900">Geographic Restrictions</h3>
+          <p class="text-sm text-gray-600 mt-2">U.S. + Canada only</p>
+          <span class="badge bg-red-200 text-red-800 mt-3 inline-block">Fail</span>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- ACTIVE EXCEPTIONS -->
+    <div class="bg-white border rounded-xl shadow-sm p-6 mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Active Exceptions</h2>
+
+      <div class="space-y-4">
+
+        <div class="p-4 bg-gray-50 border rounded-lg hover:bg-gray-100 cursor-pointer flex justify-between">
+          <div>
+            <h3 class="font-semibold text-gray-900">SoftwareCo — Non-Qualifying Asset</h3>
+            <p class="text-xs text-gray-500 mt-1">Exceeded concentration limit</p>
+          </div>
+          <span class="text-blue-600 font-semibold text-xl">→</span>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg hover:bg-gray-100 cursor-pointer flex justify-between">
+          <div>
+            <h3 class="font-semibold text-gray-900">Healthcare Rollup — Pending Eligibility</h3>
+            <p class="text-xs text-gray-500 mt-1">Awaiting updated financials</p>
+          </div>
+          <span class="text-blue-600 font-semibold text-xl">→</span>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg hover:bg-gray-100 cursor-pointer flex justify-between">
+          <div>
+            <h3 class="font-semibold text-gray-900">ConsumerCo — Covenant Test Exception</h3>
+            <p class="text-xs text-gray-500 mt-1">Risk review required</p>
+          </div>
+          <span class="text-blue-600 font-semibold text-xl">→</span>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- RECENT COMPLIANCE EVENTS -->
+    <div class="bg-white border rounded-xl shadow-sm p-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Compliance Events</h2>
+
+      <div class="space-y-5">
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900">
+            <strong>Compliance</strong> flagged a breach in Non-Qualifying Assets.
+          </p>
+          <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900">
+            <strong>Risk</strong> updated eligibility test results for First Lien assets.
+          </p>
+          <p class="text-xs text-gray-400 mt-1">Yesterday</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900">
+            <strong>Operations</strong> submitted a new exception request for SoftwareCo.
+          </p>
+          <p class="text-xs text-gray-400 mt-1">2 days ago</p>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>
