@@ -16,21 +16,35 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.2.0/dist/chartjs-chart-matrix.min.js"></script>
-
+  
   <script>
-    // GLOBAL CHART THEME OVERRIDES
-    Chart.defaults.color = "#4b5563"; // Tailwind gray-600
-    Chart.defaults.borderColor = "rgba(0,0,0,0.05)";
+    // Ensure fonts are fully loaded BEFORE initializing charts
+    document.fonts.ready.then(() => {
+      Chart.defaults.font.family = "'Poppins', sans-serif";
+      Chart.defaults.font.size = 13;
+      Chart.defaults.color = "#374151"; // Tailwind gray-700
+      Chart.defaults.borderColor = "rgba(0,0,0,0.04)";
   
-    Chart.defaults.plugins.legend.labels.padding = 16;
-    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+      // Legend styling
+      Chart.defaults.plugins.legend.labels.usePointStyle = true;
+      Chart.defaults.plugins.legend.labels.pointStyle = "circle";
+      Chart.defaults.plugins.legend.labels.boxWidth = 8;
+      Chart.defaults.plugins.legend.labels.boxHeight = 8;
+      Chart.defaults.plugins.legend.labels.padding = 14;
   
-    Chart.defaults.datasets.bar.borderRadius = 8;
-    Chart.defaults.datasets.bar.maxBarThickness = 42;
+      // Bar chart styling
+      Chart.defaults.datasets.bar.borderRadius = 10;
+      Chart.defaults.datasets.bar.borderSkipped = false;
+      Chart.defaults.datasets.bar.maxBarThickness = 36;
   
-    Chart.defaults.font.family = "Poppins";
-    Chart.defaults.font.size = 12;
+      // Tooltips
+      Chart.defaults.plugins.tooltip.backgroundColor = "rgba(15, 23, 42, 0.9)";
+      Chart.defaults.plugins.tooltip.titleFont.size = 13;
+      Chart.defaults.plugins.tooltip.bodyFont.size = 12;
+      Chart.defaults.plugins.tooltip.padding = 10;
+    });
   </script>
+
   
   <!-- Base Styles -->
   <style>
