@@ -152,7 +152,7 @@
         <!-- Pie Chart -->
         <!-- <canvas id="sectorExposureChart" class="w-full h-28 mb-4"></canvas> -->
         <div class="w-full" style="height:260px;">
-          <canvas id="sectorExposureChart"></canvas>
+          <canvas id="sectorExposureChart" style="height:100% !important;"></canvas>
         </div>
 
         <!-- Breakdown List -->
@@ -175,7 +175,7 @@
           <li>⏳ Avg. monitoring cadence: <strong>6.7 weeks</strong></li>
         </ul>
           <!-- Heatmap Canvas -->
-          <div class="w-full" style="height:140px;">
+          <div class="w-full" style="height:200px;">
             <canvas id="riskHeatmap"></canvas>
           </div>
 
@@ -326,9 +326,9 @@
           }
         },
         // 👇 FIXES HEIGHT + CELL SIZE + PADDING
-        layout: { padding: 10 },
+        layout: { padding: 6 },
         cellWidth: 32,
-        cellHeight: 24,
+        cellHeight: 28,
       }
     });
 
