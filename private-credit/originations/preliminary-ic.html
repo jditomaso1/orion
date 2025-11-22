@@ -11,12 +11,15 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Base Page Styling -->
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       background: #f5f6f8;
     }
+    canvas { max-height: 340px !important; }
   </style>
 </head>
 
@@ -107,9 +110,7 @@
     <!-- BIG CHART SECTION -->
     <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">IC Decision Trends</h2>
-      <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
-        Chart Placeholder (Approvals, Declines, Sector Shifts)
-      </div>
+      <canvas id="icDecisionChart"></canvas>
     </div>
 
     <!-- SPLIT ROW -->
@@ -125,9 +126,7 @@
           <li>🏭 Industry cyclicality</li>
           <li>📊 Limited financial visibility</li>
         </ul>
-        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
-          Bar Chart Placeholder
-        </div>
+        <canvas id="riskThemesChart" class="mt-4"></canvas>
       </div>
 
       <!-- IC Prep Status -->
@@ -139,13 +138,66 @@
           <li>📣 Sponsor calls completed: <strong>82%</strong></li>
           <li>🕒 Avg time to IC decision: <strong>6.2 days</strong></li>
         </ul>
-        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
-          Progress Chart Placeholder
-        </div>
+        <canvas id="prepStatusChart" class="mt-4"></canvas>
       </div>
 
     </div>
 
   </main>
+
+  <!-- CHARTS JS -->
+  <script>
+    const navy = "#1f3b66";
+    const steel = "#4b647d";
+    const gray = "#9aa5b1";
+
+    // IC Decision Trend – Multi-Series Line Chart
+    new Chart(document.getElementById("icDecisionChart"), {
+      type: "line",
+      data: {
+        labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+        datasets: [
+          { label:"Advanced", data:[38,40,42,39,41,44], borderColor: navy, tension:0.3 },
+          { label:"Hold", data:[25,26,27,28,29,30], borderColor: steel, tension:0.3 },
+          { label:"Declined", data:[30,29,32,31,33,31], borderColor: gray, tension:0.3 }
+        ]
+      },
+      options:{ responsive:true, maintainAspectRatio:false }
+    });
+
+    // Risk Themes — Horizontal Bar Chart
+    new Chart(document.getElementById("riskThemesChart"), {
+      type: "bar",
+      data: {
+        labels:["Leverage","Margins","Sponsor","Cyclicality","Visibility"],
+        datasets:[{
+          label:"Risk Weight",
+          data:[80,70,65,60,55],
+          backgroundColor: navy
+        }]
+      },
+      options:{
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+
+    // Prep Status — Progress Bars
+    new Chart(document.getElementById("prepStatusChart"), {
+      type:"bar",
+      data:{
+        labels:["Models","Materials","Calls"],
+        datasets:[{
+          label:"Completion %",
+          data:[78,65,82],
+          backgroundColor:[navy, steel, gray]
+        }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false }
+    });
+
+  </script>
+
 </body>
 </html>
