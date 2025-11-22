@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Team Chat — Orion</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base Styles -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 flex flex-col">
+
+    <!-- PAGE HEADER -->
+    <h1 class="text-3xl font-semibold text-gray-900 tracking-tight mb-2">
+      Team Chat & Collaboration
+    </h1>
+
+    <p class="text-gray-500 text-[15px] mb-6">
+      Internal messaging portal — share updates, notes, files, and collaborate in real time.
+    </p>
+
+    <!-- CHAT CONTAINER -->
+    <div class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border overflow-hidden">
+
+      <!-- Messages Area -->
+      <div id="chatWindow" class="flex-1 p-6 space-y-6 overflow-y-auto">
+
+        <!-- EXAMPLE MESSAGES (you can delete these) -->
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">J</div>
+          <div>
+            <div class="font-semibold text-gray-800">Joseph DiTomaso <span class="text-gray-400 text-xs ml-2">10:14 AM</span></div>
+            <div class="bg-gray-100 p-3 rounded-lg text-sm text-gray-700 max-w-xl">
+              Morning update — let's finalize the Core Dashboard compliance fixes today.
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 bg-gray-300 text-gray-700 rounded-full flex items-center justify-center font-semibold">A</div>
+          <div>
+            <div class="font-semibold text-gray-800">Analyst <span class="text-gray-400 text-xs ml-2">10:17 AM</span></div>
+            <div class="bg-gray-100 p-3 rounded-lg text-sm text-gray-700 max-w-xl">
+              Working on it. Will send updated CSV ingestion logic shortly.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- INPUT BAR -->
+      <div class="border-t p-4 bg-gray-50 flex items-center gap-3">
+
+        <input 
+          id="chatInput"
+          type="text"
+          placeholder="Write a message…"
+          class="flex-1 px-4 py-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+        />
+
+        <button 
+          id="sendBtn"
+          class="px-6 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
+          Send
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Chat Logic -->
+  <script>
+    const input = document.getElementById("chatInput");
+    const btn = document.getElementById("sendBtn");
+    const windowEl = document.getElementById("chatWindow");
+
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      const msg = document.createElement("div");
+      msg.className = "flex items-start gap-3";
+
+      msg.innerHTML = `
+        <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">J</div>
+        <div>
+          <div class="font-semibold text-gray-800">You <span class="text-gray-400 text-xs ml-2">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
+          <div class="bg-blue-50 p-3 rounded-lg text-sm text-gray-800 max-w-xl border border-blue-200">
+            ${text}
+          </div>
+        </div>
+      `;
+
+      windowEl.appendChild(msg);
+      windowEl.scrollTop = windowEl.scrollHeight;
+
+      input.value = "";
+    }
+
+    btn.onclick = sendMessage;
+    input.addEventListener("keypress", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+
+</body>
+</html>
