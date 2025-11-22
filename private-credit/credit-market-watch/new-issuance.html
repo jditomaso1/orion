@@ -5,16 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Credit Market Watch — New Issuance</title>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Base Styles -->
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -31,18 +25,16 @@
   async function injectSidebar() {
     const res = await fetch("/private-credit/sidebar.html");
     document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-  
-    window.toggleSection = function (id) {
+
+    window.toggleSection = function(id) {
       const section = document.getElementById(id);
       const icon = document.getElementById("icon-" + id);
       if (!section || !icon) return;
       section.classList.toggle("hidden");
-      icon.style.transform = section.classList.contains("hidden")
-        ? "rotate(0deg)"
-        : "rotate(90deg)";
+      icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
       localStorage.setItem("sidebar-open-section", id);
     };
-  
+
     const last = localStorage.getItem("sidebar-open-section");
     if (last) {
       const section = document.getElementById(last);
@@ -55,50 +47,40 @@
   }
   injectSidebar();
   </script>
-  
+
   <!-- MAIN CONTENT -->
   <main class="flex-1 ml-64 p-8">
 
-    <!-- PAGE TITLE -->
-    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
-      New Issuance
-    </h1>
-
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">New Issuance</h1>
     <p class="text-gray-500 text-[15px] mb-8">
       Volume, structures, and pricing trends across private and syndicated markets.
     </p>
 
-    <!-- GRID: KEY METRICS -->
+    <!-- TOP METRICS -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      <!-- Volume -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Issuance Volume</h2>
-
         <ul class="text-sm text-gray-700 space-y-2">
           <li>💰 <strong>$18.7B</strong> Total Issuance MTD</li>
           <li>📈 <strong>+12%</strong> vs prior month</li>
-          <li>🏦 <strong>$6.4B</strong> Direct Lending-only issuance</li>
+          <li>🏦 <strong>$6.4B</strong> Direct Lending</li>
           <li>📉 <strong>-3%</strong> YoY</li>
         </ul>
       </div>
 
-      <!-- Pricing Levels -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Pricing Levels</h2>
-
         <ul class="text-sm text-gray-700 space-y-2">
-          <li>🔖 1st Lien Spread: <strong>L+ 525</strong></li>
-          <li>💼 Unitranche: <strong>L+ 650</strong></li>
-          <li>🏷️ OID Average: <strong>97.8</strong></li>
-          <li>⚠️ Pricing trend: <strong>+15 bps</strong> W/W</li>
+          <li>🔖 1st Lien: <strong>L+525</strong></li>
+          <li>💼 Unitranche: <strong>L+650</strong></li>
+          <li>🏷️ OID Avg: <strong>97.8</strong></li>
+          <li>⚠️ Trend: <strong>+15 bps</strong></li>
         </ul>
       </div>
 
-      <!-- Deal Mix -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Deal Mix</h2>
-
         <ul class="text-sm text-gray-700 space-y-2">
           <li>📌 LBO: <strong>48%</strong></li>
           <li>🔄 Refi: <strong>34%</strong></li>
@@ -109,20 +91,24 @@
 
     </div>
 
-    <!-- BIG CHART SECTION -->
+    <!-- MAIN CHART -->
     <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Issuance Trends</h2>
-      <canvas id="issuanceTrendsChart" class="w-full h-64"></canvas>
+
+      <div class="relative w-full h-64">
+        <canvas id="issuanceTrendsChart" width="900" height="300"></canvas>
+      </div>
     </div>
 
-    <!-- SPLIT ROW -->
+    <!-- SECOND ROW -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
 
-      <!-- Sector Breakdown -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Sector Breakdown</h2>
 
-        <canvas id="sectorBreakdownChart" class="w-full h-48"></canvas>
+        <div class="relative w-full h-48">
+          <canvas id="sectorBreakdownChart" width="600" height="240"></canvas>
+        </div>
 
         <ul class="mt-4 text-sm text-gray-700 space-y-1">
           <li>• Tech: <strong>28%</strong></li>
@@ -133,89 +119,85 @@
         </ul>
       </div>
 
-      <!-- Sponsor vs Non-Sponsor -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Sponsor vs Non-Sponsor</h2>
 
         <ul class="text-sm text-gray-700 space-y-2">
           <li>🤝 Sponsor-backed: <strong>65%</strong></li>
           <li>🏢 Non-sponsor: <strong>35%</strong></li>
-          <li>📈 Trend: Sponsor mix increasing</li>
+          <li>📈 Trend: Sponsor mix rising</li>
         </ul>
 
-        <canvas id="sponsorMixChart" class="w-full h-48 mt-4"></canvas>
+        <div class="relative w-full h-48 mt-4">
+          <canvas id="sponsorMixChart" width="600" height="240"></canvas>
+        </div>
       </div>
 
     </div>
-
   </main>
 
-  <!-- CHART JS LOGIC -->
-<script>
-const navy = "#1f3b66";
-const steel = "#4b647d";
-const gray = "#9aa5b1";
+  <!-- CHARTS -->
+  <script>
+  const navy = "#1f3b66";
+  const steel = "#4b647d";
+  const gray = "#9aa5b1";
 
-/* 1 — Issuance Trends (line + bar hybrid) */
-new Chart(document.getElementById("issuanceTrendsChart"), {
-  type: "bar",
-  data: {
-    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-    datasets: [
-      {
-        type: "bar",
-        label: "Issuance Volume ($B)",
-        data: [14,16,18,15,17,19],
-        backgroundColor: steel
-      },
-      {
-        type: "line",
-        label: "Avg Pricing (bps)",
-        data: [520,525,530,528,532,535],
-        borderColor: navy,
-        borderWidth: 2,
-        tension: 0.3,
-        yAxisID: "y1"
+  new Chart(document.getElementById("issuanceTrendsChart"), {
+    data: {
+      labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+      datasets: [
+        {
+          type: "bar",
+          label: "Issuance ($B)",
+          data: [14,16,18,15,17,19],
+          backgroundColor: steel
+        },
+        {
+          type: "line",
+          label: "Avg Pricing (bps)",
+          data: [520,525,530,528,532,535],
+          borderColor: navy,
+          borderWidth: 2,
+          tension: 0.3,
+          yAxisID: "y1"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true },
+        y1: { position: "right", grid: { drawOnChartArea: false } }
       }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: { beginAtZero: true },
-      y1: { position: "right", grid: { drawOnChartArea: false } }
     }
-  }
-});
+  });
 
-/* 2 — Sector Breakdown (pie chart) */
-new Chart(document.getElementById("sectorBreakdownChart"), {
-  type: "pie",
-  data: {
-    labels: ["Tech","Healthcare","Industrials","Consumer","Other"],
-    datasets: [{
-      data: [28,22,18,16,16],
-      backgroundColor: [navy, steel, gray, "#c7cdd4", "#e2e6ea"]
-    }]
-  },
-  options: { responsive:true, maintainAspectRatio:false }
-});
+  new Chart(document.getElementById("sectorBreakdownChart"), {
+    type: "pie",
+    data: {
+      labels: ["Tech","Healthcare","Industrials","Consumer","Other"],
+      datasets: [{
+        data: [28,22,18,16,16],
+        backgroundColor: [navy, steel, gray, "#c7cdd4", "#e2e6ea"]
+      }]
+    },
+    options: { responsive:true, maintainAspectRatio:false }
+  });
 
-/* 3 — Sponsor Mix (bar) */
-new Chart(document.getElementById("sponsorMixChart"), {
-  type: "bar",
-  data: {
-    labels: ["Sponsor","Non-Sponsor"],
-    datasets: [{
-      label: "Mix (%)",
-      data: [65,35],
-      backgroundColor: [navy, steel]
-    }]
-  },
-  options: { responsive:true, maintainAspectRatio:false }
-});
-</script>
+  new Chart(document.getElementById("sponsorMixChart"), {
+    type: "bar",
+    data: {
+      labels: ["Sponsor","Non-Sponsor"],
+      datasets: [{
+        label: "Mix (%)",
+        data: [65,35],
+        backgroundColor: [navy, steel]
+      }]
+    },
+    options: { responsive:true, maintainAspectRatio:false }
+  });
+  </script>
 
 </body>
 </html>
