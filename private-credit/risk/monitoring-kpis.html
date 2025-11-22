@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monitoring & KPIs — Private Credit</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Styling -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+    .kpi-box {
+      @apply p-6 bg-gray-50 border rounded-xl hover:bg-gray-100 transition cursor-pointer;
+    }
+    .kpi-value {
+      @apply text-2xl font-semibold text-gray-900;
+    }
+    .kpi-label {
+      @apply text-gray-500 text-sm;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const s = document.getElementById(last);
+      const i = document.getElementById("icon-" + last);
+      if (s && i) {
+        s.classList.remove("hidden");
+        i.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- PAGE HEADER -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2">Monitoring & KPIs</h1>
+    <p class="text-gray-500 text-[15px] mb-8">
+      Real-time operational, financial, and covenant performance across the active loan portfolio.
+    </p>
+
+
+
+    <!-- KPIs GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+
+      <div class="kpi-box">
+        <div class="kpi-value">4.3x</div>
+        <div class="kpi-label mt-1">Weighted Avg. Net Leverage</div>
+      </div>
+
+      <div class="kpi-box">
+        <div class="kpi-value">2.1x</div>
+        <div class="kpi-label mt-1">Interest Coverage</div>
+      </div>
+
+      <div class="kpi-box">
+        <div class="kpi-value">93.4%</div>
+        <div class="kpi-label mt-1">Portfolio Collection Rate</div>
+      </div>
+
+      <div class="kpi-box">
+        <div class="kpi-value">7.2%</div>
+        <div class="kpi-label mt-1">Borrower YoY Revenue Growth</div>
+      </div>
+
+    </div>
+
+
+
+    <!-- COVENANT MONITORING -->
+    <div class="bg-white border rounded-xl shadow-sm p-6 mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Covenant Dashboard</h2>
+
+      <div class="space-y-4">
+
+        <!-- Item -->
+        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border hover:bg-gray-100 transition cursor-pointer">
+          <div>
+            <h3 class="font-semibold text-gray-900">Leverage Covenant</h3>
+            <p class="text-gray-600 text-xs mt-1">Pawsitive Brands — Max 6.00x</p>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-green-200 text-green-800 text-xs font-semibold">
+            Compliant (4.8x)
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border hover:bg-gray-100 transition cursor-pointer">
+          <div>
+            <h3 class="font-semibold text-gray-900">Liquidity Covenant</h3>
+            <p class="text-gray-600 text-xs mt-1">Healthcare Rollup — Min $25MM</p>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-yellow-200 text-yellow-800 text-xs font-semibold">
+            Watchlist ($27MM)
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border hover:bg-gray-100 transition cursor-pointer">
+          <div>
+            <h3 class="font-semibold text-gray-900">Interest Coverage</h3>
+            <p class="text-gray-600 text-xs mt-1">SoftwareCo — Min 1.75x</p>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-red-200 text-red-800 text-xs font-semibold">
+            Breach (1.62x)
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- INDUSTRY TRENDS -->
+    <div class="bg-white border rounded-xl shadow-sm p-6 mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Sector Performance Trends</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        <div class="p-4 bg-gray-50 border rounded-xl hover:bg-gray-100 transition cursor-pointer">
+          <h3 class="font-semibold text-gray-900">Consumer</h3>
+          <p class="text-gray-600 text-sm mt-2">Stabilizing revenue trends; improving margins.</p>
+          <div class="text-xs text-gray-400 mt-2">Updated 3 days ago</div>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-xl hover:bg-gray-100 transition cursor-pointer">
+          <h3 class="font-semibold text-gray-900">Healthcare</h3>
+          <p class="text-gray-600 text-sm mt-2">Labor inflation persists; covenant pressure rising.</p>
+          <div class="text-xs text-gray-400 mt-2">Updated yesterday</div>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-xl hover:bg-gray-100 transition cursor-pointer">
+          <h3 class="font-semibold text-gray-900">Software</h3>
+          <p class="text-gray-600 text-sm mt-2">Stable ARR but slowing new bookings.</p>
+          <div class="text-xs text-gray-400 mt-2">Updated this week</div>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- RECENT MONITORING EVENTS -->
+    <div class="bg-white border rounded-xl shadow-sm p-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Monitoring Activity</h2>
+
+      <div class="space-y-5">
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900">
+            <strong>Borrower</strong> submitted updated Q3 financials for Healthcare Rollup.
+          </p>
+          <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900">
+            <strong>Ops</strong> flagged a potential ICR breach for SoftwareCo.
+          </p>
+          <p class="text-xs text-gray-400 mt-1">Yesterday</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900">
+            <strong>Risk Team</strong> updated sector outlook for Consumer.
+          </p>
+          <p class="text-xs text-gray-400 mt-1">2 days ago</p>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>
