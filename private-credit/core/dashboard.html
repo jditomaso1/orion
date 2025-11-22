@@ -318,9 +318,14 @@
             labels: ["Performing", "Monitored", "Watchlist"],
             grid: { display: false }
           }
-        }
+        },
+        // 👇 FIXES HEIGHT + CELL SIZE + PADDING
+        layout: { padding: 20 },
+        cellWidth: 60,
+        cellHeight: 60
       }
     });
+
   </script>
 
   
