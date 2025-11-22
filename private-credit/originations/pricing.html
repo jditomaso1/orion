@@ -11,11 +11,17 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <!-- Base Page Styling -->
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       background: #f5f6f8;
+    }
+    canvas {
+      max-height: 350px !important;
     }
   </style>
 </head>
@@ -29,7 +35,7 @@
   async function injectSidebar() {
     const res = await fetch("/private-credit/sidebar.html");
     document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-  
+
     window.toggleSection = function (id) {
       const section = document.getElementById(id);
       const icon = document.getElementById("icon-" + id);
@@ -40,7 +46,7 @@
         : "rotate(90deg)";
       localStorage.setItem("sidebar-open-section", id);
     };
-  
+
     const last = localStorage.getItem("sidebar-open-section");
     if (last) {
       const section = document.getElementById(last);
@@ -73,10 +79,10 @@
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Leverage & Sizing</h2>
         <ul class="text-sm text-gray-700 space-y-2">
-          <li>📊 Avg. leverage proposed: <strong>5.2x</strong></li>
-          <li>📉 Median stress case: <strong>4.4x</strong></li>
-          <li>🔍 % deals requiring re-cut: <strong>28%</strong></li>
-          <li>🏦 Hold levels: <strong>$65–$125M</strong> typical</li>
+          <li><strong>5.2x</strong> avg. leverage proposed</li>
+          <li><strong>4.4x</strong> median stress case</li>
+          <li><strong>28%</strong> required re-cut</li>
+          <li>Hold levels: <strong>$65–$125M</strong></li>
         </ul>
       </div>
 
@@ -84,10 +90,10 @@
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Pricing Parameters</h2>
         <ul class="text-sm text-gray-700 space-y-2">
-          <li>💵 Avg. spread: <strong>L+ 625</strong></li>
-          <li>🏷️ OID range: <strong>96.5 – 98.5</strong></li>
-          <li>📈 Flex sensitivity: <strong>+25–50 bps</strong></li>
-          <li>⏳ Tenor: <strong>5–7 years</strong></li>
+          <li>Avg. spread: <strong>L+ 625</strong></li>
+          <li>OID: <strong>96.5 – 98.5</strong></li>
+          <li>Flex sensitivity: <strong>+25–50 bps</strong></li>
+          <li>Tenor: <strong>5–7 years</strong></li>
         </ul>
       </div>
 
@@ -95,10 +101,10 @@
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Structural Features</h2>
         <ul class="text-sm text-gray-700 space-y-2">
-          <li>🛡️ Covenants: <strong>87% single covenant</strong></li>
-          <li>⚙️ Call protection: <strong>104 / 103 / 102</strong></li>
-          <li>💼 Amortization: <strong>1–5% per year</strong></li>
-          <li>🔒 MFN protection: <strong>100% of deals</strong></li>
+          <li>87% single covenant</li>
+          <li>Call protection: <strong>104 / 103 / 102</strong></li>
+          <li>Amortization: <strong>1–5% per year</strong></li>
+          <li>MFN protection: <strong>100%</strong></li>
         </ul>
       </div>
 
@@ -107,44 +113,102 @@
     <!-- BIG CHART SECTION -->
     <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Pricing & Structuring Trends</h2>
-      <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
-        Chart Placeholder (Spreads, OID, Leverage, Flex Activity)
-      </div>
+      <canvas id="pricingTrendsChart" style="width: 100%; height: 300px;"></canvas>
     </div>
 
     <!-- SPLIT ROW -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
 
-      <!-- Covenant Packages -->
+      <!-- Documentation Themes -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Covenant & Documentation Themes</h2>
-        <ul class="text-sm text-gray-700 space-y-2">
-          <li>📘 EBITDA add-back scrutiny increasing</li>
-          <li>📑 Tighter leakage & investments baskets in 2025</li>
-          <li>📏 NAV covenants in hybrid structures up <strong>22%</strong></li>
-          <li>🧾 Cure rights: <strong>2–3 per year</strong> standardizing</li>
-        </ul>
-        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
-          Documentation Trend Chart Placeholder
-        </div>
+        <canvas id="documentationChart" style="width: 100%; height: 300px;"></canvas>
       </div>
 
       <!-- Capital Structure Mix -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Capital Structure Mix</h2>
-        <ul class="text-sm text-gray-700 space-y-2">
-          <li>• Unitranche: <strong>58%</strong></li>
-          <li>• 1st Lien Only: <strong>27%</strong></li>
-          <li>• 1L + 2L: <strong>11%</strong></li>
-          <li>• Mezzanine: <strong>4%</strong></li>
-        </ul>
-        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
-          Pie Chart Placeholder
-        </div>
+        <canvas id="capitalMixChart" style="width: 100%; height: 300px;"></canvas>
       </div>
 
     </div>
 
   </main>
+
+  <!-- CHARTS SCRIPT -->
+  <script>
+    const navy = "#1f3b66";
+    const steel = "#4b647d";
+    const gray = "#9aa5b1";
+
+    /* 1 — Pricing & Structuring Trends */
+    new Chart(document.getElementById("pricingTrendsChart"), {
+      type: "line",
+      data: {
+        labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+        datasets: [
+          {
+            label: "Spreads (bps)",
+            data: [610,620,625,630,628,635],
+            borderColor: navy,
+            backgroundColor: "transparent",
+            borderWidth: 2,
+            tension: 0.3
+          },
+          {
+            label: "OID (%)",
+            data: [97.8,97.5,97.2,97.0,96.9,97.3],
+            borderColor: steel,
+            backgroundColor: "transparent",
+            borderWidth: 2,
+            tension: 0.3
+          },
+          {
+            label: "Avg Leverage (x)",
+            data: [5.1,5.0,5.3,5.2,5.4,5.2],
+            borderColor: "rgba(31,59,102,0.3)",
+            backgroundColor: "rgba(31,59,102,0.15)",
+            fill: true,
+            tension: 0.3
+          }
+        ]
+      },
+      options: { responsive:true, maintainAspectRatio:false }
+    });
+
+    /* 2 — Documentation Themes */
+    new Chart(document.getElementById("documentationChart"), {
+      type: "bar",
+      data: {
+        labels: [
+          "Add-backs",
+          "Leakage Limits",
+          "NAV Covenants",
+          "Cure Rights"
+        ],
+        datasets: [{
+          label: "Theme Frequency",
+          data: [70, 65, 22, 45],
+          backgroundColor: [navy, steel, navy, steel]
+        }]
+      },
+      options: { responsive:true, maintainAspectRatio:false }
+    });
+
+    /* 3 — Capital Structure Mix (Pie) */
+    new Chart(document.getElementById("capitalMixChart"), {
+      type: "pie",
+      data: {
+        labels: ["Unitranche", "1st Lien Only", "1L + 2L", "Mezz"],
+        datasets: [{
+          data: [58,27,11,4],
+          backgroundColor: [navy, steel, gray, "#cbd5e1"]
+        }]
+      },
+      options: { responsive:true, maintainAspectRatio:false }
+    });
+
+  </script>
+
 </body>
 </html>
