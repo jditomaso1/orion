@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Originations — Screening</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base Page Styling -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+  
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden")
+        ? "rotate(0deg)"
+        : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+  
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const section = document.getElementById(last);
+      const icon = document.getElementById("icon-" + last);
+      if (section && icon) {
+        section.classList.remove("hidden");
+        icon.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT WRAPPER -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- PAGE TITLE -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
+      Screening
+    </h1>
+
+    <p class="text-gray-500 text-[15px] mb-8">
+      Early-stage evaluation of new opportunities, sponsor-backed deals, and inbound pipelines.
+    </p>
+
+    <!-- GRID: KEY SCREENING METRICS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Deals Reviewed -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Pipeline Volume</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>📁 <strong>142</strong> deals screened MTD</li>
+          <li>📈 <strong>+18%</strong> vs prior month</li>
+          <li>🏦 <strong>67%</strong> sponsor-sourced</li>
+          <li>📉 <strong>-9%</strong> YoY</li>
+        </ul>
+      </div>
+
+      <!-- Pass/Decline Mix -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Pass / Decline Mix</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>👍 Passed to underwriting: <strong>22%</strong></li>
+          <li>❌ Declined: <strong>61%</strong></li>
+          <li>⏳ In review: <strong>17%</strong></li>
+        </ul>
+      </div>
+
+      <!-- Sector Mix -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Sector Mix</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>• Tech: <strong>26%</strong></li>
+          <li>• Healthcare: <strong>24%</strong></li>
+          <li>• Industrials: <strong>19%</strong></li>
+          <li>• Business Services: <strong>14%</strong></li>
+          <li>• Other: <strong>17%</strong></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- BIG CHART SECTION -->
+    <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Screening Trends</h2>
+      <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
+        Chart Placeholder (Pipeline Volume, Pass Rates, Sector Mix)
+      </div>
+    </div>
+
+    <!-- SPLIT ROW -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
+
+      <!-- Sponsor vs Non-Sponsor -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Sponsor vs Non-Sponsor Flow</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>🤝 Sponsor-backed: <strong>67%</strong></li>
+          <li>🏢 Non-sponsor: <strong>33%</strong></li>
+          <li>📈 Trend: Sponsor share rising</li>
+        </ul>
+        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
+          Bar Chart Placeholder
+        </div>
+      </div>
+
+      <!-- Reasons for Decline -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Top Decline Reasons</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>⚠️ Aggressive leverage: <strong>31%</strong></li>
+          <li>📉 Weak cash flow durability: <strong>26%</strong></li>
+          <li>🛑 Sponsor reputation concerns: <strong>15%</strong></li>
+          <li>🏭 Sector cyclicality: <strong>11%</strong></li>
+          <li>🔍 Insufficient disclosure: <strong>8%</strong></li>
+          <li>📊 Other: <strong>9%</strong></li>
+        </ul>
+        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
+          Pie Chart Placeholder
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</body>
+</html>
