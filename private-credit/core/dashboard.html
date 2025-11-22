@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Core Dashboard</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base Styles -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+  
+      // Dropdown handler (matches all portal pages)
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+  
+      // Restore last open section
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+  
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT WRAPPER -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- PAGE TITLE -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
+      Core Dashboard
+    </h1>
+
+    <p class="text-gray-500 text-[15px] mb-8">
+      Firm-wide analytics, investment activity, and key portfolio signals.
+    </p>
+
+    <!-- GRID: TOP CARDS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <div class="bg-white p-6 rounded-xl shadow-sm border">
+        <h2 class="text-gray-600 text-sm">AUM</h2>
+        <p class="text-2xl font-semibold mt-1">$14.2B</p>
+        <p class="text-xs text-gray-500 mt-1">+4.1% Q/Q</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-sm border">
+        <h2 class="text-gray-600 text-sm">Active Portfolio</h2>
+        <p class="text-2xl font-semibold mt-1">187 companies</p>
+        <p class="text-xs text-gray-500 mt-1">12 sectors</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-sm border">
+        <h2 class="text-gray-600 text-sm">YTD Originations</h2>
+        <p class="text-2xl font-semibold mt-1">$6.8B</p>
+        <p class="text-xs text-gray-500 mt-1">42 deals</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-sm border">
+        <h2 class="text-gray-600 text-sm">Watchlist Exposure</h2>
+        <p class="text-2xl font-semibold mt-1">$740M</p>
+        <p class="text-xs text-red-500 mt-1">↑ Increasing</p>
+      </div>
+
+    </div>
+
+    <!-- CHART SECTION -->
+    <div class="mt-10 bg-white rounded-xl shadow-sm border p-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Portfolio Trend Overview</h2>
+      <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+        Chart Placeholder (Performance, AUM, Portfolio Growth)
+      </div>
+    </div>
+
+    <!-- SPLIT ROW -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
+
+      <!-- Sector Exposure -->
+      <div class="bg-white rounded-xl shadow-sm border p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Sector Exposure</h2>
+        <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+          Sector Chart Placeholder
+        </div>
+        <ul class="text-sm text-gray-700 mt-4 space-y-1">
+          <li>• Tech: <strong>22%</strong></li>
+          <li>• Healthcare: <strong>19%</strong></li>
+          <li>• Industrials: <strong>17%</strong></li>
+          <li>• Business Services: <strong>14%</strong></li>
+          <li>• Other: <strong>28%</strong></li>
+        </ul>
+      </div>
+
+      <!-- Risk Overview -->
+      <div class="bg-white rounded-xl shadow-sm border p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Risk Overview</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>⚠️ Watchlist: <strong>18 companies</strong></li>
+          <li>🔥 Tier-3 risk: <strong>4 names</strong></li>
+          <li>📉 Markdowns in last 90 days: <strong>$210M</strong></li>
+          <li>⏳ Avg. monitoring cadence: <strong>6.7 weeks</strong></li>
+        </ul>
+        <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 mt-4">
+          Risk Heatmap Placeholder
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+</html>
