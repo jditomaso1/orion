@@ -108,3 +108,12 @@ aside a:hover {
   border-radius: 6px;
 }
 
+/* Collapsible section headers (like "Originations") */
+aside button {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937; /* gray-800 */
+  text-transform: uppercase;
+}
+
+
