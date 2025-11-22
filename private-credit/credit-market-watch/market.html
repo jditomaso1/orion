@@ -25,15 +25,45 @@
   <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
 
-  <script>
-  async function injectSidebar() {
-    const res = await fetch("/private-credit/sidebar.html");
-    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-  }
-  
-  injectSidebar();
+<script>
+async function injectSidebar() {
+  const res = await fetch("/private-credit/sidebar.html");
+  document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
-  </script>
+  // GLOBAL DROPDOWN HANDLER - REQUIRED
+  window.toggleSection = function (id) {
+    const section = document.getElementById(id);
+    const icon = document.getElementById("icon-" + id);
+
+    if (!section || !icon) return;
+
+    section.classList.toggle("hidden");
+
+    if (section.classList.contains("hidden")) {
+      icon.style.transform = "rotate(0deg)";
+    } else {
+      icon.style.transform = "rotate(90deg)";
+    }
+
+    // Remember open section
+    localStorage.setItem("sidebar-open-section", id);
+  };
+
+  // Restore last open section
+  const last = localStorage.getItem("sidebar-open-section");
+  if (last) {
+    const section = document.getElementById(last);
+    const icon = document.getElementById("icon-" + last);
+    if (section && icon) {
+      section.classList.remove("hidden");
+      icon.style.transform = "rotate(90deg)";
+    }
+  }
+}
+
+injectSidebar();
+</script>
+
 
   <!-- MAIN CONTENT WRAPPER -->
   <main class="flex-1 ml-64 p-8">  
