@@ -11,11 +11,21 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Base Page Styling -->
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       background: #f5f6f8;
+    }
+
+    /* MATCH CHARTS PAGE — hard cap canvas height */
+    canvas {
+      max-height: 350px !important;
+    }
+    #spreadChart {
+      max-height: 420px !important;
     }
   </style>
 </head>
@@ -24,36 +34,37 @@
 
   <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
-
   <script>
-  async function injectSidebar() {
-    const res = await fetch("/private-credit/sidebar.html");
-    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
-    window.toggleSection = function (id) {
-      const section = document.getElementById(id);
-      const icon = document.getElementById("icon-" + id);
-      if (!section || !icon) return;
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
 
-      section.classList.toggle("hidden");
-      icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
-      localStorage.setItem("sidebar-open-section", id);
-    };
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden")
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
 
-    const last = localStorage.getItem("sidebar-open-section");
-    if (last) {
-      const section = document.getElementById(last);
-      const icon = document.getElementById("icon-" + last);
-      if (section && icon) {
-        section.classList.remove("hidden");
-        icon.style.transform = "rotate(90deg)";
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
       }
     }
-  }
-  injectSidebar();
+    injectSidebar();
   </script>
 
-  <!-- MAIN CONTENT WRAPPER -->
+  <!-- MAIN CONTENT -->
   <main class="flex-1 ml-64 p-8">
 
     <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
@@ -64,10 +75,10 @@
       Real-time spreads, issuance trends, volatility, and market signals.
     </p>
 
-    <!-- GRID: SNAPSHOTS -->
+    <!-- SNAPSHOT GRID -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      <!-- Market Spread Snapshot -->
+      <!-- Spread Snapshot -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Spread Snapshot</h2>
         <ul class="text-sm text-gray-700 space-y-2">
@@ -88,7 +99,7 @@
         </ul>
       </div>
 
-      <!-- Market Volatility -->
+      <!-- Volatility -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Market Volatility</h2>
         <ul class="text-sm text-gray-700 space-y-2">
@@ -100,12 +111,10 @@
 
     </div>
 
-    <!-- BIG CHART -->
+    <!-- BIG SPREAD CHART -->
     <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Historical Spread Trends</h2>
-      <div class="w-full h-64">
-        <canvas id="spreadChart"></canvas>
-      </div>
+      <canvas id="spreadChart"></canvas>
     </div>
 
     <!-- ISSUANCE + DEFAULTS ROW -->
@@ -114,10 +123,7 @@
       <!-- Issuance Breakdown -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Issuance Breakdown</h2>
-
-        <div class="w-full h-48">
-          <canvas id="issuancePie"></canvas>
-        </div>
+        <canvas id="issuancePie"></canvas>
 
         <ul class="mt-4 text-sm text-gray-700 space-y-1">
           <li>• LBO: <strong>44%</strong></li>
@@ -127,34 +133,32 @@
         </ul>
       </div>
 
-      <!-- Defaults / Distress -->
+      <!-- Defaults & Distress -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Defaults & Distress</h2>
 
         <ul class="text-sm text-gray-700 space-y-2">
           <li>🔥 <strong>3.2%</strong> Loan Default Rate</li>
-          <li>⚠️ <strong>9.4%</strong> Distress Ratio (> L+ 1000)</li>
+          <li>⚠️ <strong>9.4%</strong> Distress Ratio (&gt; L+ 1000)</li>
           <li>⏳ Expected 12-month default: <strong>4.1%</strong></li>
           <li>📉 Recovery expectations: <strong>41% secured</strong></li>
         </ul>
 
-        <div class="w-full h-48 mt-4">
-          <canvas id="defaultsBar"></canvas>
-        </div>
+        <canvas id="defaultsBar" class="mt-4"></canvas>
       </div>
 
     </div>
 
   </main>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <!-- CHART LOGIC -->
   <script>
-    // Historical Line Chart (existing)
-    const ctx = document.getElementById("spreadChart");
-    new Chart(ctx, {
+    const navy = "#1f3b66";
+    const steel = "#4b647d";
+    const gray = "#9aa5b1";
+
+    /* SPREAD CHART */
+    new Chart(document.getElementById("spreadChart"), {
       type: "line",
       data: {
         labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"],
@@ -162,16 +166,18 @@
           {
             label: "Avg. 1st Lien Spread (bps)",
             data: [520,525,530,518,512,505,495,500,508],
+            borderColor: navy,
+            backgroundColor: "transparent",
             borderWidth: 2,
-            borderColor: "#3b82f6",
-            tension: 0.35
+            tension: 0.3
           },
           {
             label: "Private Credit Composite (bps)",
             data: [410,415,420,430,425,418,410,412,415],
+            borderColor: steel,
+            backgroundColor: "transparent",
             borderWidth: 2,
-            borderColor: "#10b981",
-            tension: 0.35
+            tension: 0.3
           }
         ]
       },
@@ -182,28 +188,33 @@
       }
     });
 
-    // PIE CHART — Issuance Breakdown
+    /* ISSUANCE PIE */
     new Chart(document.getElementById("issuancePie"), {
       type: "pie",
       data: {
-        labels: ["LBO", "Refinancing", "Recap", "Misc"],
+        labels: ["LBO","Refinancing","Recap","Misc"],
         datasets: [{
-          data: [44, 38, 12, 6],
-          backgroundColor: ["#3b82f6","#10b981","#f59e0b","#6b7280"]
+          data: [44,38,12,6],
+          backgroundColor: [navy, steel, gray, "#cbd3db"]
         }]
       },
       options: { responsive: true, maintainAspectRatio: false }
     });
 
-    // BAR CHART — Defaults & Distress
+    /* DEFAULTS BAR */
     new Chart(document.getElementById("defaultsBar"), {
       type: "bar",
       data: {
-        labels: ["Default Rate", "Distress Ratio", "Expected 12-mo Default", "Recovery"],
+        labels: [
+          "Default Rate", 
+          "Distress Ratio", 
+          "Expected 12-mo Default", 
+          "Recovery"
+        ],
         datasets: [{
           label: "Percent",
           data: [3.2, 9.4, 4.1, 41],
-          backgroundColor: ["#ef4444","#fbbf24","#3b82f6","#10b981"]
+          backgroundColor: [navy, steel, gray, "#cbd3db"]
         }]
       },
       options: {
