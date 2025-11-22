@@ -1,1 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Credit Market Watch — New Issuance</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base Styles -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- PAGE TITLE -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
+      New Issuance
+    </h1>
+
+    <p class="text-gray-500 text-[15px] mb-8">
+      Volume, structures, and pricing trends across private and syndicated markets.
+    </p>
+
+    <!-- GRID: KEY METRICS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Volume -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Issuance Volume</h2>
+
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>💰 <strong>$18.7B</strong> Total Issuance MTD</li>
+          <li>📈 <strong>+12%</strong> vs prior month</li>
+          <li>🏦 <strong>$6.4B</strong> Direct Lending-only issuance</li>
+          <li>📉 <strong>-3%</strong> YoY</li>
+        </ul>
+      </div>
+
+      <!-- Pricing Levels -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Pricing Levels</h2>
+
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>🔖 1st Lien Spread: <strong>L+ 525</strong></li>
+          <li>💼 Unitranche: <strong>L+ 650</strong></li>
+          <li>🏷️ OID Average: <strong>97.8</strong></li>
+          <li>⚠️ Pricing trend: <strong>+15 bps</strong> W/W</li>
+        </ul>
+      </div>
+
+      <!-- Deal Mix -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Deal Mix</h2>
+
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>📌 LBO: <strong>48%</strong></li>
+          <li>🔄 Refi: <strong>34%</strong></li>
+          <li>💵 Recap: <strong>11%</strong></li>
+          <li>📊 Other: <strong>7%</strong></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- BIG CHART SECTION -->
+    <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Issuance Trends</h2>
+
+      <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
+        Chart Placeholder (Volume / Pricing Trend)
+      </div>
+    </div>
+
+    <!-- SPLIT ROW -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
+
+      <!-- Sector Breakdown -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Sector Breakdown</h2>
+
+        <div class="w-full h-48 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
+          Pie Chart Placeholder
+        </div>
+
+        <ul class="mt-4 text-sm text-gray-700 space-y-1">
+          <li>• Tech: <strong>28%</strong></li>
+          <li>• Healthcare: <strong>22%</strong></li>
+          <li>• Industrials: <strong>18%</strong></li>
+          <li>• Consumer: <strong>16%</strong></li>
+          <li>• Other: <strong>16%</strong></li>
+        </ul>
+      </div>
+
+      <!-- Sponsor vs Non-Sponsor -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Sponsor vs Non-Sponsor</h2>
+
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>🤝 Sponsor-backed: <strong>65%</strong></li>
+          <li>🏢 Non-sponsor: <strong>35%</strong></li>
+          <li>📈 Trend: Sponsor mix increasing</li>
+        </ul>
+
+        <div class="w-full h-48 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400 mt-4">
+          Bar Chart Placeholder
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</body>
+</html>
 
