@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Watchlist — Private Credit Risk</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base Styling -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+
+    .risk-card {
+      @apply bg-gray-50 border rounded-xl p-5 hover:bg-gray-100 transition cursor-pointer;
+    }
+
+    .status-tag {
+      @apply text-xs font-semibold px-2 py-1 rounded-full;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden")
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
+
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- TITLE -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2">Watchlist</h1>
+    <p class="text-gray-500 text-[15px] mb-8">
+      Active monitoring of stressed borrowers, covenant risks, liquidity issues, and evolving credit threats.
+    </p>
+
+
+    <!-- TIER 1 — HIGH RISK -->
+    <div class="bg-white border rounded-xl shadow-sm p-6 mb-10">
+      <h2 class="text-xl font-semibold text-red-600 mb-4">Tier 1 — High Risk</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        <div class="risk-card">
+          <div class="flex justify-between items-start">
+            <h3 class="text-lg font-semibold text-gray-900">Precision Retail Group</h3>
+            <span class="status-tag bg-red-200 text-red-800">Critical</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-3">Liquidity stress; revolver fully drawn; breach likely in 30–45 days.</p>
+          <div class="text-xs text-gray-400 mt-3">Updated: 2 days ago</div>
+        </div>
+
+        <div class="risk-card">
+          <div class="flex justify-between items-start">
+            <h3 class="text-lg font-semibold text-gray-900">Horizon Diagnostics</h3>
+            <span class="status-tag bg-red-200 text-red-800">Critical</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-3">EBITDA drop of 18% YoY; leverage > 7.0x; vendor delays emerging.</p>
+          <div class="text-xs text-gray-400 mt-3">Updated: 1 day ago</div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- TIER 2 — ELEVATED RISK -->
+    <div class="bg-white border rounded-xl shadow-sm p-6 mb-10">
+      <h2 class="text-xl font-semibold text-yellow-600 mb-4">Tier 2 — Elevated Risk</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        <div class="risk-card">
+          <div class="flex justify-between items-start">
+            <h3 class="text-lg font-semibold text-gray-900">Silverline Software</h3>
+            <span class="status-tag bg-yellow-200 text-yellow-800">Elevated</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-3">Churn increase post-price hike; cash burn accelerating.</p>
+          <div class="text-xs text-gray-400 mt-3">Updated: 3 days ago</div>
+        </div>
+
+        <div class="risk-card">
+          <div class="flex justify-between items-start">
+            <h3 class="text-lg font-semibold text-gray-900">Urban Freight Logistics</h3>
+            <span class="status-tag bg-yellow-200 text-yellow-800">Elevated</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-3">Fuel cost pressure; maintenance capex higher than forecast.</p>
+          <div class="text-xs text-gray-400 mt-3">Updated: 1 week ago</div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- TIER 3 — EARLY WARNING -->
+    <div class="bg-white border rounded-xl shadow-sm p-6 mb-10">
+      <h2 class="text-xl font-semibold text-blue-600 mb-4">Tier 3 — Early Warning</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        <div class="risk-card">
+          <div class="flex justify-between items-start">
+            <h3 class="text-lg font-semibold text-gray-900">Northern Foods</h3>
+            <span class="status-tag bg-blue-200 text-blue-800">Monitoring</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-3">Seasonal margin compression; inventory build ahead of schedule.</p>
+          <div class="text-xs text-gray-400 mt-3">Updated: 5 days ago</div>
+        </div>
+
+        <div class="risk-card">
+          <div class="flex justify-between items-start">
+            <h3 class="text-lg font-semibold text-gray-900">Vector Industrial Services</h3>
+            <span class="status-tag bg-blue-200 text-blue-800">Monitoring</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-3">Customer concentration creeping higher; slight covenant headroom erosion.</p>
+          <div class="text-xs text-gray-400 mt-3">Updated: 8 days ago</div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- RECENT WATCHLIST UPDATES -->
+    <div class="bg-white border rounded-xl shadow-sm p-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Watchlist Updates</h2>
+
+      <div class="space-y-5">
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900"><strong>Risk</strong> moved Precision Retail Group from Tier 2 → Tier 1.</p>
+          <p class="text-xs text-gray-400 mt-1">Today</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900"><strong>Portfolio Ops</strong> flagged vendor slowdown at Horizon Diagnostics.</p>
+          <p class="text-xs text-gray-400 mt-1">Yesterday</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg">
+          <p class="text-sm text-gray-900"><strong>Finance</strong> submitted revised forecast for Silverline Software.</p>
+          <p class="text-xs text-gray-400 mt-1">3 days ago</p>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>
