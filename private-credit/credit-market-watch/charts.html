@@ -195,13 +195,13 @@
     datasets: [{
       label: "Risk Scores",
       data: [
-        { x:"Jan", y:"Tech", v:0.7 },
-        { x:"Feb", y:"Tech", v:0.5 },
-        { x:"Mar", y:"Tech", v:0.6 },
-
-        { x:"Jan", y:"Healthcare", v:0.4 },
-        { x:"Feb", y:"Healthcare", v:0.3 },
-        { x:"Mar", y:"Healthcare", v:0.5 }
+        { x:"Jan", y:"Tech", r:18, v:0.7 },
+        { x:"Feb", y:"Tech", r:14, v:0.5 },
+        { x:"Mar", y:"Tech", r:16, v:0.6 },
+      
+        { x:"Jan", y:"Healthcare", r:12, v:0.4 },
+        { x:"Feb", y:"Healthcare", r:10, v:0.3 },
+        { x:"Mar", y:"Healthcare", r:15, v:0.5 }
       ],
       backgroundColor: ctx => {
         const v = ctx.raw.v;
