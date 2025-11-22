@@ -269,11 +269,9 @@
           min: 0.5,
           max: 5.5,
           offset: true,
-        
-          // FIX: Show ticks, but override ALL values
           ticks: {
             display: true,
-            stepSize: 1,       // ensures one tick per row
+            stepSize: 1,
             callback: (value) => {
               const labels = {
                 5: "Tech",
@@ -287,9 +285,7 @@
             color: "#6b7280",
             font: { size: 14 }
           },
-        
           grid: { display: true }
-        }
         }
       },
       plugins: {
@@ -297,8 +293,6 @@
       }
     }
   });
-
-
 
 
   // 6 — Composite Index
