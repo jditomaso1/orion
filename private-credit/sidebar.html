@@ -107,5 +107,19 @@
   </nav>
 </aside>
 
+<script>
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  const icon = document.getElementById("icon-" + id);
+
+  if (section.style.display === "none") {
+    section.style.display = "block";
+    icon.style.transform = "rotate(90deg)";
+  } else {
+    section.style.display = "none";
+    icon.style.transform = "rotate(0deg)";
+  }
+}
+</script>
 <!-- WRAP PAGE CONTENT WITH THIS DIV -->
 <div class="ml-64">
