@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Legal Structure — Private Credit</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+
+    .entity-box {
+      @apply bg-gray-50 border rounded-xl p-6 hover:bg-gray-100 transition cursor-pointer;
+    }
+
+    .badge {
+      padding: 3px 10px;
+      font-size: 11px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden")
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
+
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- TITLE -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2">Legal Structure</h1>
+    <p class="text-gray-500 text-[15px] mb-8">
+      Organizational hierarchy, guarantor structure, collateral package, lien priorities, and legal documentation summary.
+    </p>
+
+
+
+    <!-- ORG STRUCTURE -->
+    <div class="bg-white shadow-sm border rounded-xl p-6 mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Organizational Structure</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        <div class="entity-box">
+          <h3 class="text-lg font-semibold text-gray-900">Top HoldCo</h3>
+          <p class="text-sm text-gray-600 mt-2">Delaware LLC<br/>Owns 100% of MidCo</p>
+          <span class="badge bg-blue-200 text-blue-800 mt-3 inline-block">Non-Guarantor</span>
+        </div>
+
+        <div class="entity-box">
+          <h3 class="text-lg font-semibold text-gray-900">MidCo Holdings</h3>
+          <p class="text-sm text-gray-600 mt-2">Delaware Corporation<br/>Principal equity entity</p>
+          <span class="badge bg-green-200 text-green-800 mt-3 inline-block">Guarantor</span>
+        </div>
+
+        <div class="entity-box">
+          <h3 class="text-lg font-semibold text-gray-900">Operating Company</h3>
+          <p class="text-sm text-gray-600 mt-2">Primary revenue-generating entity</p>
+          <span class="badge bg-green-200 text-green-800 mt-3 inline-block">Guarantor</span>
+        </div>
+
+        <div class="entity-box">
+          <h3 class="text-lg font-semibold text-gray-900">IP Subsidiary</h3>
+          <p class="text-sm text-gray-600 mt-2">Holds trademarks, patents, and software</p>
+          <span class="badge bg-yellow-200 text-yellow-800 mt-3 inline-block">Conditional Guarantor</span>
+        </div>
+
+        <div class="entity-box">
+          <h3 class="text-lg font-semibold text-gray-900">Foreign Subsidiary</h3>
+          <p class="text-sm text-gray-600 mt-2">Non-U.S. operations entity</p>
+          <span class="badge bg-gray-300 text-gray-700 mt-3 inline-block">Excluded</span>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- COLLATERAL PACKAGE -->
+    <div class="bg-white shadow-sm border rounded-xl p-6 mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Collateral Package</h2>
+
+      <div class="space-y-4">
+
+        <div class="p-4 bg-gray-50 border rounded-lg hover:bg-gray-100 transition cursor-pointer flex justify-between">
+          <div>
+            <h3 class="font-semibold text-gray-900">All Assets Lien</h3>
+            <p class="text-xs text-gray-500 mt-1">Accounts receivable, inventory, IP, general intangibles</p>
+          </div>
+          <span class="badge bg-green-200 text-green-800">Secured</span>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg hover:bg-gray-100 transition cursor-pointer flex justify-between">
+          <div>
+            <h3 class="font-semibold text-gray-900">Equity Pledge</h3>
+            <p class="text-xs text-gray-500 mt-1">100% pledge of OpCo and MidCo equity</p>
+          </div>
+          <span class="badge bg-green-200 text-green-800">Secured</span>
+        </div>
+
+        <div class="p-4 bg-gray-50 border rounded-lg hover:bg-gray-100 transition cursor-pointer flex justify-between">
+          <div>
+            <h3 class="font-semibold text-gray-900">Foreign Subsidiary Guarantee</h3>
+            <p class="text-xs text-gray-500 mt-1">Limited to 65% pledge of voting stock</p>
+          </div>
+          <span class="badge bg-yellow-200 text-yellow-800">Partial</span>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- LEGAL DOCUMENTATION -->
+    <div class="bg-white shadow-sm border rounded-xl p-6 mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Legal Documents</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="p-5 bg-gray-50 border rounded-xl hover:bg-gray-100 transition cursor-pointer">
+          <h3 class="font-semibold text-gray-900">Credit Agreement</h3>
+          <p class="text-sm text-gray-600 mt-2">Core terms, covenants, definitions, and lender protections</p>
+        </div>
+
+        <div class="p-5 bg-gray-50 border rounded-xl hover:bg-gray-100 transition cursor-pointer">
+          <h3 class="font-semibold text-gray-900">Security Agreement</h3>
+          <p class="text-sm text-gray-600 mt-2">Lien filing, collateral definitions, pledge requirements</p>
+        </div>
+
+        <div class="p-5 bg-gray-50 border rounded-xl hover:bg-gray-100 transition cursor-pointer">
+          <h3 class="font-semibold text-gray-900">Guarantee Agreement</h3>
+          <p class="text-sm text-gray-600 mt-2">Upstream, downstream, and cross-guarantees</p>
+        </div>
+
+        <div class="p-5 bg-gray-50 border rounded-xl hover:bg-gray-100 transition cursor-pointer">
+          <h3 class="font-semibold text-gray-900">Intercreditor Agreement</h3>
+          <p class="text-sm text-gray-600 mt-2">Lien subordination, payment priority, waterfall</p>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- RECENT LEGAL UPDATES -->
+    <div class="bg-white shadow-sm border rounded-xl p-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Legal Updates</h2>
+
+      <div class="space-y-
