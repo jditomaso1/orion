@@ -423,6 +423,9 @@ function toggleSection(id) {
   } else {
     icon.style.transform = "rotate(90deg)";
   }
+
+  // Save open section
+  localStorage.setItem("sidebar-open-section", id);
 }
 
 // Restore last open section
@@ -437,7 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
-  
 </script>
+
 <!-- WRAP PAGE CONTENT WITH THIS DIV -->
 <!--<div class="ml-64">-->
