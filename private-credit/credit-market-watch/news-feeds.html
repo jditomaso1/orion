@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Credit Market Watch — News & Feeds</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base Page Styling -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT WRAPPER -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- PAGE TITLE -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
+      Credit Market Watch — News & Feeds
+    </h1>
+
+    <p class="text-gray-500 text-[15px] mb-8">
+      Aggregated headlines, market commentary, macro signals, and real-time private credit intelligence.
+    </p>
+
+    <!-- GRID: FEEDS + HEADLINES -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Left: News Headlines -->
+      <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Market Headlines</h2>
+
+        <div class="space-y-5">
+
+          <!-- Headline Block -->
+          <div class="p-4 bg-gray-50 rounded-xl border hover:bg-gray-100 cursor-pointer transition">
+            <h3 class="font-semibold text-gray-900 text-lg">Private Credit Spreads Widen as Macro Pressures Build</h3>
+            <p class="text-gray-600 text-sm mt-2">
+              Analysts note increased dispersion across sectors with energy and retail leading widening trends.
+            </p>
+            <div class="text-xs text-gray-400 mt-2">Published 2 hours ago</div>
+          </div>
+
+          <div class="p-4 bg-gray-50 rounded-xl border hover:bg-gray-100 cursor-pointer transition">
+            <h3 class="font-semibold text-gray-900 text-lg">Direct Lenders Step Into $4B Software Buyout Deal</h3>
+            <p class="text-gray-600 text-sm mt-2">
+              Syndicated markets remain volatile, opening doors for private capital to price large LBO transactions.
+            </p>
+            <div class="text-xs text-gray-400 mt-2">Published 5 hours ago</div>
+          </div>
+
+          <div class="p-4 bg-gray-50 rounded-xl border hover:bg-gray-100 cursor-pointer transition">
+            <h3 class="font-semibold text-gray-900 text-lg">Distress Ratio Rises to 9.4% as Refinancing Wave Approaches</h3>
+            <p class="text-gray-600 text-sm mt-2">
+              Borrowers with 2025–2026 maturities see increased pressure amid tighter liquidity conditions.
+            </p>
+            <div class="text-xs text-gray-400 mt-2">Yesterday</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right: Feed Sources -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Live Feeds</h2>
+
+        <ul class="space-y-4 text-sm">
+
+          <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 cursor-pointer">
+            <span>Reuters Credit Markets</span>
+            <span class="text-blue-600 font-semibold">→</span>
+          </li>
+
+          <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 cursor-pointer">
+            <span>LCD / PitchBook</span>
+            <span class="text-blue-600 font-semibold">→</span>
+          </li>
+
+          <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 cursor-pointer">
+            <span>Bloomberg Direct Lending</span>
+            <span class="text-blue-600 font-semibold">→</span>
+          </li>
+
+          <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 cursor-pointer">
+            <span>WSJ Credit & Markets</span>
+            <span class="text-blue-600 font-semibold">→</span>
+          </li>
+
+          <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 cursor-pointer">
+            <span>Middle Market Daily</span>
+            <span class="text-blue-600 font-semibold">→</span>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+
+    <!-- INSIGHTS SECTION -->
+    <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Analyst Insights</h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <div class="p-4 bg-gray-50 rounded-xl border hover:bg-gray-100 transition">
+          <h3 class="text-lg font-semibold text-gray-900">Private Credit Outlook — Q4</h3>
+          <p class="text-gray-600 text-sm mt-2">
+            Expectations of moderate tightening ahead, with lender-friendly structures persisting across most sectors.
+          </p>
+          <div class="text-xs text-gray-400 mt-2">Updated this week</div>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-xl border hover:bg-gray-100 transition">
+          <h3 class="text-lg font-semibold text-gray-900">Sector Watch: Healthcare</h3>
+          <p class="text-gray-600 text-sm mt-2">
+            Strong sponsor demand but growing operational headwinds could elevate covenant breaches into 2026.
+          </p>
+          <div class="text-xs text-gray-400 mt-2">Updated 3 days ago</div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>
+
