@@ -29,24 +29,10 @@
   async function injectSidebar() {
     const res = await fetch("/private-credit/sidebar.html");
     document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-  
-    // Now that sidebar HTML is inserted, attach toggle handler globally
-    window.toggleSection = function (id) {
-      const section = document.getElementById(id);
-      const icon = document.getElementById("icon-" + id);
-  
-      if (!section || !icon) return;
-  
-      const isHidden = section.classList.contains("hidden");
-      if (isHidden) {
-        section.classList.remove("hidden");
-        icon.style.transform = "rotate(90deg)";
-      } else {
-        section.classList.add("hidden");
-        icon.style.transform = "rotate(0deg)";
-      }
-    };
   }
+  
+  injectSidebar();
+
   
   injectSidebar();
   </script>
