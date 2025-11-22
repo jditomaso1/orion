@@ -11,11 +11,16 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Base Page Styling -->
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       background: #f5f6f8;
+    }
+    canvas {
+      max-height: 350px !important;
     }
   </style>
 </head>
@@ -54,10 +59,9 @@
   injectSidebar();
   </script>
 
-  <!-- MAIN CONTENT WRAPPER -->
+  <!-- MAIN CONTENT -->
   <main class="flex-1 ml-64 p-8">
 
-    <!-- PAGE TITLE -->
     <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
       Screening
     </h1>
@@ -69,7 +73,7 @@
     <!-- GRID: KEY SCREENING METRICS -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      <!-- Deals Reviewed -->
+      <!-- Pipeline Volume -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Pipeline Volume</h2>
         <ul class="text-sm text-gray-700 space-y-2">
@@ -104,48 +108,110 @@
 
     </div>
 
-    <!-- BIG CHART SECTION -->
+    <!-- SCREENING TRENDS CHART -->
     <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Screening Trends</h2>
-      <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
-        Chart Placeholder (Pipeline Volume, Pass Rates, Sector Mix)
-      </div>
+      <canvas id="screeningTrendsChart"></canvas>
     </div>
 
     <!-- SPLIT ROW -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
 
-      <!-- Sponsor vs Non-Sponsor -->
+      <!-- Sponsor vs Non-Sponsor Flow -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Sponsor vs Non-Sponsor Flow</h2>
-        <ul class="text-sm text-gray-700 space-y-2">
-          <li>🤝 Sponsor-backed: <strong>67%</strong></li>
-          <li>🏢 Non-sponsor: <strong>33%</strong></li>
-          <li>📈 Trend: Sponsor share rising</li>
-        </ul>
-        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
-          Bar Chart Placeholder
-        </div>
+        <canvas id="sponsorFlowChart"></canvas>
       </div>
 
       <!-- Reasons for Decline -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Top Decline Reasons</h2>
-        <ul class="text-sm text-gray-700 space-y-2">
-          <li>⚠️ Aggressive leverage: <strong>31%</strong></li>
-          <li>📉 Weak cash flow durability: <strong>26%</strong></li>
-          <li>🛑 Sponsor reputation concerns: <strong>15%</strong></li>
-          <li>🏭 Sector cyclicality: <strong>11%</strong></li>
-          <li>🔍 Insufficient disclosure: <strong>8%</strong></li>
-          <li>📊 Other: <strong>9%</strong></li>
-        </ul>
-        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
-          Pie Chart Placeholder
-        </div>
+        <canvas id="declineReasonsChart"></canvas>
       </div>
 
     </div>
 
   </main>
+
+  <!-- CHART LOGIC -->
+  <script>
+    const navy = "#1f3b66";
+    const steel = "#4b647d";
+    const gray = "#9aa5b1";
+
+    /* ---------------- Screening Trends (line chart) ---------------- */
+    new Chart(document.getElementById("screeningTrendsChart"), {
+      type: "line",
+      data: {
+        labels: ["Week 1","Week 2","Week 3","Week 4"],
+        datasets: [
+          {
+            label: "Deals Screened",
+            data: [38, 42, 36, 26],
+            borderColor: navy,
+            borderWidth: 2,
+            tension: 0.3
+          },
+          {
+            label: "% Passed",
+            data: [21, 23, 20, 24],
+            borderColor: steel,
+            borderDash: [5,5],
+            borderWidth: 2,
+            tension: 0.3
+          },
+          {
+            label: "% Declined",
+            data: [62, 58, 65, 60],
+            borderColor: gray,
+            borderWidth: 2,
+            tension: 0.3
+          }
+        ]
+      },
+      options: { responsive:true, maintainAspectRatio:false }
+    });
+
+    /* ---------------- Sponsor vs Non-Sponsor (bar chart) ---------------- */
+    new Chart(document.getElementById("sponsorFlowChart"), {
+      type: "bar",
+      data: {
+        labels: ["Sponsor-Backed","Non-Sponsor"],
+        datasets: [{
+          data: [67, 33],
+          backgroundColor: [navy, steel]
+        }]
+      },
+      options: { responsive:true, maintainAspectRatio:false }
+    });
+
+    /* ---------------- Decline Reasons (pie chart) ---------------- */
+    new Chart(document.getElementById("declineReasonsChart"), {
+      type: "pie",
+      data: {
+        labels: [
+          "Aggressive Leverage",
+          "Weak Cash Flow",
+          "Sponsor Reputation",
+          "Sector Cyclicality",
+          "Insufficient Disclosure",
+          "Other"
+        ],
+        datasets: [{
+          data: [31, 26, 15, 11, 8, 9],
+          backgroundColor: [
+            navy,
+            steel,
+            gray,
+            "#cbd5e1",
+            "#e2e8f0",
+            "#94a3b8"
+          ]
+        }]
+      },
+      options: { responsive:true, maintainAspectRatio:false }
+    });
+  </script>
+
 </body>
 </html>
