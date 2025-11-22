@@ -26,31 +26,31 @@
   <div id="sidebar-placeholder"></div>
 
   <script>
-    async function injectSidebar() {
-      const res = await fetch("/private-credit/sidebar.html");
-      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-    }
-    injectSidebar();
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+  
+    // Now that sidebar HTML is inserted, attach toggle handler globally
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+  
+      if (!section || !icon) return;
+  
+      const isHidden = section.classList.contains("hidden");
+      if (isHidden) {
+        section.classList.remove("hidden");
+        icon.style.transform = "rotate(90deg)";
+      } else {
+        section.classList.add("hidden");
+        icon.style.transform = "rotate(0deg)";
+      }
+    };
+  }
+  
+  injectSidebar();
   </script>
 
-  <script>
-  // Sidebar toggle logic — must be on each page because scripts inside injected HTML do not run.
-  function toggleSection(id) {
-    const section = document.getElementById(id);
-    const icon = document.getElementById("icon-" + id);
-
-    if (!section || !icon) return;
-
-    const isHidden = section.classList.contains("hidden");
-    if (isHidden) {
-      section.classList.remove("hidden");
-      icon.style.transform = "rotate(90deg)";
-    } else {
-      section.classList.add("hidden");
-      icon.style.transform = "rotate(0deg)";
-    }
-  }
-</script>
 
   <!-- MAIN CONTENT WRAPPER -->
   <main class="flex-1 ml-64 p-8">
