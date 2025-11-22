@@ -117,9 +117,11 @@
       <!-- Sector Exposure -->
       <div class="bg-white rounded-xl shadow-sm border p-6">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Sector Exposure</h2>
-        <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-          Sector Chart Placeholder
-        </div>
+      
+        <!-- Pie Chart -->
+        <canvas id="sectorExposureChart" class="w-full h-48 mb-4"></canvas>
+      
+        <!-- Breakdown List -->
         <ul class="text-sm text-gray-700 mt-4 space-y-1">
           <li>• Tech: <strong>22%</strong></li>
           <li>• Healthcare: <strong>19%</strong></li>
@@ -128,6 +130,40 @@
           <li>• Other: <strong>28%</strong></li>
         </ul>
       </div>
+
+      
+      <script>
+        const sectorCtx = document.getElementById("sectorExposureChart").getContext("2d");
+      
+        new Chart(sectorCtx, {
+          type: "pie",
+          data: {
+            labels: ["Tech", "Healthcare", "Industrials", "Business Services", "Other"],
+            datasets: [{
+              data: [22, 19, 17, 14, 28], // MOCK DATA
+              backgroundColor: [
+                "rgba(54, 162, 235, 0.7)",
+                "rgba(75, 192, 192, 0.7)",
+                "rgba(255, 206, 86, 0.7)",
+                "rgba(255, 99, 132, 0.7)",
+                "rgba(153, 102, 255, 0.7)"
+              ],
+              borderColor: [
+                "rgba(54, 162, 235, 1)",
+                "rgba(75, 192, 192, 1)",
+                "rgba(255, 206, 86, 1)",
+                "rgba(255, 99, 132, 1)",
+                "rgba(153, 102, 255, 1)"
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: "right" } }
+          }
+        });
+      </script>
 
       <!-- Risk Overview -->
       <div class="bg-white rounded-xl shadow-sm border p-6">
@@ -152,7 +188,7 @@
   const issuanceChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['Unitranche', 'First Lien', 'Second Lien', 'Mezzanine', 'ABL', 'Hybrid'],
+      labels: ['Unitranche', 'First Lien', 'Second Lien', 'Mezzanine', 'ABL', 'Hybrid
       datasets: [{
         label: 'Deal Volume ($MM)',
         data: [4200, 3100, 900, 650, 1200, 480], // MOCK DATA
