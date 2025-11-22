@@ -48,22 +48,22 @@
       <p id="originations" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
       <!--<p id="originations" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 mt-4 hidden ml-2">-->
 
-        <a href="main.html"
+        <a href="/private-credit/originations/screening.html"
            class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
           Screening
         </a>
     
-        <a href="tear-sheet.html"
+        <a href="/private-credit/originations/preliminary-ic.html"
            class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
           Preliminary IC
         </a>
     
-        <a href="deal-comp.html"
+        <a href="/private-credit/originations/pricing.html"
            class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
           Pricing & Structure
         </a>
     
-        <a href="portfolio-overview.html"
+        <a href="/private-credit/originations/comps.html"
            class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
           Comps
         </a>
@@ -125,22 +125,22 @@
   
     <p id="core" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
   
-      <a href="main.html"
+      <a href="/private-credit/core/dashboard.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Dashboard
       </a>
   
-      <a href="tear-sheet.html"
+      <a href="/private-credit/core/tear-sheet.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Tear Sheet
       </a>
   
-      <a href="deal-comp.html"
+      <a href="/private-credit/core/deal-compare.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Deal Compare
       </a>
   
-      <a href="portfolio-overview.html"
+      <a href="/private-credit/core/portfolio-overview.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Portfolio Overview
       </a>
@@ -160,27 +160,27 @@
   
     <p id="risk" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
   
-      <a href="ratings-drift.html"
+      <a href="/private-credit/risk/ratings-drift.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Ratings Drift
       </a>
   
-      <a href="monitoring.html"
+      <a href="/private-credit/risk/monitoring-kpis.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Monitoring & KPIs
       </a>
   
-      <a href="monitoring.html"
+      <a href="/private-credit/risk/compliance.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Compliance
       </a>
   
-      <a href="legal-structure.html"
+      <a href="/private-credit/risk/legal-structure.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Legal Structure
       </a>
   
-      <a href="legal-structure.html"
+      <a href="/private-credit/risk/watchlist.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Watchlist
       </a>
@@ -200,12 +200,12 @@
   
     <p id="workflow" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
   
-      <a href="approvals.html"
+      <a href="/private-credit/workflow/approvals.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Approvals
       </a>
   
-      <a href="closing-queue.html"
+      <a href="/private-credit/workflow/closing-queue.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Closing Queue
       </a>
@@ -225,7 +225,7 @@
   
     <p id="data" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
   
-      <a href="data-room.html"
+      <a href="/private-credit/data/data-room.html"
          class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
         Data Room
       </a>
@@ -423,7 +423,24 @@ function toggleSection(id) {
   } else {
     icon.style.transform = "rotate(90deg)";
   }
+
+  // Save open section
+  localStorage.setItem("sidebar-open-section", id);
 }
+
+// Restore last open section
+document.addEventListener("DOMContentLoaded", () => {
+  const last = localStorage.getItem("sidebar-open-section");
+  if (last) {
+    const section = document.getElementById(last);
+    const icon = document.getElementById("icon-" + last);
+    if (section && icon) {
+      section.classList.remove("hidden");
+      icon.style.transform = "rotate(90deg)";
+    }
+  }
+});
 </script>
+
 <!-- WRAP PAGE CONTENT WITH THIS DIV -->
 <!--<div class="ml-64">-->
