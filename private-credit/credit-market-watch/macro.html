@@ -6,10 +6,12 @@
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!--<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">-->
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Base Page Styling -->
   <style>
@@ -22,8 +24,6 @@
 
 <body class="flex">
 
-<!--<body class="bg-gray-50 text-gray-900">-->
-
   <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
 
@@ -32,7 +32,6 @@
     const res = await fetch("/private-credit/sidebar.html");
     document.getElementById("sidebar-placeholder").innerHTML = await res.text();
   
-    // GLOBAL DROPDOWN HANDLER - REQUIRED
     window.toggleSection = function (id) {
       const section = document.getElementById(id);
       const icon = document.getElementById("icon-" + id);
@@ -40,18 +39,11 @@
       if (!section || !icon) return;
   
       section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
   
-      if (section.classList.contains("hidden")) {
-        icon.style.transform = "rotate(0deg)";
-      } else {
-        icon.style.transform = "rotate(90deg)";
-      }
-  
-      // Remember open section
       localStorage.setItem("sidebar-open-section", id);
     };
   
-    // Restore last open section
     const last = localStorage.getItem("sidebar-open-section");
     if (last) {
       const section = document.getElementById(last);
@@ -62,7 +54,6 @@
       }
     }
   }
-  
   injectSidebar();
   </script>
   
@@ -81,73 +72,209 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
       <!-- INFLATION -->
-      <div class="bg-white p-6 shadow rounded-lg">
-        <h2 class="text-xl font-semibold mb-3">Inflation Trends</h2>
+      <div class="bg-white p-6 shadow rounded-lg border">
+        <h2 class="text-xl font-semibold mb-3 text-gray-800">Inflation Trends</h2>
         <p class="text-gray-600 mb-4">
           Consumer Price Index (CPI), Core CPI, and PPI developments over time.
         </p>
-        <div class="h-48 bg-gray-100 rounded flex items-center justify-center">
-          <span class="text-gray-400">Inflation Chart Placeholder</span>
+        <div class="h-48">
+          <canvas id="inflationChart"></canvas>
         </div>
       </div>
 
       <!-- INTEREST RATES -->
-      <div class="bg-white p-6 shadow rounded-lg">
-        <h2 class="text-xl font-semibold mb-3">Interest Rate Environment</h2>
+      <div class="bg-white p-6 shadow rounded-lg border">
+        <h2 class="text-xl font-semibold mb-3 text-gray-800">Interest Rate Environment</h2>
         <p class="text-gray-600 mb-4">
           Fed policy updates, yield curves, and forward rate expectations.
         </p>
-        <div class="h-48 bg-gray-100 rounded flex items-center justify-center">
-          <span class="text-gray-400">Rates Chart Placeholder</span>
+        <div class="h-48">
+          <canvas id="ratesChart"></canvas>
         </div>
       </div>
 
       <!-- GDP -->
-      <div class="bg-white p-6 shadow rounded-lg">
-        <h2 class="text-xl font-semibold mb-3">GDP Growth</h2>
+      <div class="bg-white p-6 shadow rounded-lg border">
+        <h2 class="text-xl font-semibold mb-3 text-gray-800">GDP Growth</h2>
         <p class="text-gray-600 mb-4">
           Quarterly GDP growth, revisions, and sector contributions.
         </p>
-        <div class="h-48 bg-gray-100 rounded flex items-center justify-center">
-          <span class="text-gray-400">GDP Chart Placeholder</span>
+        <div class="h-48">
+          <canvas id="gdpChart"></canvas>
         </div>
       </div>
 
       <!-- LABOR MARKET -->
-      <div class="bg-white p-6 shadow rounded-lg">
-        <h2 class="text-xl font-semibold mb-3">Labor Market</h2>
+      <div class="bg-white p-6 shadow rounded-lg border">
+        <h2 class="text-xl font-semibold mb-3 text-gray-800">Labor Market</h2>
         <p class="text-gray-600 mb-4">
           Nonfarm payrolls, unemployment rates, wage growth, and participation.
         </p>
-        <div class="h-48 bg-gray-100 rounded flex items-center justify-center">
-          <span class="text-gray-400">Labor Chart Placeholder</span>
+        <div class="h-48">
+          <canvas id="laborChart"></canvas>
         </div>
       </div>
 
       <!-- CREDIT CONDITIONS -->
-      <div class="bg-white p-6 shadow rounded-lg">
-        <h2 class="text-xl font-semibold mb-3">Credit Conditions</h2>
+      <div class="bg-white p-6 shadow rounded-lg border">
+        <h2 class="text-xl font-semibold mb-3 text-gray-800">Credit Conditions</h2>
         <p class="text-gray-600 mb-4">
           Lending standards, credit spreads, and bank loan officer surveys.
         </p>
-        <div class="h-48 bg-gray-100 rounded flex items-center justify-center">
-          <span class="text-gray-400">Credit Conditions Placeholder</span>
+        <div class="h-48">
+          <canvas id="creditChart"></canvas>
         </div>
       </div>
 
       <!-- CONSUMER HEALTH -->
-      <div class="bg-white p-6 shadow rounded-lg">
-        <h2 class="text-xl font-semibold mb-3">Consumer Financial Health</h2>
+      <div class="bg-white p-6 shadow rounded-lg border">
+        <h2 class="text-xl font-semibold mb-3 text-gray-800">Consumer Financial Health</h2>
         <p class="text-gray-600 mb-4">
           Savings rates, debt service ratios, retail activity, and sentiment.
         </p>
-        <div class="h-48 bg-gray-100 rounded flex items-center justify-center">
-          <span class="text-gray-400">Consumer Metrics Placeholder</span>
+        <div class="h-48">
+          <canvas id="consumerChart"></canvas>
         </div>
       </div>
 
     </div>
   </div>
+
+  <!-- CHART LOGIC -->
+  <script>
+    const navy = "#1f3b66";
+    const steel = "#4b647d";
+    const gray = "#9aa5b1";
+
+    /* 1 — Inflation */
+    new Chart(document.getElementById("inflationChart"), {
+      type: "line",
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        datasets: [
+          {
+            label: "CPI YoY %",
+            data: [3.1, 3.2, 3.4, 3.3, 3.0, 2.9],
+            borderColor: navy,
+            borderWidth: 2,
+            tension: 0.3
+          },
+          {
+            label: "Core CPI YoY %",
+            data: [3.8, 3.7, 3.6, 3.5, 3.4, 3.3],
+            borderColor: steel,
+            borderWidth: 2,
+            tension: 0.3
+          }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    /* 2 — Interest Rates */
+    new Chart(document.getElementById("ratesChart"), {
+      type: "line",
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        datasets: [
+          {
+            label: "10Y Treasury",
+            data: [4.1, 4.2, 4.0, 3.9, 4.0, 4.1],
+            borderColor: navy,
+            borderWidth: 2,
+            tension: 0.3
+          },
+          {
+            label: "Fed Funds Target",
+            data: [5.25, 5.25, 5.25, 5.00, 5.00, 4.75],
+            borderColor: steel,
+            borderWidth: 2,
+            tension: 0.3
+          }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    /* 3 — GDP */
+    new Chart(document.getElementById("gdpChart"), {
+      type: "bar",
+      data: {
+        labels: ["Q1", "Q2", "Q3", "Q4"],
+        datasets: [{
+          label: "GDP Growth %",
+          data: [2.1, 2.4, 2.0, 1.8],
+          backgroundColor: navy
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    /* 4 — Labor Market */
+    new Chart(document.getElementById("laborChart"), {
+      type: "line",
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        datasets: [
+          {
+            label: "Unemployment Rate",
+            data: [3.7, 3.8, 3.8, 3.9, 4.0, 4.0],
+            borderColor: navy,
+            borderWidth: 2,
+            tension: 0.3
+          },
+          {
+            label: "Payrolls (k)",
+            data: [180, 210, 165, 250, 230, 190],
+            borderColor: steel,
+            borderWidth: 2,
+            tension: 0.3
+          }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    /* 5 — Credit Conditions */
+    new Chart(document.getElementById("creditChart"), {
+      type: "bar",
+      data: {
+        labels: ["Q1", "Q2", "Q3", "Q4"],
+        datasets: [{
+          label: "% Banks Tightening",
+          data: [46, 41, 37, 33],
+          backgroundColor: steel
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    /* 6 — Consumer Financial Health */
+    new Chart(document.getElementById("consumerChart"), {
+      type: "line",
+      data: {
+        labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+        datasets: [
+          {
+            label: "Savings Rate %",
+            data: [3.8, 3.9, 4.0, 4.1, 4.2, 4.1],
+            borderColor: navy,
+            borderWidth: 2,
+            tension: 0.3
+          },
+          {
+            label: "Credit Card Delinq %",
+            data: [2.9, 3.0, 3.1, 3.2, 3.3, 3.4],
+            borderColor: steel,
+            borderWidth: 2,
+            tension: 0.3
+          }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+  </script>
+
 </body>
 </html>
-
