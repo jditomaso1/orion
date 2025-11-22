@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Portfolio Overview — Private Credit</title>
+  <title>Deal Comparison — Core</title>
 
-  <!-- Fonts -->
+  <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     body {
@@ -26,274 +23,117 @@
 
   <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
-
   <script>
-  async function injectSidebar() {
-    const res = await fetch("/private-credit/sidebar.html");
-    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
-    window.toggleSection = function (id) {
-      const section = document.getElementById(id);
-      const icon = document.getElementById("icon-" + id);
-      if (!section || !icon) return;
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
 
-      section.classList.toggle("hidden");
-      icon.style.transform = section.classList.contains("hidden")
-        ? "rotate(0deg)"
-        : "rotate(90deg)";
-      localStorage.setItem("sidebar-open-section", id);
-    };
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden")
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
 
-    const last = localStorage.getItem("sidebar-open-section");
-    if (last) {
-      const s = document.getElementById(last);
-      const i = document.getElementById("icon-" + last);
-      if (s && i) {
-        s.classList.remove("hidden");
-        i.style.transform = "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
       }
     }
-  }
-  injectSidebar();
+    injectSidebar();
   </script>
-
 
   <!-- MAIN CONTENT -->
   <main class="flex-1 ml-64 p-8 space-y-10">
 
     <!-- HEADER -->
     <div>
-      <h1 class="text-3xl font-semibold tracking-tight text-gray-900 flex items-center gap-2">
-        <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
-        Portfolio Overview
+      <h1 class="text-3xl font-semibold tracking-tight text-gray-900">
+        Deal Comparison
       </h1>
-      <p class="text-gray-500 text-sm mt-1">As of 2025-09-27 • Mock data</p>
+      <p class="text-gray-500 text-sm mt-1">
+        Compare pricing, structure, covenants, and deal terms across transactions.
+      </p>
     </div>
 
+    <!-- DEAL SELECTOR -->
+    <section class="bg-white border rounded-2xl p-6">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Select Deals</h2>
 
-    <!-- METRICS GRID -->
-    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-      <metric-card label="Total Exposure" value="$4.6bn"></metric-card>
-      <metric-card label="# Deals" value="83"></metric-card>
-      <metric-card label="Avg Spread (bps)" value="463"></metric-card>
-      <metric-card label="Wtd Avg Leverage" value="4.7x"></metric-card>
-      <metric-card label="Wtd Avg Maturity" value="4.2 yrs"></metric-card>
-      <metric-card label="% Floating" value="88%"></metric-card>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <select class="p-3 border rounded-lg">
+          <option>Select Deal A</option>
+        </select>
 
-      <metric-card label="Cash (Avail.)" value="$210mm"></metric-card>
-      <metric-card label="30D Net CF" value="+$38mm"></metric-card>
-      <metric-card label="Wtd Avg Price" value="98.7"></metric-card">
-      <metric-card label="Non-accruals" value="1.2%"></metric-card>
-      <metric-card label="Top Issuer Exp." value="3.9%"></metric-card>
-      <metric-card label="Top Sponsor Exp." value="6.1%"></metric-card>
+        <select class="p-3 border rounded-lg">
+          <option>Select Deal B</option>
+        </select>
+
+        <select class="p-3 border rounded-lg">
+          <option>Select Deal C (optional)</option>
+        </select>
+      </div>
     </section>
 
+    <!-- 3-COLUMN GRID -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    <!-- MIX: INDUSTRY + RATINGS -->
-    <section class="grid grid-cols-12 gap-6">
-
-      <!-- Industry Concentration -->
-      <div class="col-span-12 lg:col-span-6">
-        <div class="rounded-2xl border bg-white p-6">
-          <h2 class="text-lg font-semibold flex items-center gap-2">
-            <i data-lucide="factory" class="w-5 h-5"></i>
-            Industry Concentration
-          </h2>
-
-          <div class="mt-4 space-y-3 text-sm">
-            <!-- Bar Rows -->
-            ${[
-              ['Software', 28],
-              ['Healthcare', 19],
-              ['Consumer', 16],
-              ['Industrials', 14],
-              ['Other', 23]
-            ].map(([label, pct]) => `
-              <div class="flex items-center gap-3">
-                <span class="w-28 text-gray-600">${label}</span>
-                <div class="flex-1 h-3 bg-gray-100 rounded overflow-hidden">
-                  <div class="h-3 bg-gray-800 rounded" style="width:${pct}%"></div>
-                </div>
-                <span class="w-12 text-right">${pct}%</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
+      <!-- Pricing -->
+      <div class="bg-white p-6 rounded-2xl border shadow-sm">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Pricing</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>• Spread: <strong>L+ 550–650</strong></li>
+          <li>• OID: <strong>97–99</strong></li>
+          <li>• Floor: <strong>1.00%</strong></li>
+          <li>• Fees: <strong>150–225 bps</strong></li>
+        </ul>
       </div>
 
+      <!-- Structure -->
+      <div class="bg-white p-6 rounded-2xl border shadow-sm">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Structure</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>• Type: <strong>Unitranche / 1st Lien</strong></li>
+          <li>• Leverage: <strong>4.0–5.5x</strong></li>
+          <li>• Tenor: <strong>5–7 years</strong></li>
+          <li>• Amortization: <strong>1% annual</strong></li>
+        </ul>
+      </div>
 
-      <!-- Ratings Concentration -->
-      <div class="col-span-12 lg:col-span-6">
-        <div class="rounded-2xl border bg-white p-6">
-          <h2 class="text-lg font-semibold flex items-center gap-2">
-            <i data-lucide="badge-check" class="w-5 h-5"></i>
-            Ratings Concentration
-          </h2>
-
-          <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-            ${[
-              ['BB / BB-', 32, 90],
-              ['B+ / B', 25, 70],
-              ['B-', 18, 55],
-              ['Unrated', 25, 45]
-            ].map(([bucket, pct, dash]) => `
-              <div class="border rounded-xl p-3 flex items-center gap-3">
-                <svg width="48" height="48" viewBox="0 0 36 36">
-                  <circle cx="18" cy="18" r="16" fill="none" stroke="#eee" stroke-width="4"/>
-                  <circle cx="18" cy="18" r="16"
-                    fill="none" stroke="currentColor" stroke-width="4"
-                    stroke-dasharray="${dash} 100"
-                    transform="rotate(-90 18 18)"/>
-                </svg>
-                <div>
-                  <div class="text-xs text-gray-500">${bucket}</div>
-                  <div class="font-medium">${pct}%</div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
+      <!-- Covenants -->
+      <div class="bg-white p-6 rounded-2xl border shadow-sm">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Covenants</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>• Financial Covenant: <strong>1 maintenance test</strong></li>
+          <li>• Reporting: <strong>Quarterly</strong></li>
+          <li>• Builder Basket: <strong>50% CNI</strong></li>
+          <li>• Incremental: <strong>MFN 50 bps</strong></li>
+        </ul>
       </div>
 
     </section>
 
-
-    <!-- MATURITY LADDER + CASHFLOWS -->
-    <section class="grid grid-cols-12 gap-6">
-
-      <!-- Maturity Ladder -->
-      <div class="col-span-12 lg:col-span-8">
-        <div class="rounded-2xl border bg-white p-6">
-          <h2 class="text-lg font-semibold flex items-center gap-2">
-            <i data-lucide="calendar-range" class="w-5 h-5"></i>
-            Maturity Ladder
-          </h2>
-
-          <div class="mt-4 space-y-3">
-            ${[
-              ['2026', 18, '$830mm'],
-              ['2027', 22, '$1.01bn'],
-              ['2028', 27, '$1.24bn'],
-              ['2029', 15, '$690mm'],
-              ['2030+', 18, '$830mm']
-            ].map(([yr, pct, amt]) => `
-              <div class="flex items-center gap-3 text-sm">
-                <span class="w-16 text-gray-600">${yr}</span>
-                <div class="flex-1 h-3 rounded bg-gray-100 overflow-hidden">
-                  <div class="h-3 bg-gray-800 rounded" style="width:${pct}%"></div>
-                </div>
-                <span class="w-20 text-right">${amt}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      </div>
-
-
-      <!-- Cashflows -->
-      <div class="col-span-12 lg:col-span-4">
-        <div class="rounded-2xl border bg-white p-6">
-          <h2 class="text-lg font-semibold flex items-center gap-2">
-            <i data-lucide="wallet" class="w-5 h-5"></i>
-            Cashflows (90d)
-          </h2>
-
-          <svg viewBox="0 0 320 120" class="mt-4 w-full">
-            <polyline fill="none" stroke="currentColor" stroke-width="2"
-              points="0,90 40,95 80,80 120,70 160,85 200,60 240,55 280,45 320,50"/>
-            <line x1="0" y1="100" x2="320" y2="100" stroke="#e5e7eb" stroke-width="1"/>
-            <line x1="0" y1="60" x2="320" y2="60" stroke="#f1f5f9" stroke-width="1"/>
-          </svg>
-
-          <p class="mt-2 text-xs text-gray-600">
-            Net +$38mm (30d) • Cumulative +$95mm (90d)
-          </p>
-        </div>
-      </div>
-
-    </section>
-
-
-    <!-- PERFORMANCE LISTS -->
-    <section class="grid grid-cols-12 gap-6">
-
-      <!-- Top Performers -->
-      <div class="col-span-12 lg:col-span-6">
-        <div class="rounded-2xl border bg-white p-6">
-          <h2 class="text-lg font-semibold flex items-center gap-2">
-            <i data-lucide="trending-up" class="w-5 h-5"></i>
-            Top 5 Performers
-          </h2>
-
-          <table class="mt-4 w-full text-sm">
-            <thead class="text-gray-500">
-              <tr>
-                <th class="text-left py-1">Issuer</th>
-                <th class="text-right py-1">MoM Px</th>
-                <th class="text-right py-1">P&L ($mm)</th>
-                <th class="text-right py-1">Exposure</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y">
-              <tr><td class="py-2">VetWell Group</td><td class="text-right py-2">+1.6</td><td class="text-right py-2">+4.2</td><td class="text-right py-2">$95mm</td></tr>
-              <tr><td class="py-2">RiverPoint SW</td><td class="text-right py-2">+1.3</td><td class="text-right py-2">+3.6</td><td class="text-right py-2">$80mm</td></tr>
-              <tr><td class="py-2">NorthPeak SaaS</td><td class="text-right py-2">+1.1</td><td class="text-right py-2">+3.1</td><td class="text-right py-2">$74mm</td></tr>
-              <tr><td class="py-2">GreenFields Food</td><td class="text-right py-2">+0.9</td><td class="text-right py-2">+2.2</td><td class="text-right py-2">$52mm</td></tr>
-              <tr><td class="py-2">Coastal Logistics</td><td class="text-right py-2">+0.8</td><td class="text-right py-2">+1.7</td><td class="text-right py-2">$49mm</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-
-      <!-- Watchlist -->
-      <div class="col-span-12 lg:col-span-6">
-        <div class="rounded-2xl border bg-white p-6">
-          <h2 class="text-lg font-semibold flex items-center gap-2">
-            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-            Top 5 Watchlist
-          </h2>
-
-          <table class="mt-4 w-full text-sm">
-            <thead class="text-gray-500">
-              <tr>
-                <th class="text-left py-1">Issuer</th>
-                <th class="text-right py-1">MoM Px</th>
-                <th class="text-right py-1">Trigger</th>
-                <th class="text-right py-1">Exposure</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y">
-              <tr><td class="py-2">MidTown Retail</td><td class="text-right py-2">-2.4</td><td class="text-right py-2">Soft comps</td><td class="text-right py-2">$41mm</td></tr>
-              <tr><td class="py-2">Ardent Chem</td><td class="text-right py-2">-1.9</td><td class="text-right py-2">RM volatility</td><td class="text-right py-2">$58mm</td></tr>
-              <tr><td class="py-2">NovaCloud</td><td class="text-right py-2">-1.5</td><td class="text-right py-2">Churn uptick</td><td class="text-right py-2">$66mm</td></tr>
-              <tr><td class="py-2">TrueCare Clinics</td><td class="text-right py-2">-1.4</td><td class="text-right py-2">Reimbursement</td><td class="text-right py-2">$38mm</td></tr>
-              <tr><td class="py-2">Everrail</td><td class="text-right py-2">-1.2</td><td class="text-right py-2">Leverage</td><td class="text-right py-2">$47mm</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
+    <!-- NOTES -->
+    <section class="bg-white border rounded-2xl p-6">
+      <h2 class="text-lg font-semibold text-gray-800 mb-3">Notes & Considerations</h2>
+      <textarea
+        class="w-full h-32 p-4 border rounded-lg text-sm text-gray-700"
+        placeholder="Add commentary or comparison notes..."
+      ></textarea>
     </section>
 
   </main>
-
-  <script>
-    if (window.lucide) window.lucide.createIcons();
-
-    customElements.define('metric-card', class extends HTMLElement {
-      connectedCallback(){
-        const label = this.getAttribute('label');
-        const value = this.getAttribute('value');
-        this.innerHTML = `
-          <div class="rounded-2xl border bg-white p-4">
-            <div class="text-xs text-gray-500">${label}</div>
-            <div class="text-xl font-semibold">${value}</div>
-          </div>
-        `;
-      }
-    });
-  </script>
 
 </body>
 </html>
