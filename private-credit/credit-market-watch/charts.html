@@ -195,13 +195,15 @@
     datasets: [{
       label: "Risk Scores",
       data: [
-        { x:"Jan", y:"Tech", r:18, v:0.7 },
-        { x:"Feb", y:"Tech", r:14, v:0.5 },
-        { x:"Mar", y:"Tech", r:16, v:0.6 },
+        // Tech row
+        { x: 0.8, y: 1.9, r: 22, v: 0.7 }, // Jan
+        { x: 2.1, y: 2.2, r: 16, v: 0.5 }, // Feb
+        { x: 3.2, y: 2.0, r: 18, v: 0.6 }, // Mar
       
-        { x:"Jan", y:"Healthcare", r:12, v:0.4 },
-        { x:"Feb", y:"Healthcare", r:10, v:0.3 },
-        { x:"Mar", y:"Healthcare", r:15, v:0.5 }
+        // Healthcare row
+        { x: 1.0, y: 0.9, r: 14, v: 0.4 }, // Jan
+        { x: 2.2, y: 0.8, r: 12, v: 0.3 }, // Feb
+        { x: 3.1, y: 1.1, r: 18, v: 0.5 }  // Mar
       ],
       backgroundColor: ctx => {
         const v = ctx.raw.v;
@@ -214,18 +216,28 @@
     type: "bubble",
     data: heatmapData,
     options: {
-      responsive:true,
-      maintainAspectRatio:false,
-      scales:{
-        x:{ type:"category" },
-        y:{ 
-          type:"category",
-          labels:["Tech","Healthcare"] 
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          type: "linear",
+          min: 0,
+          max: 7,
+          ticks: { display: false },
+          grid: { display: false }
+        },
+        y: {
+          type: "linear",
+          min: 0,
+          max: 3,
+          ticks: { display: false },
+          grid: { display: false }
         }
       },
-      plugins:{ legend:{ display:false } }
+      plugins: { legend: { display: false } }
     }
   });
+
 
   // 6 — Composite Index
   new Chart(document.getElementById("creditConditionsChart"), {
