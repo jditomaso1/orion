@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Originations — Pricing & Structuring</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base Page Styling -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+  
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden")
+        ? "rotate(0deg)"
+        : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+  
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const section = document.getElementById(last);
+      const icon = document.getElementById("icon-" + last);
+      if (section && icon) {
+        section.classList.remove("hidden");
+        icon.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT WRAPPER -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- PAGE TITLE -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
+      Pricing & Structuring
+    </h1>
+
+    <p class="text-gray-500 text-[15px] mb-8">
+      Credit modeling, leverage sizing, spread and OID calibration, covenant design, and capital structure optimization.
+    </p>
+
+    <!-- GRID: PRICING METRICS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Leverage & Sizing -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Leverage & Sizing</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>📊 Avg. leverage proposed: <strong>5.2x</strong></li>
+          <li>📉 Median stress case: <strong>4.4x</strong></li>
+          <li>🔍 % deals requiring re-cut: <strong>28%</strong></li>
+          <li>🏦 Hold levels: <strong>$65–$125M</strong> typical</li>
+        </ul>
+      </div>
+
+      <!-- Pricing Parameters -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Pricing Parameters</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>💵 Avg. spread: <strong>L+ 625</strong></li>
+          <li>🏷️ OID range: <strong>96.5 – 98.5</strong></li>
+          <li>📈 Flex sensitivity: <strong>+25–50 bps</strong></li>
+          <li>⏳ Tenor: <strong>5–7 years</strong></li>
+        </ul>
+      </div>
+
+      <!-- Structural Features -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Structural Features</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>🛡️ Covenants: <strong>87% single covenant</strong></li>
+          <li>⚙️ Call protection: <strong>104 / 103 / 102</strong></li>
+          <li>💼 Amortization: <strong>1–5% per year</strong></li>
+          <li>🔒 MFN protection: <strong>100% of deals</strong></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- BIG CHART SECTION -->
+    <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Pricing & Structuring Trends</h2>
+      <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
+        Chart Placeholder (Spreads, OID, Leverage, Flex Activity)
+      </div>
+    </div>
+
+    <!-- SPLIT ROW -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
+
+      <!-- Covenant Packages -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Covenant & Documentation Themes</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>📘 EBITDA add-back scrutiny increasing</li>
+          <li>📑 Tighter leakage & investments baskets in 2025</li>
+          <li>📏 NAV covenants in hybrid structures up <strong>22%</strong></li>
+          <li>🧾 Cure rights: <strong>2–3 per year</strong> standardizing</li>
+        </ul>
+        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
+          Documentation Trend Chart Placeholder
+        </div>
+      </div>
+
+      <!-- Capital Structure Mix -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Capital Structure Mix</h2>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>• Unitranche: <strong>58%</strong></li>
+          <li>• 1st Lien Only: <strong>27%</strong></li>
+          <li>• 1L + 2L: <strong>11%</strong></li>
+          <li>• Mezzanine: <strong>4%</strong></li>
+        </ul>
+        <div class="w-full h-48 bg-gray-100 mt-4 rounded-lg flex items-center justify-center text-gray-400">
+          Pie Chart Placeholder
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</body>
+</html>
