@@ -1,0 +1,429 @@
+<!-- FIXED LEFT SIDEBAR -->
+<aside class="w-64 h-screen bg-white border-r shadow-sm fixed top-0 left-0 z-50 flex flex-col">
+
+  <!-- Logo / Title -->
+  <a href="/credit-manager-portal/main.html"
+     class="flex items-center gap-3 px-6 py-6 border-b">
+  
+    <img src="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png"
+         alt="Orion Logo"
+         class="h-8 w-auto">
+  
+    <span class="text-[24px] font-semibold text-gray-900 tracking-tight leading-none">
+      ORION
+    </span>
+  
+  </a>
+  
+
+  <!--<a href="/credit-manager-portal/main.html"
+   class="flex items-center gap-2 text-lg font-semibold tracking-tight">
+
+  <img src="/assets/orion-logo.svg"
+       alt="Orion"
+       class="h-7 w-auto">
+
+  <span>Orion Credit Manager</span>
+
+  </a>-->
+
+
+  <!-- Navigation -->
+  <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+    
+    <!-- ORIGINATIONS (Collapsible) -->
+    <div class="mt-4">
+      
+      <button onclick="toggleSection('originations')"
+              class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+              <!--class="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 rounded">-->
+        <span>Originations</span>
+        <span id="icon-originations" class="transition-transform">
+          ▶
+        </span>
+      </button>
+    
+      <!-- <div id="originations" style="display: none;" class="mt-1 ml-2"> -->
+      <!-- <div id="originations" class="mt-1 ml-2 hidden"> -->
+      <p id="originations" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
+      <!--<p id="originations" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 mt-4 hidden ml-2">-->
+
+        <a href="main.html"
+           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+          Screening
+        </a>
+    
+        <a href="tear-sheet.html"
+           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+          Preliminary IC
+        </a>
+    
+        <a href="deal-comp.html"
+           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+          Pricing & Structure
+        </a>
+    
+        <a href="portfolio-overview.html"
+           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+          Comps
+        </a>
+      <!--</div>-->
+      </p>
+    </div>
+
+  <!-- CREDIT WATCH -->  
+  <div class="mt-4">
+    
+    <button onclick="toggleSection('creditwatch')"
+            class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+      <span>Credit Market Watch</span>
+      <span id="icon-creditwatch" class="transition-transform">
+        ▶
+      </span>
+    </button>
+  
+    <p id="creditwatch" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
+  
+      <a href="/private-credit/credit-market-watch/market.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Market
+      </a>
+  
+      <a href="/private-credit/credit-market-watch/news-feeds.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        News & Feeds
+      </a>
+  
+      <a href="/private-credit/credit-market-watch/charts.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Charts
+      </a>
+  
+      <a href="/private-credit/credit-market-watch/new-issuance.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        New Issuance
+      </a>
+  
+      <a href="/private-credit/credit-market-watch/macro.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Macro
+      </a>
+  
+    </p>
+  
+  </div>
+
+  <!-- CORE -->
+  <div class="mt-4">
+    <button onclick="toggleSection('core')"
+            class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+      <span>Core</span>
+      <span id="icon-core" class="transition-transform">
+        ▶
+      </span>
+    </button>
+  
+    <p id="core" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
+  
+      <a href="main.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Dashboard
+      </a>
+  
+      <a href="tear-sheet.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Tear Sheet
+      </a>
+  
+      <a href="deal-comp.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Deal Compare
+      </a>
+  
+      <a href="portfolio-overview.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Portfolio Overview
+      </a>
+  
+    </p>
+  </div>
+
+  <!-- RISK -->
+  <div class="mt-4">
+    <button onclick="toggleSection('risk')"
+            class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+      <span>Risk</span>
+      <span id="icon-risk" class="transition-transform">
+        ▶
+      </span>
+    </button>
+  
+    <p id="risk" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
+  
+      <a href="ratings-drift.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Ratings Drift
+      </a>
+  
+      <a href="monitoring.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Monitoring & KPIs
+      </a>
+  
+      <a href="monitoring.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Compliance
+      </a>
+  
+      <a href="legal-structure.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Legal Structure
+      </a>
+  
+      <a href="legal-structure.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Watchlist
+      </a>
+  
+    </p>
+  </div>
+
+  <!-- WORKFLOW -->
+  <div class="mt-4">
+    <button onclick="toggleSection('workflow')"
+            class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+      <span>Workflow</span>
+      <span id="icon-workflow" class="transition-transform">
+        ▶
+      </span>
+    </button>
+  
+    <p id="workflow" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
+  
+      <a href="approvals.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Approvals
+      </a>
+  
+      <a href="closing-queue.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Closing Queue
+      </a>
+  
+    </p>
+  </div>
+
+  <!-- DATA -->
+  <div class="mt-4">
+    <button onclick="toggleSection('data')"
+            class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+      <span>Data</span>
+      <span id="icon-data" class="transition-transform">
+        ▶
+      </span>
+    </button>
+  
+    <p id="data" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
+  
+      <a href="data-room.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Data Room
+      </a>
+  
+    </p>
+  </div>
+
+  <!-- BORROWER PORTAL -->
+  <div class="mt-4">
+    <button onclick="toggleSection('borrower')"
+            class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+      <span>Borrower</span>
+      <span id="icon-borrower" class="transition-transform">
+        ▶
+      </span>
+    </button>
+  
+    <p id="borrower" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
+  
+      <a href="borrower-portal.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Borrower Portal
+      </a>
+  
+      <a href="borrower-portal.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Client Chat
+      </a>
+  
+    </p>
+  </div>
+
+  <!-- LP REPORTING -->
+  <!-- LP REPORTING -->
+  <div class="mt-4">
+    <button onclick="toggleSection('lpreporting')"
+            class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+      <span>LP Reporting</span>
+      <span id="icon-lpreporting" class="transition-transform">
+        ▶
+      </span>
+    </button>
+  
+    <p id="lpreporting" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
+  
+      <a href="lp-portfolio-summary.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Portfolio Summary
+      </a>
+  
+      <a href="lp-performance.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Performance
+      </a>
+  
+      <a href="lp-new-investments.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        New Investments
+      </a>
+  
+      <a href="lp-realizations.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Realizations & Exits
+      </a>
+  
+      <a href="lp-monitoring.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Portfolio Monitoring
+      </a>
+  
+      <a href="lp-risk.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Risk & Exposure
+      </a>
+  
+      <a href="lp-valuation.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Valuation
+      </a>
+  
+      <a href="lp-esg.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        ESG
+      </a>
+  
+      <a href="lp-financials.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Fund Financial
+      </a>
+  
+      <a href="lp-capital-activity.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Distributions
+      </a>
+  
+      <a href="lp-legal.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        Compliance & Legal
+      </a>
+  
+      <a href="lp-commentary.html"
+         class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+        GP Commentary
+      </a>
+  
+    </p>
+  </div>
+  
+      
+    <!-- Originations -->
+    <!--<p class="text-sm text-gray-500 uppercase mt-4 mb-2">Originations</p>
+    
+    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 mt-4">
+      <a href="main.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Screening</a>
+      <a href="tear-sheet.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Preliminary IC</a>
+      <a href="deal-comp.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Pricing & Structure</a>
+      <a href="portfolio-overview.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Comps</a>
+    </p>
+    <div class="h-4"></div> -->
+
+    <!-- Credit Market Watch -->
+    <!-- <p class="text-sm text-gray-500 uppercase mt-4 mb-2">Credit Market Watch</p>
+    
+    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 mt-4">
+      <a href="main.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Market</a>
+      <a href="tear-sheet.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">News & Feeds</a>
+      <a href="deal-comp.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Charts</a>
+      <a href="portfolio-overview.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">New Issuance</a>
+      <a href="portfolio-overview.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Macro</a>
+    </p>
+    <div class="h-4"></div> -->
+    
+    <!-- CORE -->
+    <!--<p class="text-sm text-gray-500 uppercase mt-4 mb-2">Core</p>
+    
+    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 mt-4">
+      <a href="main.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Dashboard</a>
+      <a href="tear-sheet.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Tear Sheet</a>
+      <a href="deal-comp.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Deal Compare</a>
+      <a href="portfolio-overview.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Portfolio Overview</a>
+    </p>
+    <div class="h-4"></div>-->
+
+
+    <!-- RISK -->
+    <!--<p class="text-sm text-gray-500 uppercase mt-4 mb-2">Risk</p>
+   
+    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 mt-4">
+      <a href="ratings-drift.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Ratings Drift</a>
+      <a href="monitoring.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Monitoring & KPIs</a>
+      <a href="monitoring.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Compliance</a>
+      <a href="legal-structure.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Legal Structure</a>
+      <a href="legal-structure.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Watchlist</a>
+    </p>
+    <div class="h-4"></div>-->
+
+    <!-- WORKFLOW -->
+    <!--<p class="text-sm text-gray-500 uppercase mt-4 mb-2">Workflow</p>
+    
+    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 mt-4">
+      <a href="approvals.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Approvals</a>
+      <a href="closing-queue.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Closing Queue</a>
+    </p>
+    <div class="h-4"></div>-->
+
+    <!-- DATA -->
+    <!--<p class="text-sm text-gray-500 uppercase mt-4 mb-2">Data</p>
+    
+    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 mt-4">
+      <a href="data-room.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Data Room</a>
+    </p>
+    <div class="h-4"></div>-->
+
+    <!-- BORROWER PORTAL -->
+    <!--<p class="text-sm text-gray-500 uppercase mt-4 mb-2">BORROWER</p>
+    
+    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 mt-4">
+      <a href="borrower-portal.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Borrower Portal</a>
+      <a href="borrower-portal.html" class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">Client Chat</a>
+    </p>
+    <div class="h-4"></div>-->
+    
+  </nav>
+</aside>
+
+<script>
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  const icon = document.getElementById("icon-" + id);
+
+  section.classList.toggle("hidden");
+
+  if (section.classList.contains("hidden")) {
+    icon.style.transform = "rotate(0deg)";
+  } else {
+    icon.style.transform = "rotate(90deg)";
+  }
+}
+</script>
+<!-- WRAP PAGE CONTENT WITH THIS DIV -->
+<!--<div class="ml-64">-->
