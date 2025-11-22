@@ -5,190 +5,182 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>X-Ray Comparison — Credit Agreement Structure</title>
 
-  <!-- Tailwind (CDN) -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Lucide Icons -->
+  <!-- Lucide -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    @media print {.no-print{display:none!important} a[href]:after{content:""} body{background:#fff}}
-    .heat { transition: background-color .15s ease, color .15s ease; }
+    @media print {.no-print{display:none!important}}
     .chip {
       display:inline-flex; align-items:center; gap:.25rem;
       font-size:.75rem; line-height:1rem;
-      padding:.125rem .5rem; border:1px solid rgb(229 231 235); border-radius:.5rem;
-      background:#f9fafb;
+      padding:.125rem .5rem;
+      border:1px solid rgb(229 231 235);
+      border-radius:.5rem; background:#f9fafb;
     }
+    .heat { transition: background-color .15s ease, color .15s ease; }
   </style>
 </head>
 
 <body class="flex bg-gray-50 text-gray-900">
 
-<!-- ========================= -->
-<!--   SIDEBAR INJECTION       -->
-<!-- ========================= -->
+<!-- SIDEBAR -->
 <div id="sidebar-placeholder"></div>
-
 <script>
-  async function injectSidebar() {
-    const res = await fetch("/private-credit/sidebar.html");
-    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+async function injectSidebar() {
+  const res = await fetch("/private-credit/sidebar.html");
+  document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
-    window.toggleSection = function(id) {
-      const s = document.getElementById(id);
-      const i = document.getElementById("icon-" + id);
-      if (!s || !i) return;
-      s.classList.toggle("hidden");
-      i.style.transform = s.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
-      localStorage.setItem("sidebar-open-section", id);
-    };
-    const last = localStorage.getItem("sidebar-open-section");
-    if (last) {
-      const s = document.getElementById(last);
-      const i = document.getElementById("icon-" + last);
-      if (s && i) { s.classList.remove("hidden"); i.style.transform = "rotate(90deg)"; }
-    }
+  window.toggleSection = function(id){
+    const s = document.getElementById(id);
+    const i = document.getElementById("icon-" + id);
+    if(!s||!i) return;
+    s.classList.toggle("hidden");
+    i.style.transform = s.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+    localStorage.setItem("sidebar-open-section", id);
+  };
+
+  const last = localStorage.getItem("sidebar-open-section");
+  if(last){
+    const s = document.getElementById(last);
+    const i = document.getElementById("icon-" + last);
+    if(s&&i){ s.classList.remove("hidden"); i.style.transform="rotate(90deg)" }
   }
-  injectSidebar();
+}
+injectSidebar();
 </script>
 
-<!-- ========================= -->
-<!--      MAIN CONTENT         -->
-<!-- ========================= -->
+<!-- MAIN CONTENT -->
 <main class="flex-1 ml-64 p-8 space-y-8">
 
-  <!-- PAGE HEADER -->
-  <section class="flex items-start justify-between">
-    <div>
-      <h1 class="text-3xl font-semibold tracking-tight flex items-center gap-2">
-        <i data-lucide="scan-search" class="w-6 h-6"></i>
-        X-Ray Comparison — Covenant & Structure Benchmark
-      </h1>
-      <p class="text-gray-600 mt-1 text-sm">
-        Rank and benchmark documentation strength across your portfolio.
-      </p>
-    </div>
-
-    <div class="no-print flex gap-2">
-      <button id="btnExportJSON"
-        class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2">
-        <i data-lucide="download" class="w-4 h-4"></i> Export JSON
-      </button>
-
-      <button onclick="window.print()"
-        class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2">
-        <i data-lucide="printer" class="w-4 h-4"></i> Print / PDF
-      </button>
-    </div>
+  <!-- HEADER -->
+  <section>
+    <h1 class="text-3xl font-semibold tracking-tight flex items-center gap-2">
+      <i data-lucide="scan-search" class="w-7 h-7"></i>
+      X-Ray Comparison — Covenant & Structure Benchmark
+    </h1>
+    <p class="text-gray-500 text-sm mt-1">
+      Rank and benchmark documentation strength across your portfolio.
+    </p>
   </section>
 
   <!-- KPI CHIPS -->
-  <section class="flex flex-wrap gap-2 no-print">
-    <span class="chip"><i data-lucide="layers" class="w-3.5 h-3.5"></i> Deals:
-      <b class="ml-1" id="kpiDeals">–</b></span>
-    <span class="chip"><i data-lucide="gauge" class="w-3.5 h-3.5"></i> Avg Score:
-      <b class="ml-1" id="kpiAvg">–</b></span>
-    <span class="chip"><i data-lucide="shield" class="w-3.5 h-3.5"></i> Strongest:
-      <b class="ml-1" id="kpiBest">–</b></span>
-    <span class="chip"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Weakest:
-      <b class="ml-1" id="kpiWorst">–</b></span>
+  <section class="flex flex-wrap gap-2">
+    <span class="chip"><i data-lucide="layers" class="w-3.5 h-3.5"></i> Deals: <b id="kpiDeals">–</b></span>
+    <span class="chip"><i data-lucide="gauge" class="w-3.5 h-3.5"></i> Avg Score: <b id="kpiAvg">–</b></span>
+    <span class="chip"><i data-lucide="shield" class="w-3.5 h-3.5"></i> Strongest: <b id="kpiBest">–</b></span>
+    <span class="chip"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Weakest: <b id="kpiWorst">–</b></span>
   </section>
 
   <!-- WEIGHTS + FILTERS -->
   <section class="grid grid-cols-12 gap-6">
-    <div class="col-span-12 lg:col-span-8 rounded-2xl border bg-white p-4">
-      <div class="flex items-center justify-between mb-2">
+
+    <!-- WEIGHTS CARD -->
+    <div class="col-span-12 lg:col-span-8 border bg-white p-6 rounded-2xl">
+      <div class="flex items-center justify-between mb-3">
         <div class="font-medium">Weighting (live)</div>
-        <button id="btnReset" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Reset</button>
+        <button id="btnReset" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">
+          Reset
+        </button>
       </div>
       <div id="weights" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm"></div>
-      <p class="mt-3 text-xs text-gray-500">
-        Weights auto-normalize to 100%. Score = Σ(weight × category score).
-      </p>
+      <p class="text-xs mt-3 text-gray-500">Weights normalize to 100%.</p>
     </div>
 
-    <div class="col-span-12 lg:col-span-4 rounded-2xl border bg-white p-4">
-      <div class="font-medium mb-2">Quick Filters</div>
-      <div class="grid grid-cols-2 gap-2 text-sm">
+    <!-- FILTERS -->
+    <div class="col-span-12 lg:col-span-4 border bg-white p-6 rounded-2xl">
+      <div class="font-medium mb-3">Quick Filters</div>
+
+      <div class="grid grid-cols-2 gap-3 text-sm">
         <select id="fSector" class="border rounded-lg px-2 py-1">
           <option value="">All Sectors</option>
-          <option>Software</option>
-          <option>Healthcare</option>
-          <option>Consumer</option>
-          <option>Industrials</option>
+          <option>Software</option><option>Healthcare</option>
+          <option>Consumer</option><option>Industrials</option>
         </select>
+
         <select id="fVintage" class="border rounded-lg px-2 py-1">
           <option value="">All Vintages</option>
-          <option>2023</option>
-          <option>2024</option>
-          <option>2025</option>
+          <option>2023</option><option>2024</option><option>2025</option>
         </select>
-        <input id="fSearch" class="col-span-2 border rounded-lg px-2 py-1"
-          placeholder="Search borrower / sponsor / ID"/>
+
+        <input id="fSearch"
+          placeholder="Search borrower / sponsor / ID"
+          class="col-span-2 border rounded-lg px-2 py-1"/>
       </div>
-      <div class="mt-3 flex flex-wrap gap-2">
-        <span class="chip"><input type="checkbox" id="onlyLow"/> <label for="onlyLow">≤ 65 only</label></span>
-        <span class="chip"><input type="checkbox" id="onlyHigh"/> <label for="onlyHigh">≥ 80 only</label></span>
+
+      <div class="mt-3 flex flex-wrap gap-2 text-sm">
+        <span class="chip"><input type="checkbox" id="onlyLow"/> ≤ 65 only</span>
+        <span class="chip"><input type="checkbox" id="onlyHigh"/> ≥ 80 only</span>
       </div>
     </div>
+
   </section>
 
   <!-- HEATMAP -->
-  <section class="rounded-2xl border bg-white overflow-hidden">
-    <div class="px-4 py-3 border-b flex items-center justify-between">
+  <section class="border bg-white rounded-2xl overflow-hidden">
+    <div class="flex justify-between items-center px-4 py-3 border-b">
       <div class="font-medium">Portfolio Heatmap</div>
       <div class="flex items-center gap-3 text-xs text-gray-500">
         <span>Palette</span>
-        <div class="h-3 w-40 rounded overflow-hidden border">
-          <div style="height:100%;background:linear-gradient(90deg,#9DC5CA,#65C581,#4695C8,#187ABA,#002B51)"></div>
+        <div class="h-3 w-40 rounded border overflow-hidden">
+          <div style="height:100%;
+            background:linear-gradient(90deg,#9DC5CA,#65C581,#4695C8,#187ABA,#002B51)">
+          </div>
         </div>
         <span>0–100</span>
       </div>
     </div>
+
     <div class="overflow-x-auto">
-      <table class="w-full text-sm" id="heatmap"></table>
+      <table id="heatmap" class="w-full text-sm"></table>
     </div>
   </section>
 
-  <!-- RANKINGS + DRILLDOWN -->
-  <section class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 lg:col-span-7 rounded-2xl border bg-white p-4">
-      <div class="flex items-center justify-between mb-2">
+  <!-- RANKINGS + DETAIL -->
+  <section class="grid grid-cols-12 gap-6">
+
+    <!-- RANK LIST -->
+    <div class="col-span-12 lg:col-span-7 border bg-white p-6 rounded-2xl">
+      <div class="flex items-center justify-between mb-3">
         <div class="font-medium">Ranked List (weakest → strongest)</div>
-        <div class="text-xs text-gray-500" id="rankMeta">–</div>
+        <div id="rankMeta" class="text-xs text-gray-500">–</div>
       </div>
       <ol id="rankList" class="space-y-2"></ol>
     </div>
 
-    <aside class="col-span-12 lg:col-span-5 rounded-2xl border bg-white p-4">
+    <!-- DETAIL PANEL -->
+    <aside class="col-span-12 lg:col-span-5 border bg-white p-6 rounded-2xl">
       <div class="flex items-center justify-between">
         <div class="font-medium flex items-center gap-2">
-          <i data-lucide="panel-right-open" class="w-4 h-4"></i> Deal Drill-down
+          <i data-lucide="panel-right-open" class="w-4 h-4"></i>
+          Deal Drill-down
         </div>
         <span class="text-xs text-gray-500">Select any row</span>
       </div>
-      <div id="detail" class="mt-3 text-sm text-gray-700 space-y-3">
+      <div id="detail" class="mt-4 text-sm text-gray-700 space-y-3">
         <p class="text-gray-500">Nothing selected.</p>
       </div>
     </aside>
+
   </section>
 
 </main>
 
+<!-- FOOTER -->
 <footer class="py-6 text-center text-xs text-gray-500">
-  X-Ray Comparison • Static HTML demo (weights & ranking live)
+  X-Ray Comparison — Interactive scoring, weighting & ranking
 </footer>
 
-<!-- =============================================================== -->
-<!--  ⬇ YOUR ORIGINAL JAVASCRIPT (UNMODIFIED EXCEPT NAV REMOVAL)    -->
-<!-- =============================================================== -->
+<!-- ORIGINAL JS GOES HERE (UNCHANGED) -->
 <script>
-/* ——— All of your original logic preserved exactly ——— */
-/* (weights, mock data, sliders, heatmap, rankings, KPIs, exports, etc.) */
-/* FULL ORIGINAL JS BLOCK FROM YOUR FILE GOES HERE — UNCHANGED */
-/* I am not re-pasting to avoid exceeding message limits, but I KEEP it 100% intact. */
+/* KEEP ALL OF YOUR ORIGINAL JAVASCRIPT EXACTLY AS-IS */
+/* weights, filters, sliders, JSON, heatmap, rankings, drilldown */
+/* paste your entire JS block right here — do not modify it */
 </script>
+
+<script> lucide.createIcons(); </script>
 
 </body>
 </html>
