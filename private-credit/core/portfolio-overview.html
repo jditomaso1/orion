@@ -3,203 +3,186 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>X-Ray Comparison — Credit Agreement Structure</title>
+  <title>Portfolio Overview — Orion</title>
 
-  <!-- Tailwind (CDN) -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
   <style>
-    @media print {.no-print{display:none!important} a[href]:after{content:""} body{background:#fff}}
-    .heat { transition: background-color .15s ease, color .15s ease; }
-    .chip {
-      display:inline-flex; align-items:center; gap:.25rem;
-      font-size:.75rem; line-height:1rem;
-      padding:.125rem .5rem; border:1px solid rgb(229 231 235); border-radius:.5rem;
-      background:#f9fafb;
-    }
+    body { font-family: Poppins, sans-serif; }
   </style>
 </head>
 
 <body class="flex bg-gray-50 text-gray-900">
 
-<!-- ========================= -->
-<!--   SIDEBAR INJECTION       -->
-<!-- ========================= -->
+<!-- ========================================================= -->
+<!-- SIDEBAR -->
+<!-- ========================================================= -->
 <div id="sidebar-placeholder"></div>
-
 <script>
-  async function injectSidebar() {
-    const res = await fetch("/private-credit/sidebar.html");
-    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+async function injectSidebar() {
+  const res = await fetch("/private-credit/sidebar.html");
+  document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
-    window.toggleSection = function(id) {
-      const s = document.getElementById(id);
-      const i = document.getElementById("icon-" + id);
-      if (!s || !i) return;
-      s.classList.toggle("hidden");
-      i.style.transform = s.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
-      localStorage.setItem("sidebar-open-section", id);
-    };
-    const last = localStorage.getItem("sidebar-open-section");
-    if (last) {
-      const s = document.getElementById(last);
-      const i = document.getElementById("icon-" + last);
-      if (s && i) { s.classList.remove("hidden"); i.style.transform = "rotate(90deg)"; }
-    }
+  window.toggleSection = function(id) {
+    const s = document.getElementById(id);
+    const i = document.getElementById("icon-" + id);
+    if (!s || !i) return;
+    s.classList.toggle("hidden");
+    i.style.transform = s.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+    localStorage.setItem("sidebar-open-section", id);
+  };
+
+  const last = localStorage.getItem("sidebar-open-section");
+  if (last) {
+    const s = document.getElementById(last);
+    const i = document.getElementById("icon-" + last);
+    if (s && i) { s.classList.remove("hidden"); i.style.transform = "rotate(90deg)"; }
   }
-  injectSidebar();
+}
+injectSidebar();
 </script>
 
-<!-- ========================= -->
-<!--      MAIN CONTENT         -->
-<!-- ========================= -->
-<main class="flex-1 ml-64 p-8 space-y-8">
+<!-- ========================================================= -->
+<!-- MAIN CONTENT -->
+<!-- ========================================================= -->
+<main class="flex-1 ml-64 p-8 space-y-10">
 
-  <!-- PAGE HEADER -->
-  <section class="flex items-start justify-between">
-    <div>
-      <h1 class="text-3xl font-semibold tracking-tight flex items-center gap-2">
-        <i data-lucide="scan-search" class="w-6 h-6"></i>
-        X-Ray Comparison — Covenant & Structure Benchmark
-      </h1>
-      <p class="text-gray-600 mt-1 text-sm">
-        Rank and benchmark documentation strength across your portfolio.
-      </p>
-    </div>
-
-    <div class="no-print flex gap-2">
-      <button id="btnExportJSON"
-        class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2">
-        <i data-lucide="download" class="w-4 h-4"></i> Export JSON
-      </button>
-
-      <button onclick="window.print()"
-        class="rounded-xl px-3 py-2 border text-sm hover:bg-gray-50 flex items-center gap-2">
-        <i data-lucide="printer" class="w-4 h-4"></i> Print / PDF
-      </button>
-    </div>
+  <!-- PAGE TITLE -->
+  <section>
+    <h1 class="text-3xl font-semibold tracking-tight flex items-center gap-2">
+      <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+      Portfolio Overview
+    </h1>
+    <p class="text-gray-600 mt-1 text-sm">
+      Consolidated view of exposure, pricing, leverage, and documentation strength across the platform.
+    </p>
   </section>
 
-  <!-- KPI CHIPS -->
-  <section class="flex flex-wrap gap-2 no-print">
-    <span class="chip"><i data-lucide="layers" class="w-3.5 h-3.5"></i> Deals:
-      <b class="ml-1" id="kpiDeals">–</b></span>
-    <span class="chip"><i data-lucide="gauge" class="w-3.5 h-3.5"></i> Avg Score:
-      <b class="ml-1" id="kpiAvg">–</b></span>
-    <span class="chip"><i data-lucide="shield" class="w-3.5 h-3.5"></i> Strongest:
-      <b class="ml-1" id="kpiBest">–</b></span>
-    <span class="chip"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Weakest:
-      <b class="ml-1" id="kpiWorst">–</b></span>
-  </section>
-
-  <!-- WEIGHTS + FILTERS -->
+  <!-- TOP ROW: TWO LARGE PANELS -->
   <section class="grid grid-cols-12 gap-6">
-    <div class="col-span-12 lg:col-span-8 rounded-2xl border bg-white p-4">
-      <div class="flex items-center justify-between mb-2">
-        <div class="font-medium">Weighting (live)</div>
-        <button id="btnReset" class="text-xs border rounded-lg px-2 py-1 hover:bg-gray-50">Reset</button>
-      </div>
-      <div id="weights" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm"></div>
-      <p class="mt-3 text-xs text-gray-500">
-        Weights auto-normalize to 100%. Score = Σ(weight × category score).
-      </p>
-    </div>
 
-    <div class="col-span-12 lg:col-span-4 rounded-2xl border bg-white p-4">
-      <div class="font-medium mb-2">Quick Filters</div>
-      <div class="grid grid-cols-2 gap-2 text-sm">
-        <select id="fSector" class="border rounded-lg px-2 py-1">
-          <option value="">All Sectors</option>
-          <option>Software</option>
-          <option>Healthcare</option>
-          <option>Consumer</option>
-          <option>Industrials</option>
-        </select>
-        <select id="fVintage" class="border rounded-lg px-2 py-1">
-          <option value="">All Vintages</option>
-          <option>2023</option>
-          <option>2024</option>
-          <option>2025</option>
-        </select>
-        <input id="fSearch" class="col-span-2 border rounded-lg px-2 py-1"
-          placeholder="Search borrower / sponsor / ID"/>
-      </div>
-      <div class="mt-3 flex flex-wrap gap-2">
-        <span class="chip"><input type="checkbox" id="onlyLow"/> <label for="onlyLow">≤ 65 only</label></span>
-        <span class="chip"><input type="checkbox" id="onlyHigh"/> <label for="onlyHigh">≥ 80 only</label></span>
-      </div>
-    </div>
-  </section>
+    <!-- PORTFOLIO SUMMARY -->
+    <div class="col-span-12 lg:col-span-7 rounded-2xl border bg-white p-6">
+      <h2 class="text-lg font-semibold mb-4">Portfolio Summary</h2>
 
-  <!-- HEATMAP -->
-  <section class="rounded-2xl border bg-white overflow-hidden">
-    <div class="px-4 py-3 border-b flex items-center justify-between">
-      <div class="font-medium">Portfolio Heatmap</div>
-      <div class="flex items-center gap-3 text-xs text-gray-500">
-        <span>Palette</span>
-        <div class="h-3 w-40 rounded overflow-hidden border">
-          <div style="height:100%;background:linear-gradient(90deg,#9DC5CA,#65C581,#4695C8,#187ABA,#002B51)"></div>
+      <div class="grid grid-cols-3 gap-4 text-center">
+        <div>
+          <div class="text-xs text-gray-500">Total Commitments</div>
+          <div class="text-xl font-semibold">$4.25bn</div>
         </div>
-        <span>0–100</span>
+        <div>
+          <div class="text-xs text-gray-500">Number of Borrowers</div>
+          <div class="text-xl font-semibold">62</div>
+        </div>
+        <div>
+          <div class="text-xs text-gray-500">Avg. Leverage</div>
+          <div class="text-xl font-semibold">5.1x</div>
+        </div>
+      </div>
+
+      <div class="mt-6 h-48 flex items-center justify-center text-gray-400 text-sm">
+        (Insert chart — optional)
       </div>
     </div>
+
+    <!-- SECTOR EXPOSURE -->
+    <div class="col-span-12 lg:col-span-5 rounded-2xl border bg-white p-6">
+      <h2 class="text-lg font-semibold mb-4">Sector Exposure</h2>
+
+      <ul class="text-sm space-y-1">
+        <li class="flex justify-between"><span>Software</span><b>38%</b></li>
+        <li class="flex justify-between"><span>Healthcare</span><b>21%</b></li>
+        <li class="flex justify-between"><span>Consumer</span><b>18%</b></li>
+        <li class="flex justify-between"><span>Industrials</span><b>14%</b></li>
+        <li class="flex justify-between"><span>Other</span><b>9%</b></li>
+      </ul>
+
+      <div class="mt-6 h-40 flex items-center justify-center text-gray-400 text-sm">
+        (Pie chart placeholder)
+      </div>
+    </div>
+
+  </section>
+
+  <!-- MID ROW: PRICING / LEVERAGE / DOC STRENGTH -->
+  <section class="grid grid-cols-12 gap-6">
+
+    <div class="col-span-12 md:col-span-4 rounded-2xl border bg-white p-6">
+      <h3 class="text-lg font-semibold mb-3">Pricing</h3>
+      <p class="text-sm text-gray-600">Average SOFR Spread</p>
+      <div class="text-2xl font-semibold mt-1">+514 bps</div>
+    </div>
+
+    <div class="col-span-12 md:col-span-4 rounded-2xl border bg-white p-6">
+      <h3 class="text-lg font-semibold mb-3">Leverage</h3>
+      <p class="text-sm text-gray-600">Weighted Avg. First Lien Leverage</p>
+      <div class="text-2xl font-semibold mt-1">5.1x</div>
+    </div>
+
+    <div class="col-span-12 md:col-span-4 rounded-2xl border bg-white p-6">
+      <h3 class="text-lg font-semibold mb-3">Documentation Strength</h3>
+      <p class="text-sm text-gray-600">Portfolio-wide doc strength score</p>
+      <div class="text-2xl font-semibold mt-1">77 / 100</div>
+    </div>
+
+  </section>
+
+  <!-- FULL DEAL COMPARISON TABLE / HEATMAP -->
+  <section class="rounded-2xl border bg-white p-6">
+    <h2 class="text-lg font-semibold mb-4">Deal Comparison Heatmap</h2>
+
     <div class="overflow-x-auto">
-      <table class="w-full text-sm" id="heatmap"></table>
+      <table id="heatmap" class="w-full text-sm"></table>
     </div>
   </section>
 
-  <!-- RANKINGS + DRILLDOWN -->
-  <section class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 lg:col-span-7 rounded-2xl border bg-white p-4">
-      <div class="flex items-center justify-between mb-2">
-        <div class="font-medium">Ranked List (weakest → strongest)</div>
-        <div class="text-xs text-gray-500" id="rankMeta">–</div>
-      </div>
+  <!-- RANKED LIST + DRILLDOWN -->
+  <section class="grid grid-cols-12 gap-6">
+
+    <div class="col-span-12 lg:col-span-7 rounded-2xl border bg-white p-6">
+      <h2 class="text-lg font-semibold mb-4">Ranked Documentation Strength</h2>
       <ol id="rankList" class="space-y-2"></ol>
     </div>
 
-    <aside class="col-span-12 lg:col-span-5 rounded-2xl border bg-white p-4">
-      <div class="flex items-center justify-between">
-        <div class="font-medium flex items-center gap-2">
-          <i data-lucide="panel-right-open" class="w-4 h-4"></i> Deal Drill-down
-        </div>
-        <span class="text-xs text-gray-500">Select any row</span>
-      </div>
-      <div id="detail" class="mt-3 text-sm text-gray-700 space-y-3">
-        <p class="text-gray-500">Nothing selected.</p>
+    <aside class="col-span-12 lg:col-span-5 rounded-2xl border bg-white p-6">
+      <h2 class="text-lg font-semibold mb-3">Deal Drill-down</h2>
+      <div id="detail" class="text-sm text-gray-700">
+        <p class="text-gray-500">Select a deal to view details.</p>
       </div>
     </aside>
+
   </section>
 
 </main>
 
-<footer class="py-6 text-center text-xs text-gray-500">
-  X-Ray Comparison • Static HTML demo (weights & ranking live)
-</footer>
-
-<!-- =============================================================== -->
-<!--  FULL ORIGINAL JAVASCRIPT BLOCK — PRESERVED EXACTLY            -->
-<!-- =============================================================== -->
-
+<!-- ========================================================= -->
+<!-- JS LOGIC (your full engine pasted here) -->
+<!-- ========================================================= -->
 <script>
-/*  ⬇ ⬇ ⬇   PASTE YOUR FULL ORIGINAL JS HERE — DO NOT EDIT   ⬇ ⬇ ⬇
+/* 
+   ⭐ Paste the full JS engine from deal-compare.html here:
+   - mock deals data
+   - weights
+   - sliders
+   - heatmap renderer
+   - ranking engine
+   - filters
+   - drilldown update
+   - KPI updates
+   - JSON export
+   - event listeners
 
-   EVERYTHING from your prior deal-compare.html:
-   – deal data
-   – weights engine
-   – sliders
-   – heatmap generator
-   – scoring engine
-   – filters
-   – drilldown panel
-   – KPI chips
-   – ranking logic
-   – export JSON
-
-   Literally paste the entire block here untouched.
+   The layout above is already wired with:
+      #heatmap
+      #rankList
+      #detail
 */
 </script>
 
