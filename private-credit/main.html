@@ -15,14 +15,14 @@
 
   <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
-
+  
   <script>
     fetch("sidebar.html")
       .then(res => res.text())
-      .then(html => {
-        document.getElementById("sidebar-placeholder").innerHTML = html;
-      });
+      .then(html => document.getElementById("sidebar-placeholder").innerHTML = html);
   </script>
+  
+  <div class="ml-64">
 
   <!-- MAIN WRAPPER -->
   <div class="ml-64 p-8">
