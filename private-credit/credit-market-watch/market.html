@@ -124,9 +124,13 @@
     <div class="mt-10 bg-white rounded-xl shadow-sm p-6 border">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Historical Spread Trends</h2>
 
-      <div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
+      <!--<div class="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
         <!-- Placeholder where your chart will go -->
-        Chart Placeholder (Embed JS chart or static SVG later)
+        <!--Chart Placeholder (Embed JS chart or static SVG later)-->
+      <div class="w-full h-64">
+        <canvas id="spreadChart"></canvas>
+      </div>
+
       </div>
     </div>
 
@@ -170,6 +174,51 @@
     </div>
 
   </main>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById("spreadChart");
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"],
+      datasets: [
+        {
+          label: "Avg. 1st Lien Spread (bps)",
+          data: [520, 525, 530, 518, 512, 505, 495, 500, 508],
+          borderWidth: 2,
+          tension: 0.35,
+        },
+        {
+          label: "Private Credit Composite (bps)",
+          data: [410, 415, 420, 430, 425, 418, 410, 412, 415],
+          borderWidth: 2,
+          tension: 0.35,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: false,
+          ticks: { color: "#555" }
+        },
+        x: {
+          ticks: { color: "#555" }
+        }
+      },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { boxWidth: 12 }
+        }
+      }
+    }
+  });
+</script>
 
 </body>
 </html>
