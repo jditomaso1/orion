@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pawsitive Brands — Tear Sheet</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Base Styling -->
+  <style>
+    body { background: #f5f6f8; font-family: 'Poppins', sans-serif; }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff !important; }
+      a[href]:after { content: ""; }
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden")
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 space-y-8">
+
+    <!-- TITLE -->
+    <section>
+      <h1 class="text-3xl font-semibold tracking-tight flex items-center gap-2">
+        <i data-lucide="file-text" class="w-6 h-6"></i>
+        Pawsitive Brands — Tear Sheet
+      </h1>
+      <p class="mt-1 text-sm text-gray-600">$300,000,000 Senior Secured Credit Facility</p>
+
+      <div class="mt-3 flex flex-wrap gap-2">
+        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-green-50 text-green-700">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> In Compliance
+        </span>
+        <span class="inline-flex text-xs px-2 py-1 rounded-full border bg-gray-50">Pet Care</span>
+        <span class="inline-flex text-xs px-2 py-1 rounded-full border bg-gray-50">Summit Hill Partners</span>
+        <span class="inline-flex text-xs px-2 py-1 rounded-full border bg-gray-50">Ownership ≥ 51%</span>
+      </div>
+    </section>
+
+    <!-- METRIC CARDS -->
+    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <metric-card label="Revenue (LTM)" value="$375mm"></metric-card>
+      <metric-card label="EBITDA (LTM)" value="$60mm"></metric-card>
+      <metric-card label="EBITDA Margin" value="16%"></metric-card>
+      <metric-card label="CapEx (LTM)" value="$8mm"></metric-card>
+      <metric-card label="Cash" value="$15mm"></metric-card>
+      <metric-card label="Debt (New)" value="$300mm"></metric-card>
+      <metric-card label="Term" value="7 years"></metric-card>
+      <metric-card label="Pricing" value="SOFR + 525 bps"></metric-card>
+      <metric-card label="Floor" value="2.00% floor"></metric-card>
+      <metric-card label="Gross Leverage" value="5.4x"></metric-card>
+      <metric-card label="Net Leverage" value="3.69x"></metric-card>
+      <metric-card label="Equity Contrib." value="35%"></metric-card>
+    </section>
+
+    <!-- DEAL OVERVIEW -->
+    <section class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 lg:col-span-8">
+        <div class="rounded-2xl border bg-white p-4 space-y-4">
+          <h2 class="text-lg font-medium flex items-center gap-2">
+            <i data-lucide="notebook-text" class="w-5 h-5"></i> Deal Overview
+          </h2>
+
+          <div class="text-sm space-y-2 text-gray-800">
+            <p><b class="text-gray-500">Company:</b> Pawsitive Brands — Premium pet food & wellness.</p>
+            <p><b class="text-gray-500">Structure:</b> TLB $250mm + RCF $50mm.</p>
+            <p><b class="text-gray-500">Use of Proceeds:</b> $175mm refi, $75mm sponsor dividend.</p>
+            <p><b class="text-gray-500">Security:</b> 1st lien on all assets.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border rounded-xl p-3">
+              <div class="text-xs text-gray-500 font-medium">Covenants</div>
+              <ul class="mt-2 text-sm space-y-1">
+                <li>Total Net Leverage ≤ <b>5.00x</b></li>
+                <li>Interest Coverage ≥ <b>2.25x</b></li>
+                <li>Liquidity ≥ <b>$15mm</b></li>
+              </ul>
+            </div>
+            <div class="border rounded-xl p-3">
+              <div class="text-xs text-gray-500 font-medium">Sponsor</div>
+              <ul class="mt-2 text-sm space-y-1">
+                <li>Summit Hill Partners</li>
+                <li>Ownership ≥ 51%</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <aside class="col-span-12 lg:col-span-4 space-y-4">
+        <div class="rounded-2xl border bg-white p-4">
+          <h3 class="text-sm font-medium flex items-center gap-2">
+            <i data-lucide="brain" class="w-4 h-4"></i> Strategy Recommendation
+          </h3>
+          <div class="mt-2 p-3 text-sm bg-purple-50 border rounded-xl text-purple-900">
+            Flexible SMA / Hybrid
+          </div>
+        </div>
+
+        <div class="rounded-2xl border bg-white p-4">
+          <h3 class="text-sm font-medium flex items-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i> Export
+          </h3>
+          <div class="mt-2 flex flex-wrap gap-2 text-xs">
+            <a class="border px-2 py-1 rounded-lg hover:bg-gray-50">JSON</a>
+            <a class="border px-2 py-1 rounded-lg hover:bg-gray-50">CSV</a>
+            <a class="border px-2 py-1 rounded-lg hover:bg-gray-50">Text</a>
+            <button onclick="window.print()" class="border px-2 py-1 rounded-lg hover:bg-gray-50">PDF</button>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border bg-white p-4">
+          <h3 class="text-sm font-medium flex items-center gap-2">
+            <i data-lucide="paperclip" class="w-4 h-4"></i> Files Used
+          </h3>
+          <ul class="mt-2 text-sm text-gray-700 space-y-1">
+            <li>Pawsitive Compliance Certificate.pdf</li>
+            <li>Pawsitive Notes.pdf</li>
+            <li>Pawsitive Credit Agreement.pdf</li>
+            <li>Pawsitive CIM.pdf</li>
+            <li>Pawsitive Term Sheet.pdf</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+
+    <!-- FINANCIALS + STRUCTURE -->
+    <section class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 lg:col-span-6">
+        <div class="rounded-2xl border bg-white p-4">
+          <h2 class="text-lg font-medium flex items-center gap-2">
+            <i data-lucide="banknote" class="w-5 h-5"></i> Financials
+          </h2>
+          <table class="mt-2 w-full text-sm">
+            <thead>
+              <tr class="text-gray-500">
+                <th></th><th class="text-right">2023</th><th class="text-right">2024</th><th class="text-right">LTM</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y">
+              <tr><td>Revenue</td><td class="text-right">340</td><td class="text-right">360</td><td class="text-right font-medium">375</td></tr>
+              <tr><td>EBITDA</td><td class="text-right">52</td><td class="text-right">57</td><td class="text-right font-medium">60</td></tr>
+              <tr><td>Margin</td><td class="text-right">15%</td><td class="text-right">15.5%</td><td class="text-right font-medium">16%</td></tr>
+              <tr><td>CapEx</td><td class="text-right">7</td><td class="text-right">8</td><td class="text-right font-medium">8</td></tr>
+              <tr><td>Cash</td><td class="text-right">12</td><td class="text-right">14</td><td class="text-right font-medium">15</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-span-12 lg:col-span-6">
+        <div class="rounded-2xl border bg-white p-4">
+          <h2 class="text-lg font-medium flex items-center gap-2">
+            <i data-lucide="scale" class="w-5 h-5"></i> Structure & Terms
+          </h2>
+          <table class="mt-2 w-full text-sm">
+            <tbody class="divide-y">
+              <tr><td>Debt Amount</td><td class="text-right font-medium">$300mm</td></tr>
+              <tr><td>Use of Proceeds</td><td class="text-right font-medium">$175mm refi / $75mm dividend</td></tr>
+              <tr><td>Term</td><td class="text-right font-medium">7 years</td></tr>
+              <tr><td>Pricing</td><td class="text-right font-medium">SOFR + 525 bps</td></tr>
+              <tr><td>Structure</td><td class="text-right font-medium">TLB $250mm / RCF $50mm</td></tr>
+              <tr><td>Equity</td><td class="text-right font-medium">35%</td></tr>
+              <tr><td>Leverage</td><td class="text-right font-medium">5.4x / 3.69x</td></tr>
+              <tr><td>Security</td><td class="text-right font-medium">1st lien</td></tr>
+              <tr><td>Covenants</td><td class="text-right font-medium">Net Lev ≤ 5.0x; IC ≥ 2.25x; Liquidity ≥ $15mm</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- COVENANTS -->
+    <section class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 lg:col-span-6">
+        <div class="rounded-2xl border bg-white p-4">
+          <h2 class="text-lg font-medium flex items-center gap-2">
+            <i data-lucide="shield" class="w-5 h-5"></i> Covenant Metrics
+          </h2>
+          <table class="mt-2 w-full text-sm">
+            <thead>
+              <tr class="text-gray-500">
+                <th></th><th class="text-right">2023</th><th class="text-right">2024</th><th class="text-right">LTM</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y">
+              <tr><td>Total Net Leverage</td><td class="text-right">4.9x</td><td class="text-right">5.1x</td><td class="text-right font-medium">5.0x</td></tr>
+              <tr><td>Interest Coverage</td><td class="text-right">2.3x</td><td class="text-right">2.4x</td><td class="text-right font-medium">2.25x</td></tr>
+              <tr><td>Liquidity</td><td class="text-right">$16</td><td class="text-right">$17</td><td class="text-right font-medium">$15</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANALYSIS -->
+    <section class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 lg:col-span-8">
+        <div class="rounded-2xl border bg-white p-4">
+          <h2 class="text-lg font-medium flex items-center gap-2">
+            <i data-lucide="analysis" class="w-5 h-5"></i> Analysis & Commentary
+          </h2>
+
+          <div class="mt-3 grid md:grid-cols-2 gap-3 text-sm">
+            <div class="rounded-xl border p-3">
+              <div class="text-xs text-gray-500">Key Strengths</div>
+              <ul class="mt-2 list-disc list-inside space-y-1">
+                <li>Brand loyalty</li>
+                <li>Clean-label ingredients</li>
+                <li>Recurring DTC revenue</li>
+                <li>High retention</li>
+              </ul>
+            </div>
+            <div class="rounded-xl border p-3">
+              <div class="text-xs text-gray-500">Key Risks</div>
+              <ul class="mt-2 list-disc list-inside space-y-1">
+                <li>Covenant breach</li>
+                <li>Insolvency risk</li>
+                <li>Cross-default</li>
+                <li>MAC events</li>
+              </ul>
+            </div>
+          </div>
+
+          <p class="mt-3 text-sm text-gray-700">
+            Notes: Summary only. See full Credit Agreement.
+          </p>
+        </div>
+      </div>
+
+      <!-- JSON viewer -->
+      <div class="col-span-12 lg:col-span-4">
+        <div class="rounded-2xl border bg-white p-4">
+          <h3 class="text-sm font-medium flex items-center gap-2">
+            <i data-lucide="code" class="w-4 h-4"></i> Final JSON
+          </h3>
+          <details class="mt-2 text-xs">
+            <summary class="cursor-pointer text-gray-600">Show JSON</summary>
+            <pre class="mt-3 p-3 bg-gray-100 rounded-lg overflow-x-auto">
+{ ... your JSON content ... }
+            </pre>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMMENTS -->
+    <section>
+      <!-- (Use your existing comments block — unchanged) -->
+    </section>
+
+    <!-- DATA ROOM -->
+    <section>
+      <!-- (Use your existing data room block — unchanged) -->
+    </section>
+
+    <!-- CLIENT COMMUNICATIONS -->
+    <section>
+      <!-- (Use your existing comms block — unchanged) -->
+    </section>
+
+  </main>
+
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+
+  <!-- METRIC CARD WEB COMPONENT -->
+  <script>
+    customElements.define('metric-card', class extends HTMLElement {
+      connectedCallback() {
+        const label = this.getAttribute("label") || "";
+        const value = this.getAttribute("value") || "";
+        this.innerHTML = `
+          <div class="rounded-2xl border bg-white p-3">
+            <div class="text-xs text-gray-500">${label}</div>
+            <div class="text-lg font-semibold text-gray-900">${value}</div>
+          </div>`;
+      }
+    });
+  </script>
+
+</body>
+</html>
