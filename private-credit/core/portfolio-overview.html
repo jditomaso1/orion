@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Deal Comparison — Core</title>
+  <title>Deal Comparison — Private Credit</title>
 
-  <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: "Poppins", sans-serif;
       background: #f5f6f8;
     }
   </style>
@@ -50,6 +53,8 @@
           icon.style.transform = "rotate(90deg)";
         }
       }
+
+      if (window.lucide) window.lucide.createIcons();
     }
     injectSidebar();
   </script>
@@ -58,51 +63,60 @@
   <main class="flex-1 ml-64 p-8 space-y-10">
 
     <!-- HEADER -->
-    <div>
-      <h1 class="text-3xl font-semibold tracking-tight text-gray-900">
-        Deal Comparison
-      </h1>
-      <p class="text-gray-500 text-sm mt-1">
-        Compare pricing, structure, covenants, and deal terms across transactions.
-      </p>
+    <div class="flex items-center gap-3">
+      <i data-lucide="columns" class="w-6 h-6"></i>
+      <h1 class="text-3xl font-semibold tracking-tight text-gray-900">Deal Comparison</h1>
     </div>
 
-    <!-- DEAL SELECTOR -->
-    <section class="bg-white border rounded-2xl p-6">
-      <h2 class="text-lg font-semibold text-gray-800 mb-4">Select Deals</h2>
+    <p class="text-gray-500 text-sm -mt-4">
+      Side-by-side comparison of structures, pricing, leverage, covenants, and key considerations.
+    </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-        <select class="p-3 border rounded-lg">
+    <!-- DEAL SELECTOR -->
+    <section class="rounded-2xl border bg-white p-6">
+      <h2 class="text-lg font-semibold flex items-center gap-2 mb-4">
+        <i data-lucide="list-filter" class="w-5 h-5"></i>
+        Select Deals
+      </h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <select class="p-3 border rounded-lg text-sm text-gray-700">
           <option>Select Deal A</option>
         </select>
-
-        <select class="p-3 border rounded-lg">
+        <select class="p-3 border rounded-lg text-sm text-gray-700">
           <option>Select Deal B</option>
         </select>
-
-        <select class="p-3 border rounded-lg">
+        <select class="p-3 border rounded-lg text-sm text-gray-700">
           <option>Select Deal C (optional)</option>
         </select>
       </div>
     </section>
 
-    <!-- 3-COLUMN GRID -->
+    <!-- THREE-COLUMN COMPARISON GRID -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      <!-- Pricing -->
-      <div class="bg-white p-6 rounded-2xl border shadow-sm">
-        <h2 class="text-lg font-semibold text-gray-800 mb-3">Pricing</h2>
+      <!-- PRICING -->
+      <div class="rounded-2xl border bg-white p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3 flex gap-2 items-center">
+          <i data-lucide="wallet" class="w-5 h-5"></i>
+          Pricing
+        </h2>
+
         <ul class="text-sm text-gray-700 space-y-2">
           <li>• Spread: <strong>L+ 550–650</strong></li>
           <li>• OID: <strong>97–99</strong></li>
-          <li>• Floor: <strong>1.00%</strong></li>
+          <li>• Floor: <strong>1.0%</strong></li>
           <li>• Fees: <strong>150–225 bps</strong></li>
         </ul>
       </div>
 
-      <!-- Structure -->
-      <div class="bg-white p-6 rounded-2xl border shadow-sm">
-        <h2 class="text-lg font-semibold text-gray-800 mb-3">Structure</h2>
+      <!-- STRUCTURE -->
+      <div class="rounded-2xl border bg-white p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3 flex gap-2 items-center">
+          <i data-lucide="building" class="w-5 h-5"></i>
+          Structure
+        </h2>
+
         <ul class="text-sm text-gray-700 space-y-2">
           <li>• Type: <strong>Unitranche / 1st Lien</strong></li>
           <li>• Leverage: <strong>4.0–5.5x</strong></li>
@@ -111,13 +125,17 @@
         </ul>
       </div>
 
-      <!-- Covenants -->
-      <div class="bg-white p-6 rounded-2xl border shadow-sm">
-        <h2 class="text-lg font-semibold text-gray-800 mb-3">Covenants</h2>
+      <!-- COVENANTS -->
+      <div class="rounded-2xl border bg-white p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3 flex gap-2 items-center">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+          Covenants
+        </h2>
+
         <ul class="text-sm text-gray-700 space-y-2">
           <li>• Financial Covenant: <strong>1 maintenance test</strong></li>
           <li>• Reporting: <strong>Quarterly</strong></li>
-          <li>• Builder Basket: <strong>50% CNI</strong></li>
+          <li>• Builders Basket: <strong>50% CNI</strong></li>
           <li>• Incremental: <strong>MFN 50 bps</strong></li>
         </ul>
       </div>
@@ -125,15 +143,23 @@
     </section>
 
     <!-- NOTES -->
-    <section class="bg-white border rounded-2xl p-6">
-      <h2 class="text-lg font-semibold text-gray-800 mb-3">Notes & Considerations</h2>
+    <section class="rounded-2xl border bg-white p-6">
+      <h2 class="text-lg font-semibold text-gray-800 mb-3 flex gap-2 items-center">
+        <i data-lucide="sticky-note" class="w-5 h-5"></i>
+        Notes & Considerations
+      </h2>
+
       <textarea
-        class="w-full h-32 p-4 border rounded-lg text-sm text-gray-700"
+        class="w-full h-32 p-4 border rounded-lg text-gray-700 text-sm"
         placeholder="Add commentary or comparison notes..."
       ></textarea>
     </section>
 
   </main>
+
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+  </script>
 
 </body>
 </html>
