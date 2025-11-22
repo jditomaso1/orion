@@ -223,20 +223,38 @@
           type: "linear",
           min: 0,
           max: 7,
-          ticks: { display: false },
+          ticks: {
+            callback: (v) => {
+              const labels = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+              return labels[v] || "";
+            },
+            color: "#6b7280", // soft gray
+            font: { size: 12 }
+          },
           grid: { display: false }
         },
         y: {
           type: "linear",
           min: 0,
           max: 3,
-          ticks: { display: false },
+          ticks: {
+            callback: (v) => {
+              if (v > 1.5) return "Tech";
+              if (v > 0.5) return "Healthcare";
+              return "";
+            },
+            color: "#6b7280",
+            font: { size: 12 }
+          },
           grid: { display: false }
         }
       },
-      plugins: { legend: { display: false } }
+      plugins: {
+        legend: { display: false }
+      }
     }
   });
+
 
 
   // 6 — Composite Index
