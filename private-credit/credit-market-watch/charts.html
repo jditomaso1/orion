@@ -11,7 +11,9 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Base Page Styles -->
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -30,26 +32,18 @@
     const res = await fetch("/private-credit/sidebar.html");
     document.getElementById("sidebar-placeholder").innerHTML = await res.text();
   
-    // GLOBAL DROPDOWN HANDLER - REQUIRED
+    // GLOBAL DROPDOWN HANDLER
     window.toggleSection = function (id) {
       const section = document.getElementById(id);
       const icon = document.getElementById("icon-" + id);
-  
       if (!section || !icon) return;
-  
       section.classList.toggle("hidden");
-  
-      if (section.classList.contains("hidden")) {
-        icon.style.transform = "rotate(0deg)";
-      } else {
-        icon.style.transform = "rotate(90deg)";
-      }
-  
-      // Remember open section
+      icon.style.transform = section.classList.contains("hidden")
+        ? "rotate(0deg)"
+        : "rotate(90deg)";
       localStorage.setItem("sidebar-open-section", id);
     };
   
-    // Restore last open section
     const last = localStorage.getItem("sidebar-open-section");
     if (last) {
       const section = document.getElementById(last);
@@ -60,25 +54,12 @@
       }
     }
   }
-  
   injectSidebar();
   </script>
-  
- <!-- SIDEBAR -->
-  <!-- <div id="sidebar-placeholder"></div>
-
-  <script>
-    async function injectSidebar() {
-      const res = await fetch("/private-credit/sidebar.html");
-      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-    }
-    injectSidebar();
-  </script> -->
 
   <!-- MAIN CONTENT -->
   <main class="flex-1 ml-64 p-8">
 
-    <!-- PAGE TITLE -->
     <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
       Credit Market Watch — Charts
     </h1>
@@ -87,69 +68,183 @@
       Visual benchmarks across spreads, issuance, volatility, distress, and sector flows.
     </p>
 
-    <!-- GRID OF CHART MODULES -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
       <!-- Spread History -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Historical Spread Trends</h2>
-        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-          Line Chart Placeholder
-        </div>
+        <canvas id="spreadHistoryChart" class="w-full h-64"></canvas>
       </div>
 
       <!-- New Issuance Volume -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">New Issuance Volume</h2>
-        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-          Bar Chart Placeholder
-        </div>
+        <canvas id="issuanceVolumeChart" class="w-full h-64"></canvas>
       </div>
 
       <!-- Default & Distress Indicators -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Default & Distress Indicators</h2>
-        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-          Area Chart Placeholder
-        </div>
+        <canvas id="distressChart" class="w-full h-64"></canvas>
       </div>
 
       <!-- Sector Spread Comparison -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Sector Spread Comparison</h2>
-        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-          Multi-Series Chart Placeholder
-        </div>
+        <canvas id="sectorSpreadChart" class="w-full h-64"></canvas>
       </div>
 
-      <!-- Heatmap: Risk Signals -->
+      <!-- Heatmap -->
       <div class="bg-white rounded-xl shadow-sm p-6 border lg:col-span-2">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Risk Signal Heatmap</h2>
-        <div class="w-full h-72 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-          Heatmap Placeholder
-        </div>
+        <canvas id="heatmapChart" class="w-full h-72"></canvas>
       </div>
 
       <!-- Credit Conditions -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Credit Conditions Index</h2>
-        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-          Composite Index Placeholder
-        </div>
+        <canvas id="creditConditionsChart" class="w-full h-64"></canvas>
       </div>
 
       <!-- Volatility Dashboard -->
       <div class="bg-white rounded-xl shadow-sm p-6 border">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Volatility Dashboard</h2>
-        <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-          Volatility Chart Placeholder
-        </div>
+        <canvas id="volatilityChart" class="w-full h-64"></canvas>
       </div>
 
     </div>
 
   </main>
 
+  <!-- CHART.JS SCRIPTS -->
+  <script>
+  const navy = "#1f3b66";
+  const steel = "#4b647d";
+  const gray = "#9aa5b1";
+
+  // 1 — Line chart (Spreads)
+  new Chart(document.getElementById("spreadHistoryChart"), {
+    type: "line",
+    data: {
+      labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"],
+      datasets: [{
+        label: "Avg 1st Lien Spread (bps)",
+        data: [520,525,530,518,512,505,495,500,508],
+        borderColor: navy,
+        backgroundColor: "transparent",
+        borderWidth: 2,
+        tension: 0.3
+      }]
+    },
+    options: { responsive:true, maintainAspectRatio:false }
+  });
+
+  // 2 — Bar chart (Issuance)
+  new Chart(document.getElementById("issuanceVolumeChart"), {
+    type: "bar",
+    data: {
+      labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+      datasets: [{
+        label: "New Issuance ($B)",
+        data: [8,10,12,9,11,13],
+        backgroundColor: steel
+      }]
+    },
+    options: { responsive:true, maintainAspectRatio:false }
+  });
+
+  // 3 — Area chart (Defaults & Distress)
+  new Chart(document.getElementById("distressChart"), {
+    type: "line",
+    data: {
+      labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+      datasets: [{
+        label: "Default Rate (%)",
+        data: [2.8,3.0,3.1,3.3,3.4,3.2],
+        borderColor: navy,
+        backgroundColor: "rgba(31,59,102,0.2)",
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: { responsive:true, maintainAspectRatio:false }
+  });
+
+  // 4 — Multi-series (Sector spreads)
+  new Chart(document.getElementById("sectorSpreadChart"), {
+    type: "line",
+    data: {
+      labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+      datasets: [
+        { label:"Tech", data:[450,455,460,462,458,455], borderColor: navy, tension:0.3 },
+        { label:"Healthcare", data:[420,425,430,432,429,431], borderColor: steel, tension:0.3 }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false }
+  });
+
+  // 5 — Heatmap (simple mock)
+  const heatmapData = {
+    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+    datasets: [{
+      label: "Risk Scores",
+      data: [
+        { x:"Jan", y:"Tech", v:0.7 },
+        { x:"Feb", y:"Tech", v:0.5 },
+        { x:"Mar", y:"Tech", v:0.6 },
+
+        { x:"Jan", y:"Healthcare", v:0.4 },
+        { x:"Feb", y:"Healthcare", v:0.3 },
+        { x:"Mar", y:"Healthcare", v:0.5 }
+      ],
+      backgroundColor: ctx => {
+        const v = ctx.raw.v;
+        return v > 0.6 ? navy : v > 0.4 ? steel : gray;
+      }
+    }]
+  };
+  new Chart(document.getElementById("heatmapChart"), {
+    type: "bubble",
+    data: heatmapData,
+    options: {
+      responsive:true,
+      maintainAspectRatio:false,
+      scales:{ x:{ type:"category" }, y:{ type:"category" } },
+      plugins:{ legend:{ display:false } }
+    }
+  });
+
+  // 6 — Composite Index
+  new Chart(document.getElementById("creditConditionsChart"), {
+    type: "line",
+    data: {
+      labels:["Jan","Feb","Mar","Apr","May","Jun"],
+      datasets:[{
+        label:"Credit Conditions",
+        data:[48,50,52,49,47,46],
+        borderColor: navy,
+        backgroundColor:"transparent",
+        borderWidth:2,
+        tension:0.3
+      }]
+    },
+    options:{ responsive:true, maintainAspectRatio:false }
+  });
+
+  // 7 — Volatility
+  new Chart(document.getElementById("volatilityChart"), {
+    type:"bar",
+    data:{
+      labels:["HY", "LL", "VIX"],
+      datasets:[{
+        label:"Volatility",
+        data:[5.2,2.1,19.4],
+        backgroundColor:[navy, steel, gray]
+      }]
+    },
+    options:{ responsive:true, maintainAspectRatio:false }
+  });
+  </script>
+
 </body>
 </html>
-
