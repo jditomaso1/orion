@@ -11,41 +11,35 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Issuance Chart -->
-
+  <!-- Chart.js + Matrix Plugin -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.2.0/dist/chartjs-chart-matrix.min.js"></script>
-  
+
+  <!-- Global Theme -->
   <script>
-    // Ensure fonts are fully loaded BEFORE initializing charts
     document.fonts.ready.then(() => {
       Chart.defaults.font.family = "'Poppins', sans-serif";
       Chart.defaults.font.size = 13;
-      Chart.defaults.color = "#374151"; // Tailwind gray-700
-      Chart.defaults.borderColor = "rgba(0,0,0,0.04)";
-  
-      // Legend styling
+      Chart.defaults.color = "#374151"; 
+      Chart.defaults.borderColor = "rgba(0,0,0,0.05)";
+
+      // Legend
       Chart.defaults.plugins.legend.labels.usePointStyle = true;
       Chart.defaults.plugins.legend.labels.pointStyle = "circle";
-      Chart.defaults.plugins.legend.labels.boxWidth = 8;
-      Chart.defaults.plugins.legend.labels.boxHeight = 8;
-      Chart.defaults.plugins.legend.labels.padding = 14;
-  
-      // Bar chart styling
+      Chart.defaults.plugins.legend.labels.padding = 12;
+
+      // Bars
       Chart.defaults.datasets.bar.borderRadius = 10;
-      Chart.defaults.datasets.bar.borderSkipped = false;
-      Chart.defaults.datasets.bar.maxBarThickness = 36;
-  
-      // Tooltips
-      Chart.defaults.plugins.tooltip.backgroundColor = "rgba(15, 23, 42, 0.9)";
+      Chart.defaults.datasets.bar.maxBarThickness = 38;
+
+      // Tooltip
+      Chart.defaults.plugins.tooltip.backgroundColor = "rgba(17, 24, 39, 0.92)";
       Chart.defaults.plugins.tooltip.titleFont.size = 13;
       Chart.defaults.plugins.tooltip.bodyFont.size = 12;
       Chart.defaults.plugins.tooltip.padding = 10;
     });
   </script>
 
-  
   <!-- Base Styles -->
   <style>
     body {
@@ -59,52 +53,31 @@
 
   <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
-
   <script>
     async function injectSidebar() {
-      const res = await fetch("/private-credit/sidebar.html");
-      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-  
-      // Dropdown handler (matches all portal pages)
-      window.toggleSection = function (id) {
-        const section = document.getElementById(id);
-        const icon = document.getElementById("icon-" + id);
-        if (!section || !icon) return;
-        section.classList.toggle("hidden");
-        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
-        localStorage.setItem("sidebar-open-section", id);
-      };
-  
-      // Restore last open section
-      const last = localStorage.getItem("sidebar-open-section");
-      if (last) {
-        const section = document.getElementById(last);
-        const icon = document.getElementById("icon-" + last);
-        if (section && icon) {
-          section.classList.remove("hidden");
-          icon.style.transform = "rotate(90deg)";
-        }
+      try {
+        const res = await fetch("/private-credit/sidebar.html");
+        document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+      } catch (err) {
+        console.error("Sidebar failed to load", err);
       }
     }
-  
     injectSidebar();
   </script>
 
-  <!-- MAIN CONTENT WRAPPER -->
+  <!-- MAIN WRAPPER -->
   <main class="flex-1 ml-64 p-8">
-
-    <!-- PAGE TITLE -->
+    
+    <!-- PAGE HEADER -->
     <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
       Core Dashboard
     </h1>
-
     <p class="text-gray-500 text-[15px] mb-8">
       Firm-wide analytics, investment activity, and key portfolio signals.
     </p>
 
-    <!-- GRID: TOP CARDS -->
+    <!-- TOP CARDS -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
       <div class="bg-white p-6 rounded-xl shadow-sm border">
         <h2 class="text-gray-600 text-sm">AUM</h2>
         <p class="text-2xl font-semibold mt-1">$14.2B</p>
@@ -128,34 +101,25 @@
         <p class="text-2xl font-semibold mt-1">$740M</p>
         <p class="text-xs text-red-500 mt-1">↑ Increasing</p>
       </div>
-
     </div>
 
-    <!-- CHART SECTION -->
+    <!-- ISSUANCE BREAKDOWN -->
     <div class="mt-10 bg-white rounded-xl shadow-sm border p-6">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">Portfolio Trend Overview</h2>
-      <div class="bg-white rounded-xl shadow-sm border p-6 mt-10">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Issuance Breakdown</h2>
-      
-        <canvas id="issuanceChart" class="w-full h-64"></canvas>
-      </div>
-
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Issuance Breakdown</h2>
+      <canvas id="issuanceChart" class="w-full h-64"></canvas>
     </div>
 
     <!-- SPLIT ROW -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
 
-      <!-- Sector Exposure -->
+      <!-- PIE CHART -->
       <div class="bg-white rounded-xl shadow-sm border p-6">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Sector Exposure</h2>
-      
-        <!-- Pie Chart -->
-        <!-- <canvas id="sectorExposureChart" class="w-full h-28 mb-4"></canvas> -->
-        <div class="w-52 h-52 mx-auto">
+
+        <div class="w-56 h-56 mx-auto">
           <canvas id="sectorExposureChart"></canvas>
         </div>
 
-        <!-- Breakdown List -->
         <ul class="text-sm text-gray-700 mt-4 space-y-1">
           <li>• Tech: <strong>22%</strong></li>
           <li>• Healthcare: <strong>19%</strong></li>
@@ -165,17 +129,18 @@
         </ul>
       </div>
 
-      <!-- Risk Overview -->
+      <!-- HEATMAP -->
       <div class="bg-white rounded-xl shadow-sm border p-6">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Risk Overview</h2>
-          <!-- Heatmap Canvas -->
-          <div class="w-full" style="height:200px;">
-            <canvas id="riskHeatmap"></canvas>
-          </div>
-        <ul class="text-sm text-gray-700 space-y-2">
+
+        <div class="w-full" style="height:180px;">
+          <canvas id="riskHeatmap"></canvas>
+        </div>
+
+        <ul class="text-sm text-gray-700 space-y-2 mt-4">
           <li>⚠️ Watchlist: <strong>18 companies</strong></li>
           <li>🔥 Tier-3 risk: <strong>4 names</strong></li>
-          <li>📉 Markdowns in last 90 days: <strong>$210M</strong></li>
+          <li>📉 Markdowns (90d): <strong>$210M</strong></li>
           <li>⏳ Avg. monitoring cadence: <strong>6.7 weeks</strong></li>
         </ul>
       </div>
@@ -183,74 +148,55 @@
     </div>
 
   </main>
-  
+
+  <!-- CHART SCRIPTS -->
   <script>
-  const ctx = document.getElementById('issuanceChart').getContext('2d');
-  
-  const issuanceChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Unitranche', 'First Lien', 'Second Lien', 'Mezzanine', 'ABL', 'Hybrid'],
-      datasets: [{
-        label: 'Deal Volume ($MM)',
-        data: [4200, 3100, 900, 650, 1200, 480], // MOCK DATA
-        backgroundColor: [
-          'rgba(54, 162, 235, 0.6)',
-          'rgba(75, 192, 192, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(153, 102, 255, 0.6)',
-          'rgba(201, 203, 207, 0.6)'
-        ],
-        borderColor: [
-          'rgba(54, 162, 235, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(255, 99, 132, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(201, 203, 207, 1)'
-        ],
-        borderWidth: 1,
-        borderRadius: 6
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: value => '$' + value + 'MM'
+    // Bar (Issuance)
+    new Chart(document.getElementById("issuanceChart"), {
+      type: "bar",
+      data: {
+        labels: ['Unitranche', 'First Lien', 'Second Lien', 'Mezzanine', 'ABL', 'Hybrid'],
+        datasets: [{
+          label: 'Deal Volume ($MM)',
+          data: [4200, 3100, 900, 650, 1200, 480],
+          backgroundColor: [
+            "rgba(59,130,246,0.7)",
+            "rgba(34,197,94,0.7)",
+            "rgba(234,179,8,0.7)",
+            "rgba(239,68,68,0.7)",
+            "rgba(139,92,246,0.7)",
+            "rgba(107,114,128,0.7)"
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: v => '$' + v + 'MM'
+            }
           }
         }
       }
-    }
-  });
+    });
   </script>
 
-
   <script>
-    const sectorCtx = document.getElementById("sectorExposureChart").getContext("2d");
-      
-    new Chart(sectorCtx, {
+    // Pie (Sector Exposure)
+    new Chart(document.getElementById("sectorExposureChart"), {
       type: "pie",
       data: {
         labels: ["Tech", "Healthcare", "Industrials", "Business Services", "Other"],
         datasets: [{
-          data: [22, 19, 17, 14, 28], // MOCK DATA
+          data: [22, 19, 17, 14, 28],
           backgroundColor: [
-            "rgba(54, 162, 235, 0.7)",
-            "rgba(75, 192, 192, 0.7)",
-            "rgba(255, 206, 86, 0.7)",
-            "rgba(255, 99, 132, 0.7)",
-            "rgba(153, 102, 255, 0.7)"
-          ],
-          borderColor: [
-            "rgba(54, 162, 235, 1)",
-            "rgba(75, 192, 192, 1)",
-            "rgba(255, 206, 86, 1)",
-            "rgba(255, 99, 132, 1)",
-            "rgba(153, 102, 255, 1)"
+            "rgba(59,130,246,0.8)",
+            "rgba(34,197,94,0.8)",
+            "rgba(234,179,8,0.8)",
+            "rgba(239,68,68,0.8)",
+            "rgba(139,92,246,0.8)"
           ],
           borderWidth: 1
         }]
@@ -261,57 +207,41 @@
       }
     });
   </script>
-  
+
   <script>
+    // Heatmap (Risk)
     const heatCtx = document.getElementById("riskHeatmap").getContext("2d");
-  
-    // Mock heatmap (3x3 grid of risk buckets)
-    const riskData = {
-      labels: ["Low", "Medium", "High"], // x-axis ratings
-      datasets: [
-        {
+
+    new Chart(heatCtx, {
+      type: "matrix",
+      data: {
+        datasets: [{
           label: "Risk Heatmap",
           data: [
-            // ROW 1 — Performing
-            { x: "Low",    y: "Performing", value: 2 },
+            { x: "Low", y: "Performing", value: 2 },
             { x: "Medium", y: "Performing", value: 5 },
-            { x: "High",   y: "Performing", value: 1 },
-  
-            // ROW 2 — Monitored
-            { x: "Low",    y: "Monitored", value: 3 },
+            { x: "High", y: "Performing", value: 1 },
+            { x: "Low", y: "Monitored", value: 3 },
             { x: "Medium", y: "Monitored", value: 7 },
-            { x: "High",   y: "Monitored", value: 4 },
-  
-            // ROW 3 — Watchlist
-            { x: "Low",    y: "Watchlist", value: 1 },
+            { x: "High", y: "Monitored", value: 4 },
+            { x: "Low", y: "Watchlist", value: 1 },
             { x: "Medium", y: "Watchlist", value: 4 },
-            { x: "High",   y: "Watchlist", value: 6 }
+            { x: "High", y: "Watchlist", value: 6 }
           ],
           backgroundColor: ctx => {
             const v = ctx.raw.value;
-            if (v <= 2) return "rgba(75, 192, 192, .7)";   // green
-            if (v <= 4) return "rgba(255, 206, 86, .7)";   // yellow
-            if (v <= 6) return "rgba(255, 159, 64, .7)";   // orange
-            return "rgba(255, 99, 132, .7)";               // red
+            if (v <= 2) return "rgba(34,197,94,0.75)";    
+            if (v <= 4) return "rgba(234,179,8,0.75)";    
+            if (v <= 6) return "rgba(249,115,22,0.75)";   
+            return "rgba(239,68,68,0.75)";               
           },
+          borderColor: "rgba(255,255,255,0.7)",
           borderWidth: 1,
-          borderColor: "rgba(255,255,255,0.6)"
-        }
-      ]
-    };
-  
-    new Chart(heatCtx, {
-      type: "matrix",
-      data: riskData,
+          width: () => 38,
+          height: () => 26
+        }]
+      },
       options: {
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: ctx => `Companies: ${ctx.raw.value}`
-            }
-          }
-        },
         scales: {
           x: {
             type: "category",
@@ -324,16 +254,18 @@
             grid: { display: false }
           }
         },
-      
-        // *** FINAL FIXED DIMENSIONS ***
-        layout: { padding: 4 },
-        cellWidth: 30,
-        cellHeight: 18
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => `Companies: ${ctx.raw.value}`
+            }
+          }
+        },
+        layout: { padding: 6 }
       }
     });
-
   </script>
 
-  
 </body>
 </html>
