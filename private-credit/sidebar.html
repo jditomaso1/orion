@@ -424,6 +424,20 @@ function toggleSection(id) {
     icon.style.transform = "rotate(90deg)";
   }
 }
+
+// Restore last open section
+document.addEventListener("DOMContentLoaded", () => {
+  const last = localStorage.getItem("sidebar-open-section");
+  if (last) {
+    const section = document.getElementById(last);
+    const icon = document.getElementById("icon-" + last);
+    if (section && icon) {
+      section.classList.remove("hidden");
+      icon.style.transform = "rotate(90deg)";
+    }
+  }
+});
+  
 </script>
 <!-- WRAP PAGE CONTENT WITH THIS DIV -->
 <!--<div class="ml-64">-->
