@@ -282,17 +282,20 @@
               };
               return labels[value] || "";
             },
-            color: "#6b7280",
-            font: { size: 14 }
+            color: "#374151",       // darker so it shows
+            font: { size: 14, weight: "500" }
           },
-          grid: { display: true }
+          grid: {
+            display: true,          // ← TURN GRID BACK ON
+            color: "#e5e7eb",       // light gray grid
+            lineWidth: 1
+          },
+          border: {
+            display: true,          // ← RESTORE Y-AXIS LINE
+            color: "#9ca3af",
+            width: 1
+          }
         }
-      },
-      plugins: {
-        legend: { display: false }
-      }
-    }
-  });
 
 
   // 6 — Composite Index
