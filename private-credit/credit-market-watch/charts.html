@@ -190,45 +190,40 @@
   });
 
   // 5 — Heatmap 
-  // 5 — Heatmap with larger bubbles and more sectors
+  // 5 — Heatmap 
   const heatmapData = {
     labels: ["Jan","Feb","Mar","Apr","May","Jun"],
     datasets: [{
       label: "Risk Scores",
       data: [
-        // TECH (y = 5)
-        { x: 1, y: 5, r: 30, v: 0.70 }, // Jan
-        { x: 2, y: 5, r: 26, v: 0.60 }, // Feb
-        { x: 3, y: 5, r: 28, v: 0.65 }, // Mar
-        { x: 4, y: 5, r: 32, v: 0.72 }, // Apr
-        { x: 5, y: 5, r: 34, v: 0.75 }, // May
-        { x: 6, y: 5, r: 31, v: 0.68 }, // Jun
-      
-        // HEALTHCARE (y = 4)
+        { x: 1, y: 5, r: 30, v: 0.70 },
+        { x: 2, y: 5, r: 26, v: 0.60 },
+        { x: 3, y: 5, r: 28, v: 0.65 },
+        { x: 4, y: 5, r: 32, v: 0.72 },
+        { x: 5, y: 5, r: 34, v: 0.75 },
+        { x: 6, y: 5, r: 31, v: 0.68 },
+
         { x: 1, y: 4, r: 24, v: 0.40 },
         { x: 2, y: 4, r: 22, v: 0.35 },
         { x: 3, y: 4, r: 26, v: 0.50 },
         { x: 4, y: 4, r: 28, v: 0.55 },
         { x: 5, y: 4, r: 30, v: 0.58 },
         { x: 6, y: 4, r: 27, v: 0.52 },
-      
-        // INDUSTRIALS (y = 3)
+
         { x: 1, y: 3, r: 25, v: 0.55 },
         { x: 2, y: 3, r: 27, v: 0.60 },
         { x: 3, y: 3, r: 23, v: 0.45 },
         { x: 4, y: 3, r: 26, v: 0.50 },
         { x: 5, y: 3, r: 28, v: 0.57 },
         { x: 6, y: 3, r: 30, v: 0.62 },
-      
-        // PET CARE (y = 2)
+
         { x: 1, y: 2, r: 20, v: 0.30 },
         { x: 2, y: 2, r: 22, v: 0.35 },
         { x: 3, y: 2, r: 24, v: 0.40 },
         { x: 4, y: 2, r: 26, v: 0.45 },
         { x: 5, y: 2, r: 28, v: 0.50 },
         { x: 6, y: 2, r: 25, v: 0.38 },
-      
-        // PHARMACEUTICALS (y = 1)
+
         { x: 1, y: 1, r: 26, v: 0.50 },
         { x: 2, y: 1, r: 28, v: 0.55 },
         { x: 3, y: 1, r: 32, v: 0.65 },
@@ -242,7 +237,7 @@
       }
     }]
   };
-  
+
   new Chart(document.getElementById("heatmapChart"), {
     type: "bubble",
     data: heatmapData,
@@ -255,10 +250,7 @@
           min: 0,
           max: 7,
           ticks: {
-            callback: (v) => {
-              const labels = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-              return labels[v] || "";
-            },
+            callback: (v) => ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun"][v] || "",
             color: "#6b7280",
             font: { size: 12 }
           },
@@ -270,33 +262,31 @@
           max: 5.5,
           offset: true,
           ticks: {
-            display: true,
             stepSize: 1,
-            callback: (value) => {
-              const labels = {
-                5: "Tech",
-                4: "Healthcare",
-                3: "Industrials",
-                2: "Pet Care",
-                1: "Pharmaceuticals"
-              };
-              return labels[value] || "";
-            },
-            color: "#374151",       // darker so it shows
+            callback: (value) => ({
+              5: "Tech",
+              4: "Healthcare",
+              3: "Industrials",
+              2: "Pet Care",
+              1: "Pharmaceuticals"
+            }[value] || ""),
+            color: "#374151",
             font: { size: 14, weight: "500" }
           },
           grid: {
-            display: true,          // ← TURN GRID BACK ON
-            color: "#e5e7eb",       // light gray grid
+            display: true,
+            color: "#e5e7eb",
             lineWidth: 1
           },
           border: {
-            display: true,          // ← RESTORE Y-AXIS LINE
+            display: true,
             color: "#9ca3af",
             width: 1
           }
         }
-
+      }
+    }
+  });
 
   // 6 — Composite Index
   new Chart(document.getElementById("creditConditionsChart"), {
@@ -314,6 +304,21 @@
     },
     options:{ responsive:true, maintainAspectRatio:false }
   });
+
+  // 7 — Volatility
+  new Chart(document.getElementById("volatilityChart"), {
+    type:"bar",
+    data:{
+      labels:["HY","LL","VIX"],
+      datasets:[{
+        label:"Volatility",
+        data:[5.2,2.1,19.4],
+        backgroundColor:[navy, steel, gray]
+      }]
+    },
+    options:{ responsive:true, maintainAspectRatio:false }
+  });
+
 
   // 7 — Volatility
   new Chart(document.getElementById("volatilityChart"), {
