@@ -1,1 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion Mezzanine & Subordinated Debt Control Center</title>
 
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Icons (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #050816;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border-radius: 999px;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.7rem;
+      line-height: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.85);
+      color: #e5e7eb;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-slate-100 flex flex-col">
+
+  <!-- TOP NAV -->
+  <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-purple-500 via-indigo-500 to-emerald-400 flex items-center justify-center shadow-lg shadow-purple-500/40">
+          <span class="text-sm font-bold tracking-tight">O</span>
+        </div>
+        <div>
+          <div class="text-sm font-semibold tracking-wide text-slate-50">Orion Mezzanine & Subordinated Debt</div>
+          <div class="text-[11px] text-slate-400">AI co-pilot for mezz, PIK, holdco & hybrid capital</div>
+        </div>
+      </div>
+
+      <div class="hidden md:flex items-center gap-4 text-xs">
+        <span class="chip">
+          <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+          Vehicle: Orion Mezzanine Fund I
+        </span>
+        <span class="chip">
+          <span class="h-2 w-2 rounded-full bg-amber-400"></span>
+          Monitoring 32 positions
+        </span>
+        <button class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 text-xs font-semibold hover:bg-emerald-400 transition">
+          Export IC Pack
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT -->
+  <main class="flex-1">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 grid grid-cols-1 lg:grid-cols-[290px,1fr] gap-6">
+
+      <!-- LEFT SIDEBAR -->
+      <aside class="space-y-6">
+        <!-- Vehicle selector -->
+        <section class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">VEHICLES</h2>
+            <span class="text-[11px] text-slate-500">Mock book</span>
+          </div>
+          <div class="space-y-2 text-xs">
+            <button class="w-full text-left px-3 py-2 rounded-xl bg-slate-900 border border-emerald-500/60">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-slate-50">Orion Mezz Fund I</span>
+                <span class="text-[11px] text-emerald-400">Core book</span>
+              </div>
+              <div class="flex items-center justify-between mt-1 text-[11px] text-slate-400">
+                <span>Commit: $400MM (mock)</span>
+                <span>Positions: 22</span>
+              </div>
+            </button>
+
+            <button class="w-full text-left px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-600">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-slate-100">Orion Hybrid Capital</span>
+                <span class="text-[11px] text-slate-400">PIK / prefs</span>
+              </div>
+              <div class="flex items-center justify-between mt-1 text-[11px] text-slate-500">
+                <span>Commit: $250MM</span>
+                <span>Positions: 10</span>
+              </div>
+            </button>
+          </div>
+        </section>
+
+        <!-- Vehicle KPIs -->
+        <section class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">VEHICLE SNAPSHOT</h2>
+            <span class="text-[11px] text-slate-500">Key metrics</span>
+          </div>
+          <div class="space-y-3 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Capital deployed</span>
+              <span class="text-slate-100 font-medium">$280MM (70%)</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Blended cash coupon</span>
+              <span class="text-emerald-400 font-medium">8.7%</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Blended all-in yield</span>
+              <span class="text-slate-100 font-medium">13.4%</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Equity kicker coverage</span>
+              <span class="text-slate-100 font-medium">71% positions</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Orion Agent controls -->
+        <section class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">ORION AGENT</h2>
+            <span class="text-[11px] text-slate-500">Deployment & monitoring</span>
+          </div>
+
+          <div class="space-y-3 text-[11px]">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-400">Mode</span>
+              <select class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] w-36 text-slate-100 focus:outline-none focus:border-emerald-500">
+                <option>Monitor only</option>
+                <option>Suggest trades</option>
+                <option>Simulate portfolio</option>
+              </select>
+            </div>
+
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-400">Primary objective</span>
+              <select class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] w-40 text-slate-100 focus:outline-none focus:border-emerald-500">
+                <option>Maximize IRR</option>
+                <option>Protect downside</option>
+                <option>Increase equity participation</option>
+                <option>Balance cash vs PIK</option>
+              </select>
+            </div>
+
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-400">Max moves / quarter</span>
+              <select class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] w-32 text-slate-100 focus:outline-none focus:border-emerald-500">
+                <option>≤ 5 positions</option>
+                <option>≤ 10 positions</option>
+                <option>No cap</option>
+              </select>
+            </div>
+
+            <button class="w-full mt-3 py-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-semibold hover:bg-emerald-400 transition">
+              Run Mezzanine Portfolio Scan
+            </button>
+          </div>
+        </section>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <section class="space-y-6">
+        <!-- Row 1: Portfolio overview + Health -->
+        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,2.1fr),minmax(0,1.4fr)] gap-6">
+
+          <!-- Portfolio overview -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h2 class="text-xs font-semibold text-slate-300 tracking-wide">PORTFOLIO OVERVIEW</h2>
+                <p class="text-[11px] text-slate-500">Mezzanine & subordinated debt – mock data</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs mb-5">
+              <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">Active positions</div>
+                <div class="mt-1 text-lg font-semibold text-slate-50">22</div>
+                <div class="mt-1 text-[11px] text-slate-500">Plus 10 in pipeline</div>
+              </div>
+
+              <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">Weighted attach / detach</div>
+                <div class="mt-1 text-lg font-semibold text-slate-50">4.2x / 6.3x</div>
+                <div class="mt-1 text-[11px] text-slate-500">Senior at ~3.0x</div>
+              </div>
+
+              <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">Cash vs PIK mix</div>
+                <div class="mt-1 text-lg font-semibold text-slate-50">61% / 39%</div>
+                <div class="mt-1 text-[11px] text-slate-500">On coupon component</div>
+              </div>
+
+              <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">Equity kicker</div>
+                <div class="mt-1 text-lg font-semibold text-emerald-400">71% deals</div>
+                <div class="mt-1 text-[11px] text-slate-500">Warrants / co-invest</div>
+              </div>
+            </div>
+
+            <!-- Sector & structure mix -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px]">
+              <!-- Sector mix -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-slate-400 uppercase tracking-wide">Sector mix (by exposure)</span>
+                  <span class="text-slate-500">Top sectors</span>
+                </div>
+                <div class="space-y-2">
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Business services</span>
+                      <span class="text-slate-400">29%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[29%] rounded-full bg-gradient-to-r from-sky-400 to-emerald-400"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Healthcare / pharma services</span>
+                      <span class="text-slate-400">24%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[24%] rounded-full bg-gradient-to-r from-emerald-400 to-lime-400"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Software / tech-enabled</span>
+                      <span class="text-slate-400">21%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[21%] rounded-full bg-gradient-to-r from-indigo-400 to-fuchsia-400"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Structure mix -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-slate-400 uppercase tracking-wide">Structure mix (by count)</span>
+                  <span class="text-slate-500">Instrument types</span>
+                </div>
+                <div class="space-y-2">
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Classic second lien / mezz</span>
+                      <span class="text-slate-400">41%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[41%] rounded-full bg-gradient-to-r from-emerald-400 to-teal-400"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Holdco / opco-holdco</span>
+                      <span class="text-slate-400">32%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[32%] rounded-full bg-gradient-to-r from-sky-400 to-indigo-400"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Preferred / hybrid</span>
+                      <span class="text-slate-400">27%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[27%] rounded-full bg-gradient-to-r from-amber-400 to-rose-400"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Health / coverage -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-xs font-semibold text-slate-300 tracking-wide">ORION PORTFOLIO HEALTH</h2>
+              <span class="text-[11px] text-slate-500">Risk, coverage & cash flow</span>
+            </div>
+
+            <div class="flex items-center gap-4 mb-4">
+              <div class="relative">
+                <div class="h-16 w-16 rounded-full border-4 border-emerald-500/80 flex items-center justify-center">
+                  <span class="text-lg font-semibold text-emerald-400">85</span>
+                </div>
+              </div>
+              <div class="text-[11px] space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                  <span class="text-slate-300">Coverage & leverage in “comfort zone” for majority of book</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full bg-amber-300"></span>
+                  <span class="text-slate-300">Select names with tight cash interest coverage</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full bg-rose-400"></span>
+                  <span class="text-slate-300">2 names where equity value nearly exhausted</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-2 text-[11px] mb-4">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Weighted senior leverage</span>
+                <span class="text-slate-100 font-medium">3.2x</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Weighted total leverage</span>
+                <span class="text-slate-100 font-medium">5.7x</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Cash interest coverage</span>
+                <span class="text-slate-100 font-medium">2.3x (median)</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">% coupons fully cash-pay</span>
+                <span class="text-slate-100 font-medium">63%</span>
+              </div>
+            </div>
+
+            <div class="mt-4 text-[11px] text-slate-400 mb-3">
+              Orion flags:
+              <span class="text-slate-100 font-medium">3 positions where toggles, PIK step-ups or covenants are likely to matter in the next 12–18 months.</span>
+            </div>
+
+            <button class="mt-1 w-full py-2 rounded-xl border border-slate-700 text-[11px] text-slate-200 hover:border-emerald-500/70 hover:text-emerald-300 transition flex items-center justify-center gap-2">
+              <span>Open Coverage & Covenant Dashboard</span>
+              <span class="h-3 w-3" data-lucide="shield-check"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Row 2: Pipeline + Watchlist + Actions -->
+        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.5fr),minmax(0,2fr)] gap-6">
+
+          <!-- Pipeline + Watchlist -->
+          <div class="space-y-6">
+            <!-- Deal pipeline -->
+            <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-xs font-semibold text-slate-300 tracking-wide">NEW MEZZANINE PIPELINE</h2>
+                <span class="text-[11px] text-slate-500">AI scored – mock</span>
+              </div>
+
+              <div class="space-y-2 text-[11px]">
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-slate-50">SummitCare Health Services</span>
+                      <span class="chip text-[10px] border-emerald-400/70">High fit</span>
+                    </div>
+                    <div class="mt-1 text-slate-400">
+                      Healthcare services · Sponsor-backed · Mezz tranche at 5.0x · Total leverage 6.0x · Cash/PIK: 7%/4%.
+                    </div>
+                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-emerald-400/70">
+                    Open IC file
+                  </button>
+                </div>
+
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-slate-50">BlueBridge Software (Holdco PIK)</span>
+                      <span class="chip text-[10px] border-amber-400/70">Structure sensitive</span>
+                    </div>
+                    <div class="mt-1 text-slate-400">
+                      SaaS · Low capex · Holdco toggle notes · High equity cushion but volatility in ARR growth.
+                    </div>
+                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-amber-400/70">
+                    Open IC file
+                  </button>
+                </div>
+
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-slate-50">Atlas Industrial Logistics (Pref)</span>
+                      <span class="chip text-[10px] border-slate-500/70">Screen only</span>
+                    </div>
+                    <div class="mt-1 text-slate-400">
+                      Logistics real estate · Pref equity · Heavier capex needs; Orion flags business plan risk.
+                    </div>
+                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-slate-400/70">
+                    Open IC file
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Watchlist -->
+            <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-xs font-semibold text-slate-300 tracking-wide">MEZZANINE WATCHLIST (TOP 5)</h2>
+                <span class="text-[11px] text-slate-500">By coverage + cushion</span>
+              </div>
+
+              <div class="space-y-2 text-[11px]">
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-slate-50">RiverPark Retail Holdings (Mezz)</span>
+                      <span class="chip text-[10px] border-rose-400/70">High risk</span>
+                    </div>
+                    <div class="mt-1 text-slate-400">
+                      DSCR 1.2x; equity cushion shrinking; Orion flags risk of cash-pay pressure and need to toggle.
+                    </div>
+                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-rose-400/70">
+                    View workout memo
+                  </button>
+                </div>
+
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-slate-50">MetroFleet Services (Holdco PIK)</span>
+                      <span class="chip text-[10px] border-amber-400/70">Medium</span>
+                    </div>
+                    <div class="mt-1 text-slate-400">
+                      Mix of cash / PIK; senior leverage elevated; equity sponsor supporting; monitor covenant flexibility.
+                    </div>
+                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-amber-400/70">
+                    View memo
+                  </button>
+                </div>
+
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-slate-50">Clarion Data Systems (Mezz)</span>
+                      <span class="chip text-[10px] border-emerald-400/70">Improving</span>
+                    </div>
+                    <div class="mt-1 text-slate-400">
+                      Growth re-accelerating; interest coverage improving; Orion suggests promoting to “core hold”.
+                    </div>
+                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-emerald-400/70">
+                    View memo
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action pack: allocate, toggle, resize -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-xs font-semibold text-slate-300 tracking-wide">TODAY'S ORION ACTION PACK</h2>
+              <span class="text-[11px] text-slate-500">Generated by Orion</span>
+            </div>
+
+            <div class="mb-3 text-[11px] text-slate-400">
+              Objective: <span class="text-slate-100 font-medium">Rebalance between cash yield, risk, and upside via equity kickers</span>
+            </div>
+
+            <div class="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80">
+              <table class="w-full text-[11px]">
+                <thead class="bg-slate-900/90 text-slate-400 uppercase tracking-wide">
+                  <tr>
+                    <th class="text-left px-3 py-2.5 font-medium">Name</th>
+                    <th class="text-left px-3 py-2.5 font-medium">Action</th>
+                    <th class="text-right px-3 py-2.5 font-medium">Size / Terms</th>
+                    <th class="text-right px-3 py-2.5 font-medium">Rationale</th>
+                    <th class="text-center px-3 py-2.5 font-medium">Include</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-t border-slate-800/60">
+                    <td class="px-3 py-2 text-slate-100">
+                      SummitCare Health Services (Mezz)
+                      <div class="text-[10px] text-slate-500">Healthcare services · Sponsor-backed</div>
+                    </td>
+                    <td class="px-3 py-2 text-emerald-300 font-semibold">Lead tranche</td>
+                    <td class="px-3 py-2 text-right text-slate-100">$25MM @ 7% cash + 5% PIK + warrants</td>
+                    <td class="px-3 py-2 text-right text-emerald-300">
+                      Strong coverage; equity cushion robust; structure attractive vs risk.
+                    </td>
+                    <td class="px-3 py-2 text-center">
+                      <input type="checkbox" checked class="accent-emerald-500">
+                    </td>
+                  </tr>
+
+                  <tr class="border-t border-slate-800/60">
+                    <td class="px-3 py-2 text-slate-100">
+                      RiverPark Retail Holdings (Mezz)
+                      <div class="text-[10px] text-slate-500">Retail · Higher risk</div>
+                    </td>
+                    <td class="px-3 py-2 text-rose-300 font-semibold">De-risk / amend</td>
+                    <td class="px-3 py-2 text-right text-slate-100">
+                      Shift 50% coupon to PIK; tighten covenants; incremental equity from sponsor
+                    </td>
+                    <td class="px-3 py-2 text-right text-amber-300">
+                      Protect cash interest; increase equity buffer to maintain downside protection.
+                    </td>
+                    <td class="px-3 py-2 text-center">
+                      <input type="checkbox" checked class="accent-emerald-500">
+                    </td>
+                  </tr>
+
+                  <tr class="border-t border-slate-800/60">
+                    <td class="px-3 py-2 text-slate-100">
+                      MetroFleet Services (Holdco PIK)
+                      <div class="text-[10px] text-slate-500">Transport services · Holdco</div>
+                    </td>
+                    <td class="px-3 py-2 text-slate-200 font-semibold">Right-size exposure</td>
+                    <td class="px-3 py-2 text-right text-slate-100">Sell $7MM; retain core position</td>
+                    <td class="px-3 py-2 text-right text-slate-200">
+                      Maintain upside; reduce risk from elevated senior leverage and macro sensitivity.
+                    </td>
+                    <td class="px-3 py-2 text-center">
+                      <input type="checkbox" class="accent-emerald-500">
+                    </td>
+                  </tr>
+
+                  <tr class="border-t border-slate-800/60">
+                    <td class="px-3 py-2 text-slate-100">
+                      Clarion Data Systems (Mezz)
+                      <div class="text-[10px] text-slate-500">Tech-enabled services · Improving</div>
+                    </td>
+                    <td class="px-3 py-2 text-emerald-300 font-semibold">Add-on / equity kicker</td>
+                    <td class="px-3 py-2 text-right text-slate-100">+ $10MM @ 6% cash + 6% PIK; higher warrant coverage</td>
+                    <td class="px-3 py-2 text-right text-emerald-300">
+                      Metrics inflecting; increase participation in upside while leverage manageable.
+                    </td>
+                    <td class="px-3 py-2 text-center">
+                      <input type="checkbox" checked class="accent-emerald-500">
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-[11px]">
+              <div class="space-y-1 text-slate-400">
+                <div>Net capital deployed / (freed): <span class="text-slate-100 font-medium">+ $28MM</span></div>
+                <div>
+                  Expected impact (base):
+                  <span class="text-emerald-400 font-medium">+80–120 bps to portfolio IRR</span> ·
+                  Risk: <span class="text-amber-300 font-medium">moderate, manage via coverage thresholds</span>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button class="flex-1 md:flex-none px-3 py-2 rounded-xl border border-slate-700 text-slate-200 hover:border-slate-500">
+                  Export Action List
+                </button>
+                <button class="flex-1 md:flex-none px-3 py-2 rounded-xl bg-emerald-500 text-slate-950 font-semibold hover:bg-emerald-400">
+                  Generate IC / LP Summary
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide && typeof window.lucide.createIcons === "function") {
+        window.lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+</html>
