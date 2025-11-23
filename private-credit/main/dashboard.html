@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion Dashboard — Hybrid Intelligence</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base Styling -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+  
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const section = document.getElementById(last);
+      const icon = document.getElementById("icon-" + last);
+      if (section && icon) {
+        section.classList.remove("hidden");
+        icon.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- HEADER -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
+      Orion Intelligence Dashboard
+    </h1>
+    <p class="text-gray-500 text-[15px] mb-8">
+      Unified view of market conditions, portfolio health, and pipeline momentum.
+    </p>
+
+    <!-- TOP KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+
+      <div class="bg-white shadow-sm p-5 rounded-xl border">
+        <div class="text-gray-500 text-sm">AUM / Exposure</div>
+        <div class="text-2xl font-semibold mt-1">$4.3B</div>
+        <div class="text-xs text-green-600 mt-1">+3.1% MoM</div>
+      </div>
+
+      <div class="bg-white shadow-sm p-5 rounded-xl border">
+        <div class="text-gray-500 text-sm">Portfolio Yield (WAVG)</div>
+        <div class="text-2xl font-semibold mt-1">9.2%</div>
+        <div class="text-xs text-green-600 mt-1">Stable</div>
+      </div>
+
+      <div class="bg-white shadow-sm p-5 rounded-xl border">
+        <div class="text-gray-500 text-sm">Distress Ratio</div>
+        <div class="text-2xl font-semibold mt-1">9.4%</div>
+        <div class="text-xs text-red-600 mt-1">+40 bps</div>
+      </div>
+
+      <div class="bg-white shadow-sm p-5 rounded-xl border">
+        <div class="text-gray-500 text-sm">New Deals (MTD)</div>
+        <div class="text-2xl font-semibold mt-1">142</div>
+        <div class="text-xs text-green-600 mt-1">+18% vs prior month</div>
+      </div>
+
+    </div>
+
+    <!-- MARKET INTELLIGENCE STRIP -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Market Intelligence</h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Live Headlines -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="p-4 bg-gray-50 rounded-xl border hover:bg-gray-100 cursor-pointer transition">
+            <h3 class="font-semibold text-gray-900 text-lg">Private Credit Spreads Widen as Macro Pressures Build</h3>
+            <p class="text-gray-600 text-sm mt-2">Energy + retail driving dispersion as credit conditions tighten.</p>
+            <div class="text-xs text-gray-400 mt-2">2 hours ago</div>
+          </div>
+
+          <div class="p-4 bg-gray-50 rounded-xl border hover:bg-gray-100 cursor-pointer transition">
+            <h3 class="font-semibold text-gray-900 text-lg">Direct Lenders Step Into $4B Software Buyout Deal</h3>
+            <p class="text-gray-600 text-sm mt-2">Volatile syndicated markets enable private capital to lead pricing.</p>
+            <div class="text-xs text-gray-400 mt-2">5 hours ago</div>
+          </div>
+        </div>
+
+        <!-- Live Feeds -->
+        <div class="bg-gray-50 rounded-xl border p-5">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Live Feeds</h3>
+          <ul class="space-y-3 text-sm">
+            <li class="flex justify-between p-3 bg-white rounded-lg border hover:bg-gray-100 cursor-pointer">
+              <span>Reuters Credit Markets</span><span class="text-blue-600 font-semibold">→</span>
+            </li>
+            <li class="flex justify-between p-3 bg-white rounded-lg border hover:bg-gray-100 cursor-pointer">
+              <span>LCD / PitchBook</span><span class="text-blue-600 font-semibold">→</span>
+            </li>
+            <li class="flex justify-between p-3 bg-white rounded-lg border hover:bg-gray-100 cursor-pointer">
+              <span>Bloomberg Direct Lending</span><span class="text-blue-600 font-semibold">→</span>
+            </li>
+            <li class="flex justify-between p-3 bg-white rounded-lg border hover:bg-gray-100 cursor-pointer">
+              <span>WSJ Credit & Markets</span><span class="text-blue-600 font-semibold">→</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PORTFOLIO INSIGHTS -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border mb-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Portfolio Insights</h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div class="p-4 bg-gray-50 rounded-xl border">
+          <h3 class="font-semibold text-gray-900">Sector Exposure</h3>
+          <p class="text-sm text-gray-600 mt-1">Tech (26%), Healthcare (24%), Industrials (19%)</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-xl border">
+          <h3 class="font-semibold text-gray-900">Risk Flags</h3>
+          <p class="text-sm text-gray-600 mt-1">4 credits on Watchlist, 2 with leverage >7.5x</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-xl border">
+          <h3 class="font-semibold text-gray-900">Ratings Drift</h3>
+          <p class="text-sm text-gray-600 mt-1">6 trending negative, 2 trending positive</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PIPELINE SNAPSHOT -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Pipeline Snapshot</h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div class="p-4 bg-gray-50 rounded-xl border">
+          <h3 class="font-semibold text-gray-900">Pass / Decline Mix</h3>
+          <p class="text-sm text-gray-600 mt-1">Passed: 22%, Declined: 61%, In review: 17%</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-xl border">
+          <h3 class="font-semibold text-gray-900">Sponsor Flow</h3>
+          <p class="text-sm text-gray-600 mt-1">67% sponsor-sourced</p>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-xl border">
+          <h3 class="font-semibold text-gray-900">Deal Velocity</h3>
+          <p class="text-sm text-gray-600 mt-1">Average time from screening→IC: 4.8 days</p>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>
