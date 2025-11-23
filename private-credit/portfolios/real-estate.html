@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Orion ETF Control Center</title>
+  <title>Orion Real Estate Control Center</title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: #0b1020;
+      background: #050816;
     }
     .chip {
       display: inline-flex;
@@ -28,7 +28,7 @@
       font-size: 0.7rem;
       line-height: 1rem;
       border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.85);
       color: #e5e7eb;
     }
   </style>
@@ -40,26 +40,26 @@
   <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
       <div class="flex items-center gap-3">
-        <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+        <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-500 via-sky-500 to-amber-400 flex items-center justify-center shadow-lg shadow-emerald-500/40">
           <span class="text-sm font-bold tracking-tight">O</span>
         </div>
         <div>
-          <div class="text-sm font-semibold tracking-wide text-slate-50">Orion ETF Control Center</div>
-          <div class="text-[11px] text-slate-400">AI co-pilot for syndicated loan ETFs</div>
+          <div class="text-sm font-semibold tracking-wide text-slate-50">Orion Real Estate Control Center</div>
+          <div class="text-[11px] text-slate-400">AI co-pilot for real estate credit & equity</div>
         </div>
       </div>
 
       <div class="hidden md:flex items-center gap-4 text-xs">
         <span class="chip">
           <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-          Live: SRLN Synthetic Book
+          Vehicle: Orion RE Income Fund I
         </span>
         <span class="chip">
           <span class="h-2 w-2 rounded-full bg-amber-400"></span>
-          Monitoring: BKLN Shadow
+          Monitoring 37 assets
         </span>
         <button class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 text-xs font-semibold hover:bg-emerald-400 transition">
-          Export Daily Pack
+          Export IC Pack
         </button>
       </div>
     </div>
@@ -67,105 +67,105 @@
 
   <!-- MAIN LAYOUT -->
   <main class="flex-1">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 grid grid-cols-1 lg:grid-cols-[280px,1fr] gap-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 grid grid-cols-1 lg:grid-cols-[290px,1fr] gap-6">
 
-      <!-- LEFT SIDEBAR: BOOK + FILTERS -->
+      <!-- LEFT SIDEBAR -->
       <aside class="space-y-6">
-        <!-- Book selector -->
-        <section class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
+        <!-- Fund selector -->
+        <section class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
           <div class="flex items-center justify-between mb-3">
-            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">BOOK SELECTION</h2>
-            <span class="text-[11px] text-slate-500">Live sandbox</span>
+            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">VEHICLES</h2>
+            <span class="text-[11px] text-slate-500">Mock book</span>
           </div>
-          <div class="space-y-2">
-            <button class="w-full text-left px-3 py-2 rounded-xl bg-slate-900 border border-emerald-500/60 text-xs">
+          <div class="space-y-2 text-xs">
+            <button class="w-full text-left px-3 py-2 rounded-xl bg-slate-900 border border-emerald-500/60">
               <div class="flex items-center justify-between">
-                <span class="font-semibold text-slate-50">SRLN – Orion Overlay</span>
-                <span class="text-[11px] text-emerald-400">Active</span>
+                <span class="font-semibold text-slate-50">Orion RE Income Fund I</span>
+                <span class="text-[11px] text-emerald-400">Core / Core+</span>
               </div>
               <div class="flex items-center justify-between mt-1 text-[11px] text-slate-400">
-                <span>AUM: $7.2B (mock)</span>
-                <span>Loans: 342</span>
+                <span>Equity: $600MM (mock)</span>
+                <span>Assets: 23</span>
               </div>
             </button>
 
-            <button class="w-full text-left px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs hover:border-slate-600">
+            <button class="w-full text-left px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-600">
               <div class="flex items-center justify-between">
-                <span class="font-semibold text-slate-100">BKLN – Shadow Book</span>
-                <span class="text-[11px] text-slate-400">Passive</span>
+                <span class="font-semibold text-slate-100">Orion RE Value-Add</span>
+                <span class="text-[11px] text-slate-400">Value-add</span>
               </div>
               <div class="flex items-center justify-between mt-1 text-[11px] text-slate-500">
-                <span>AUM: $6.8B (mock)</span>
-                <span>Loans: 103</span>
+                <span>Equity: $350MM</span>
+                <span>Assets: 14</span>
               </div>
             </button>
           </div>
         </section>
 
-        <!-- Constraints Snapshot -->
-        <section class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
+        <!-- Fund KPIs -->
+        <section class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
           <div class="flex items-center justify-between mb-2">
-            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">KEY CONSTRAINTS</h2>
-            <span class="text-[11px] text-slate-500">Auto-checked</span>
+            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">VEHICLE SNAPSHOT</h2>
+            <span class="text-[11px] text-slate-500">Key metrics</span>
           </div>
           <div class="space-y-3 text-[11px]">
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">Max issuer weight</span>
-              <span class="text-slate-100 font-medium">4.0% <span class="text-slate-500">/ 5.0%</span></span>
+              <span class="text-slate-400">Gross asset value (GAV)</span>
+              <span class="text-slate-100 font-medium">$1.45B</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">CCC bucket</span>
-              <span class="text-emerald-400 font-medium">5.2% <span class="text-slate-500">/ 10.0%</span></span>
+              <span class="text-slate-400">Net LTV (weighted)</span>
+              <span class="text-emerald-400 font-medium">54%</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">Top 10 weight</span>
-              <span class="text-amber-300 font-medium">29.7% <span class="text-slate-500">/ 30.0%</span></span>
+              <span class="text-slate-400">Blended cap rate</span>
+              <span class="text-slate-100 font-medium">5.3%</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-400">Cash buffer</span>
-              <span class="text-emerald-400 font-medium">2.3% <span class="text-slate-500">/ 1–3%</span></span>
+              <span class="text-slate-400">Occupancy (weighted)</span>
+              <span class="text-slate-100 font-medium">92%</span>
             </div>
           </div>
         </section>
 
-        <!-- Filters / Agent Mode -->
-        <section class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
+        <!-- Agent controls -->
+        <section class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
           <div class="flex items-center justify-between mb-3">
-            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">AGENT MODE</h2>
-            <span class="text-[11px] text-slate-500">Suggestion engine</span>
+            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">ORION AGENT</h2>
+            <span class="text-[11px] text-slate-500">Monitoring & strategy</span>
           </div>
 
           <div class="space-y-3 text-[11px]">
-            <div class="flex items-center justify-between">
-              <span class="text-slate-400">Objective</span>
-              <select class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-slate-100 w-32 focus:outline-none focus:border-emerald-500">
-                <option>Max yield</option>
-                <option>Min tracking error</option>
-                <option>De-risk (rating)</option>
-                <option>Liquidity focus</option>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-400">Mode</span>
+              <select class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] w-36 text-slate-100 focus:outline-none focus:border-emerald-500">
+                <option>Monitor only</option>
+                <option>Suggest actions</option>
+                <option>Simulate portfolio</option>
               </select>
             </div>
 
-            <div class="flex items-center justify-between">
-              <span class="text-slate-400">Daily turnover limit</span>
-              <select class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-slate-100 w-28 focus:outline-none focus:border-emerald-500">
-                <option>≤ 3%</option>
-                <option>≤ 5%</option>
-                <option>≤ 7%</option>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-400">Priority</span>
+              <select class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] w-40 text-slate-100 focus:outline-none focus:border-emerald-500">
+                <option>Protect downside</option>
+                <option>Maximize income</option>
+                <option>De-lever risk</option>
+                <option>Lease-up & NOI growth</option>
               </select>
             </div>
 
-            <div class="pt-2 flex items-center justify-between">
-              <span class="text-slate-400">Autopilot level</span>
-              <div class="flex gap-1">
-                <span class="chip text-[10px] border-emerald-500/60">Monitor</span>
-                <span class="chip text-[10px]">Suggest</span>
-                <span class="chip text-[10px]">Simulate</span>
-              </div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-400">Max actions / month</span>
+              <select class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] w-32 text-slate-100 focus:outline-none focus:border-emerald-500">
+                <option>≤ 3 assets</option>
+                <option>≤ 7 assets</option>
+                <option>No cap</option>
+              </select>
             </div>
 
             <button class="w-full mt-3 py-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-semibold hover:bg-emerald-400 transition">
-              Run Daily Scan
+              Run Daily Portfolio Scan
             </button>
           </div>
         </section>
@@ -173,248 +173,268 @@
 
       <!-- MAIN CONTENT -->
       <section class="space-y-6">
+        <!-- Row 1: Portfolio overview + Risk -->
+        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,2.1fr),minmax(0,1.4fr)] gap-6">
 
-        <!-- Row 1: Overview + Risk/Health -->
-        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,2fr),minmax(0,1.2fr)] gap-6">
-          <!-- Overview -->
-          <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+          <!-- Portfolio overview -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
             <div class="flex items-center justify-between mb-3">
               <div>
                 <h2 class="text-xs font-semibold text-slate-300 tracking-wide">PORTFOLIO OVERVIEW</h2>
-                <p class="text-[11px] text-slate-500">Synthetic: SRLN book with Orion overlay</p>
-              </div>
-              <span class="chip">
-                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                All tests passing
-              </span>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              <div class="rounded-xl bg-slate-900/70 border border-slate-800 p-3">
-                <div class="text-[11px] text-slate-400">Modeled yield to worst</div>
-                <div class="mt-1 text-lg font-semibold text-emerald-400">7.3%</div>
-                <div class="mt-1 text-[11px] text-slate-500">+0.4% vs benchmark</div>
-              </div>
-
-              <div class="rounded-xl bg-slate-900/70 border border-slate-800 p-3">
-                <div class="text-[11px] text-slate-400">Weighted avg rating</div>
-                <div class="mt-1 text-lg font-semibold text-slate-50">B+</div>
-                <div class="mt-1 text-[11px] text-slate-500">Inside mandate</div>
-              </div>
-
-              <div class="rounded-xl bg-slate-900/70 border border-slate-800 p-3">
-                <div class="text-[11px] text-slate-400">Loans with negative drift</div>
-                <div class="mt-1 text-lg font-semibold text-amber-300">27</div>
-                <div class="mt-1 text-[11px] text-slate-500">8 flagged for review</div>
-              </div>
-
-              <div class="rounded-xl bg-slate-900/70 border border-slate-800 p-3">
-                <div class="text-[11px] text-slate-400">1-day net price move</div>
-                <div class="mt-1 text-lg font-semibold text-slate-50">-0.18 pts</div>
-                <div class="mt-1 text-[11px] text-slate-500">Broadly stable</div>
+                <p class="text-[11px] text-slate-500">Real estate equity & credit – mock data</p>
               </div>
             </div>
 
-            <!-- Sector bar "chart" (static) -->
-            <div class="mt-5">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[11px] text-slate-400 uppercase tracking-wide">Sector mix (weight %)</span>
-                <span class="text-[11px] text-slate-500">Top sectors by exposure</span>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs mb-5">
+              <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">NOI (annualized)</div>
+                <div class="mt-1 text-lg font-semibold text-slate-50">$77.5MM</div>
+                <div class="mt-1 text-[11px] text-slate-500">Same-store NOI +3.1% YoY</div>
               </div>
-              <div class="space-y-2 text-[11px]">
-                <div>
-                  <div class="flex justify-between mb-1">
-                    <span class="text-slate-300">Software & Tech</span>
-                    <span class="text-slate-400">21.4%</span>
+
+              <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">Occupancy</div>
+                <div class="mt-1 text-lg font-semibold text-emerald-400">92%</div>
+                <div class="mt-1 text-[11px] text-slate-500">Stabilized: 95% · Lease-up: 81%</div>
+              </div>
+
+              <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">Weighted avg LTV</div>
+                <div class="mt-1 text-lg font-semibold text-slate-50">54%</div>
+                <div class="mt-1 text-[11px] text-slate-500">Refi risk manageable</div>
+              </div>
+
+              <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">Fixed vs floating</div>
+                <div class="mt-1 text-lg font-semibold text-slate-50">68% / 32%</div>
+                <div class="mt-1 text-[11px] text-slate-500">Hedge coverage 80% of float</div>
+              </div>
+            </div>
+
+            <!-- Property type / geography mix -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px]">
+              <!-- Property type -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-slate-400 uppercase tracking-wide">Property type mix (by GAV)</span>
+                  <span class="text-slate-500">Top segments</span>
+                </div>
+                <div class="space-y-2">
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Multifamily</span>
+                      <span class="text-slate-400">39%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[39%] rounded-full bg-gradient-to-r from-emerald-400 to-sky-400"></div>
+                    </div>
                   </div>
-                  <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
-                    <div class="h-2 w-[21%] rounded-full bg-gradient-to-r from-cyan-400 to-emerald-500"></div>
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Industrial / logistics</span>
+                      <span class="text-slate-400">27%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[27%] rounded-full bg-gradient-to-r from-sky-400 to-indigo-400"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Office</span>
+                      <span class="text-slate-400">14%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[14%] rounded-full bg-gradient-to-r from-amber-400 to-rose-400"></div>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div class="flex justify-between mb-1">
-                    <span class="text-slate-300">Healthcare</span>
-                    <span class="text-slate-400">17.9%</span>
-                  </div>
-                  <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
-                    <div class="h-2 w-[18%] rounded-full bg-gradient-to-r from-fuchsia-400 to-cyan-400"></div>
-                  </div>
+              </div>
+
+              <!-- Geography -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-slate-400 uppercase tracking-wide">Geographic mix (by NOI)</span>
+                  <span class="text-slate-500">Top regions</span>
                 </div>
-                <div>
-                  <div class="flex justify-between mb-1">
-                    <span class="text-slate-300">Services</span>
-                    <span class="text-slate-400">13.2%</span>
+                <div class="space-y-2">
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Sunbelt</span>
+                      <span class="text-slate-400">36%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[36%] rounded-full bg-gradient-to-r from-emerald-400 to-lime-400"></div>
+                    </div>
                   </div>
-                  <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
-                    <div class="h-2 w-[13%] rounded-full bg-gradient-to-r from-amber-400 to-rose-400"></div>
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Coastal gateway</span>
+                      <span class="text-slate-400">31%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[31%] rounded-full bg-gradient-to-r from-sky-400 to-indigo-400"></div>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <div class="flex justify-between mb-1">
-                    <span class="text-slate-300">Industrial</span>
-                    <span class="text-slate-400">11.5%</span>
-                  </div>
-                  <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
-                    <div class="h-2 w-[12%] rounded-full bg-gradient-to-r from-lime-400 to-emerald-500"></div>
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-slate-300">Secondary / tertiary</span>
+                      <span class="text-slate-400">33%</span>
+                    </div>
+                    <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                      <div class="h-2 w-[33%] rounded-full bg-gradient-to-r from-amber-400 to-rose-400"></div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Health / Risk Panel -->
-          <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+          <!-- Risk / health -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
             <div class="flex items-center justify-between mb-3">
-              <h2 class="text-xs font-semibold text-slate-300 tracking-wide">ORION HEALTH SCORE</h2>
-              <span class="text-[11px] text-slate-500">AI composite</span>
+              <h2 class="text-xs font-semibold text-slate-300 tracking-wide">ORION PORTFOLIO HEALTH</h2>
+              <span class="text-[11px] text-slate-500">Forward-looking composite</span>
             </div>
 
             <div class="flex items-center gap-4 mb-4">
               <div class="relative">
                 <div class="h-16 w-16 rounded-full border-4 border-emerald-500/70 flex items-center justify-center">
-                  <span class="text-lg font-semibold text-emerald-400">82</span>
+                  <span class="text-lg font-semibold text-emerald-400">83</span>
                 </div>
               </div>
               <div class="text-[11px] space-y-1">
                 <div class="flex items-center gap-2">
                   <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                  <span class="text-slate-300">Stable aggregate risk</span>
+                  <span class="text-slate-300">Core multifamily / industrial stable</span>
                 </div>
                 <div class="flex items-center gap-2">
                   <span class="h-2 w-2 rounded-full bg-amber-300"></span>
-                  <span class="text-slate-300">Ratings drift cluster in software & media</span>
+                  <span class="text-slate-300">Office & select retail driving risk</span>
                 </div>
                 <div class="flex items-center gap-2">
                   <span class="h-2 w-2 rounded-full bg-rose-400"></span>
-                  <span class="text-slate-300">3 names breaching internal watch thresholds</span>
+                  <span class="text-slate-300">4 loans with refi risk &lt; 18 months</span>
                 </div>
               </div>
             </div>
 
-            <div class="space-y-2 text-[11px]">
+            <div class="space-y-2 text-[11px] mb-4">
               <div class="flex items-center justify-between">
-                <span class="text-slate-400">Downgrade pressure (next 6–12m)</span>
-                <span class="text-amber-300 font-medium">Moderate</span>
+                <span class="text-slate-400">% NOI from “core” bucket</span>
+                <span class="text-emerald-400 font-medium">67%</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-slate-400">Liquidity profile</span>
-                <span class="text-emerald-400 font-medium">Strong</span>
+                <span class="text-slate-400">% NOI on watch</span>
+                <span class="text-amber-300 font-medium">21%</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-slate-400">Doc quality (relative cohort)</span>
-                <span class="text-slate-100 font-medium">Neutral / slightly weak</span>
+                <span class="text-slate-400">% debt maturing in 24 mo.</span>
+                <span class="text-slate-100 font-medium">18%</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Debt service coverage (DSCR)</span>
+                <span class="text-slate-100 font-medium">1.74x weighted</span>
               </div>
             </div>
 
             <button class="mt-4 w-full py-2 rounded-xl border border-slate-700 text-[11px] text-slate-200 hover:border-emerald-500/70 hover:text-emerald-300 transition flex items-center justify-center gap-2">
-              <span>View AI Risk Memo</span>
-              <span class="h-3 w-3" data-lucide="external-link"></span>
+              <span>Open Portfolio Risk Memo</span>
+              <span class="h-3 w-3" data-lucide="file-text"></span>
             </button>
           </div>
         </div>
 
-        <!-- Row 2: Alerts + Watchlist + Trade Suggestions -->
-        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.4fr),minmax(0,2fr)] gap-6">
-          <!-- Alerts & Watchlist -->
+        <!-- Row 2: Pipeline + Watchlist + Actions -->
+        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.5fr),minmax(0,2fr)] gap-6">
+
+          <!-- Pipeline + Watchlist -->
           <div class="space-y-6">
-            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+            <!-- Deal pipeline -->
+            <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
               <div class="flex items-center justify-between mb-3">
-                <h2 class="text-xs font-semibold text-slate-300 tracking-wide">TODAY'S CRITICAL ALERTS</h2>
-                <span class="text-[11px] text-slate-500">Top 3 from Orion</span>
+                <h2 class="text-xs font-semibold text-slate-300 tracking-wide">ACQUISITIONS / LENDING PIPELINE</h2>
+                <span class="text-[11px] text-slate-500">AI scored – mock</span>
               </div>
 
-              <div class="space-y-3 text-[11px]">
-                <div class="rounded-xl border border-rose-500/60 bg-rose-950/30 p-3">
-                  <div class="flex items-center justify-between mb-1">
+              <div class="space-y-2 text-[11px]">
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
+                  <div>
                     <div class="flex items-center gap-2">
-                      <span class="h-1.5 w-1.5 rounded-full bg-rose-400"></span>
-                      <span class="font-semibold text-slate-50">Altice France TLB</span>
+                      <span class="font-semibold text-slate-50">Suncrest Multifamily Portfolio</span>
+                      <span class="chip text-[10px] border-emerald-400/70">High fit</span>
                     </div>
-                    <span class="text-rose-300 font-medium">High</span>
+                    <div class="mt-1 text-slate-400">
+                      620 units · Sunbelt · Acquisition · Cap rate 5.6% · Pro forma occ. 94% · LTV target 60%.
+                    </div>
                   </div>
-                  <p class="text-slate-200">
-                    Price -3.2 pts d/d, Reorg headline on liability management, Orion rating drift flagged 60 days ago.
-                  </p>
-                  <div class="mt-2 flex items-center justify-between text-slate-400">
-                    <span>Rec: Trim 25–50 bps of NAV exposure</span>
-                    <button class="text-[10px] px-2 py-1 rounded-lg border border-rose-400/70 hover:bg-rose-500/10">
-                      Add to trade pack
-                    </button>
-                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-emerald-400/70">
+                    Open IC file
+                  </button>
                 </div>
 
-                <div class="rounded-xl border border-amber-400/60 bg-amber-950/20 p-3">
-                  <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
+                  <div>
                     <div class="flex items-center gap-2">
-                      <span class="h-1.5 w-1.5 rounded-full bg-amber-300"></span>
-                      <span class="font-semibold text-slate-50">HealthCo Services TL</span>
+                      <span class="font-semibold text-slate-50">HarborPoint Offices</span>
+                      <span class="chip text-[10px] border-amber-400/70">Structure sensitive</span>
                     </div>
-                    <span class="text-amber-300 font-medium">Medium</span>
+                    <div class="mt-1 text-slate-400">
+                      3-building office campus · Coastal · Distressed seller · Business plan heavy; leasing risk high.
+                    </div>
                   </div>
-                  <p class="text-slate-200">
-                    Guidance tightened; Orion suggests modest add on spread vs cohort. No doc deterioration detected.
-                  </p>
-                  <div class="mt-2 flex items-center justify-between text-slate-400">
-                    <span>Rec: Add 10–20 bps of NAV exposure</span>
-                    <button class="text-[10px] px-2 py-1 rounded-lg border border-amber-400/70 hover:bg-amber-500/10">
-                      Add to trade pack
-                    </button>
-                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-amber-400/70">
+                    Open IC file
+                  </button>
                 </div>
 
-                <div class="rounded-xl border border-emerald-400/60 bg-emerald-950/20 p-3">
-                  <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
+                  <div>
                     <div class="flex items-center gap-2">
-                      <span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span>
-                      <span class="font-semibold text-slate-50">Diversified Software Basket</span>
+                      <span class="font-semibold text-slate-50">MetroLink Logistics Hub</span>
+                      <span class="chip text-[10px] border-slate-500/70">Screen only</span>
                     </div>
-                    <span class="text-emerald-300 font-medium">Opportunity</span>
+                    <div class="mt-1 text-slate-400">
+                      Industrial · Tier-2 market · Forward development loan; Orion flags construction & lease-up risk.
+                    </div>
                   </div>
-                  <p class="text-slate-200">
-                    Orion identifies 4 software names with improving metrics but underweight vs index.
-                  </p>
-                  <div class="mt-2 flex items-center justify-between text-slate-400">
-                    <span>Rec: Rotate 0.5% NAV into basket</span>
-                    <button class="text-[10px] px-2 py-1 rounded-lg border border-emerald-400/70 hover:bg-emerald-500/10">
-                      Add to trade pack
-                    </button>
-                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-slate-400/70">
+                    Open IC file
+                  </button>
                 </div>
               </div>
             </div>
 
             <!-- Watchlist -->
-            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+            <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
               <div class="flex items-center justify-between mb-3">
-                <h2 class="text-xs font-semibold text-slate-300 tracking-wide">AI WATCHLIST (TOP 5)</h2>
-                <span class="text-[11px] text-slate-500">Sorted by drift risk</span>
+                <h2 class="text-xs font-semibold text-slate-300 tracking-wide">ASSET WATCHLIST (TOP 5)</h2>
+                <span class="text-[11px] text-slate-500">By DSCR + occupancy risk</span>
               </div>
 
               <div class="space-y-2 text-[11px]">
-                <!-- Row template -->
-                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2">
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
                   <div>
                     <div class="flex items-center gap-2">
-                      <span class="font-semibold text-slate-50">Altice France TLB</span>
-                      <span class="chip text-[10px] border-rose-400/70">High risk drift</span>
+                      <span class="font-semibold text-slate-50">HarborPoint Offices – Tower B</span>
+                      <span class="chip text-[10px] border-rose-400/70">High risk</span>
                     </div>
                     <div class="mt-1 text-slate-400">
-                      Orion shadow rating: B- → CCC+ bias &middot; Price: 82.4 &middot; Weight: 1.9%
+                      Occ. 58%; DSCR 1.18x; major tenant roll in 9 months. Refi risk elevated at maturity.
                     </div>
                   </div>
                   <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-rose-400/70">
-                    View memo
+                    View workout memo
                   </button>
                 </div>
 
-                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2">
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
                   <div>
                     <div class="flex items-center gap-2">
-                      <span class="font-semibold text-slate-50">RetailCo Holdings TL</span>
-                      <span class="chip text-[10px] border-amber-400/70">Medium risk</span>
+                      <span class="font-semibold text-slate-50">Riverside Retail Plaza</span>
+                      <span class="chip text-[10px] border-amber-400/70">Medium</span>
                     </div>
                     <div class="mt-1 text-slate-400">
-                      Margin compression flagged; leverage trending above sponsor case.
+                      Anchor tenant negotiating down rent; occ. 86%; DSCR 1.40x. Business plan under review.
                     </div>
                   </div>
                   <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-amber-400/70">
@@ -422,14 +442,14 @@
                   </button>
                 </div>
 
-                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2">
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2">
                   <div>
                     <div class="flex items-center gap-2">
-                      <span class="font-semibold text-slate-50">MedTech Solutions TLB</span>
+                      <span class="font-semibold text-slate-50">Skyline Apartments – Phase II</span>
                       <span class="chip text-[10px] border-emerald-400/70">Improving</span>
                     </div>
                     <div class="mt-1 text-slate-400">
-                      Upward revision to forecast; Orion drift shows tightening risk.
+                      Lease-up ahead of plan; occ. 89% → 93% projected; DSCR trending to 1.75x in base case.
                     </div>
                   </div>
                   <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-emerald-400/70">
@@ -440,80 +460,78 @@
             </div>
           </div>
 
-          <!-- Trade Pack / Rebalancing -->
-          <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+          <!-- Actions / Refi / Capex -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
             <div class="flex items-center justify-between mb-3">
-              <h2 class="text-xs font-semibold text-slate-300 tracking-wide">TODAY'S PROPOSED TRADE PACK</h2>
+              <h2 class="text-xs font-semibold text-slate-300 tracking-wide">TODAY'S ORION ACTION PACK</h2>
               <span class="text-[11px] text-slate-500">Generated by Orion</span>
             </div>
 
             <div class="mb-3 text-[11px] text-slate-400">
-              Objective: <span class="text-slate-100 font-medium">Maintain yield; trim tail risk; keep turnover ≤ 3%</span>
+              Objective: <span class="text-slate-100 font-medium">Reduce refi risk, boost NOI via targeted capex & leasing</span>
             </div>
 
-            <div class="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/70">
+            <div class="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80">
               <table class="w-full text-[11px]">
                 <thead class="bg-slate-900/90 text-slate-400 uppercase tracking-wide">
                   <tr>
-                    <th class="text-left px-3 py-2.5 font-medium">Loan</th>
+                    <th class="text-left px-3 py-2.5 font-medium">Asset</th>
                     <th class="text-left px-3 py-2.5 font-medium">Action</th>
-                    <th class="text-right px-3 py-2.5 font-medium">Size (bps NAV)</th>
-                    <th class="text-right px-3 py-2.5 font-medium">Yield Impact</th>
-                    <th class="text-right px-3 py-2.5 font-medium">Risk Note</th>
+                    <th class="text-right px-3 py-2.5 font-medium">Capital / Terms</th>
+                    <th class="text-right px-3 py-2.5 font-medium">Impact</th>
                     <th class="text-center px-3 py-2.5 font-medium">Include</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr class="border-t border-slate-800/60">
                     <td class="px-3 py-2 text-slate-100">
-                      Altice France TLB
-                      <div class="text-[10px] text-slate-500">Comm / EMEA &middot; Price 82.4</div>
+                      HarborPoint Offices – Tower B
+                      <div class="text-[10px] text-slate-500">Office · Coastal gateway</div>
                     </td>
-                    <td class="px-3 py-2 text-rose-300 font-semibold">Sell</td>
-                    <td class="px-3 py-2 text-right text-slate-100">-0.35%</td>
-                    <td class="px-3 py-2 text-right text-slate-200">-0.02%</td>
-                    <td class="px-3 py-2 text-right text-rose-300">Drift & doc leakage risk</td>
+                    <td class="px-3 py-2 text-rose-300 font-semibold">Refi strategy</td>
+                    <td class="px-3 py-2 text-right text-slate-100">Explore A/B note; partial paydown $8MM</td>
+                    <td class="px-3 py-2 text-right text-amber-300">LTV → ~63%; DSCR buffer improves to 1.30x</td>
                     <td class="px-3 py-2 text-center">
                       <input type="checkbox" checked class="accent-emerald-500">
                     </td>
                   </tr>
+
                   <tr class="border-t border-slate-800/60">
                     <td class="px-3 py-2 text-slate-100">
-                      HealthCo Services TL
-                      <div class="text-[10px] text-slate-500">Healthcare &middot; Price 99.1</div>
+                      Skyline Apartments – Phase II
+                      <div class="text-[10px] text-slate-500">Multifamily · Sunbelt</div>
                     </td>
-                    <td class="px-3 py-2 text-emerald-300 font-semibold">Buy</td>
-                    <td class="px-3 py-2 text-right text-slate-100">+0.25%</td>
-                    <td class="px-3 py-2 text-right text-slate-200">+0.03%</td>
-                    <td class="px-3 py-2 text-right text-emerald-300">Improving fundamentals</td>
+                    <td class="px-3 py-2 text-emerald-300 font-semibold">Targeted capex</td>
+                    <td class="px-3 py-2 text-right text-slate-100">$2.4MM amenity & unit upgrade program</td>
+                    <td class="px-3 py-2 text-right text-emerald-300">NOI +9% over 24 mo.; value +$18–22MM</td>
                     <td class="px-3 py-2 text-center">
                       <input type="checkbox" checked class="accent-emerald-500">
                     </td>
                   </tr>
+
                   <tr class="border-t border-slate-800/60">
                     <td class="px-3 py-2 text-slate-100">
-                      MedTech Solutions TLB
-                      <div class="text-[10px] text-slate-500">Healthcare / Tech &middot; Price 97.8</div>
+                      Riverside Retail Plaza
+                      <div class="text-[10px] text-slate-500">Retail · Secondary market</div>
                     </td>
-                    <td class="px-3 py-2 text-emerald-300 font-semibold">Buy</td>
-                    <td class="px-3 py-2 text-right text-slate-100">+0.20%</td>
-                    <td class="px-3 py-2 text-right text-slate-200">+0.02%</td>
-                    <td class="px-3 py-2 text-right text-slate-200">Spread vs cohort</td>
-                    <td class="px-3 py-2 text-center">
-                      <input type="checkbox" checked class="accent-emerald-500">
-                    </td>
-                  </tr>
-                  <tr class="border-t border-slate-800/60">
-                    <td class="px-3 py-2 text-slate-100">
-                      Legacy RetailCo TL
-                      <div class="text-[10px] text-slate-500">Retail &middot; Price 88.9</div>
-                    </td>
-                    <td class="px-3 py-2 text-rose-300 font-semibold">Sell</td>
-                    <td class="px-3 py-2 text-right text-slate-100">-0.30%</td>
-                    <td class="px-3 py-2 text-right text-slate-200">-0.01%</td>
-                    <td class="px-3 py-2 text-right text-rose-300">Earnings volatility</td>
+                    <td class="px-3 py-2 text-amber-300 font-semibold">Anchor lease re-cut</td>
+                    <td class="px-3 py-2 text-right text-slate-100">Blend-and-extend; TI budget $1.1MM</td>
+                    <td class="px-3 py-2 text-right text-amber-300">Stabilizes NOI; modest short-term DSCR dip</td>
                     <td class="px-3 py-2 text-center">
                       <input type="checkbox" class="accent-emerald-500">
+                    </td>
+                  </tr>
+
+                  <tr class="border-t border-slate-800/60">
+                    <td class="px-3 py-2 text-slate-100">
+                      Suncrest Multifamily Portfolio
+                      <div class="text-[10px] text-slate-500">Multifamily · Acquisition</div>
+                    </td>
+                    <td class="px-3 py-2 text-emerald-300 font-semibold">Proceed to LOI</td>
+                    <td class="px-3 py-2 text-right text-slate-100">Equity $95MM; debt $140MM @ ~5.7%</td>
+                    <td class="px-3 py-2 text-right text-emerald-300">Cap rate spread attractive; accretive to NOI yield</td>
+                    <td class="px-3 py-2 text-center">
+                      <input type="checkbox" checked class="accent-emerald-500">
                     </td>
                   </tr>
                 </tbody>
@@ -522,15 +540,15 @@
 
             <div class="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-[11px]">
               <div class="space-y-1 text-slate-400">
-                <div>Net turnover: <span class="text-slate-100 font-medium">2.1% of NAV</span> (within 3% limit)</div>
-                <div>Net yield impact: <span class="text-emerald-400 font-medium">+0.03%</span></div>
+                <div>Net capex / paydown plan: <span class="text-slate-100 font-medium">$11.5MM</span></div>
+                <div>Projected portfolio impact: <span class="text-emerald-400 font-medium">NOI +4.2%</span> · LTV: <span class="text-slate-100 font-medium">~52% post actions</span></div>
               </div>
               <div class="flex gap-2">
                 <button class="flex-1 md:flex-none px-3 py-2 rounded-xl border border-slate-700 text-slate-200 hover:border-slate-500">
-                  Export trade CSV
+                  Export Action List
                 </button>
                 <button class="flex-1 md:flex-none px-3 py-2 rounded-xl bg-emerald-500 text-slate-950 font-semibold hover:bg-emerald-400">
-                  Generate PM Summary
+                  Generate IC Summary
                 </button>
               </div>
             </div>
@@ -542,7 +560,6 @@
   </main>
 
   <script>
-    // Initialize Lucide icons
     window.addEventListener("DOMContentLoaded", () => {
       if (window.lucide && typeof window.lucide.createIcons === "function") {
         window.lucide.createIcons();
