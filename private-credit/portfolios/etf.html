@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion ETF Control Center</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Icons (Lucide) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0b1020;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border-radius: 999px;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.7rem;
+      line-height: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.8);
+      color: #e5e7eb;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-slate-100 flex flex-col">
+
+  <!-- TOP NAV -->
+  <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+          <span class="text-sm font-bold tracking-tight">O</span>
+        </div>
+        <div>
+          <div class="text-sm font-semibold tracking-wide text-slate-50">Orion ETF Control Center</div>
+          <div class="text-[11px] text-slate-400">AI co-pilot for syndicated loan ETFs</div>
+        </div>
+      </div>
+
+      <div class="hidden md:flex items-center gap-4 text-xs">
+        <span class="chip">
+          <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+          Live: SRLN Synthetic Book
+        </span>
+        <span class="chip">
+          <span class="h-2 w-2 rounded-full bg-amber-400"></span>
+          Monitoring: BKLN Shadow
+        </span>
+        <button class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 text-xs font-semibold hover:bg-emerald-400 transition">
+          Export Daily Pack
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT -->
+  <main class="flex-1">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 grid grid-cols-1 lg:grid-cols-[280px,1fr] gap-6">
+
+      <!-- LEFT SIDEBAR: BOOK + FILTERS -->
+      <aside class="space-y-6">
+        <!-- Book selector -->
+        <section class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">BOOK SELECTION</h2>
+            <span class="text-[11px] text-slate-500">Live sandbox</span>
+          </div>
+          <div class="space-y-2">
+            <button class="w-full text-left px-3 py-2 rounded-xl bg-slate-900 border border-emerald-500/60 text-xs">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-slate-50">SRLN – Orion Overlay</span>
+                <span class="text-[11px] text-emerald-400">Active</span>
+              </div>
+              <div class="flex items-center justify-between mt-1 text-[11px] text-slate-400">
+                <span>AUM: $7.2B (mock)</span>
+                <span>Loans: 342</span>
+              </div>
+            </button>
+
+            <button class="w-full text-left px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs hover:border-slate-600">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-slate-100">BKLN – Shadow Book</span>
+                <span class="text-[11px] text-slate-400">Passive</span>
+              </div>
+              <div class="flex items-center justify-between mt-1 text-[11px] text-slate-500">
+                <span>AUM: $6.8B (mock)</span>
+                <span>Loans: 103</span>
+              </div>
+            </button>
+          </div>
+        </section>
+
+        <!-- Constraints Snapshot -->
+        <section class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">KEY CONSTRAINTS</h2>
+            <span class="text-[11px] text-slate-500">Auto-checked</span>
+          </div>
+          <div class="space-y-3 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Max issuer weight</span>
+              <span class="text-slate-100 font-medium">4.0% <span class="text-slate-500">/ 5.0%</span></span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">CCC bucket</span>
+              <span class="text-emerald-400 font-medium">5.2% <span class="text-slate-500">/ 10.0%</span></span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Top 10 weight</span>
+              <span class="text-amber-300 font-medium">29.7% <span class="text-slate-500">/ 30.0%</span></span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Cash buffer</span>
+              <span class="text-emerald-400 font-medium">2.3% <span class="text-slate-500">/ 1–3%</span></span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Filters / Agent Mode -->
+        <section class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 shadow-lg shadow-black/40">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xs font-semibold text-slate-300 tracking-wide">AGENT MODE</h2>
+            <span class="text-[11px] text-slate-500">Suggestion engine</span>
+          </div>
+
+          <div class="space-y-3 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Objective</span>
+              <select class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-slate-100 w-32 focus:outline-none focus:border-emerald-500">
+                <option>Max yield</option>
+                <option>Min tracking error</option>
+                <option>De-risk (rating)</option>
+                <option>Liquidity focus</option>
+              </select>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Daily turnover limit</span>
+              <select class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-slate-100 w-28 focus:outline-none focus:border-emerald-500">
+                <option>≤ 3%</option>
+                <option>≤ 5%</option>
+                <option>≤ 7%</option>
+              </select>
+            </div>
+
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-slate-400">Autopilot level</span>
+              <div class="flex gap-1">
+                <span class="chip text-[10px] border-emerald-500/60">Monitor</span>
+                <span class="chip text-[10px]">Suggest</span>
+                <span class="chip text-[10px]">Simulate</span>
+              </div>
+            </div>
+
+            <button class="w-full mt-3 py-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-semibold hover:bg-emerald-400 transition">
+              Run Daily Scan
+            </button>
+          </div>
+        </section>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <section class="space-y-6">
+
+        <!-- Row 1: Overview + Risk/Health -->
+        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,2fr),minmax(0,1.2fr)] gap-6">
+          <!-- Overview -->
+          <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h2 class="text-xs font-semibold text-slate-300 tracking-wide">PORTFOLIO OVERVIEW</h2>
+                <p class="text-[11px] text-slate-500">Synthetic: SRLN book with Orion overlay</p>
+              </div>
+              <span class="chip">
+                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                All tests passing
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div class="rounded-xl bg-slate-900/70 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">Modeled yield to worst</div>
+                <div class="mt-1 text-lg font-semibold text-emerald-400">7.3%</div>
+                <div class="mt-1 text-[11px] text-slate-500">+0.4% vs benchmark</div>
+              </div>
+
+              <div class="rounded-xl bg-slate-900/70 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">Weighted avg rating</div>
+                <div class="mt-1 text-lg font-semibold text-slate-50">B+</div>
+                <div class="mt-1 text-[11px] text-slate-500">Inside mandate</div>
+              </div>
+
+              <div class="rounded-xl bg-slate-900/70 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">Loans with negative drift</div>
+                <div class="mt-1 text-lg font-semibold text-amber-300">27</div>
+                <div class="mt-1 text-[11px] text-slate-500">8 flagged for review</div>
+              </div>
+
+              <div class="rounded-xl bg-slate-900/70 border border-slate-800 p-3">
+                <div class="text-[11px] text-slate-400">1-day net price move</div>
+                <div class="mt-1 text-lg font-semibold text-slate-50">-0.18 pts</div>
+                <div class="mt-1 text-[11px] text-slate-500">Broadly stable</div>
+              </div>
+            </div>
+
+            <!-- Sector bar "chart" (static) -->
+            <div class="mt-5">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] text-slate-400 uppercase tracking-wide">Sector mix (weight %)</span>
+                <span class="text-[11px] text-slate-500">Top sectors by exposure</span>
+              </div>
+              <div class="space-y-2 text-[11px]">
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-300">Software & Tech</span>
+                    <span class="text-slate-400">21.4%</span>
+                  </div>
+                  <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                    <div class="h-2 w-[21%] rounded-full bg-gradient-to-r from-cyan-400 to-emerald-500"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-300">Healthcare</span>
+                    <span class="text-slate-400">17.9%</span>
+                  </div>
+                  <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                    <div class="h-2 w-[18%] rounded-full bg-gradient-to-r from-fuchsia-400 to-cyan-400"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-300">Services</span>
+                    <span class="text-slate-400">13.2%</span>
+                  </div>
+                  <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                    <div class="h-2 w-[13%] rounded-full bg-gradient-to-r from-amber-400 to-rose-400"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-300">Industrial</span>
+                    <span class="text-slate-400">11.5%</span>
+                  </div>
+                  <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+                    <div class="h-2 w-[12%] rounded-full bg-gradient-to-r from-lime-400 to-emerald-500"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Health / Risk Panel -->
+          <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-xs font-semibold text-slate-300 tracking-wide">ORION HEALTH SCORE</h2>
+              <span class="text-[11px] text-slate-500">AI composite</span>
+            </div>
+
+            <div class="flex items-center gap-4 mb-4">
+              <div class="relative">
+                <div class="h-16 w-16 rounded-full border-4 border-emerald-500/70 flex items-center justify-center">
+                  <span class="text-lg font-semibold text-emerald-400">82</span>
+                </div>
+              </div>
+              <div class="text-[11px] space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                  <span class="text-slate-300">Stable aggregate risk</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full bg-amber-300"></span>
+                  <span class="text-slate-300">Ratings drift cluster in software & media</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full bg-rose-400"></span>
+                  <span class="text-slate-300">3 names breaching internal watch thresholds</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-2 text-[11px]">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Downgrade pressure (next 6–12m)</span>
+                <span class="text-amber-300 font-medium">Moderate</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Liquidity profile</span>
+                <span class="text-emerald-400 font-medium">Strong</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Doc quality (relative cohort)</span>
+                <span class="text-slate-100 font-medium">Neutral / slightly weak</span>
+              </div>
+            </div>
+
+            <button class="mt-4 w-full py-2 rounded-xl border border-slate-700 text-[11px] text-slate-200 hover:border-emerald-500/70 hover:text-emerald-300 transition flex items-center justify-center gap-2">
+              <span>View AI Risk Memo</span>
+              <span class="h-3 w-3" data-lucide="external-link"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Row 2: Alerts + Watchlist + Trade Suggestions -->
+        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.4fr),minmax(0,2fr)] gap-6">
+          <!-- Alerts & Watchlist -->
+          <div class="space-y-6">
+            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-xs font-semibold text-slate-300 tracking-wide">TODAY'S CRITICAL ALERTS</h2>
+                <span class="text-[11px] text-slate-500">Top 3 from Orion</span>
+              </div>
+
+              <div class="space-y-3 text-[11px]">
+                <div class="rounded-xl border border-rose-500/60 bg-rose-950/30 p-3">
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-2">
+                      <span class="h-1.5 w-1.5 rounded-full bg-rose-400"></span>
+                      <span class="font-semibold text-slate-50">Altice France TLB</span>
+                    </div>
+                    <span class="text-rose-300 font-medium">High</span>
+                  </div>
+                  <p class="text-slate-200">
+                    Price -3.2 pts d/d, Reorg headline on liability management, Orion rating drift flagged 60 days ago.
+                  </p>
+                  <div class="mt-2 flex items-center justify-between text-slate-400">
+                    <span>Rec: Trim 25–50 bps of NAV exposure</span>
+                    <button class="text-[10px] px-2 py-1 rounded-lg border border-rose-400/70 hover:bg-rose-500/10">
+                      Add to trade pack
+                    </button>
+                  </div>
+                </div>
+
+                <div class="rounded-xl border border-amber-400/60 bg-amber-950/20 p-3">
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-2">
+                      <span class="h-1.5 w-1.5 rounded-full bg-amber-300"></span>
+                      <span class="font-semibold text-slate-50">HealthCo Services TL</span>
+                    </div>
+                    <span class="text-amber-300 font-medium">Medium</span>
+                  </div>
+                  <p class="text-slate-200">
+                    Guidance tightened; Orion suggests modest add on spread vs cohort. No doc deterioration detected.
+                  </p>
+                  <div class="mt-2 flex items-center justify-between text-slate-400">
+                    <span>Rec: Add 10–20 bps of NAV exposure</span>
+                    <button class="text-[10px] px-2 py-1 rounded-lg border border-amber-400/70 hover:bg-amber-500/10">
+                      Add to trade pack
+                    </button>
+                  </div>
+                </div>
+
+                <div class="rounded-xl border border-emerald-400/60 bg-emerald-950/20 p-3">
+                  <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-2">
+                      <span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span>
+                      <span class="font-semibold text-slate-50">Diversified Software Basket</span>
+                    </div>
+                    <span class="text-emerald-300 font-medium">Opportunity</span>
+                  </div>
+                  <p class="text-slate-200">
+                    Orion identifies 4 software names with improving metrics but underweight vs index.
+                  </p>
+                  <div class="mt-2 flex items-center justify-between text-slate-400">
+                    <span>Rec: Rotate 0.5% NAV into basket</span>
+                    <button class="text-[10px] px-2 py-1 rounded-lg border border-emerald-400/70 hover:bg-emerald-500/10">
+                      Add to trade pack
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Watchlist -->
+            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-xs font-semibold text-slate-300 tracking-wide">AI WATCHLIST (TOP 5)</h2>
+                <span class="text-[11px] text-slate-500">Sorted by drift risk</span>
+              </div>
+
+              <div class="space-y-2 text-[11px]">
+                <!-- Row template -->
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-slate-50">Altice France TLB</span>
+                      <span class="chip text-[10px] border-rose-400/70">High risk drift</span>
+                    </div>
+                    <div class="mt-1 text-slate-400">
+                      Orion shadow rating: B- → CCC+ bias &middot; Price: 82.4 &middot; Weight: 1.9%
+                    </div>
+                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-rose-400/70">
+                    View memo
+                  </button>
+                </div>
+
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-slate-50">RetailCo Holdings TL</span>
+                      <span class="chip text-[10px] border-amber-400/70">Medium risk</span>
+                    </div>
+                    <div class="mt-1 text-slate-400">
+                      Margin compression flagged; leverage trending above sponsor case.
+                    </div>
+                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-amber-400/70">
+                    View memo
+                  </button>
+                </div>
+
+                <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-slate-50">MedTech Solutions TLB</span>
+                      <span class="chip text-[10px] border-emerald-400/70">Improving</span>
+                    </div>
+                    <div class="mt-1 text-slate-400">
+                      Upward revision to forecast; Orion drift shows tightening risk.
+                    </div>
+                  </div>
+                  <button class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 hover:border-emerald-400/70">
+                    View memo
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trade Pack / Rebalancing -->
+          <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-lg shadow-black/40">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-xs font-semibold text-slate-300 tracking-wide">TODAY'S PROPOSED TRADE PACK</h2>
+              <span class="text-[11px] text-slate-500">Generated by Orion</span>
+            </div>
+
+            <div class="mb-3 text-[11px] text-slate-400">
+              Objective: <span class="text-slate-100 font-medium">Maintain yield; trim tail risk; keep turnover ≤ 3%</span>
+            </div>
+
+            <div class="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/70">
+              <table class="w-full text-[11px]">
+                <thead class="bg-slate-900/90 text-slate-400 uppercase tracking-wide">
+                  <tr>
+                    <th class="text-left px-3 py-2.5 font-medium">Loan</th>
+                    <th class="text-left px-3 py-2.5 font-medium">Action</th>
+                    <th class="text-right px-3 py-2.5 font-medium">Size (bps NAV)</th>
+                    <th class="text-right px-3 py-2.5 font-medium">Yield Impact</th>
+                    <th class="text-right px-3 py-2.5 font-medium">Risk Note</th>
+                    <th class="text-center px-3 py-2.5 font-medium">Include</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-t border-slate-800/60">
+                    <td class="px-3 py-2 text-slate-100">
+                      Altice France TLB
+                      <div class="text-[10px] text-slate-500">Comm / EMEA &middot; Price 82.4</div>
+                    </td>
+                    <td class="px-3 py-2 text-rose-300 font-semibold">Sell</td>
+                    <td class="px-3 py-2 text-right text-slate-100">-0.35%</td>
+                    <td class="px-3 py-2 text-right text-slate-200">-0.02%</td>
+                    <td class="px-3 py-2 text-right text-rose-300">Drift & doc leakage risk</td>
+                    <td class="px-3 py-2 text-center">
+                      <input type="checkbox" checked class="accent-emerald-500">
+                    </td>
+                  </tr>
+                  <tr class="border-t border-slate-800/60">
+                    <td class="px-3 py-2 text-slate-100">
+                      HealthCo Services TL
+                      <div class="text-[10px] text-slate-500">Healthcare &middot; Price 99.1</div>
+                    </td>
+                    <td class="px-3 py-2 text-emerald-300 font-semibold">Buy</td>
+                    <td class="px-3 py-2 text-right text-slate-100">+0.25%</td>
+                    <td class="px-3 py-2 text-right text-slate-200">+0.03%</td>
+                    <td class="px-3 py-2 text-right text-emerald-300">Improving fundamentals</td>
+                    <td class="px-3 py-2 text-center">
+                      <input type="checkbox" checked class="accent-emerald-500">
+                    </td>
+                  </tr>
+                  <tr class="border-t border-slate-800/60">
+                    <td class="px-3 py-2 text-slate-100">
+                      MedTech Solutions TLB
+                      <div class="text-[10px] text-slate-500">Healthcare / Tech &middot; Price 97.8</div>
+                    </td>
+                    <td class="px-3 py-2 text-emerald-300 font-semibold">Buy</td>
+                    <td class="px-3 py-2 text-right text-slate-100">+0.20%</td>
+                    <td class="px-3 py-2 text-right text-slate-200">+0.02%</td>
+                    <td class="px-3 py-2 text-right text-slate-200">Spread vs cohort</td>
+                    <td class="px-3 py-2 text-center">
+                      <input type="checkbox" checked class="accent-emerald-500">
+                    </td>
+                  </tr>
+                  <tr class="border-t border-slate-800/60">
+                    <td class="px-3 py-2 text-slate-100">
+                      Legacy RetailCo TL
+                      <div class="text-[10px] text-slate-500">Retail &middot; Price 88.9</div>
+                    </td>
+                    <td class="px-3 py-2 text-rose-300 font-semibold">Sell</td>
+                    <td class="px-3 py-2 text-right text-slate-100">-0.30%</td>
+                    <td class="px-3 py-2 text-right text-slate-200">-0.01%</td>
+                    <td class="px-3 py-2 text-right text-rose-300">Earnings volatility</td>
+                    <td class="px-3 py-2 text-center">
+                      <input type="checkbox" class="accent-emerald-500">
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-[11px]">
+              <div class="space-y-1 text-slate-400">
+                <div>Net turnover: <span class="text-slate-100 font-medium">2.1% of NAV</span> (within 3% limit)</div>
+                <div>Net yield impact: <span class="text-emerald-400 font-medium">+0.03%</span></div>
+              </div>
+              <div class="flex gap-2">
+                <button class="flex-1 md:flex-none px-3 py-2 rounded-xl border border-slate-700 text-slate-200 hover:border-slate-500">
+                  Export trade CSV
+                </button>
+                <button class="flex-1 md:flex-none px-3 py-2 rounded-xl bg-emerald-500 text-slate-950 font-semibold hover:bg-emerald-400">
+                  Generate PM Summary
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // Initialize Lucide icons
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide && typeof window.lucide.createIcons === "function") {
+        window.lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+</html>
