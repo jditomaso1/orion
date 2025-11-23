@@ -3,168 +3,53 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Orion — Markets Dashboard</title>
-    <!-- Favicon -->
-  <link rel="icon" type="image/png"
-        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
-
-  <!-- Fonts -->
+  <title>Markets</title>
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Base Styling -->
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f5f6f8;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style> body { font-family: 'Poppins', sans-serif; background:#f5f6f8; } canvas { max-height:340px!important; } </style>
 </head>
-
 <body class="flex">
-
-  <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
   <script>
-    async function injectSidebar() {
-      const res = await fetch("/private-credit/sidebar.html");
-      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-
-      window.toggleSection = function(id) {
-        const section = document.getElementById(id);
-        const icon = document.getElementById("icon-" + id);
-        if (!section || !icon) return;
-
-        section.classList.toggle("hidden");
-        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
-        localStorage.setItem("sidebar-open-section", id);
-      };
-
-      const last = localStorage.getItem("sidebar-open-section");
-      if (last) {
-        const section = document.getElementById(last);
-        const icon = document.getElementById("icon-" + last);
-        if (section && icon) {
-          section.classList.remove("hidden");
-          icon.style.transform = "rotate(90deg)";
-        }
-      }
-    }
+    async function injectSidebar(){ const r=await fetch("/private-credit/sidebar.html"); document.getElementById("sidebar-placeholder").innerHTML=await r.text(); }
     injectSidebar();
   </script>
 
-  <!-- MAIN CONTENT -->
   <main class="flex-1 ml-64 p-8">
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">Markets Macro Dashboard</h1>
+    <p class="text-gray-500 text-[15px] mb-8">Ten key market indicators spanning rates, credit, equity sentiment, volatility, commodities, and real‑economy stress.</p>
 
-    <!-- HEADER -->
-    <h1 class="text-3xl font-semibold text-gray-900 tracking-tight mb-2">
-      Orion Markets Dashboard
-    </h1>
-    <p class="text-gray-500 text-[15px] mb-8">
-      Real-time credit market conditions, spreads, issuance trends, and macro indicators.
-    </p>
-
-    <!-- TOP MARKET SNAPSHOT -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-
-      <div class="bg-white shadow-sm p-5 rounded-xl border">
-        <div class="text-gray-500 text-sm">Broad Market Spread (bps)</div>
-        <div class="text-2xl font-semibold mt-1">468</div>
-        <div class="text-xs text-red-600 mt-1">+12 bps</div>
-      </div>
-
-      <div class="bg-white shadow-sm p-5 rounded-xl border">
-        <div class="text-gray-500 text-sm">New Issuance (MTD)</div>
-        <div class="text-2xl font-semibold mt-1">$8.4B</div>
-        <div class="text-xs text-green-600 mt-1">+22% vs MoM</div>
-      </div>
-
-      <div class="bg-white shadow-sm p-5 rounded-xl border">
-        <div class="text-gray-500 text-sm">Liquidity Conditions</div>
-        <div class="text-2xl font-semibold mt-1">Moderate</div>
-        <div class="text-xs text-yellow-500 mt-1">Tightening</div>
-      </div>
-
-      <div class="bg-white shadow-sm p-5 rounded-xl border">
-        <div class="text-gray-500 text-sm">Distress Ratio</div>
-        <div class="text-2xl font-semibold mt-1">9.4%</div>
-        <div class="text-xs text-red-600 mt-1">+40 bps</div>
-      </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="bg-white rounded-xl shadow-sm p-6 border"><h2 class="text-lg font-semibold mb-4">US Treasury Curve (2yr vs 10yr)</h2><canvas id="chart1"></canvas></div>
+      <div class="bg-white rounded-xl shadow-sm p-6 border"><h2 class="text-lg font-semibold mb-4">Investment Grade OAS</h2><canvas id="chart2"></canvas></div>
+      <div class="bg-white rounded-xl shadow-sm p-6 border"><h2 class="text-lg font-semibold mb-4">High Yield OAS</h2><canvas id="chart3"></canvas></div>
+      <div class="bg-white rounded-xl shadow-sm p-6 border"><h2 class="text-lg font-semibold mb-4">Leveraged Loan Proxy (BKLN)</h2><canvas id="chart4"></canvas></div>
+      <div class="bg-white rounded-xl shadow-sm p-6 border"><h2 class="text-lg font-semibold mb-4">Private Credit Synthetic Spread Index</h2><canvas id="chart5"></canvas></div>
+      <div class="bg-white rounded-xl shadow-sm p-6 border"><h2 class="text-lg font-semibold mb-4">S&P 500 Index</h2><canvas id="chart6"></canvas></div>
+      <div class="bg-white rounded-xl shadow-sm p-6 border"><h2 class="text-lg font-semibold mb-4">VIX Volatility Index</h2><canvas id="chart7"></canvas></div>
+      <div class="bg-white rounded-xl shadow-sm p-6 border"><h2 class="text-lg font-semibold mb-4">WTI Oil</h2><canvas id="chart8"></canvas></div>
+      <div class="bg-white rounded-xl shadow-sm p-6 border"><h2 class="text-lg font-semibold mb-4">CRE Stress Index (CMBX Proxy)</h2><canvas id="chart9"></canvas></div>
+      <div class="bg-white rounded-xl shadow-sm p-6 border"><h2 class="text-lg font-semibold mb-4">Global Rates (Bund/Gilt/JGB)</h2><canvas id="chart10"></canvas></div>
     </div>
+  </main>
 
-    <!-- CREDIT SPREAD INDICES -->
-    <div class="bg-white rounded-xl shadow-sm p-6 border mb-10">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">Credit Spread Indices</h2>
+  <script>
+    const navy="#1f3b66", steel="#4b647d", gray="#9aa5b1";
+    function L(id, lbl, dat){ return new Chart(document.getElementById(id),{ type:'line', data:{ labels:["Jan","Feb","Mar","Apr","May","Jun"], datasets:[{label:lbl,data:dat,borderColor:navy,backgroundColor:'transparent',borderWidth:2,tension:0.3 }]}, options:{responsive:true,maintainAspectRatio:false}});}    
+    function B(id,lbl,dat){ return new Chart(document.getElementById(id),{ type:'bar', data:{ labels:["Jan","Feb","Mar","Apr","May","Jun"], datasets:[{label:lbl,data:dat,backgroundColor:steel}]}, options:{responsive:true,maintainAspectRatio:false}});}    
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        <div class="p-4 bg-gray-50 rounded-xl border">
-          <h3 class="font-semibold text-gray-900">First Lien (bps)</h3>
-          <p class="text-2xl font-semibold text-gray-900 mt-2">412</p>
-          <div class="text-xs mt-1 text-red-600">+15 bps</div>
-        </div>
-
-        <div class="p-4 bg-gray-50 rounded-xl border">
-          <h3 class="font-semibold text-gray-900">Second Lien (bps)</h3>
-          <p class="text-2xl font-semibold text-gray-900 mt-2">783</p>
-          <div class="text-xs mt-1 text-green-600">-8 bps</div>
-        </div>
-
-        <div class="p-4 bg-gray-50 rounded-xl border">
-          <h3 class="font-semibold text-gray-900">Unitranche (bps)</h3>
-          <p class="text-2xl font-semibold text-gray-900 mt-2">654</p>
-          <div class="text-xs mt-1 text-yellow-600">+3 bps</div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ISSUANCE & MARKET VOLUME -->
-    <div class="bg-white rounded-xl shadow-sm p-6 border mb-10">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">New Issuance Snapshot</h2>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-        <div class="p-4 bg-gray-50 border rounded-xl">
-          <h3 class="font-semibold text-gray-900">Middle Market Issuance</h3>
-          <p class="text-sm text-gray-600 mt-2">Strong weekly volume driven by sponsor-backed LBO financings.</p>
-          <p class="text-xl font-semibold mt-3">$5.2B</p>
-        </div>
-
-        <div class="p-4 bg-gray-50 border rounded-xl">
-          <h3 class="font-semibold text-gray-900">Upper MM & Large Cap Issuance</h3>
-          <p class="text-sm text-gray-600 mt-2">Private lenders continue to take share from syndicated markets.</p>
-          <p class="text-xl font-semibold mt-3">$3.1B</p>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- SECTOR HEATMAP (Static Placeholder) -->
-    <div class="bg-white rounded-xl shadow-sm p-6 border mb-10">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">Sector Heatmap</h2>
-      <p class="text-sm text-gray-500 mb-4">High-level view of sector movement and risk sentiment.</p>
-
-      <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-
-        <div class="p-4 text-center rounded-xl bg-red-100 border border-red-300">
-          <div class="font-semibold text-gray-800">Retail</div>
-          <div class="text-sm text-red-700 mt-1">Weak</div>
-        </div>
-
-        <div class="p-4 text-center rounded-xl bg-yellow-100 border border-yellow-300">
-          <div class="font-semibold text-gray-800">Healthcare</div>
-          <div class="text-sm text-yellow-700 mt-1">Mixed</div>
-        </div>
-
-        <div class="p-4 text-center rounded-xl bg-green-100 border border-green-300">
-          <div class="font-semibold text-gray-800">Tech</div>
-          <div class="text-sm text-green-700 mt-1">Strong</div>
-        </div>
-
-        <div class="p-4 text-center rounded-xl bg-yellow-100 border border-yellow-300">
-          <div class="font-semibold text-gray-800">Industrials</div>
-          <div class="text-sm text-yell
-
+    L('chart1','2yr vs 10yr',[4.2,4.1,4.0,3.9,4.0,4.1]);
+    L('chart2','IG OAS (bps)',[115,118,120,117,114,116]);
+    L('chart3','HY OAS (bps)',[380,390,410,405,398,402]);
+    L('chart4','BKLN Price',[21.1,21.3,21.5,21.4,21.2,21.6]);
+    L('chart5','Private Credit Spread',[520,525,530,528,526,529]);
+    L('chart6','S&P 500',[4800,4820,4860,4900,4880,4920]);
+    B('chart7','VIX',[14,16,18,20,17,19]);
+    L('chart8','WTI Oil',[72,74,76,79,78,80]);
+    L('chart9','CRE Stress',[2.1,2.3,2.5,2.7,2.8,3.0]);
+    L('chart10','Global Rates',[2.3,2.4,2.5,2.45,2.5,2.55]);
+  </script>
+</body>
+</html>
