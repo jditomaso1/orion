@@ -1,0 +1,83 @@
+<!-- ASK ORION — GLOBAL INCLUDE -->
+<!-- This file is loaded once per page via fetch(). -->
+
+<!-- Floating Ask Orion Button -->
+<button id="ask-orion-btn"
+  class="fixed top-4 right-4 z-40 px-2.5 py-1 
+         bg-blue-500/60 hover:bg-blue-500/80
+         text-white text-xs rounded-full shadow 
+         transition">
+  Ask Orion
+</button>
+
+<!-- Sliding Chat Panel -->
+<div id="orion-chat-panel"
+     class="fixed top-0 right-0 w-96 h-full bg-white shadow-xl z-50
+            transform translate-x-full transition-transform duration-300">
+
+  <!-- Header -->
+  <div class="px-4 py-3 border-b text-lg font-semibold flex justify-between items-center">
+    Orion Chat
+    <button id="close-orion-panel" class="text-gray-500 hover:text-gray-800">✕</button>
+  </div>
+
+  <!-- Chat Window -->
+  <div id="orion-chat-window"
+       class="p-4 overflow-y-auto h-[calc(100%-120px)] text-sm space-y-3">
+  </div>
+
+  <!-- Input -->
+  <div class="p-4 border-t">
+    <input id="orion-input" type="text"
+           class="w-full px-3 py-2 border rounded-lg focus:outline-none"
+           placeholder="Ask a question..." />
+  </div>
+
+</div>
+
+<!-- Ask Orion Logic -->
+<script>
+  // Elements
+  const orionBtn = document.getElementById("ask-orion-btn");
+  const orionPanel = document.getElementById("orion-chat-panel");
+  const closeOrion = document.getElementById("close-orion-panel");
+  const orionInput = document.getElementById("orion-input");
+  const orionWindow = document.getElementById("orion-chat-window");
+
+  // Open panel
+  orionBtn.onclick = () => {
+    orionPanel.classList.remove("translate-x-full");
+    orionInput.focus();
+  };
+
+  // Close panel
+  closeOrion.onclick = () => {
+    orionPanel.classList.add("translate-x-full");
+  };
+
+  // Add message to window
+  function pushMessage(sender, text) {
+    const bubble = document.createElement("div");
+    bubble.className =
+      sender === "user"
+        ? "bg-blue-100 text-blue-900 px-3 py-2 rounded-lg ml-auto max-w-[80%]"
+        : "bg-gray-100 text-gray-800 px-3 py-2 rounded-lg mr-auto max-w-[80%]";
+    bubble.textContent = text;
+    orionWindow.appendChild(bubble);
+    orionWindow.scrollTop = orionWindow.scrollHeight;
+  }
+
+  // Handle user input
+  orionInput.addEventListener("keydown", async (e) => {
+    if (e.key === "Enter" && orionInput.value.trim() !== "") {
+      const userText = orionInput.value.trim();
+      pushMessage("user", userText);
+      orionInput.value = "";
+
+      // Placeholder Orion reply (replace with API call later)
+      setTimeout(() => {
+        pushMessage("orion", "I'm processing that… (API integration coming soon)");
+      }, 300);
+    }
+  });
+</script>
