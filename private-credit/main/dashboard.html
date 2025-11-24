@@ -54,15 +54,6 @@
   injectSidebar();
   </script>
 
-  <!--Ask Orion Bot -->
-  <div id="orion-chat-include"></div>
-  <script>
-    async function loadOrionChat() {
-      const res = await fetch("/includes/orion-chat.html");
-      document.getElementById("orion-chat-include").innerHTML = await res.text();
-    }
-    loadOrionChat();
-  </script>
 
   <!-- MAIN CONTENT -->
   <main class="flex-1 ml-64 p-8">
@@ -194,8 +185,17 @@
 
       </div>
     </div>
-
   </main>
+
+    <!--Ask Orion Bot -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/includes/orion-chat.html");
+      document.getElementById("orion-chat-include").innerHTML = await res.text();
+    }
+    loadOrionChat();
+  </script>
 
 </body>
 </html>
