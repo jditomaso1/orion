@@ -29,15 +29,6 @@
 
 <body class="flex">
   
-  <!-- ASK ORION BUTTON -->
-  <button id="ask-orion-btn"
-    class="fixed top-4 right-4 z-40 px-2.5 py-1 
-           bg-blue-500/60 hover:bg-blue-500/80
-           text-white text-xs rounded-full shadow 
-           transition">
-    Ask Orion
-  </button>
-  
   <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
 
@@ -241,19 +232,33 @@
     });
   </script>
 
-  <script>
-    const orionBtn = document.getElementById("ask-orion-btn");
-    const orionPanel = document.getElementById("orion-chat-panel");
-    const closeOrion = document.getElementById("close-orion-panel");
-  
-    orionBtn.onclick = () => {
-      orionPanel.classList.remove("translate-x-full");
-    };
-  
-    closeOrion.onclick = () => {
-      orionPanel.classList.add("translate-x-full");
-    };
-  </script>
+    <!--Ask Orion Bot -->
+    <div id="orion-chat-include"></div>
+    <script>
+      async function loadOrionChat() {
+        const res = await fetch("/private-credit/includes/orion-chat.html");
+        const html = await res.text();
+    
+        // Insert into DOM
+        const container = document.getElementById("orion-chat-include");
+        container.innerHTML = html;
+    
+        // --- EXECUTE SCRIPTS ---
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement("script");
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+          oldScript.remove();
+        });
+      }
+    
+      loadOrionChat();
+    </script>
 
 </body>
 </html>
