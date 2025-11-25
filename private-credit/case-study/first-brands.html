@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Credit Tear Sheet — Orion | Private Credit AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+<body class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden")
+        ? "rotate(0deg)"
+        : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const section = document.getElementById(last);
+      const icon = document.getElementById("icon-" + last);
+      if (section && icon) {
+        section.classList.remove("hidden");
+        icon.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+  <!-- PAGE WRAPPER -->
+  <div class="flex-1 ml-64 px-4 py-8">
+  
+    <!-- HEADER -->
+    <header class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">
+          Orion | Credit Tear Sheet
+        </h1>
+        <p class="text-sm text-gray-500 mt-1">
+          Deep credit profile generated from filings, agreements, and transcripts.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+          Beta
+        </span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
+          Internal Use
+        </span>
+      </div>
+    </header>
+
+    <!-- COMPANY SNAPSHOT -->
+    <section class="mb-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900">
+              Company Snapshot
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">
+              High-level view of the issuer and current market context.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium">
+              Recommendation: <span class="font-semibold">BUY</span>
+            </span>
+            <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-700 font-medium">
+              Updated: 2025-11-24
+            </span>
+          </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+          <div>
+            <div class="text-gray-500 text-xs uppercase tracking-wide">Company</div>
+            <div class="font-semibold text-gray-900">First Brands Group™</div>
+            <div class="text-xs text-gray-500">Private / Sponsor-backed</div>
+          </div>
+          <div>
+            <div class="text-gray-500 text-xs uppercase tracking-wide">Sector / Subsector</div>
+            <div class="font-semibold text-gray-900">Consumer / Industrials</div>
+            <div class="text-xs text-gray-500">Automotive Aftermarket Parts</div>
+          </div>
+          <div>
+            <div class="text-gray-500 text-xs uppercase tracking-wide">Equity Snapshot</div>
+            <div class="font-semibold text-gray-900">N/A (Private)</div>
+            <div class="text-xs text-gray-500">Market Cap: N/A | EV: $X.XB</div>
+          </div>
+          <div>
+            <div class="text-gray-500 text-xs uppercase tracking-wide">Credit Rating</div>
+            <div class="font-semibold text-gray-900">Single-B / B- Equivalent (Internal)</div>
+            <div class="text-xs text-gray-500">Orion shadow rating</div>
+          </div>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-700">
+          <span class="font-semibold">Business Model:</span>
+          First Brands Group™ is a global automotive parts company that develops, markets and sells premium products
+          through a portfolio of market-leading brands across replacement brake components, filtration, wiper blades,
+          towing and trailering, lighting and related aftermarket categories. The company serves professional installers,
+          retailers and end consumers with a mix of branded and licensed products, supported by scale manufacturing and
+          distribution capabilities.
+        </div>
+      </div>
+    </section>
+
+    <!-- TOP METRICS STRIP -->
+    <section class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+        <div class="text-xs text-gray-500 uppercase tracking-wide">LTM Revenue</div>
+        <div class="mt-1 text-xl font-semibold text-gray-900">$X,XXXmm</div>
+        <div class="text-xs text-gray-500 mt-1">YoY: +X.X%</div>
+      </div>
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+        <div class="text-xs text-gray-500 uppercase tracking-wide">LTM EBITDA</div>
+        <div class="mt-1 text-xl font-semibold text-gray-900">$XXXmm</div>
+        <div class="text-xs text-gray-500 mt-1">Margin: XX.X%</div>
+      </div>
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+        <div class="text-xs text-gray-500 uppercase tracking-wide">Net Leverage</div>
+        <div class="mt-1 text-xl font-semibold text-gray-900">X.Xx</div>
+        <div class="text-xs text-gray-500 mt-1">Gross: Y.Yx</div>
+      </div>
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+        <div class="text-xs text-gray-500 uppercase tracking-wide">Liquidity</div>
+        <div class="mt-1 text-xl font-semibold text-gray-900">$XXXmm</div>
+        <div class="text-xs text-gray-500 mt-1">Cash + Revolver availability</div>
+      </div>
+    </section>
+
+    <!-- MAIN GRID: LEFT (DETAIL) / RIGHT (OPINION + FLAGS) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- LEFT 2/3 -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- FINANCIAL OVERVIEW -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Financial Overview (LTM)</h2>
+            <span class="text-xs text-gray-500">All figures in USD millions unless noted</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead>
+                <tr class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+                  <th class="px-3 py-2 text-left">Metric</th>
+                  <th class="px-3 py-2 text-right">LTM</th>
+                  <th class="px-3 py-2 text-right">YoY</th>
+                  <th class="px-3 py-2 text-right">3-Yr CAGR</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">Revenue</td>
+                  <td class="px-3 py-2 text-right font-medium">$X,XXX</td>
+                  <td class="px-3 py-2 text-right text-emerald-600">+X.X%</td>
+                  <td class="px-3 py-2 text-right text-emerald-600">+X.X%</td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">EBITDA</td>
+                  <td class="px-3 py-2 text-right font-medium">$XXX</td>
+                  <td class="px-3 py-2 text-right text-emerald-600">+X.X%</td>
+                  <td class="px-3 py-2 text-right text-emerald-600">+X.X%</td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">EBITDA Margin</td>
+                  <td class="px-3 py-2 text-right font-medium">XX.X%</td>
+                  <td class="px-3 py-2 text-right text-emerald-600">+X bps</td>
+                  <td class="px-3 py-2 text-right text-emerald-600">+Y bps</td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">Free Cash Flow</td>
+                  <td class="px-3 py-2 text-right font-medium">$XXX</td>
+                  <td class="px-3 py-2 text-right text-emerald-600">+X.X%</td>
+                  <td class="px-3 py-2 text-right text-emerald-600">+X.X%</td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">CapEx</td>
+                  <td class="px-3 py-2 text-right font-medium">$XX</td>
+                  <td class="px-3 py-2 text-right text-rose-600">+X.X%</td>
+                  <td class="px-3 py-2 text-right text-rose-600">+X.X%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- CAPITAL STRUCTURE & MATURITY WALL -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Capital Structure &amp; Maturity Wall</h2>
+            <span class="text-xs text-gray-500">Includes revolver, term loans, and notes</span>
+          </div>
+
+          <div class="overflow-x-auto mb-4">
+            <table class="min-w-full text-sm">
+              <thead>
+                <tr class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+                  <th class="px-3 py-2 text-left">Instrument</th>
+                  <th class="px-3 py-2 text-right">Amount</th>
+                  <th class="px-3 py-2 text-right">Rate</th>
+                  <th class="px-3 py-2 text-center">Secured</th>
+                  <th class="px-3 py-2 text-center">Seniority</th>
+                  <th class="px-3 py-2 text-right">Maturity</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">1L Term Loan</td>
+                  <td class="px-3 py-2 text-right font-medium">$XXX</td>
+                  <td class="px-3 py-2 text-right">SOFR + XXX bps</td>
+                  <td class="px-3 py-2 text-center">
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Yes</span>
+                  </td>
+                  <td class="px-3 py-2 text-center text-gray-700">Senior Secured</td>
+                  <td class="px-3 py-2 text-right text-gray-700">2028</td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">Revolver</td>
+                  <td class="px-3 py-2 text-right font-medium">$XXX (Cap)</td>
+                  <td class="px-3 py-2 text-right">SOFR + XXX bps</td>
+                  <td class="px-3 py-2 text-center">
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Yes</span>
+                  </td>
+                  <td class="px-3 py-2 text-center text-gray-700">Senior Secured</td>
+                  <td class="px-3 py-2 text-right text-gray-700">2027</td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">Senior Notes</td>
+                  <td class="px-3 py-2 text-right font-medium">$XXX</td>
+                  <td class="px-3 py-2 text-right">X.XX%</td>
+                  <td class="px-3 py-2 text-center">
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-gray-50 text-gray-700">No</span>
+                  </td>
+                  <td class="px-3 py-2 text-center text-gray-700">Unsecured</td>
+                  <td class="px-3 py-2 text-right text-gray-700">2029</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <div class="text-xs text-gray-500 uppercase tracking-wide">Gross Debt</div>
+              <div class="text-lg font-semibold text-gray-900">$X,XXXmm</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500 uppercase tracking-wide">Net Debt</div>
+              <div class="text-lg font-semibold text-gray-900">$X,XXXmm</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500 uppercase tracking-wide">Weighted Avg. Cost of Debt</div>
+              <div class="text-lg font-semibold text-gray-900">X.XX%</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- COVENANTS, RISKS, STRENGTHS -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <!-- Covenants -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 mb-2">Key Covenants</h3>
+              <ul class="space-y-2 text-gray-700">
+                <li>• Springing <span class="font-medium">Net Leverage</span> covenant tied to RCF usage and draw levels.</li>
+                <li>• <span class="font-medium">Restricted payments</span> capacity subject to leverage tests and builder basket.</li>
+                <li>• <span class="font-medium">Debt incurrence</span> limited by secured leverage and interest coverage tests.</li>
+                <li>• Standard baskets for acquisitions, investments, and intercompany activity.</li>
+              </ul>
+            </div>
+
+            <!-- Key Strengths -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 mb-2">Key Strengths</h3>
+              <ul class="space-y-2 text-gray-700">
+                <li>• Portfolio of recognized, long-standing aftermarket brands across multiple categories.</li>
+                <li>• Diversified product set and channels (professional installer, retail, e-commerce).</li>
+                <li>• Defensive replacement demand driven by aging car parc and miles driven.</li>
+                <li>• Scale sourcing, engineering and distribution capabilities vs. smaller competitors.</li>
+              </ul>
+            </div>
+
+            <!-- Key Risks -->
+            <div>
+              <h3 class="text-base font-semibold text-gray-900 mb-2">Key Risks</h3>
+              <ul class="space-y-2 text-gray-700">
+                <li>• Customer concentration with large retailers and buying groups.</li>
+                <li>• Raw material and freight cost volatility impacting margins.</li>
+                <li>• Competitive pricing pressure in branded and private-label channels.</li>
+                <li>• Elevated leverage and dependence on continued stable aftermarket volumes.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- PEER COMPARISON -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Peer Positioning</h2>
+            <span class="text-xs text-gray-500">Values illustrative — replace with live data</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead>
+                <tr class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+                  <th class="px-3 py-2 text-left">Company</th>
+                  <th class="px-3 py-2 text-right">EV / EBITDA</th>
+                  <th class="px-3 py-2 text-right">EBITDA Margin</th>
+                  <th class="px-3 py-2 text-right">Net Leverage</th>
+                  <th class="px-3 py-2 text-right">FCF Yield</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr>
+                  <td class="px-3 py-2 text-gray-700 font-medium">First Brands Group (Private)</td>
+                  <td class="px-3 py-2 text-right">X.Xx</td>
+                  <td class="px-3 py-2 text-right">XX.X%</td>
+                  <td class="px-3 py-2 text-right">X.Xx</td>
+                  <td class="px-3 py-2 text-right">X.X%</td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">Public Aftermarket Peer 1</td>
+                  <td class="px-3 py-2 text-right">X.Xx</td>
+                  <td class="px-3 py-2 text-right">YY.Y%</td>
+                  <td class="px-3 py-2 text-right">X.Xx</td>
+                  <td class="px-3 py-2 text-right">X.X%</td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">Public Aftermarket Peer 2</td>
+                  <td class="px-3 py-2 text-right">X.Xx</td>
+                  <td class="px-3 py-2 text-right">YY.Y%</td>
+                  <td class="px-3 py-2 text-right">X.Xx</td>
+                  <td class="px-3 py-2 text-right">X.X%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RIGHT 1/3: OPINION, FLAGS, DOC INVENTORY -->
+      <div class="space-y-6">
+
+        <!-- FINAL OPINION CARD -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-2">Orion Credit View</h2>
+          <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 mb-3">
+            BUY — Defensive Aftermarket Profile, Manageable Leverage
+          </div>
+          <p class="text-sm text-gray-700 leading-relaxed">
+            First Brands benefits from a resilient, replacement-driven demand base, diversified brand portfolio and
+            meaningful scale advantages. While leverage is elevated and customer concentration remains a key risk,
+            margins and free cash flow are supported by leading market positions and broad category exposure.
+            At current pricing, first-lien secured debt appears attractive on a risk-adjusted basis, assuming
+            stable U.S. light vehicle miles driven and continued access to refinancing markets.
+          </p>
+        </section>
+
+        <!-- WATCH SIGNALS -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-3">Watch Signals</h2>
+          <div class="space-y-3 text-sm">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span class="font-medium text-gray-800">Aftermarket demand</span>
+              </div>
+              <p class="text-gray-600 ml-4 mt-1">
+                Replacement demand remains steady; monitor miles driven and scrappage trends for early inflection.
+              </p>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+                <span class="font-medium text-gray-800">Cost inflation &amp; pricing</span>
+              </div>
+              <p class="text-gray-600 ml-4 mt-1">
+                Raw material and freight costs need to be passed through via pricing; watch gross margin stability.
+              </p>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                <span class="font-medium text-gray-800">Refinancing window</span>
+              </div>
+              <p class="text-gray-600 ml-4 mt-1">
+                Term loan and notes maturities in 20XX–20YY require continued market access; spreads and
+                auto-aftermarket sentiment should be monitored closely.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- DOCUMENT INVENTORY -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-3">Source Documents</h2>
+          <ul class="text-sm text-gray-700 space-y-2">
+            <li>• FY 2024 Annual Report / Lender Presentation (First Brands Group)</li>
+            <li>• Most recent quarterly financials and MD&amp;A</li>
+            <li>• First Lien Term Loan Credit Agreement</li>
+            <li>• Revolving Credit Facility Agreement</li>
+            <li>• Senior Notes Indenture (if applicable)</li>
+            <li>• Latest rating agency and sponsor materials</li>
+          </ul>
+          <p class="mt-3 text-xs text-gray-500">
+            In Orion, each section of this tear sheet is linked back to the originating document and paragraph.
+          </p>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Ask Orion Bot -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/private-credit/includes/orion-chat.html");
+      const html = await res.text();
+  
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+  
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) {
+          newScript.src = oldScript.src;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+  
+    loadOrionChat();
+  </script>
+  
+</body>
+</html>
