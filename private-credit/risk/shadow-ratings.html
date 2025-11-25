@@ -122,8 +122,12 @@
   </main>
 
   <!-- App wiring -->
-  <script type="module" src="./js/main.js"></script>
+  <script type="module">
+    window.frameworkBase = "/private-credit/risk/frameworks";
+  </script>
   
+  <script type="module" src="./js/main.js"></script>
+
   </script>
     <!--Ask Orion Bot -->
     <div id="orion-chat-include"></div>
