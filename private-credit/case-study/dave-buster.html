@@ -17,6 +17,17 @@
       background: #f5f6f8;
     }
   </style>
+  
+  <style>
+  @media print {
+    nav, .sidebar, button, input, .ask-orion-container {
+      display: none !important;
+    }
+    body {
+      margin: 0;
+    }
+  }
+  </style>
 </head>
 <body class="flex min-h-screen">
 
@@ -73,6 +84,12 @@
         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
           Internal Use
         </span>
+        <button
+          onclick="window.print()"
+          class="ml-4 px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Print
+        </button>
       </div>
     </header>
 
