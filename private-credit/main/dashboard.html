@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Portfolio Dashboard — Orion | Private Credit AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+<body class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden")
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- PAGE WRAPPER -->
+  <div class="flex-1 ml-64 px-4 py-8">
+
+    <!-- HEADER -->
+    <header class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">
+          Orion | Portfolio Dashboard
+        </h1>
+        <p class="text-sm text-gray-500 mt-1">
+          Live view of portfolio risk, performance, compliance, and document intelligence.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+          Beta
+        </span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
+          Internal Use
+        </span>
+      </div>
+    </header>
+
+    <!-- TOP STRIP: PORTFOLIO SNAPSHOT -->
+    <section class="mb-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900">
+              Portfolio Snapshot
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">
+              High-level summary of AUM, risk profile, and current positioning.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-medium">
+              Status: Deployed &amp; Within Mandate
+            </span>
+            <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-700 font-medium">
+              Updated: 2025-11-25
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Total AUM</div>
+            <div class="mt-1 text-xl font-semibold text-gray-900">$X,XXXmm</div>
+            <div class="text-xs text-gray-500 mt-1">Across all vehicles</div>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Number of Positions</div>
+            <div class="mt-1 text-xl font-semibold text-gray-900">XXX</div>
+            <div class="text-xs text-gray-500 mt-1">Obligors / tranches</div>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="text-xs text-gray-500 uppercase tracking-wide">W.A. Yield (All-In)</div>
+            <div class="mt-1 text-xl font-semibold text-gray-900">X.XX%</div>
+            <div class="text-xs text-gray-500 mt-1">Net of fees</div>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="text-xs text-gray-500 uppercase tracking-wide">W.A. Rating / Shadow Rating</div>
+            <div class="mt-1 text-xl font-semibold text-gray-900">Single-B+/BB-</div>
+            <div class="text-xs text-gray-500 mt-1">Internal Orion shadow rating</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN GRID -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+      <!-- LEFT 2/3 -->
+      <div class="xl:col-span-2 space-y-6">
+
+        <!-- RISK & CONCENTRATION -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Risk &amp; Concentration</h2>
+            <span class="text-xs text-gray-500">Ratings mix, sectors, and top exposures</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm">
+            <!-- Ratings Distribution -->
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 mb-2">Ratings Distribution</h3>
+              <ul class="space-y-1 text-gray-700">
+                <li class="flex justify-between">
+                  <span>BB and above</span>
+                  <span class="font-medium">XX%</span>
+                </li>
+                <li class="flex justify-between">
+                  <span>B+ to B-</span>
+                  <span class="font-medium">XX%</span>
+                </li>
+                <li class="flex justify-between">
+                  <span>CCC and below</span>
+                  <span class="font-medium">XX%</span>
+                </li>
+                <li class="flex justify-between">
+                  <span>Not rated</span>
+                  <span class="font-medium">XX%</span>
+                </li>
+              </ul>
+              <p class="mt-3 text-xs text-gray-500">
+                Ratings can be external, internal, or Orion shadow ratings depending on issuer.
+              </p>
+            </div>
+
+            <!-- Sector Concentration -->
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 mb-2">Sector Concentration</h3>
+              <ul class="space-y-1 text-gray-700">
+                <li class="flex justify-between">
+                  <span>Top sector</span>
+                  <span class="font-medium">XX% of exposure</span>
+                </li>
+                <li class="flex justify-between">
+                  <span>Top 3 sectors</span>
+                  <span class="font-medium">XX% combined</span>
+                </li>
+                <li class="flex justify-between">
+                  <span>Non-cyclical exposure</span>
+                  <span class="font-medium">XX%</span>
+                </li>
+                <li class="flex justify-between">
+                  <span>Sponsored deals</span>
+                  <span class="font-medium">XX%</span>
+                </li>
+              </ul>
+              <p class="mt-3 text-xs text-gray-500">
+                Sector mapping aligned to internal or GICS-like taxonomy.
+              </p>
+            </div>
+
+            <!-- Top Exposures -->
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 mb-2">Top Exposures</h3>
+              <ul class="space-y-1 text-gray-700">
+                <li>• Top single-name exposure: <span class="font-medium">X.X% of AUM</span></li>
+                <li>• Top 10 names: <span class="font-medium">XX% of AUM</span></li>
+                <li>• Largest sponsor: <span class="font-medium">XX% of AUM</span></li>
+                <li>• Largest geography: <span class="font-medium">XX% of AUM</span></li>
+              </ul>
+              <p class="mt-3 text-xs text-gray-500">
+                Hover or click in-app for full list and drill-down by issuer.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- CASH FLOW & PERFORMANCE -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Cash Flow &amp; Performance</h2>
+            <span class="text-xs text-gray-500">Income, P&amp;L, and accrual profile</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 text-sm">
+            <div class="bg-gray-50 rounded-xl p-4">
+              <div class="text-xs text-gray-500 uppercase tracking-wide">Current Run-Rate Interest</div>
+              <div class="mt-1 text-lg font-semibold text-gray-900">$XXXmm / yr</div>
+              <div class="text-xs text-gray-500 mt-1">Based on current holdings</div>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4">
+              <div class="text-xs text-gray-500 uppercase tracking-wide">Realized P&amp;L (YTD)</div>
+              <div class="mt-1 text-lg font-semibold text-emerald-700">+$XXmm</div>
+              <div class="text-xs text-gray-500 mt-1">Sales, paydowns, restructurings</div>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4">
+              <div class="text-xs text-gray-500 uppercase tracking-wide">Unrealized P&amp;L</div>
+              <div class="mt-1 text-lg font-semibold text-gray-900">+$/- XXmm</div>
+              <div class="text-xs text-gray-500 mt-1">Mark-to-model / mark-to-market</div>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4">
+              <div class="text-xs text-gray-500 uppercase tracking-wide">Cash &amp; Undrawn</div>
+              <div class="mt-1 text-lg font-semibold text-gray-900">$XXXmm</div>
+              <div class="text-xs text-gray-500 mt-1">Dry powder for deployment</div>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead>
+                <tr class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+                  <th class="px-3 py-2 text-left">Metric</th>
+                  <th class="px-3 py-2 text-right">Current</th>
+                  <th class="px-3 py-2 text-right">1M Ago</th>
+                  <th class="px-3 py-2 text-right">3M Ago</th>
+                  <th class="px-3 py-2 text-right">1Y Ago</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">Gross Yield</td>
+                  <td class="px-3 py-2 text-right font-medium">X.XX%</td>
+                  <td class="px-3 py-2 text-right">X.XX%</td>
+                  <td class="px-3 py-2 text-right">X.XX%</td>
+                  <td class="px-3 py-2 text-right">X.XX%</td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">Net Yield</td>
+                  <td class="px-3 py-2 text-right font-medium">X.XX%</td>
+                  <td class="px-3 py-2 text-right">X.XX%</td>
+                  <td class="px-3 py-2 text-right">X.XX%</td>
+                  <td class="px-3 py-2 text-right">X.XX%</td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">Annualized Default Rate</td>
+                  <td class="px-3 py-2 text-right font-medium">X.XX%</td>
+                  <td class="px-3 py-2 text-right">X.XX%</td>
+                  <td class="px-3 py-2 text-right">X.XX%</td>
+                  <td class="px-3 py-2 text-right">X.XX%</td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-2 text-gray-700">Recovery Rate (Realized)</td>
+                  <td class="px-3 py-2 text-right font-medium">XX.X%</td>
+                  <td class="px-3 py-2 text-right">—</td>
+                  <td class="px-3 py-2 text-right">—</td>
+                  <td class="px-3 py-2 text-right">—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- COMPLIANCE & MANDATE CHECKS -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Compliance &amp; Mandate Checks</h2>
+            <span class="text-xs text-gray-500">Headroom vs. constraints</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm">
+            <!-- Summary -->
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium">
+                  In Compliance
+                </span>
+                <span class="text-xs text-gray-500">0 active breaches</span>
+              </div>
+              <ul class="space-y-2 text-gray-700">
+                <li>• No rating bucket limits breached.</li>
+                <li>• No single-name or sector caps exceeded.</li>
+                <li>• Leverage, OC/IC, and coverage ratios within thresholds.</li>
+                <li>• Minimum diversification tests satisfied.</li>
+              </ul>
+              <p class="mt-3 text-xs text-gray-500">
+                Orion Bouncer runs rules per mandate file and updates this view intraday.
+              </p>
+            </div>
+
+            <!-- Headroom Table -->
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead>
+                  <tr class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+                    <th class="px-3 py-2 text-left">Rule</th>
+                    <th class="px-3 py-2 text-right">Limit</th>
+                    <th class="px-3 py-2 text-right">Current</th>
+                    <th class="px-3 py-2 text-right">Headroom</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                  <tr>
+                    <td class="px-3 py-2 text-gray-700">Single-name max</td>
+                    <td class="px-3 py-2 text-right">3.0%</td>
+                    <td class="px-3 py-2 text-right">2.4%</td>
+                    <td class="px-3 py-2 text-right text-emerald-600">0.6%</td>
+                  </tr>
+                  <tr>
+                    <td class="px-3 py-2 text-gray-700">CCC &amp; below bucket</td>
+                    <td class="px-3 py-2 text-right">7.5%</td>
+                    <td class="px-3 py-2 text-right">5.2%</td>
+                    <td class="px-3 py-2 text-right text-emerald-600">2.3%</td>
+                  </tr>
+                  <tr>
+                    <td class="px-3 py-2 text-gray-700">Single sector cap</td>
+                    <td class="px-3 py-2 text-right">25.0%</td>
+                    <td class="px-3 py-2 text-right">21.0%</td>
+                    <td class="px-3 py-2 text-right text-emerald-600">4.0%</td>
+                  </tr>
+                  <tr>
+                    <td class="px-3 py-2 text-gray-700">Non-USD exposure</td>
+                    <td class="px-3 py-2 text-right">20.0%</td>
+                    <td class="px-3 py-2 text-right">16.5%</td>
+                    <td class="px-3 py-2 text-right text-emerald-600">3.5%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PIPELINE & ACTIVITY -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Pipeline &amp; Monitoring Activity</h2>
+            <span class="text-xs text-gray-500">New deals and key monitoring events</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm">
+            <!-- Origination Pipeline -->
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 mb-2">Origination Pipeline</h3>
+              <ul class="space-y-2 text-gray-700">
+                <li>• <span class="font-medium">XX</span> deals in active pipeline.</li>
+                <li>• Expected deployment over next 60 days: <span class="font-medium">$XXXmm</span>.</li>
+                <li>• W.A. expected yield: <span class="font-medium">X.XX%</span>.</li>
+                <li>• Mix: XX% new money / XX% refis / XX% add-ons.</li>
+              </ul>
+              <p class="mt-3 text-xs text-gray-500">
+                Pipeline can be filtered by sponsor, sector, size, and expected close date.
+              </p>
+            </div>
+
+            <!-- Monitoring / Events -->
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 mb-2">Monitoring &amp; Upcoming Events</h3>
+              <ul class="space-y-2 text-gray-700">
+                <li>• XX earnings releases in next 14 days.</li>
+                <li>• XX compliance certificates due this month.</li>
+                <li>• XX amendments/waivers under review.</li>
+                <li>• XX positions on internal watchlist.</li>
+              </ul>
+              <p class="mt-3 text-xs text-gray-500">
+                Each item links to issuer tear sheets, docs, and Orion commentary.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT 1/3 -->
+      <div class="space-y-6">
+
+        <!-- DOCUMENT INTELLIGENCE -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-2">Document Intelligence</h2>
+          <p class="text-sm text-gray-700 mb-3">
+            Aggregated view of the latest filings, credit agreements, certificates, and transcripts feeding Orion.
+          </p>
+
+          <ul class="text-sm text-gray-700 space-y-2 mb-4">
+            <li>• XX new documents ingested in last 24 hours.</li>
+            <li>• XX issuers with updated leverage / liquidity metrics.</li>
+            <li>• XX covenants flagged as changed vs. prior versions.</li>
+            <li>• XX new risk phrases detected in MD&amp;A / transcripts.</li>
+          </ul>
+
+          <div class="mt-4 border-t border-gray-100 pt-4">
+            <h3 class="text-sm font-semibold text-gray-900 mb-2">Orion AI Signals</h3>
+            <ul class="space-y-2 text-gray-700 text-sm">
+              <li>• Shadow rating updates for <span class="font-medium">XX</span> positions.</li>
+              <li>• Ratings drift warnings on <span class="font-medium">XX</span> names.</li>
+              <li>• Covenant drift alerts on <span class="font-medium">XX</span> facilities.</li>
+              <li>• Liquidity stress markers on <span class="font-medium">XX</span> issuers.</li>
+            </ul>
+            <p class="mt-3 text-xs text-gray-500">
+              Each signal is linked to the specific paragraph and clause that triggered it.
+            </p>
+          </div>
+        </section>
+
+        <!-- WATCHLIST & FLAGS -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-3">Watchlist &amp; Risk Flags</h2>
+          <div class="space-y-3 text-sm">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span class="font-medium text-gray-800">Stable bucket</span>
+              </div>
+              <p class="text-gray-600 ml-4 mt-1">
+                Majority of positions show stable or improving metrics; no systemic deterioration detected.
+              </p>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+                <span class="font-medium text-gray-800">Watchlist names</span>
+              </div>
+              <p class="text-gray-600 ml-4 mt-1">
+                XX positions flagged for softening fundamentals, negative revisions, or rising leverage.
+              </p>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                <span class="font-medium text-gray-800">High concern</span>
+              </div>
+              <p class="text-gray-600 ml-4 mt-1">
+                X–X names with covenant pressure, liquidity stress, or elevated default probability.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- OPTIMIZATION & RECOMMENDATIONS -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-2">Orion Optimization Panel</h2>
+          <p class="text-sm text-gray-700 mb-3">
+            AI-generated suggestions to rebalance the book for yield, risk, and mandate alignment.
+          </p>
+
+          <ul class="text-sm text-gray-700 space-y-2 mb-4">
+            <li>• Suggested trims: <span class="font-medium">X–Y</span> positions with poor risk/return.</li>
+            <li>• Suggested adds: <span class="font-medium">X–Y</span> candidates from pipeline / coverage list.</li>
+            <li>• Projected uplift in net yield: <span class="font-medium">+X–Y bps</span>.</li>
+            <li>• Impact on OC/IC, rating mix, and sector concentration shown before/after.</li>
+          </ul>
+
+          <p class="mt-2 text-xs text-gray-500">
+            In a live deployment, this section ties directly into the Bouncer and Distiller modules to ensure each suggested move is mandate-compliant and fully documented.
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ask Orion Bot -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/private-credit/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) {
+          newScript.src = oldScript.src;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
