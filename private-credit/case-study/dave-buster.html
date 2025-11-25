@@ -20,11 +20,50 @@
   
   <style>
   @media print {
-    nav, .sidebar, button, input, .ask-orion-container {
+  
+    /* --- PAGE CONTROL --- */
+    @page {
+      size: A4;         /* or letter */
+      margin: 10mm;     /* control margins */
+    }
+  
+    /* Hide unwanted UI elements */
+    nav, .sidebar, .ask-orion-container, button, input {
       display: none !important;
     }
-    body {
-      margin: 0;
+  
+    /* Make background white and remove rounded corners/shadows */
+    body, .bg-white {
+      background: white !important;
+      box-shadow: none !important;
+    }
+    .rounded-2xl, .rounded-lg, .rounded {
+      border-radius: 0 !important;
+    }
+  
+    /* Remove spacing between sections for a cleaner print */
+    section {
+      page-break-inside: avoid; /* don't break a card in half */
+      break-inside: avoid;
+    }
+  
+    /* Make tables print cleanly */
+    table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      font-size: 11px !important;
+    }
+  
+    th, td {
+      border: 1px solid #ccc !important;
+      padding: 4px !important;
+    }
+  
+    /* Optional: make text slightly darker for printing */
+    * {
+      color: #000 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
   }
   </style>
