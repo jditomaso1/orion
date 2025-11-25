@@ -21,75 +21,74 @@
   <style>
   @media print {
   
-    /* --- PAGE CONTROL --- */
+    /* Page layout */
     @page {
-      size: A4;         /* or letter */
-      margin: 10mm;     /* control margins */
+      size: A4;
+      margin: 10mm;
     }
   
-    /* Hide unwanted UI elements */
-    nav, .sidebar, .ask-orion-container, button, input {
+    /* Hide UI elements */
+    nav,
+    .sidebar,
+    #sidebar-placeholder,
+    .ask-orion-container,
+    button,
+    input {
       display: none !important;
     }
   
-    /* Make background white and remove rounded corners/shadows */
-    body, .bg-white {
+    /* Reset layout indentation (remove sidebar offset) */
+    .ml-64 {
+      margin-left: 0 !important;
+    }
+  
+    /* Expand main content fully */
+    .flex-1 {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 0 !important;
+    }
+  
+    /* Reset backgrounds + shadows */
+    body,
+    .bg-white {
       background: white !important;
       box-shadow: none !important;
     }
-    .rounded-2xl, .rounded-lg, .rounded {
+  
+    /* Remove curves */
+    .rounded,
+    .rounded-lg,
+    .rounded-2xl {
       border-radius: 0 !important;
     }
   
-    /* Remove spacing between sections for a cleaner print */
+    /* Prevent mid-section breaks */
     section {
-      page-break-inside: avoid; /* don't break a card in half */
-      break-inside: avoid;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
     }
   
-    /* Make tables print cleanly */
+    /* Tables look clean in print */
     table {
       width: 100% !important;
       border-collapse: collapse !important;
       font-size: 11px !important;
     }
   
-    th, td {
+    th,
+    td {
       border: 1px solid #ccc !important;
       padding: 4px !important;
     }
   
-    /* Optional: make text slightly darker for printing */
+    /* Make text darker for print */
     * {
       color: #000 !important;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
-    .ml-64 {
-      margin-left: 0 !important;
-    }
-    .flex-1 {
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-    @media print {
-      /* Remove sidebar layout indentation */
-      .ml-64 {
-        margin-left: 0 !important;
-      }
-    
-      /* Expand main content to full width */
-      .flex-1 {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 0 !important;     /* optional: cleaner print */
-      }
-    
-      /* Hide the sidebar container completely */
-      #sidebar-placeholder {
-        display: none !important;
-      }
-    }
+  }
     
   }
   </style>
