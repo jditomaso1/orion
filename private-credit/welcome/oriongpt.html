@@ -325,12 +325,12 @@
       // Right column: Chat
       const right = el("section", "flex-1 flex flex-col bg-white");
       right.innerHTML = `
-        <div class="px-4 py-2 border-b border-neutral-200" style="background:#f5f6f8;">
+        <div class="px-4 py-2" style="background:#f5f6f8;">
           <div id="faqChips" class="flex flex-wrap gap-2"></div>
         </div>
         <div id="chatStream" class="flex-1 overflow-auto p-4 space-y-4" style="background:#f5f6f8;"></div>
         <div class="border-t border-neutral-200 bg-white p-3">
-          <div class="flex items-end gap-2 bg-white rounded-2xl px-3 py-2 border border-neutral-200">
+          <div class="flex items-end gap-2 rounded-2xl px-3 py-2 border border-neutral-200" style="background:#f5f6f8;">
             <textarea
               id="chatInput"
               rows="1"
