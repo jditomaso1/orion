@@ -31,6 +31,26 @@
   <!-- Navigation -->
   <nav class="flex-1 overflow-y-auto p-4 space-y-1">
     
+    <!-- Welcome -->
+    <div class="mt-4">
+       <button onclick="toggleSection('welcome')"
+                class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+        <span>welcom</span>
+        <span id="icon-welcom" class="transition-transform">
+          ▶
+        </span>
+      </button>
+    
+    <p id="welcom" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
+      
+        <a href="/private-credit/welcom/oriongpt.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+            Dashboard
+        </a>
+    
+      </p>
+    </div>
+    
     <!-- Main -->
     <div class="mt-4">
        <button onclick="toggleSection('main')"
