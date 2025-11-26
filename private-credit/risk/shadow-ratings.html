@@ -6,6 +6,9 @@
   <title>Shadow Ratings | Private Credit AI</title>
   <meta name="description" content="Rules-based shadow ratings for private credit: leverage, coverage, size, structure, covenants, liquidity, sponsor, sector." />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
 
   <style>
     :root{ --bg:#f4f4f4; --card:#fff; --text:#111; --muted:#666; --border:#e8e8e8; }
@@ -31,7 +34,41 @@
     .footer-note{ margin-top:12px; color:#666; font-size:12px }
   </style>
 </head>
+  
 <body>
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const s = document.getElementById(last);
+      const i = document.getElementById("icon-" + last);
+      if (s && i) {
+        s.classList.remove("hidden");
+        i.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+
+  <!-- MAIN CONTENT -->
+  
   <main class="page">
     <h1 style="margin:0 0 8px;font-size:26px;font-weight:700;">Shadow Ratings</h1>
     <p style="margin:0 0 20px;color:#666;">Transparent, rules-based scoring. Toggle framework & industry, enter inputs on the left, see the result on the right.</p>
