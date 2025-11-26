@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orion — Command Center</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+    canvas {
+      max-height: 350px !important;
+    }
+  </style>
+  <style>
+    .thin-scrollbar::-webkit-scrollbar { width: 8px; }
+    .thin-scrollbar::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 8px; }
+    .thin-scrollbar { scrollbar-width: thin; scrollbar-color: #d4d4d8 transparent; }
+    .bubble { max-width: 75%; }
+
+    .typing-cursor::after {
+      content: "|";
+      animation: blink 0.7s steps(1) infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+  </style>
+</head>
+
+<body class="flex">
+  
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+  
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden")
+        ? "rotate(0deg)"
+        : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+  
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const section = document.getElementById(last);
+      const icon = document.getElementById("icon-" + last);
+      if (section && icon) {
+        section.classList.remove("hidden");
+        icon.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+  <!-- *** INSERT CHAT PANEL HERE *** -->
+  <div id="orion-chat-panel" class="fixed top-0 right-0 w-96 h-full bg-white shadow-xl z-40 transform translate-x-full transition-transform duration-300">
+    
+    <div class="px-4 py-3 border-b text-lg font-semibold flex justify-between items-center">
+      Orion Chat
+      <button id="close-orion-panel" class="text-gray-500 hover:text-gray-800">✕</button>
+    </div>
+
+    <div id="orion-chat-window" class="p-4 overflow-y-auto h-[calc(100%-120px)]"></div>
+
+    <div class="p-4 border-t">
+      <input id="orion-input" type="text"
+        class="w-full px-3 py-2 border rounded-lg"
+        placeholder="Ask a question..." />
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+  <body class="h-screen bg-neutral-50 flex overflow-hidden">
+    <!-- LEFT: SIDEBAR PLACEHOLDER -->
+    <div id="sidebar-placeholder" class="w-64 bg-white border-r border-neutral-200"></div>
+  
+    <!-- RIGHT: ORION CHAT APP -->
+    <div id="app" class="flex-1 h-full flex overflow-hidden"></div>
+  
+    <script>
+      // Inject your existing sidebar HTML
+      async function injectSidebar() {
+        try {
+          const res = await fetch("/private-credit/sidebar.html");
+          if (res.ok) {
+            const html = await res.text();
+            document.getElementById("sidebar-placeholder").innerHTML = html;
+          } else {
+            console.error("Failed to load sidebar:", res.status);
+          }
+        } catch (err) {
+          console.error("Error loading sidebar:", err);
+        }
+      }
+      injectSidebar();
+  
+      // ------------------------
+      // Data (not really used yet, but fine to keep)
+      // ------------------------
+      const CASE_INFO = {
+        company: "First Brands Group, LLC",
+        caseNo: "25-90399",
+        district: "S.D. Texas (Houston)",
+        judge: "Hon. Christopher M. Lopez",
+        chapter: "Chapter 11",
+        petitionDate: "09/29/2025",
+        venue: "Houston, Courtroom 401",
+        debtorCounsel: "Kirkland & Ellis LLP",
+        financialAdvisor: "Lazard Frères & Co. LLC",
+      };
+  
+      const DOCKET_ENTRIES = [
+        { caseNo: "25-90383", title: "Chapter 11 Voluntary Petition Filed by Global Assets LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/12a7yYhepK8Efwgi3AzCwkhR_dhvGIhBt/preview" },
+        { caseNo: "25-90384", title: "Chapter 11 Voluntary Petition Filed by Global Lease Assets Holdings, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/1apg46Rg5rEvv-48gO44misECV2ZZbmsT/view?usp=drive_link" },
+        { caseNo: "25-90385", title: "Chapter 11 Voluntary Petition Filed by Carnaby Capital Holdings, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/10gjxREZv2eCK7NGa-u7OIIkGYcZ8Suvx/view?usp=drive_link" },
+        { caseNo: "25-90386", title: "Chapter 11 Voluntary Petition Filed by Broad Street Financial Holdings, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/1ZWpWQgWoH_wxY-SOgdvXlz87tIt8h0BX/view?usp=drive_link" },
+        { caseNo: "25-90387", title: "Chapter 11 Voluntary Petition Filed by Broad Street Financial, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/1FYzk7pN3DyWccw7Xnw2_jB7y9G2CmRpr/view?usp=drive_link" },
+        { caseNo: "25-90388", title: "Chapter 11 Voluntary Petition Filed by Carnaby Inventory II, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/1PZhheU9WbiEgXylcQBa5QmD4her-Jc4v/view?usp=drive_link" },
+        { caseNo: "25-90389", title: "Chapter 11 Voluntary Petition Filed by Carnaby Inventory Holdings II, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/13B3e5w1_YEJOD40G6kNmzmFGaqGs-fyD/view?usp=drive_link" },
+        { caseNo: "25-90390", title: "Chapter 11 Voluntary Petition Filed by Carnaby Inventory III, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/1RrUcZA-UX9qQ6sDE3oqRlpme9vKXPK1_/view?usp=drive_link" },
+        { caseNo: "25-90391", title: "Chapter 11 Voluntary Petition Filed by Carnaby Inventory Holdings III, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/13VOfO8hpjoNLMZOoxQTwjURgBcrE0noX/view?usp=drive_link" },
+        { caseNo: "25-90392", title: "Chapter 11 Voluntary Petition Filed by Patterson Inventory, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/1456W_WDzeqbFv6ArrvwspknhbXlwVT2y/view?usp=drive_link" },
+        { caseNo: "25-90393", title: "Chapter 11 Voluntary Petition Filed by Patterson Inventory Holdings, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/14zttXuZhrUoWQjPcOIplI0d5qe0laqQe/view?usp=drive_link" },
+        { caseNo: "25-90394", title: "Chapter 11 Voluntary Petition Filed by Starlight Inventory I, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/19iyWVP7kV2F-7aP0IAEaX7s4S9uBJGVu/view?usp=drive_link" },
+        { caseNo: "25-90395", title: "Chapter 11 Voluntary Petition Filed by Starlight Inventory Holdings I, LLC.", dateFiled: "09/24/2025", url: "https://drive.google.com/file/d/1QGEBnQxKYZYh6dSMag25-HnUc0JkP5Bn/view?usp=drive_link" },
+        { caseNo: "25-90396", title: "Chapter 11 Voluntary Petition Filed by Trico Technologies Corporation.", dateFiled: "09/28/2025", url: "https://drive.google.com/file/d/14-8BNJuoMlTk4LZxLbklL8t7PH5mIT1i/view?usp=drive_link" },
+      ];
+  
+      // ------------------------
+      // PRESET Q&A — PORTFOLIO / RISK
+      // ------------------------
+      const PRESET_QA = [
+        {
+          q: "Give me a portfolio snapshot",
+          triggers: [/snapshot/i, /overview/i, /portfolio summary/i],
+          a: `**Portfolio Snapshot (Mock)**
+  • Total Exposure: $4.2bn across 137 positions
+  • Average Rating: BB– (internal shadow rating)
+  • Top 3 Sectors: Software (28%), Healthcare Services (19%), Industrials (15%)
+  • Top 5 Issuers: AlphaSoft, Meridian Health, Titan Components, Vantage Outdoor, TrueCar
+  • Weighted Average Life: 4.1 years
+  • Floating vs Fixed: 92% / 8%`,
+          citations: [{ label: "Internal Holdings File — Latest Cut", url: "#" }],
+        },
+        {
+          q: "Which names are deteriorating?",
+          triggers: [/deteriorat/i, /worsening/i, /getting worse/i, /spreads? widening/i],
+          a: `**Deteriorating Names (Mock)**
+  I scanned the portfolio for:
+  • Worsening leverage QoQ
+  • Margin compression
+  • Spread widening
+  • Negative rating / outlook changes
+  
+  **Top 5 by size × deterioration:**
+  1) **Meridian Health Systems**
+     - Leverage: 4.8x → 5.5x
+     - EBITDA margin: 22% → 18%
+     - Spread: +275 bps since last quarter
+  
+  2) **Titan Components, Inc.**
+     - Leverage: 5.1x → 5.9x
+     - Covenant headroom: from 28% → 12%
+  
+  3) **TrueCar Inc**
+     - Revenue: –7% YoY
+     - Management turnover flagged (CFO + COO)
+  
+  4) **Vantage Outdoor Co.**
+     - Working capital draw; revolver now 65% utilized
+  
+  5) **ForgeFab Materials Co.**
+     - Rating drift: BB → BB– (internal) on weaker outlook`,
+          citations: [{ label: "Monitoring Packs — Last 2 Quarters", url: "#" }],
+        },
+        {
+          q: "Are we breaching any mandate limits?",
+          triggers: [/mandate/i, /breach/i, /limit/i, /guidelines?/i, /constraints?/i],
+          a: `**Mandate Compliance Check (Mock)**
+  I tested current holdings against standard guidelines:
+  
+  • Single-name limit (5% of NAV):
+    - **1 name over limit**: AlphaSoft at 5.6%
+    - Suggest: trim 0.6% or pair with offsetting reduction elsewhere.
+  
+  • Sector limits:
+    - Software cap: 30% — **currently at 28%** (watchlist, but within bounds)
+    - Energy cap: 10% — at 6% (comfortable)
+  
+  • Rating bucket mix:
+    - Minimum 60% ≥ single-BB: currently 64%
+    - Max CCC & below: limit 5% — currently 3.2%
+  
+  • Non-sponsored exposure:
+    - Mandate: 20–40% — currently 24% (in range)`,
+          citations: [{ label: "Mandate Rules / Investment Guidelines", url: "#" }],
+        },
+        {
+          q: "Show me the top 10 positions by exposure",
+          triggers: [/top 10/i, /largest positions?/i, /biggest names?/i, /top holdings?/i],
+          a: `**Top 10 Positions by Exposure (Mock)**
+  1) AlphaSoft Holdings — 5.6% of NAV
+  2) Meridian Health Systems — 4.9%
+  3) Titan Components, Inc. — 4.3%
+  4) Vantage Outdoor Co. — 3.8%
+  5) TrueCar Inc — 3.4%
+  6) ForgeFab Materials Co. — 3.1%
+  7) Elevated Learning Systems — 2.9%
+  8) BlueRidge Secondary Fund LP — 2.7%
+  9) Pawsitive Brands, Inc. — 2.5%
+  10) Trico Technologies Corporation — 2.3%
+  
+  Let me know if you want:
+  • concentration by sponsor
+  • concentration by rating
+  • concentration by sector`,
+          citations: [{ label: "Holdings Detail — Position Sizing", url: "#" }],
+        },
+      ];
+  
+      // ------------------------
+      // Utilities
+      // ------------------------
+      const $ = (sel, root = document) => root.querySelector(sel);
+      const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+      const el = (tag, classes = "", text = "") => {
+        const n = document.createElement(tag);
+        if (classes) n.className = classes;
+        if (text) n.textContent = text;
+        return n;
+      };
+      const md = (text) => {
+        return (text || "")
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+          .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\n/g, "<br/>");
+      };
+  
+      function matchPreset(text) {
+        const t = (text || "").trim();
+        for (const item of PRESET_QA) {
+          for (const trig of item.triggers) {
+            if (
+              (typeof trig === "string" && t.toLowerCase().includes(trig.toLowerCase())) ||
+              (trig instanceof RegExp && trig.test(t))
+            ) {
+              return item;
+            }
+          }
+        }
+        return null;
+      }
+  
+      // ---------------------------------
+      // Typing helper for assistant output
+      // ---------------------------------
+      function addAssistant(mdText, afterHTML = "") {
+        const row = el("div", ""); // Assistant messages are left-aligned
+        const bubble = el(
+          "div",
+          "inline-block rounded-2xl px-4 py-3 bubble bg-white border border-neutral-200"
+        );
+        row.appendChild(bubble);
+        stream.appendChild(row);
+        stream.scrollTop = stream.scrollHeight;
+  
+        const raw = mdText || "";
+        const speed = 15;
+        let i = 0;
+  
+        bubble.classList.add("typing-cursor");
+  
+        const type = () => {
+          if (i <= raw.length) {
+            bubble.innerHTML = md(raw.slice(0, i));
+            stream.scrollTop = stream.scrollHeight;
+            i++;
+            setTimeout(type, speed);
+          } else {
+            bubble.classList.remove("typing-cursor");
+            if (afterHTML) {
+              bubble.innerHTML += afterHTML;
+              stream.scrollTop = stream.scrollHeight;
+            }
+          }
+        };
+  
+        setTimeout(type, 250);
+      }
+  
+      // ------------------------
+      // Build UI (no frameworks)
+      // ------------------------
+      const app = $("#app");
+  
+      // Right column: Chat
+      const right = el("section", "flex-1 flex flex-col bg-white");
+      right.innerHTML = `
+        <div class="px-5 py-3 bg-[#187ABA] text-white flex items-center justify-between border-b border-[#187ABA]">
+          <h2 class="font-semibold text-[15px] tracking-wide">Orion</h2>
+          <span class="text-xs text-neutral-200">Command Center</span>
+        </div>
+        <div class="px-4 py-2 bg-neutral-50 border-b border-neutral-200">
+          <div id="faqChips" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div id="chatStream" class="flex-1 overflow-auto p-4 space-y-4 bg-neutral-50"></div>
+        <div class="border-t border-neutral-200 bg-white p-3">
+          <div class="flex items-end gap-2 bg-neutral-100 rounded-2xl px-3 py-2">
+            <textarea
+              id="chatInput"
+              rows="1"
+              placeholder="Type a question or click a preset above…"
+              class="flex-1 bg-transparent outline-none resize-none text-sm max-h-32 py-[8px] leading-[1.4]"
+              style="vertical-align: middle;"
+            ></textarea>
+            <button id="sendBtn" class="px-3 py-2 rounded-xl text-sm bg-neutral-900 text-white hover:bg-black">
+              Ask
+            </button>
+          </div>
+        </div>
+      `;
+      app.appendChild(right);
+  
+      const stream = $("#chatStream", right);
+      const input = $("#chatInput", right);
+      const sendBtn = $("#sendBtn", right);
+      const chips = $("#faqChips", right);
+  
+      // Standard user message
+      const addMsg = (role, html) => {
+        const row = el("div", role === "user" ? "text-right" : "");
+        const bubble = el(
+          "div",
+          "inline-block rounded-2xl px-4 py-3 bubble " +
+            (role === "user"
+              ? "bg-[#187ABA] text-white"
+              : "bg-white border border-neutral-200")
+        );
+        bubble.innerHTML = html;
+        row.appendChild(bubble);
+        stream.appendChild(row);
+        stream.scrollTop = stream.scrollHeight;
+      };
+  
+      // Welcome message
+      addAssistant("**Joe — ready.**");
+  
+      // Chips
+      PRESET_QA.forEach((item) => {
+        const b = el(
+          "button",
+          "text-xs px-2.5 py-1.5 rounded-full border border-neutral-300 bg-white hover:bg-neutral-100"
+        );
+        b.textContent = item.q;
+        b.addEventListener("click", () => {
+          addMsg("user", md(item.q));
+  
+          const citationsHTML = (item.citations?.length)
+            ? `<div class="mt-3 flex flex-wrap gap-2">
+                 ${item.citations.map(c => `
+                   <a class="text-[11px] px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100" target="_blank" href="${c.url || '#'}">
+                     ${c.label || 'Source'}
+                   </a>`).join("")}
+               </div>`
+            : "";
+  
+          addAssistant(item.a, citationsHTML);
+        });
+        chips.appendChild(b);
+      });
+  
+      // Send handler
+      function handleSend() {
+        const text = input.value.trim();
+        if (!text) return;
+        addMsg("user", md(text));
+        input.value = "";
+  
+        const preset = matchPreset(text);
+        if (preset) {
+          const citationsHTML = (preset.citations?.length)
+            ? `<div class="mt-3 flex flex-wrap gap-2">
+                 ${preset.citations.map(c => `
+                   <a class="text-[11px] px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100" target="_blank" href="${c.url || '#'}">
+                     ${c.label || 'Source'}
+                   </a>`).join("")}
+               </div>`
+            : "";
+          addAssistant(preset.a, citationsHTML);
+        } else {
+          addAssistant("I don't have a preset for that yet. Please add one to the preset list or connect a backend.");
+        }
+      }
+  
+      sendBtn.addEventListener("click", handleSend);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          handleSend();
+        }
+      });
+    </script>
+  </body>
+
+    <!--Ask Orion Bot -->
+    <div id="orion-chat-include"></div>
+    <script>
+      async function loadOrionChat() {
+        const res = await fetch("/private-credit/includes/orion-chat.html");
+        const html = await res.text();
+    
+        // Insert into DOM
+        const container = document.getElementById("orion-chat-include");
+        container.innerHTML = html;
+    
+        // --- EXECUTE SCRIPTS ---
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement("script");
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+          oldScript.remove();
+        });
+      }
+    
+      loadOrionChat();
+    </script>
+
+</body>
+</html>
