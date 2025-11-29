@@ -145,16 +145,17 @@
           Summarize selected file(s)
         </button>
 
-        <!-- Output -->
+        <!-- Output (main summary) -->
         <pre
           id="output"
           class="mt-4 text-xs bg-gray-900 text-green-200 p-3 rounded-lg max-h-72 overflow-y-auto"
-        ></pre
-        <!-- Embedding preview (for demo only) -->
+        ></pre>
+        
+        <!-- Embedding preview -->
         <pre
           id="embeddingOutput"
           class="mt-4 text-xs bg-gray-900 text-blue-200 p-3 rounded-lg max-h-72 overflow-y-auto"
-        ></pre>   
+        ></pre>
       </div>
 
     </div>
@@ -301,7 +302,10 @@
         }
 
         const outputEl = document.getElementById("output");
+        const embeddingEl = document.getElementById("embeddingOutput");
+
         outputEl.textContent = "Running summaries...";
+        if (embeddingEl) embeddingEl.textContent = "";
 
         const results = [];
 
@@ -327,13 +331,30 @@
             });
           }
 
-          outputEl.textContent = JSON.stringify(results, null, 2);
+          // Strip embeddings out for the main summary box
+          const summaryOnly = results.map(r => {
+            const { embedding_preview, ...rest } = r;
+            return rest;
+          });
+
+          // Only embeddings in the second box
+          const embeddingOnly = results.map(r => ({
+            file_id: r.file_id,
+            file_name: r.file_name,
+            embedding_preview: r.embedding_preview
+          }));
+
+          outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
+
+          if (embeddingEl) {
+            embeddingEl.textContent = JSON.stringify(embeddingOnly, null, 2);
+          }
         } catch (err) {
           console.error("Error summarizing files:", err);
           outputEl.textContent = "Error summarizing files. Check console.";
+          if (embeddingEl) embeddingEl.textContent = "";
         }
       };
-    });
   </script>
 
 </body>
