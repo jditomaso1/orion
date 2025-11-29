@@ -332,8 +332,9 @@
             });
           }
 
+          
           // Strip embeddings out for the main summary box
-          const summaryOnly = results.map(r => {
+          /*const summaryOnly = results.map(r => {
             const { embedding_preview, ...rest } = r;
             return rest;
           });
@@ -354,10 +355,75 @@
           console.error("Error summarizing files:", err);
           outputEl.textContent = "Error summarizing files. Check console.";
           if (embeddingEl) embeddingEl.textContent = "";
-        }
+        } */
+        // Strip embeddings out for the main summary box
+        const summaryOnly = results.map(r => {
+          const { embedding_preview, ...rest } = r;
+          return rest;
+        });
+        
+        // Only embeddings in the second box
+        const embeddingOnly = results.map(r => ({
+          file_id: r.file_id,
+          file_name: r.file_name,
+          embedding_preview: r.embedding_preview
+        }));
+        
+        // Main summary box – no embeddings
+        outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
+        
+        // Embedding box – vectors + optional drift
+        if (embeddingEl) {
+          let text = JSON.stringify(embeddingOnly, null, 2);
+        
+          // If we have at least 2 files, compute a simple drift metric
+          if (embeddingOnly.length >= 2 &&
+              embeddingOnly[0].embedding_preview &&
+              embeddingOnly[1].embedding_preview &&
+              Array.isArray(embeddingOnly[0].embedding_preview.first_50_values) &&
+              Array.isArray(embeddingOnly[1].embedding_preview.first_50_values)) {
+        
+            const v1 = embeddingOnly[0].embedding_preview.first_50_values;
+            const v2 = embeddingOnly[1].embedding_preview.first_50_values;
+            const cos = cosineSimilarity(v1, v2);
+        
+            if (cos !== null) {
+              text =
+                "Drift (cosine similarity of first 50 dims): " +
+                cos.toFixed(4) +
+                "\n\n" +
+                text;
+            }
+          }
+        
+          embeddingEl.textContent = text;
+        } 
       };
     });
   </script>
-
+  
+  <script>
+    // --- COSINE SIMILARITY FOR DRIFT DEMOS ---
+    function cosineSimilarity(v1, v2) {
+      if (!Array.isArray(v1) || !Array.isArray(v2) || v1.length !== v2.length) {
+        return null;
+      }
+      let dot = 0;
+      let n1 = 0;
+      let n2 = 0;
+  
+      for (let i = 0; i < v1.length; i++) {
+        const a = v1[i];
+        const b = v2[i];
+        dot += a * b;
+        n1 += a * a;
+        n2 += b * b;
+      }
+  
+      if (n1 === 0 || n2 === 0) return null;
+      return dot / (Math.sqrt(n1) * Math.sqrt(n2));
+    }
+  </script>
+  
 </body>
 </html>
