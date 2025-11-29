@@ -292,29 +292,30 @@
       summarizeBtn.onclick = async () => {
         const assetClass = document.getElementById("assetClass").value;
         const promptType = PROMPT_MAP[assetClass] || "syndicated";
-
+      
         const selectedBoxes = Array.from(
           document.querySelectorAll('input[name="fileCheckbox"]:checked')
         );
-
+      
         if (!selectedBoxes.length) {
           alert("Please select at least one file.");
           return;
         }
-
+      
         const outputEl = document.getElementById("output");
         const embeddingEl = document.getElementById("embeddingOutput");
-
+      
         outputEl.textContent = "Running summaries...";
         if (embeddingEl) embeddingEl.textContent = "";
-
+      
         const results = [];
-
+      
         try {
+          // --- Call FastAPI once per selected file ---
           for (const cb of selectedBoxes) {
             const fileId = cb.value;
             const fileName = cb.nextSibling.textContent || "";
-
+      
             const res = await fetch(`${API_BASE}/summarize-file`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -323,7 +324,7 @@
                 prompt_type: promptType
               })
             });
-
+      
             const data = await res.json();
             results.push({
               file_id: fileId,
@@ -331,73 +332,53 @@
               ...data
             });
           }
-
-          
-          // Strip embeddings out for the main summary box
-          /*const summaryOnly = results.map(r => {
+      
+          // --- Main summary box – no embeddings ---
+          const summaryOnly = results.map(r => {
             const { embedding_preview, ...rest } = r;
             return rest;
           });
-
-          // Only embeddings in the second box
+      
+          // --- Embedding box – vectors + optional drift ---
           const embeddingOnly = results.map(r => ({
             file_id: r.file_id,
             file_name: r.file_name,
             embedding_preview: r.embedding_preview
           }));
-
+      
           outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
-
+      
           if (embeddingEl) {
-            embeddingEl.textContent = JSON.stringify(embeddingOnly, null, 2);
+            let text = JSON.stringify(embeddingOnly, null, 2);
+      
+            // If we have at least 2 files, compute a simple drift metric
+            if (
+              embeddingOnly.length >= 2 &&
+              embeddingOnly[0].embedding_preview &&
+              embeddingOnly[1].embedding_preview &&
+              Array.isArray(embeddingOnly[0].embedding_preview.first_50_values) &&
+              Array.isArray(embeddingOnly[1].embedding_preview.first_50_values)
+            ) {
+              const v1 = embeddingOnly[0].embedding_preview.first_50_values;
+              const v2 = embeddingOnly[1].embedding_preview.first_50_values;
+              const cos = cosineSimilarity(v1, v2);
+      
+              if (cos !== null) {
+                text =
+                  "Drift (cosine similarity of first 50 dims): " +
+                  cos.toFixed(4) +
+                  "\n\n" +
+                  text;
+              }
+            }
+      
+            embeddingEl.textContent = text;
           }
         } catch (err) {
           console.error("Error summarizing files:", err);
           outputEl.textContent = "Error summarizing files. Check console.";
           if (embeddingEl) embeddingEl.textContent = "";
-        } */
-        // Strip embeddings out for the main summary box
-        const summaryOnly = results.map(r => {
-          const { embedding_preview, ...rest } = r;
-          return rest;
-        });
-        
-        // Only embeddings in the second box
-        const embeddingOnly = results.map(r => ({
-          file_id: r.file_id,
-          file_name: r.file_name,
-          embedding_preview: r.embedding_preview
-        }));
-        
-        // Main summary box – no embeddings
-        outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
-        
-        // Embedding box – vectors + optional drift
-        if (embeddingEl) {
-          let text = JSON.stringify(embeddingOnly, null, 2);
-        
-          // If we have at least 2 files, compute a simple drift metric
-          if (embeddingOnly.length >= 2 &&
-              embeddingOnly[0].embedding_preview &&
-              embeddingOnly[1].embedding_preview &&
-              Array.isArray(embeddingOnly[0].embedding_preview.first_50_values) &&
-              Array.isArray(embeddingOnly[1].embedding_preview.first_50_values)) {
-        
-            const v1 = embeddingOnly[0].embedding_preview.first_50_values;
-            const v2 = embeddingOnly[1].embedding_preview.first_50_values;
-            const cos = cosineSimilarity(v1, v2);
-        
-            if (cos !== null) {
-              text =
-                "Drift (cosine similarity of first 50 dims): " +
-                cos.toFixed(4) +
-                "\n\n" +
-                text;
-            }
-          }
-        
-          embeddingEl.textContent = text;
-        } 
+        }
       };
     });
   </script>
