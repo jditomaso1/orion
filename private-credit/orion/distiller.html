@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion — Asset Selector</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden")
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- HEADER -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
+      The Distiller
+    </h1>
+    <p class="text-gray-500 text-[15px] mb-8">
+      Choose an asset class, company folder, and one or more files to summarize.
+    </p>
+
+    <!-- SELECTION BOX -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border max-w-xl">
+
+      <!-- ASSET CLASS DROPDOWN -->
+      <label class="block text-gray-700 font-medium mb-2">Asset Class</label>
+      <div class="relative mb-6">
+        <select
+          id="assetClass"
+          class="w-full p-3 pr-10 border border-gray-100 rounded-lg bg-gray-50 appearance-none
+                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select Asset Class</option>
+          <option>Syndicate Loan</option>
+          <option>Direct Lending</option>
+          <option>Asset-Backed Security</option>
+          <option>Venture Debt</option>
+          <option>Second Lien</option>
+          <option>Mezzanine</option>
+          <option>Infrastructure</option>
+          <option>Unitranche</option>
+          <option>Distressed</option>
+          <option>Secondary PE LP</option>
+          <option>Custom</option>
+          <option>Compliance</option>
+        </select>
+
+        <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+          &#9662;
+        </div>
+      </div>
+
+      <!-- COMPANY DROPDOWN (DRIVE FOLDERS) -->
+      <label class="block text-gray-700 font-medium mb-2">Company Folder</label>
+      <div class="relative mb-6">
+        <select
+          id="companyFolder"
+          class="w-full p-3 pr-10 border border-gray-100 rounded-lg bg-gray-50 appearance-none
+                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Loading companies...</option>
+        </select>
+
+        <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+          &#9662;
+        </div>
+      </div>
+
+      <!-- FILE LIST + ACTIONS -->
+      <div class="mt-2">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-gray-700 font-medium">Files in Folder</span>
+          <button
+            id="loadFiles"
+            class="text-sm px-3 py-1 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+          >
+            Load Files
+          </button>
+        </div>
+
+        <!-- Select-all toggle -->
+        <label class="inline-flex items-center text-sm text-gray-600 mb-2">
+          <input type="checkbox" id="selectAllFiles" class="mr-2">
+          Select all files in this folder
+        </label>
+
+        <!-- Dynamic file list -->
+        <div id="fileList" class="max-h-64 overflow-y-auto border border-gray-100 rounded-lg bg-gray-50 p-3 text-sm">
+          <p class="text-gray-400">No files loaded yet.</p>
+        </div>
+
+        <!-- Summarize button -->
+        <button
+          id="summarize"
+          class="mt-4 w-full py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700"
+        >
+          Summarize selected file(s)
+        </button>
+
+        <!-- Output -->
+        <pre
+          id="output"
+          class="mt-4 text-xs bg-gray-900 text-green-200 p-3 rounded-lg max-h-72 overflow-y-auto"
+        ></pre>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Ask Orion Chat -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/private-credit/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+  <!-- 🚀 ORION–API WIRING (SINGLE SOURCE OF TRUTH) -->
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+
+    // Map asset class → prompt template
+    const PROMPT_MAP = {
+      "Syndicate Loan": "syndicated",
+      "Compliance": "compliance_certificate",
+      "Distressed": "distressed",
+      "Asset-Backed Security": "abs",
+      "Secondary PE LP": "lp_secondary",
+      "Infrastructure": "infra",
+      "Direct Lending": "direct_lending_PC",
+      "Venture Debt": "venture_debt",
+      "Custom": "credit_tear_sheet"  // or whatever you want
+      // others can fall back to syndicated
+    };
+
+    // 1) Load companies on page load
+    window.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const res = await fetch(`${API_BASE}/companies`);
+        const companies = await res.json();
+
+        const select = document.getElementById("companyFolder");
+        select.innerHTML = '<option value="">Select Company</option>';
+
+        companies.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.id;      // folder id from Drive
+          opt.textContent = c.name;
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        console.error("Error loading companies:", err);
+        alert("Error loading companies from API.");
+        const select = document.getElementById("companyFolder");
+        select.innerHTML = '<option value="">Error loading companies</option>';
+      }
+    });
+
+    // 2) Load files for selected company (on button click)
+    document.addEventListener("DOMContentLoaded", () => {
+      const loadFilesBtn = document.getElementById("loadFiles");
+      const selectAll = document.getElementById("selectAllFiles");
+      const summarizeBtn = document.getElementById("summarize");
+
+      loadFilesBtn.onclick = async () => {
+        const companyId = document.getElementById("companyFolder").value;
+        const fileListDiv = document.getElementById("fileList");
+        fileListDiv.innerHTML = "";
+
+        if (!companyId) {
+          alert("Please select a company folder first.");
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_BASE}/company-files/${companyId}`);
+          const files = await res.json();
+
+          if (!files.length) {
+            fileListDiv.innerHTML = '<p class="text-gray-400">No PDFs found in this folder.</p>';
+            return;
+          }
+
+          const list = document.createElement("div");
+          list.className = "space-y-2";
+
+          files.forEach(f => {
+            const row = document.createElement("label");
+            row.className = "flex items-center space-x-2 cursor-pointer text-gray-700";
+
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.name = "fileCheckbox";
+            cb.value = f.id;
+
+            const span = document.createElement("span");
+            span.textContent = f.name;
+
+            row.appendChild(cb);
+            row.appendChild(span);
+            list.appendChild(row);
+          });
+
+          fileListDiv.appendChild(list);
+
+        } catch (err) {
+          console.error("Error loading files:", err);
+          alert("Error loading files from API.");
+          fileListDiv.innerHTML = '<p class="text-red-500 text-sm">Error loading files.</p>';
+        }
+      };
+
+      // 3) Select all / deselect all
+      selectAll.onclick = (e) => {
+        const checked = e.target.checked;
+        const boxes = document.querySelectorAll('input[name="fileCheckbox"]');
+        boxes.forEach(cb => cb.checked = checked);
+      };
+
+      // 4) Summarize selected files
+      summarizeBtn.onclick = async () => {
+        const assetClass = document.getElementById("assetClass").value;
+        const promptType = PROMPT_MAP[assetClass] || "syndicated";
+
+        const selectedBoxes = Array.from(
+          document.querySelectorAll('input[name="fileCheckbox"]:checked')
+        );
+
+        if (!selectedBoxes.length) {
+          alert("Please select at least one file.");
+          return;
+        }
+
+        const outputEl = document.getElementById("output");
+        outputEl.textContent = "Running summaries...";
+
+        const results = [];
+
+        try {
+          for (const cb of selectedBoxes) {
+            const fileId = cb.value;
+            const fileName = cb.nextSibling.textContent || "";
+
+            const res = await fetch(`${API_BASE}/summarize-file`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                file_id: fileId,
+                prompt_type: promptType
+              })
+            });
+
+            const data = await res.json();
+            results.push({
+              file_id: fileId,
+              file_name: fileName,
+              ...data
+            });
+          }
+
+          outputEl.textContent = JSON.stringify(results, null, 2);
+        } catch (err) {
+          console.error("Error summarizing files:", err);
+          outputEl.textContent = "Error summarizing files. Check console.";
+        }
+      };
+    });
+  </script>
+
+</body>
+</html>
