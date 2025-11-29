@@ -411,7 +411,7 @@
     // Turn a hex vector_id into an 8x8 "matrix" of characters
     function vectorIdToMatrix(vectorId) {
       const clean = (vectorId || "").toLowerCase().replace(/[^0-9a-f]/g, "");
-      const size = 12;
+      const size = 24;
       const chars = clean.padEnd(size * size, "0").slice(0, size * size).split("");
   
       let html = "";
