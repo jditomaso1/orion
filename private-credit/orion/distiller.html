@@ -448,28 +448,5 @@
     }
   </script>
   
-  <script>
-    // --- COSINE SIMILARITY FOR DRIFT DEMOS ---
-    function cosineSimilarity(v1, v2) {
-      if (!Array.isArray(v1) || !Array.isArray(v2) || v1.length !== v2.length) {
-        return null;
-      }
-      let dot = 0;
-      let n1 = 0;
-      let n2 = 0;
-  
-      for (let i = 0; i < v1.length; i++) {
-        const a = v1[i];
-        const b = v2[i];
-        dot += a * b;
-        n1 += a * a;
-        n2 += b * b;
-      }
-  
-      if (n1 === 0 || n2 === 0) return null;
-      return dot / (Math.sqrt(n1) * Math.sqrt(n2));
-    }
-  </script>
-  
 </body>
 </html>
