@@ -316,6 +316,7 @@
       
         const outputEl = document.getElementById("output");
         const embeddingEl = document.getElementById("embeddingOutput");
+        const matrixEl = document.getElementById("vectorMatrix"); 
       
         outputEl.textContent = "Running summaries...";
         if (embeddingEl) embeddingEl.textContent = "";
@@ -386,6 +387,17 @@
       
             embeddingEl.textContent = text;
           }
+          
+          // Render Matrix view from the first file's vector_id
+          if (matrixEl) {
+            const first = embeddingOnly[0];
+            const vid = first?.embedding_preview?.vector_id;
+            if (vid) {
+              matrixEl.innerHTML = vectorIdToMatrix(vid);
+            } else {
+              matrixEl.innerHTML = "";
+            }
+          }          
         } catch (err) {
           console.error("Error summarizing files:", err);
           outputEl.textContent = "Error summarizing files. Check console.";
