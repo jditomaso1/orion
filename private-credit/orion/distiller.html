@@ -351,25 +351,26 @@
       
         const outputEl = document.getElementById("output");
         const embeddingEl = document.getElementById("embeddingOutput");
-        const matrixEl = document.getElementById("vectorMatrix"); 
-    
+        const matrixEl = document.getElementById("vectorMatrix");
+        const asciiEl = document.getElementById("asciiBlock");
+      
         // --- Animated loading text ---
         let dots = 0;
         outputEl.textContent = "Running summaries";
         const loader = setInterval(() => {
-          dots = (dots + 1) % 4;   // 0,1,2,3
+          dots = (dots + 1) % 4;
           outputEl.textContent = "Running summaries" + ".".repeat(dots);
         }, 400);
         if (embeddingEl) embeddingEl.textContent = "";
-        
+      
         const results = [];
-        
+      
         try {
           // --- Call FastAPI once per selected file ---
           for (const cb of selectedBoxes) {
             const fileId = cb.value;
             const fileName = cb.nextSibling.textContent || "";
-        
+      
             const res = await fetch(`${API_BASE}/summarize-file`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -378,7 +379,7 @@
                 prompt_type: promptType
               })
             });
-        
+      
             const data = await res.json();
             results.push({
               file_id: fileId,
@@ -386,44 +387,16 @@
               ...data
             });
           }
-        
-          // stop loader
+      
           clearInterval(loader);
-        
-          // --- Main summary box – no embeddings ---
-          const summaryOnly = results.map(r => {
-            const { embedding_preview, ...rest } = r;
-            return rest;
-          });
-        
-          const embeddingOnly = results.map(r => ({
-            file_id: r.file_id,
-            file_name: r.file_name,
-            embedding_preview: r.embedding_preview
-          }));
-        
-          outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
-        
-          if (embeddingEl) {
-            let text = JSON.stringify(embeddingOnly, null, 2);
-            // (cosine drift stuff here if you want)
-            embeddingEl.textContent = text;
-          }
-        
-        } catch (err) {
-          clearInterval(loader);  // stop loader on error too
-          console.error("Error summarizing files:", err);
-          outputEl.textContent = "Error summarizing files. Check console.";
-          if (embeddingEl) embeddingEl.textContent = "";
-        }
       
-          // --- Main summary box – no embeddings ---
+          // --- Strip embeddings from summary section ---
           const summaryOnly = results.map(r => {
             const { embedding_preview, ...rest } = r;
             return rest;
           });
       
-          // --- Embedding box – vectors + optional drift ---
+          // --- Embedding payload ---
           const embeddingOnly = results.map(r => ({
             file_id: r.file_id,
             file_name: r.file_name,
@@ -432,10 +405,10 @@
       
           outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
       
+          // embeddings + drift
           if (embeddingEl) {
             let text = JSON.stringify(embeddingOnly, null, 2);
       
-            // If we have at least 2 files, compute a simple drift metric
             if (
               embeddingOnly.length >= 2 &&
               embeddingOnly[0].embedding_preview &&
@@ -458,24 +431,21 @@
       
             embeddingEl.textContent = text;
           }
-          
-          // Render Matrix view from the first file's vector_id
+      
+          // --- Matrix + ASCII fingerprint ---
+          const first = embeddingOnly[0];
+          const vid = first?.embedding_preview?.vector_id;
+      
           if (matrixEl) {
-            const first = embeddingOnly[0];
-            const vid = first?.embedding_preview?.vector_id;
-            if (vid) {
-              matrixEl.innerHTML = vectorIdToMatrix(vid);
-            } else {
-              matrixEl.innerHTML = "";
-            }
-            // ASCII fingerprint
-            const asciiEl = document.getElementById("asciiBlock");
-            if (asciiEl && vid) {
-              asciiEl.textContent = vectorIdToAsciiBlock(vid);
-            }
-          }          
+            matrixEl.innerHTML = vid ? vectorIdToMatrix(vid) : "";
+          }
+      
+          if (asciiEl) {
+            asciiEl.textContent = vid ? vectorIdToAsciiBlock(vid) : "";
+          }
         } catch (err) {
-          console.error("Error summarizing files:", err);
+          clearInterval(loader);
+          console.error("Error:", err);
           outputEl.textContent = "Error summarizing files. Check console.";
           if (embeddingEl) embeddingEl.textContent = "";
         }
