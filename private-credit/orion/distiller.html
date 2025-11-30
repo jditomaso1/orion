@@ -40,6 +40,7 @@
       line-height: 1.1;
       box-sizing: border-box; /* padding counted inside the box */
     }
+    /* larger dna block */
     /* .asciiBlock {
       background: #020;
       color: #0f0;
@@ -351,18 +352,24 @@
         const outputEl = document.getElementById("output");
         const embeddingEl = document.getElementById("embeddingOutput");
         const matrixEl = document.getElementById("vectorMatrix"); 
-      
-        outputEl.textContent = "Running summaries...";
+    
+        // --- Animated loading text ---
+        let dots = 0;
+        outputEl.textContent = "Running summaries";
+        const loader = setInterval(() => {
+          dots = (dots + 1) % 4;   // 0,1,2,3
+          outputEl.textContent = "Running summaries" + ".".repeat(dots);
+        }, 400);
         if (embeddingEl) embeddingEl.textContent = "";
-      
+        
         const results = [];
-      
+        
         try {
           // --- Call FastAPI once per selected file ---
           for (const cb of selectedBoxes) {
             const fileId = cb.value;
             const fileName = cb.nextSibling.textContent || "";
-      
+        
             const res = await fetch(`${API_BASE}/summarize-file`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -371,7 +378,7 @@
                 prompt_type: promptType
               })
             });
-      
+        
             const data = await res.json();
             results.push({
               file_id: fileId,
@@ -379,6 +386,36 @@
               ...data
             });
           }
+        
+          // stop loader
+          clearInterval(loader);
+        
+          // --- Main summary box – no embeddings ---
+          const summaryOnly = results.map(r => {
+            const { embedding_preview, ...rest } = r;
+            return rest;
+          });
+        
+          const embeddingOnly = results.map(r => ({
+            file_id: r.file_id,
+            file_name: r.file_name,
+            embedding_preview: r.embedding_preview
+          }));
+        
+          outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
+        
+          if (embeddingEl) {
+            let text = JSON.stringify(embeddingOnly, null, 2);
+            // (cosine drift stuff here if you want)
+            embeddingEl.textContent = text;
+          }
+        
+        } catch (err) {
+          clearInterval(loader);  // stop loader on error too
+          console.error("Error summarizing files:", err);
+          outputEl.textContent = "Error summarizing files. Check console.";
+          if (embeddingEl) embeddingEl.textContent = "";
+        }
       
           // --- Main summary box – no embeddings ---
           const summaryOnly = results.map(r => {
