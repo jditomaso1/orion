@@ -24,8 +24,9 @@
       background: #020;
       color: #0f0;
       font-family: ui-monospace, Menlo, Monaco, Consolas, "Courier New", monospace;
-      font-size: 12px;
-      line-height: 1.3;
+      font-size: 18px;
+      line-height: 1.35;
+      padding: 20px;
     }
     .asciiBlock {
       background: #020;
@@ -439,7 +440,7 @@
         html += "<div>";
         for (let c = 0; c < size; c++) {
           const ch = chars[r * size + c];
-          html += `<span class="inline-block w-3 text-center">${ch}</span>`;
+          html += `<span class="inline-block w-5 text-center">${ch}</span>`;
         }
         html += "</div>";
       }
