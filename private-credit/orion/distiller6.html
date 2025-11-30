@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion — Asset Selector</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden")
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- HEADER -->
+    <h1 class="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
+      The Distiller
+    </h1>
+    <p class="text-gray-500 text-[15px] mb-8">
+      Choose an asset class, company folder, and file to summarize.
+    </p>
+
+    <!-- SELECTION BOX -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border max-w-xl">
+
+      <!-- ASSET CLASS DROPDOWN -->
+      <label class="block text-gray-700 font-medium mb-2">Asset Class</label>
+      <div class="relative mb-6">
+        <select
+          id="assetClass"
+          class="w-full p-3 pr-10 border border-gray-100 rounded-lg bg-gray-50 appearance-none
+                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select Asset Class</option>
+          <option value="syndicated">Syndicate Loan</option>
+          <option value="direct_lending">Direct Lending</option>
+          <option value="abs">Asset-Backed Security</option>
+          <option value="venture_debt">Venture Debt</option>
+          <option value="second_lien">Second Lien</option>
+          <option value="mezzanine">Mezzanine</option>
+          <option value="infra">Infrastructure</option>
+          <option value="unitranche">Unitranche</option>
+          <option value="distressed">Distressed</option>
+          <option value="lp_secondary">Secondary PE LP</option>
+          <option value="custom">Custom</option>  
+          <option value="compliance">Compliance</option>
+        </select>
+
+        <!-- CUSTOM ARROW -->
+        <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+          &#9662;
+        </div>
+      </div>
+
+      <!-- COMPANY DROPDOWN (DRIVE FOLDERS) -->
+      <label class="block text-gray-700 font-medium mb-2">Company Folder</label>
+      <div class="relative mb-6">
+        <select
+          id="companyFolder"
+          class="w-full p-3 pr-10 border border-gray-100 rounded-lg bg-gray-50 appearance-none
+                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Loading companies...</option>
+        </select>
+
+        <!-- CUSTOM ARROW -->
+        <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+          &#9662;
+        </div>
+      </div>
+
+      <!-- FILE DROPDOWN (PDFs INSIDE FOLDER) -->
+      <label class="block text-gray-700 font-medium mb-2">Deal File</label>
+      <div class="relative mb-6">
+        <select
+          id="dealFile"
+          class="w-full p-3 pr-10 border border-gray-100 rounded-lg bg-gray-50 appearance-none
+                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select file</option>
+        </select>
+
+        <!-- CUSTOM ARROW -->
+        <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+          &#9662;
+        </div>
+      </div>
+
+      <!-- SUMMARIZE BUTTON -->
+      <button
+        id="summarizeBtn"
+        class="w-full inline-flex justify-center items-center px-4 py-3 rounded-lg text-sm font-medium
+               bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        Summarize Selected File
+      </button>
+
+      <!-- OUTPUT PANEL -->
+      <pre
+        id="output"
+        class="mt-6 text-xs bg-gray-900 text-green-200 p-4 rounded-lg overflow-x-auto max-h-64">
+        <!-- summary JSON will appear here -->
+      </pre>
+
+    </div>
+
+  </main>
+
+  <!-- Ask Orion Chat -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/private-credit/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+  <!-- 🚀 ORION–API WIRING -->
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+
+    // 1) Load companies on page load
+    async function loadCompanies() {
+      try {
+        const res = await fetch(`${API_BASE}/companies`);
+        const data = await res.json();
+        const sel = document.getElementById("companyFolder");
+        sel.innerHTML = '<option value="">Select Company</option>';
+        data.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.id;      // Google Drive folder id
+          opt.textContent = c.name;
+          sel.appendChild(opt);
+        });
+      } catch (err) {
+        console.error("Error loading companies:", err);
+        document.getElementById("companyFolder").innerHTML =
+          '<option value="">Error loading companies</option>';
+      }
+    }
+
+    // 2) When company changes, load PDF files in that folder
+    async function loadFilesForCompany() {
+      const companyId = document.getElementById("companyFolder").value;
+      const fileSel = document.getElementById("dealFile");
+      fileSel.innerHTML = '<option value="">Loading files...</option>';
+
+      if (!companyId) {
+        fileSel.innerHTML = '<option value="">Select a company first</option>';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/company-files/${companyId}`);
+        const data = await res.json();
+        fileSel.innerHTML = '<option value="">Select file</option>';
+        data.forEach(f => {
+          const opt = document.createElement("option");
+          opt.value = f.id;    // fileId for summarize-file endpoint
+          opt.textContent = f.name;
+          fileSel.appendChild(opt);
+        });
+      } catch (err) {
+        console.error("Error loading files:", err);
+        fileSel.innerHTML = '<option value="">Error loading files</option>';
+      }
+    }
+
+    // 3) Map asset class to prompt_type template
+    function getPromptTypeFromAsset(assetValue) {
+      // values come from the <option value="..."> above
+      switch (assetValue) {
+        case "syndicated":
+          return "syndicated";          // templates/syndicated.json
+        case "compliance":
+          return "compliance_certificate"; // if you have templates/compliance_certificate.json
+        case "abs":
+          return "abs";
+        case "venture_debt":
+          return "venture_debt";
+        case "lp_secondary":
+          return "lp_secondary";
+        case "infra":
+          return "infra";
+        case "direct_lending":
+          return "direct_lending_PC";
+        case "distressed":
+          return "distressed";
+        default:
+          return "syndicated";  // safe default
+      }
+    }
+
+    // 4) Call summarize-file when button is clicked
+    async function summarizeSelectedFile() {
+      const fileId = document.getElementById("dealFile").value;
+      const assetVal = document.getElementById("assetClass").value;
+      const output = document.getElementById("output");
+
+      if (!fileId) {
+        alert("Please select a file.");
+        return;
+      }
+
+      const promptType = getPromptTypeFromAsset(assetVal);
+
+      output.textContent = "Running Orion summarizer…";
+
+      try {
+        const res = await fetch(`${API_BASE}/summarize-file`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            file_id: fileId,
+            prompt_type: promptType
+          })
+        });
+        const data = await res.json();
+
+        // Show just the summary object; you can change this later
+        output.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        console.error("Error summarizing file:", err);
+        output.textContent = "Error calling summarizer. Check console.";
+      }
+    }
+
+    // Wire up events
+    document.addEventListener("DOMContentLoaded", () => {
+      loadCompanies();  // auto-load companies from Drive
+      document
+        .getElementById("companyFolder")
+        .addEventListener("change", loadFilesForCompany);
+      document
+        .getElementById("summarizeBtn")
+        .addEventListener("click", summarizeSelectedFile);
+    });
+  </script>
+
+</body>
+</html>
