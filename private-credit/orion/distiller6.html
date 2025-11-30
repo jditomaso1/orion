@@ -20,6 +20,13 @@
       font-family: 'Poppins', sans-serif;
       background: #f5f6f8;
     }
+    #vectorMatrix {
+      background: #020;
+      color: #0f0;
+      font-family: ui-monospace, Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.3;
+    }
   </style>
 </head>
 
@@ -64,7 +71,7 @@
       The Distiller
     </h1>
     <p class="text-gray-500 text-[15px] mb-8">
-      Choose an asset class, company folder, and file to summarize.
+      Choose an asset class, company folder, and one or more files to summarize.
     </p>
 
     <!-- SELECTION BOX -->
@@ -79,21 +86,20 @@
                  focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Select Asset Class</option>
-          <option value="syndicated">Syndicate Loan</option>
-          <option value="direct_lending">Direct Lending</option>
-          <option value="abs">Asset-Backed Security</option>
-          <option value="venture_debt">Venture Debt</option>
-          <option value="second_lien">Second Lien</option>
-          <option value="mezzanine">Mezzanine</option>
-          <option value="infra">Infrastructure</option>
-          <option value="unitranche">Unitranche</option>
-          <option value="distressed">Distressed</option>
-          <option value="lp_secondary">Secondary PE LP</option>
-          <option value="custom">Custom</option>  
-          <option value="compliance">Compliance</option>
+          <option>Syndicate Loan</option>
+          <option>Direct Lending</option>
+          <option>Asset-Backed Security</option>
+          <option>Venture Debt</option>
+          <option>Second Lien</option>
+          <option>Mezzanine</option>
+          <option>Infrastructure</option>
+          <option>Unitranche</option>
+          <option>Distressed</option>
+          <option>Secondary PE LP</option>
+          <option>Custom</option>
+          <option>Compliance</option>
         </select>
 
-        <!-- CUSTOM ARROW -->
         <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
           &#9662;
         </div>
@@ -110,43 +116,60 @@
           <option value="">Loading companies...</option>
         </select>
 
-        <!-- CUSTOM ARROW -->
         <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
           &#9662;
         </div>
       </div>
 
-      <!-- FILE DROPDOWN (PDFs INSIDE FOLDER) -->
-      <label class="block text-gray-700 font-medium mb-2">Deal File</label>
-      <div class="relative mb-6">
-        <select
-          id="dealFile"
-          class="w-full p-3 pr-10 border border-gray-100 rounded-lg bg-gray-50 appearance-none
-                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      <!-- FILE LIST + ACTIONS -->
+      <div class="mt-2">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-gray-700 font-medium">Files in Folder</span>
+          <button
+            id="loadFiles"
+            class="text-sm px-3 py-1 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+          >
+            Load Files
+          </button>
+        </div>
+
+        <!-- Select-all toggle -->
+        <label class="inline-flex items-center text-sm text-gray-600 mb-2">
+          <input type="checkbox" id="selectAllFiles" class="mr-2">
+          Select all files in this folder
+        </label>
+
+        <!-- Dynamic file list -->
+        <div id="fileList" class="max-h-64 overflow-y-auto border border-gray-100 rounded-lg bg-gray-50 p-3 text-sm">
+          <p class="text-gray-400">No files loaded yet.</p>
+        </div>
+
+        <!-- Summarize button -->
+        <button
+          id="summarize"
+          class="mt-4 w-full py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700"
         >
-          <option value="">Select file</option>
-        </select>
+          Summarize selected file(s)
+        </button>
 
-        <!-- CUSTOM ARROW -->
-        <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
-          &#9662;
-        </div>
+        <!-- Output (main summary) -->
+        <!-- Output -->
+        <pre
+          id="output"
+          class="mt-4 text-xs bg-gray-900 text-green-200 p-3 rounded-lg max-h-72 overflow-y-auto"
+        ></pre>
+        
+        <!-- Embedding preview (for demo only) -->
+        <pre
+          id="embeddingOutput"
+          class="mt-4 text-xs bg-gray-900 text-blue-200 p-3 rounded-lg max-h-72 overflow-y-auto"
+        ></pre>
+        <!-- Matrix-style vector ID -->
+        <div
+          id="vectorMatrix"
+          class="mt-4 inline-block bg-black text-green-400 font-mono p-4 rounded-lg"
+        ></div>
       </div>
-
-      <!-- SUMMARIZE BUTTON -->
-      <button
-        id="summarizeBtn"
-        class="w-full inline-flex justify-center items-center px-4 py-3 rounded-lg text-sm font-medium
-               bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        Summarize Selected File
-      </button>
-
-      <!-- OUTPUT PANEL -->
-      <pre
-        id="output"
-        class="mt-6 text-xs bg-gray-900 text-green-200 p-4 rounded-lg overflow-x-auto max-h-64">
-        <!-- summary JSON will appear here -->
-      </pre>
 
     </div>
 
@@ -175,127 +198,255 @@
     loadOrionChat();
   </script>
 
-  <!-- 🚀 ORION–API WIRING -->
+  <!-- 🚀 ORION–API WIRING (SINGLE SOURCE OF TRUTH) -->
   <script>
     const API_BASE = "http://127.0.0.1:8000";
 
+    // Map asset class → prompt template
+    const PROMPT_MAP = {
+      "Syndicate Loan": "syndicated",
+      "Compliance": "compliance_certificate",
+      "Distressed": "distressed",
+      "Asset-Backed Security": "abs",
+      "Secondary PE LP": "lp_secondary",
+      "Infrastructure": "infra",
+      "Direct Lending": "direct_lending_PC",
+      "Venture Debt": "venture_debt",
+      "Custom": "credit_tear_sheet"  // or whatever you want
+      // others can fall back to syndicated
+    };
+
     // 1) Load companies on page load
-    async function loadCompanies() {
+    window.addEventListener("DOMContentLoaded", async () => {
       try {
         const res = await fetch(`${API_BASE}/companies`);
-        const data = await res.json();
-        const sel = document.getElementById("companyFolder");
-        sel.innerHTML = '<option value="">Select Company</option>';
-        data.forEach(c => {
+        const companies = await res.json();
+
+        const select = document.getElementById("companyFolder");
+        select.innerHTML = '<option value="">Select Company</option>';
+
+        companies.forEach(c => {
           const opt = document.createElement("option");
-          opt.value = c.id;      // Google Drive folder id
+          opt.value = c.id;      // folder id from Drive
           opt.textContent = c.name;
-          sel.appendChild(opt);
+          select.appendChild(opt);
         });
       } catch (err) {
         console.error("Error loading companies:", err);
-        document.getElementById("companyFolder").innerHTML =
-          '<option value="">Error loading companies</option>';
+        alert("Error loading companies from API.");
+        const select = document.getElementById("companyFolder");
+        select.innerHTML = '<option value="">Error loading companies</option>';
       }
-    }
+    });
 
-    // 2) When company changes, load PDF files in that folder
-    async function loadFilesForCompany() {
-      const companyId = document.getElementById("companyFolder").value;
-      const fileSel = document.getElementById("dealFile");
-      fileSel.innerHTML = '<option value="">Loading files...</option>';
-
-      if (!companyId) {
-        fileSel.innerHTML = '<option value="">Select a company first</option>';
-        return;
-      }
-
-      try {
-        const res = await fetch(`${API_BASE}/company-files/${companyId}`);
-        const data = await res.json();
-        fileSel.innerHTML = '<option value="">Select file</option>';
-        data.forEach(f => {
-          const opt = document.createElement("option");
-          opt.value = f.id;    // fileId for summarize-file endpoint
-          opt.textContent = f.name;
-          fileSel.appendChild(opt);
-        });
-      } catch (err) {
-        console.error("Error loading files:", err);
-        fileSel.innerHTML = '<option value="">Error loading files</option>';
-      }
-    }
-
-    // 3) Map asset class to prompt_type template
-    function getPromptTypeFromAsset(assetValue) {
-      // values come from the <option value="..."> above
-      switch (assetValue) {
-        case "syndicated":
-          return "syndicated";          // templates/syndicated.json
-        case "compliance":
-          return "compliance_certificate"; // if you have templates/compliance_certificate.json
-        case "abs":
-          return "abs";
-        case "venture_debt":
-          return "venture_debt";
-        case "lp_secondary":
-          return "lp_secondary";
-        case "infra":
-          return "infra";
-        case "direct_lending":
-          return "direct_lending_PC";
-        case "distressed":
-          return "distressed";
-        default:
-          return "syndicated";  // safe default
-      }
-    }
-
-    // 4) Call summarize-file when button is clicked
-    async function summarizeSelectedFile() {
-      const fileId = document.getElementById("dealFile").value;
-      const assetVal = document.getElementById("assetClass").value;
-      const output = document.getElementById("output");
-
-      if (!fileId) {
-        alert("Please select a file.");
-        return;
-      }
-
-      const promptType = getPromptTypeFromAsset(assetVal);
-
-      output.textContent = "Running Orion summarizer…";
-
-      try {
-        const res = await fetch(`${API_BASE}/summarize-file`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            file_id: fileId,
-            prompt_type: promptType
-          })
-        });
-        const data = await res.json();
-
-        // Show just the summary object; you can change this later
-        output.textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        console.error("Error summarizing file:", err);
-        output.textContent = "Error calling summarizer. Check console.";
-      }
-    }
-
-    // Wire up events
+    // 2) Load files for selected company (on button click)
     document.addEventListener("DOMContentLoaded", () => {
-      loadCompanies();  // auto-load companies from Drive
-      document
-        .getElementById("companyFolder")
-        .addEventListener("change", loadFilesForCompany);
-      document
-        .getElementById("summarizeBtn")
-        .addEventListener("click", summarizeSelectedFile);
+      const loadFilesBtn = document.getElementById("loadFiles");
+      const selectAll = document.getElementById("selectAllFiles");
+      const summarizeBtn = document.getElementById("summarize");
+
+      loadFilesBtn.onclick = async () => {
+        const companyId = document.getElementById("companyFolder").value;
+        const fileListDiv = document.getElementById("fileList");
+        fileListDiv.innerHTML = "";
+
+        if (!companyId) {
+          alert("Please select a company folder first.");
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_BASE}/company-files/${companyId}`);
+          const files = await res.json();
+
+          if (!files.length) {
+            fileListDiv.innerHTML = '<p class="text-gray-400">No PDFs found in this folder.</p>';
+            return;
+          }
+
+          const list = document.createElement("div");
+          list.className = "space-y-2";
+
+          files.forEach(f => {
+            const row = document.createElement("label");
+            row.className = "flex items-center space-x-2 cursor-pointer text-gray-700";
+
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.name = "fileCheckbox";
+            cb.value = f.id;
+
+            const span = document.createElement("span");
+            span.textContent = f.name;
+
+            row.appendChild(cb);
+            row.appendChild(span);
+            list.appendChild(row);
+          });
+
+          fileListDiv.appendChild(list);
+
+        } catch (err) {
+          console.error("Error loading files:", err);
+          alert("Error loading files from API.");
+          fileListDiv.innerHTML = '<p class="text-red-500 text-sm">Error loading files.</p>';
+        }
+      };
+
+      // 3) Select all / deselect all
+      selectAll.onclick = (e) => {
+        const checked = e.target.checked;
+        const boxes = document.querySelectorAll('input[name="fileCheckbox"]');
+        boxes.forEach(cb => cb.checked = checked);
+      };
+
+      // 4) Summarize selected files
+      summarizeBtn.onclick = async () => {
+        const assetClass = document.getElementById("assetClass").value;
+        const promptType = PROMPT_MAP[assetClass] || "syndicated";
+      
+        const selectedBoxes = Array.from(
+          document.querySelectorAll('input[name="fileCheckbox"]:checked')
+        );
+      
+        if (!selectedBoxes.length) {
+          alert("Please select at least one file.");
+          return;
+        }
+      
+        const outputEl = document.getElementById("output");
+        const embeddingEl = document.getElementById("embeddingOutput");
+        const matrixEl = document.getElementById("vectorMatrix"); 
+      
+        outputEl.textContent = "Running summaries...";
+        if (embeddingEl) embeddingEl.textContent = "";
+      
+        const results = [];
+      
+        try {
+          // --- Call FastAPI once per selected file ---
+          for (const cb of selectedBoxes) {
+            const fileId = cb.value;
+            const fileName = cb.nextSibling.textContent || "";
+      
+            const res = await fetch(`${API_BASE}/summarize-file`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                file_id: fileId,
+                prompt_type: promptType
+              })
+            });
+      
+            const data = await res.json();
+            results.push({
+              file_id: fileId,
+              file_name: fileName,
+              ...data
+            });
+          }
+      
+          // --- Main summary box – no embeddings ---
+          const summaryOnly = results.map(r => {
+            const { embedding_preview, ...rest } = r;
+            return rest;
+          });
+      
+          // --- Embedding box – vectors + optional drift ---
+          const embeddingOnly = results.map(r => ({
+            file_id: r.file_id,
+            file_name: r.file_name,
+            embedding_preview: r.embedding_preview
+          }));
+      
+          outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
+      
+          if (embeddingEl) {
+            let text = JSON.stringify(embeddingOnly, null, 2);
+      
+            // If we have at least 2 files, compute a simple drift metric
+            if (
+              embeddingOnly.length >= 2 &&
+              embeddingOnly[0].embedding_preview &&
+              embeddingOnly[1].embedding_preview &&
+              Array.isArray(embeddingOnly[0].embedding_preview.first_50_values) &&
+              Array.isArray(embeddingOnly[1].embedding_preview.first_50_values)
+            ) {
+              const v1 = embeddingOnly[0].embedding_preview.first_50_values;
+              const v2 = embeddingOnly[1].embedding_preview.first_50_values;
+              const cos = cosineSimilarity(v1, v2);
+      
+              if (cos !== null) {
+                text =
+                  "Drift (cosine similarity of first 50 dims): " +
+                  cos.toFixed(4) +
+                  "\n\n" +
+                  text;
+              }
+            }
+      
+            embeddingEl.textContent = text;
+          }
+          
+          // Render Matrix view from the first file's vector_id
+          if (matrixEl) {
+            const first = embeddingOnly[0];
+            const vid = first?.embedding_preview?.vector_id;
+            if (vid) {
+              matrixEl.innerHTML = vectorIdToMatrix(vid);
+            } else {
+              matrixEl.innerHTML = "";
+            }
+          }          
+        } catch (err) {
+          console.error("Error summarizing files:", err);
+          outputEl.textContent = "Error summarizing files. Check console.";
+          if (embeddingEl) embeddingEl.textContent = "";
+        }
+      };
     });
   </script>
 
+  <script>
+    // Turn a hex vector_id into an 8x8 "matrix" of characters
+    function vectorIdToMatrix(vectorId) {
+      const clean = (vectorId || "").toLowerCase().replace(/[^0-9a-f]/g, "");
+      const size = 8;
+      const chars = clean.padEnd(size * size, "0").slice(0, size * size).split("");
+  
+      let html = "";
+      for (let r = 0; r < size; r++) {
+        html += "<div>";
+        for (let c = 0; c < size; c++) {
+          const ch = chars[r * size + c];
+          html += `<span class="inline-block w-3 text-center">${ch}</span>`;
+        }
+        html += "</div>";
+      }
+      return html;
+    }
+  
+    // --- COSINE SIMILARITY FOR DRIFT DEMOS ---
+    function cosineSimilarity(v1, v2) {
+      if (!Array.isArray(v1) || !Array.isArray(v2) || v1.length !== v2.length) {
+        return null;
+      }
+      let dot = 0;
+      let n1 = 0;
+      let n2 = 0;
+  
+      for (let i = 0; i < v1.length; i++) {
+        const a = v1[i];
+        const b = v2[i];
+        dot += a * b;
+        n1 += a * a;
+        n2 += b * b;
+      }
+  
+      if (n1 === 0 || n2 === 0) return null;
+      return dot / (Math.sqrt(n1) * Math.sqrt(n2));
+    }
+  </script>
+  
 </body>
 </html>
