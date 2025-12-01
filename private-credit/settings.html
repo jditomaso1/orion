@@ -137,6 +137,71 @@
         </div>
       </div>
 
+      <!-- DOCUMENT SOURCES / DRIVE CONNECTION -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Document Sources & Drives
+        </h2>
+
+        <p class="text-sm text-gray-600 mb-4">
+          Connect Orion to your firm’s document repositories. These are used for ingestion,
+          summarization, and credit DNA building.
+        </p>
+
+        <div class="space-y-4">
+          <!-- Google Drive -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Google Drive</p>
+              <p class="text-xs text-gray-500">
+                Recommended for Orion Distiller prototypes and smaller teams.
+              </p>
+            </div>
+            <button
+              class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+
+          <!-- OneDrive / SharePoint -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">OneDrive / SharePoint</p>
+              <p class="text-xs text-gray-500">
+                Common for banks and larger institutions.
+              </p>
+            </div>
+            <button
+              class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+
+          <!-- Local / SFTP / Network Drive -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Local / SFTP / Network Drive</p>
+              <p class="text-xs text-gray-500">
+                Behind-firewall data sources (configured via IT / DevOps).
+              </p>
+            </div>
+            <button
+              class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Configure
+            </button>
+          </div>
+
+          <!-- Status note -->
+          <p class="text-[11px] text-gray-400 border-t pt-3 mt-2">
+            * Buttons are placeholders for now — wire them to your actual OAuth / service
+            accounts when you’re ready.
+          </p>
+        </div>
+      </div>
+      
       <!-- API KEYS -->
       <div class="bg-white rounded-lg shadow p-6 border">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">API Keys</h2>
