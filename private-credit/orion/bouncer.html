@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion — Portfolio Dashboard</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR (same include pattern as other pages) -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden")
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 space-y-8">
+
+    <!-- HEADER -->
+    <section>
+      <h1 class="text-3xl font-semibold text-gray-900 tracking-tight">
+        Portfolio Dashboard
+      </h1>
+      <p class="mt-2 text-gray-500 text-[15px] max-w-2xl">
+        Live view of your positions, exposures, and risk. Powered by Orion’s deal brain.
+      </p>
+    </section>
+
+    <!-- TOP STRIP: FILTERS + AS OF -->
+    <section class="bg-white border rounded-xl p-4 flex flex-wrap items-center gap-4 shadow-sm">
+      <!-- Vehicle selector -->
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
+          Vehicle
+        </label>
+        <select
+          id="vehicleFilter"
+          class="min-w-[190px] p-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm
+                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">All Vehicles</option>
+          <option value="CLO 1">CLO 1</option>
+          <option value="CLO 2">CLO 2</option>
+          <option value="BDC">BDC</option>
+          <option value="Private Credit Fund">Private Credit Fund</option>
+        </select>
+      </div>
+
+      <!-- Strategy selector -->
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
+          Strategy
+        </label>
+        <select
+          id="strategyFilter"
+          class="min-w-[190px] p-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm
+                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">All Strategies</option>
+          <option value="Direct Lending">Direct Lending</option>
+          <option value="Unitranche">Unitranche</option>
+          <option value="Mezzanine">Mezzanine</option>
+          <option value="Distressed / Special Sits">Distressed / Special Sits</option>
+        </select>
+      </div>
+
+      <!-- Status selector -->
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
+          Status
+        </label>
+        <select
+          id="statusFilter"
+          class="min-w-[150px] p-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm
+                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">All</option>
+          <option value="Active">Active</option>
+          <option value="Watchlist">Watchlist</option>
+          <option value="Defaulted">Defaulted</option>
+        </select>
+      </div>
+
+      <!-- Spacer -->
+      <div class="flex-1"></div>
+
+      <!-- As-of + Refresh -->
+      <div class="flex items-center gap-3">
+        <div class="text-right">
+          <p class="text-[11px] uppercase tracking-wide text-gray-400">
+            As of
+          </p>
+          <p class="text-sm font-medium text-gray-800" id="asOfLabel">
+            30 Nov 2025
+          </p>
+        </div>
+        <button
+          id="refreshPortfolio"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200
+                 bg-gray-50 text-xs font-medium text-gray-700 hover:bg-gray-100"
+        >
+          <span>Refresh</span>
+          <span class="text-[14px]">⟳</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- KPI CARDS -->
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <!-- AUM -->
+      <div class="bg-white border rounded-xl p-4 shadow-sm">
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Total Market Value
+        </p>
+        <p class="mt-2 text-2xl font-semibold text-gray-900">
+          $1,235<span class="text-base align-top">mm</span>
+        </p>
+        <p class="mt-1 text-xs text-emerald-600">
+          + 4.2% vs last quarter
+        </p>
+      </div>
+
+      <!-- # Positions -->
+      <div class="bg-white border rounded-xl p-4 shadow-sm">
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Positions
+        </p>
+        <p class="mt-2 text-2xl font-semibold text-gray-900">
+          47
+        </p>
+        <p class="mt-1 text-xs text-gray-500">
+          5 new deals in last 90 days
+        </p>
+      </div>
+
+      <!-- Yield -->
+      <div class="bg-white border rounded-xl p-4 shadow-sm">
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Portfolio Yield (Current)
+        </p>
+        <p class="mt-2 text-2xl font-semibold text-gray-900">
+          11.3<span class="text-base align-top">%</span>
+        </p>
+        <p class="mt-1 text-xs text-gray-500">
+          Spread: SOFR + 560 bps
+        </p>
+      </div>
+
+      <!-- Risk / Watchlist -->
+      <div class="bg-white border rounded-xl p-4 shadow-sm">
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Watchlist / Stressed
+        </p>
+        <p class="mt-2 text-2xl font-semibold text-gray-900">
+          4<span class="text-sm text-gray-400"> / 47</span>
+        </p>
+        <p class="mt-1 text-xs text-amber-600">
+          2 names flagged by Orion drift engine
+        </p>
+      </div>
+    </section>
+
+    <!-- MIDDLE STRIP: ALLOCATIONS + RISK (STATIC WIRES FOR NOW) -->
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      <!-- By Asset Class -->
+      <div class="xl:col-span-2 bg-white border rounded-xl p-4 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 class="text-sm font-semibold text-gray-900">
+              Allocation by Asset Class
+            </h2>
+            <p class="text-[12px] text-gray-500">
+              Simple snapshot by par value. Replace with live chart later.
+            </p>
+          </div>
+        </div>
+        <div class="space-y-3 text-[13px]">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-gray-700">Direct Lending</span>
+              <span class="text-gray-900 font-medium">38%</span>
+            </div>
+            <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full bg-blue-600 w-[38%]"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-gray-700">Unitranche</span>
+              <span class="text-gray-900 font-medium">24%</span>
+            </div>
+            <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full bg-emerald-500 w-[24%]"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-gray-700">Mezzanine</span>
+              <span class="text-gray-900 font-medium">18%</span>
+            </div>
+            <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full bg-amber-500 w-[18%]"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-gray-700">Distressed / Special Sits</span>
+              <span class="text-gray-900 font-medium">10%</span>
+            </div>
+            <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full bg-red-500 w-[10%]"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-gray-700">Other</span>
+              <span class="text-gray-900 font-medium">10%</span>
+            </div>
+            <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full bg-gray-400 w-[10%]"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk Buckets -->
+      <div class="bg-white border rounded-xl p-4 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 class="text-sm font-semibold text-gray-900">
+              Risk Buckets
+            </h2>
+            <p class="text-[12px] text-gray-500">
+              Internal ratings — illustrative only.
+            </p>
+          </div>
+        </div>
+        <div class="space-y-3 text-[13px]">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+              <span>Rating 1–2 (Strong)</span>
+            </div>
+            <span class="font-medium text-gray-900">22</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-blue-500"></span>
+              <span>Rating 3–4 (Stable)</span>
+            </div>
+            <span class="font-medium text-gray-900">17</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-amber-500"></span>
+              <span>Rating 5–6 (Watchlist)</span>
+            </div>
+            <span class="font-medium text-gray-900">6</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-red-500"></span>
+              <span>Rating 7+ (Defaulted)</span>
+            </div>
+            <span class="font-medium text-gray-900">2</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- POSITIONS TABLE -->
+    <section class="bg-white border rounded-xl shadow-sm">
+      <!-- Table header strip -->
+      <div class="flex items-center justify-between px-4 py-3 border-b">
+        <div>
+          <h2 class="text-sm font-semibold text-gray-900">
+            Positions
+          </h2>
+          <p class="text-[12px] text-gray-500">
+            One row per credit, aggregated across all documents and updates.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <input
+            id="positionSearch"
+            type="text"
+            placeholder="Search company / ticker..."
+            class="text-sm px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50
+                   focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            class="text-xs px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50
+                   text-gray-700 hover:bg-gray-100"
+          >
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Table body -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left text-xs">
+          <thead class="bg-gray-50 border-b">
+            <tr class="text-[11px] uppercase tracking-wide text-gray-500">
+              <th class="px-4 py-2">Company</th>
+              <th class="px-4 py-2">Asset Class</th>
+              <th class="px-4 py-2">Vehicle</th>
+              <th class="px-4 py-2">Par ($mm)</th>
+              <th class="px-4 py-2">Price</th>
+              <th class="px-4 py-2">Market Value ($mm)</th>
+              <th class="px-4 py-2">Coupon / Spread</th>
+              <th class="px-4 py-2">Rating</th>
+              <th class="px-4 py-2">Exposure %</th>
+              <th class="px-4 py-2">Status</th>
+              <th class="px-4 py-2">Source Docs</th>
+            </tr>
+          </thead>
+          <tbody id="positionsBody" class="divide-y divide-gray-100 text-[12px]">
+            <!-- Example row 1 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2">
+                <div class="flex flex-col">
+                  <span class="font-medium text-gray-900">Pawsitive Brands, Inc.</span>
+                  <span class="text-[11px] text-gray-500">First Lien Term Loan</span>
+                </div>
+              </td>
+              <td class="px-4 py-2 text-gray-700">Direct Lending</td>
+              <td class="px-4 py-2 text-gray-700">CLO 1</td>
+              <td class="px-4 py-2 text-gray-900">50.0</td>
+              <td class="px-4 py-2 text-gray-900">99.25</td>
+              <td class="px-4 py-2 text-gray-900">49.6</td>
+              <td class="px-4 py-2 text-gray-700">SOFR + 600 bps</td>
+              <td class="px-4 py-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+                  B+ / Internal 2
+                </span>
+              </td>
+              <td class="px-4 py-2 text-gray-900">4.0%</td>
+              <td class="px-4 py-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+                  Active
+                </span>
+              </td>
+              <td class="px-4 py-2">
+                <button class="text-[11px] text-blue-600 hover:underline">
+                  View sources
+                </button>
+              </td>
+            </tr>
+
+            <!-- Example row 2 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2">
+                <div class="flex flex-col">
+                  <span class="font-medium text-gray-900">Meridian Behavioral Health</span>
+                  <span class="text-[11px] text-gray-500">Unitranche Term Loan</span>
+                </div>
+              </td>
+              <td class="px-4 py-2 text-gray-700">Unitranche</td>
+              <td class="px-4 py-2 text-gray-700">BDC</td>
+              <td class="px-4 py-2 text-gray-900">75.0</td>
+              <td class="px-4 py-2 text-gray-900">97.50</td>
+              <td class="px-4 py-2 text-gray-900">73.1</td>
+              <td class="px-4 py-2 text-gray-700">SOFR + 650 bps</td>
+              <td class="px-4 py-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
+                  B / Internal 3
+                </span>
+              </td>
+              <td class="px-4 py-2 text-gray-900">6.1%</td>
+              <td class="px-4 py-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+                  Active
+                </span>
+              </td>
+              <td class="px-4 py-2">
+                <button class="text-[11px] text-blue-600 hover:underline">
+                  View sources
+                </button>
+              </td>
+            </tr>
+
+            <!-- Example row 3 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2">
+                <div class="flex flex-col">
+                  <span class="font-medium text-gray-900">JD Tire Company</span>
+                  <span class="text-[11px] text-gray-500">Second Lien Term Loan</span>
+                </div>
+              </td>
+              <td class="px-4 py-2 text-gray-700">Mezzanine</td>
+              <td class="px-4 py-2 text-gray-700">Private Credit Fund</td>
+              <td class="px-4 py-2 text-gray-900">30.0</td>
+              <td class="px-4 py-2 text-gray-900">92.00</td>
+              <td class="px-4 py-2 text-gray-900">27.6</td>
+              <td class="px-4 py-2 text-gray-700">SOFR + 800 bps</td>
+              <td class="px-4 py-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+                  CCC+ / Internal 5
+                </span>
+              </td>
+              <td class="px-4 py-2 text-gray-900">2.3%</td>
+              <td class="px-4 py-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+                  Watchlist
+                </span>
+              </td>
+              <td class="px-4 py-2">
+                <button class="text-[11px] text-blue-600 hover:underline">
+                  View sources
+                </button>
+              </td>
+            </tr>
+
+            <!-- Example row 4 -->
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2">
+                <div class="flex flex-col">
+                  <span class="font-medium text-gray-900">D&B Entertainment Holdings</span>
+                  <span class="text-[11px] text-gray-500">First Lien Term Loan</span>
+                </div>
+              </td>
+              <td class="px-4 py-2 text-gray-700">Direct Lending</td>
+              <td class="px-4 py-2 text-gray-700">CLO 2</td>
+              <td class="px-4 py-2 text-gray-900">40.0</td>
+              <td class="px-4 py-2 text-gray-900">88.50</td>
+              <td class="px-4 py-2 text-gray-900">35.4</td>
+              <td class="px-4 py-2 text-gray-700">SOFR + 700 bps</td>
+              <td class="px-4 py-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-red-50 text-red-700">
+                  CC / Internal 7
+                </span>
+              </td>
+              <td class="px-4 py-2 text-gray-900">3.1%</td>
+              <td class="px-4 py-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-red-50 text-red-700">
+                  Defaulted
+                </span>
+              </td>
+              <td class="px-4 py-2">
+                <button class="text-[11px] text-blue-600 hover:underline">
+                  View sources
+                </button>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Ask Orion Chat include (same pattern as other pages) -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/private-credit/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+  <!-- Simple client-side search/filter wiring (static for now) -->
+  <script>
+    const searchInput = document.getElementById("positionSearch");
+    const rows = Array.from(document.querySelectorAll("#positionsBody tr"));
+    const vehicleFilter = document.getElementById("vehicleFilter");
+    const strategyFilter = document.getElementById("strategyFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    function applyFilters() {
+      const q = (searchInput.value || "").toLowerCase();
+      const vehicle = vehicleFilter.value;
+      const strategy = strategyFilter.value;
+      const status = statusFilter.value;
+
+      rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        const companyText = cells[0].innerText.toLowerCase();
+        const assetClass = cells[1].innerText;
+        const vehicleVal = cells[2].innerText;
+        const statusText = cells[9].innerText;
+
+        let visible = true;
+
+        if (q && !companyText.includes(q)) visible = false;
+        if (vehicle && vehicleVal !== vehicle) visible = false;
+        if (strategy && assetClass !== strategy) visible = false;
+        if (status && !statusText.includes(status)) visible = false;
+
+        row.style.display = visible ? "" : "none";
+      });
+    }
+
+    [searchInput, vehicleFilter, strategyFilter, statusFilter].forEach(el => {
+      if (!el) return;
+      el.addEventListener("input", applyFilters);
+      el.addEventListener("change", applyFilters);
+    });
+
+    document.getElementById("refreshPortfolio")?.addEventListener("click", applyFilters);
+  </script>
+
+</body>
+</html>
