@@ -4,10 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Orion Settings</title>
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Include Sidebar -->
+  <link rel="stylesheet" href="/private-credit/styles.css" />
+
 </head>
 
 <body class="bg-gray-50">
+
+  <!-- 🔥 SIDEBAR -->
+  <!-- Literally paste your sidebar.html here OR use server-side include -->
+  <!--#include virtual="/private-credit/sidebar.html" -->
 
   <!-- PAGE WRAPPER SHIFTED FOR SIDEBAR -->
   <div class="ml-64 p-8">
@@ -54,31 +64,11 @@
         </p>
 
         <div class="space-y-3">
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="llm" class="h-4 w-4" />
-            <span>OpenAI</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="llm" class="h-4 w-4" />
-            <span>Anthropic</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="llm" class="h-4 w-4" />
-            <span>Grok</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="llm" class="h-4 w-4" />
-            <span>Mistral</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="llm" class="h-4 w-4" />
-            <span>Cohere</span>
-          </label>
+          <label class="flex items-center gap-3"><input type="radio" name="llm" /> OpenAI</label>
+          <label class="flex items-center gap-3"><input type="radio" name="llm" /> Anthropic</label>
+          <label class="flex items-center gap-3"><input type="radio" name="llm" /> Grok</label>
+          <label class="flex items-center gap-3"><input type="radio" name="llm" /> Mistral</label>
+          <label class="flex items-center gap-3"><input type="radio" name="llm" /> Cohere</label>
         </div>
       </div>
 
@@ -91,27 +81,10 @@
         </p>
 
         <div class="space-y-3">
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="database" class="h-4 w-4" />
-            <span>PostgreSQL</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="database" class="h-4 w-4" />
-            <span>Snowflake</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="database" class="h-4 w-4" />
-            <span>Local / Embedded</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="database" class="h-4 w-4" />
-            <span>MySQL</span>
-          </label>
-
+          <label class="flex items-center gap-3"><input type="radio" name="db" /> PostgreSQL</label>
+          <label class="flex items-center gap-3"><input type="radio" name="db" /> Snowflake</label>
+          <label class="flex items-center gap-3"><input type="radio" name="db" /> Local / Embedded</label>
+          <label class="flex items-center gap-3"><input type="radio" name="db" /> MySQL</label>
         </div>
       </div>
 
@@ -124,27 +97,10 @@
         </p>
 
         <div class="space-y-3">
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="vectordb" class="h-4 w-4" />
-            <span>Pinecone</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="vectordb" class="h-4 w-4" />
-            <span>Weaviate</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="vectordb" class="h-4 w-4" />
-            <span>Milvus</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="radio" name="vectordb" class="h-4 w-4" />
-            <span>Local (FAISS)</span>
-          </label>
-
+          <label class="flex items-center gap-3"><input type="radio" name="vectordb" /> Pinecone</label>
+          <label class="flex items-center gap-3"><input type="radio" name="vectordb" /> Weaviate</label>
+          <label class="flex items-center gap-3"><input type="radio" name="vectordb" /> Milvus</label>
+          <label class="flex items-center gap-3"><input type="radio" name="vectordb" /> Local (FAISS)</label>
         </div>
       </div>
 
@@ -152,74 +108,73 @@
       <div class="bg-white rounded-lg shadow p-6 border">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">API Keys</h2>
 
-        <p class="text-sm text-gray-600 mb-4">
-          Securely store the keys needed for your AI and database providers.
-        </p>
-
         <div class="space-y-4">
           <div>
-            <label class="block text-sm text-gray-600 mb-1">OpenAI API Key</label>
-            <input class="w-full border rounded px-3 py-2"
-                   placeholder="sk-xxxxxxxxxxxxxxxxxxxx" type="password" />
+            <label class="text-sm text-gray-600">OpenAI API Key</label>
+            <input type="password" class="w-full border rounded px-3 py-2" />
           </div>
-
           <div>
-            <label class="block text-sm text-gray-600 mb-1">Anthropic API Key</label>
-            <input class="w-full border rounded px-3 py-2"
-                   placeholder="sk-ant-xxxxxxxx" type="password" />
+            <label class="text-sm text-gray-600">Anthropic API Key</label>
+            <input type="password" class="w-full border rounded px-3 py-2" />
           </div>
-
           <div>
-            <label class="block text-sm text-gray-600 mb-1">Pinecone API Key</label>
-            <input class="w-full border rounded px-3 py-2" placeholder="pc-xxxxx" type="password" />
+            <label class="text-sm text-gray-600">Pinecone API Key</label>
+            <input type="password" class="w-full border rounded px-3 py-2" />
           </div>
-
           <div>
-            <label class="block text-sm text-gray-600 mb-1">Snowflake Token</label>
-            <input class="w-full border rounded px-3 py-2" placeholder="sn-xxxxx" type="password" />
+            <label class="text-sm text-gray-600">Snowflake Token</label>
+            <input type="password" class="w-full border rounded px-3 py-2" />
           </div>
         </div>
       </div>
 
-      <!-- SYSTEM PREFERENCES -->
+      <!-- SYSTEM PREFS -->
       <div class="bg-white rounded-lg shadow p-6 border">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">System Preferences</h2>
 
-        <div class="space-y-4">
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" class="h-4 w-4" />
-            <span>Enable Dark Mode</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" class="h-4 w-4" />
-            <span>Auto-save Prompts</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" class="h-4 w-4" />
-            <span>Show Developer Tools</span>
-          </label>
-
-          <label class="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" class="h-4 w-4" />
-            <span>Enable Experimental Features</span>
-          </label>
-
+        <div class="space-y-3">
+          <label class="flex items-center gap-3"><input type="checkbox" /> Enable Dark Mode</label>
+          <label class="flex items-center gap-3"><input type="checkbox" /> Auto-save Prompts</label>
+          <label class="flex items-center gap-3"><input type="checkbox" /> Show Developer Tools</label>
+          <label class="flex items-center gap-3"><input type="checkbox" /> Enable Experimental Features</label>
         </div>
       </div>
 
-    </div> <!-- END GRID -->
+    </div>
 
-    <!-- Save Button -->
+    <!-- SAVE BUTTON -->
     <div class="mt-10">
-      <button class="px-6 py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700">
+      <button class="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700">
         Save Settings
       </button>
     </div>
 
-  </div> <!-- END PAGE WRAPPER -->
+  </div>
+
+
+  <!-- 🔥 ASK ORION FLOATING BUTTON -->
+  <button onclick="toggleAskOrion()"
+          class="fixed bottom-6 right-6 bg-blue-600 text-white px-5 py-3 rounded-full shadow-lg hover:bg-blue-700">
+    Ask Orion
+  </button>
+
+  <!-- ASK ORION MODAL -->
+  <div id="askOrionModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-6">
+    <div class="bg-white w-full max-w-xl rounded-lg shadow-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">Ask Orion</h2>
+      <textarea class="w-full border rounded p-3 h-32" placeholder="Ask anything..."></textarea>
+      <div class="flex justify-end mt-4">
+        <button onclick="toggleAskOrion()" class="px-4 py-2 bg-gray-300 rounded mr-2">Cancel</button>
+        <button class="px-4 py-2 bg-blue-600 text-white rounded">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleAskOrion() {
+      document.getElementById('askOrionModal').classList.toggle('hidden');
+    }
+  </script>
 
 </body>
 </html>
