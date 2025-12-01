@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Orion Settings</title>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -18,7 +23,35 @@
   <!-- 🔥 SIDEBAR -->
   <!-- Literally paste your sidebar.html here OR use server-side include -->
   <!--#include virtual="/private-credit/sidebar.html" -->
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
   <!-- PAGE WRAPPER SHIFTED FOR SIDEBAR -->
   <div class="ml-64 p-8">
 
@@ -152,29 +185,46 @@
   </div>
 
 
-  <!-- 🔥 ASK ORION FLOATING BUTTON -->
-  <button onclick="toggleAskOrion()"
-          class="fixed bottom-6 right-6 bg-blue-600 text-white px-5 py-3 rounded-full shadow-lg hover:bg-blue-700">
-    Ask Orion
-  </button>
-
-  <!-- ASK ORION MODAL -->
-  <div id="askOrionModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-6">
-    <div class="bg-white w-full max-w-xl rounded-lg shadow-lg p-6">
-      <h2 class="text-xl font-semibold mb-4">Ask Orion</h2>
-      <textarea class="w-full border rounded p-3 h-32" placeholder="Ask anything..."></textarea>
-      <div class="flex justify-end mt-4">
-        <button onclick="toggleAskOrion()" class="px-4 py-2 bg-gray-300 rounded mr-2">Cancel</button>
-        <button class="px-4 py-2 bg-blue-600 text-white rounded">Send</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- JS -->
   <script>
-    function toggleAskOrion() {
-      document.getElementById('askOrionModal').classList.toggle('hidden');
+    const composeBtn = document.getElementById("composeBtn");
+    const composeModal = document.getElementById("composeModal");
+
+    composeBtn.onclick = () => {
+      composeModal.classList.remove("hidden");
+    };
+
+    function closeCompose() {
+      composeModal.classList.add("hidden");
     }
   </script>
+    <!--Ask Orion Bot -->
+    <div id="orion-chat-include"></div>
+    <script>
+      async function loadOrionChat() {
+        const res = await fetch("/private-credit/includes/orion-chat.html");
+        const html = await res.text();
+    
+        // Insert into DOM
+        const container = document.getElementById("orion-chat-include");
+        container.innerHTML = html;
+    
+        // --- EXECUTE SCRIPTS ---
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement("script");
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+          oldScript.remove();
+        });
+      }
+    
+      loadOrionChat();
+    </script>
 
 </body>
 </html>
