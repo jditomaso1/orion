@@ -225,7 +225,124 @@
           </div>
         </div>
       </div>
-
+      
+      <!-- FINANCIAL DATA PROVIDERS -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Market Data Providers & Pricing APIs
+        </h2>
+      
+        <p class="text-sm text-gray-600 mb-4">
+          Connect Orion to your firm’s market data sources. These enable real-time loan prices,
+          credit spreads, and market intelligence.
+        </p>
+      
+        <div class="space-y-6">
+      
+          <!-- Bloomberg -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Bloomberg API</p>
+              <p class="text-xs text-gray-500">Requires Bloomberg Server API (BLPAPI) entitlement.</p>
+              <input type="password"
+                     placeholder="Bloomberg API Key / SAPI Token"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+      
+          <!-- LSEG / LPC Loan Pricing -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">LSEG Loan Pricing (LPC / Markit)</p>
+              <p class="text-xs text-gray-500">
+                Live & historical pricing for syndicated loans, LSTA/LPC marks.
+              </p>
+              <input type="password"
+                     placeholder="LSEG / LPC API Token"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+      
+          <!-- Refinitiv DataScope -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Refinitiv DataScope</p>
+              <p class="text-xs text-gray-500">
+                Pricing, reference data, identifiers, and corporate actions.
+              </p>
+              <input type="password"
+                     placeholder="Refinitiv App Key"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+      
+          <!-- ICE / Merrill -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">ICE / Merrill Pricing API</p>
+              <p class="text-xs text-gray-500">Corporate loan prices, credit curves, and indices.</p>
+              <input type="password"
+                     placeholder="ICE API Key"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+      
+          <!-- ClearPar / Settlement -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">ClearPar (Settlement)</p>
+              <p class="text-xs text-gray-500">
+                Loan settlement, allocation, trade status, and par activity.
+              </p>
+              <input type="password"
+                     placeholder="ClearPar Auth Token"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+      
+          <!-- Custom / Other -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Custom Market Data API</p>
+              <p class="text-xs text-gray-500">For proprietary or client-specific data feeds.</p>
+              <input type="password"
+                     placeholder="Endpoint or Token"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Configure
+            </button>
+          </div>
+      
+        </div>
+      </div>
       <!-- SYSTEM PREFS -->
       <div class="bg-white rounded-lg shadow p-6 border">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">System Preferences</h2>
