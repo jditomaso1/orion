@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orion Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+
+  <!-- PAGE WRAPPER SHIFTED FOR SIDEBAR -->
+  <div class="ml-64 p-8">
+
+    <!-- Page Title -->
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Settings</h1>
+
+    <!-- SETTINGS GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- USER INFO -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">User Profile</h2>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Name</label>
+            <input class="w-full border rounded px-3 py-2" placeholder="John Doe" />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">User ID</label>
+            <input class="w-full border rounded px-3 py-2" placeholder="USR-00123" />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Company</label>
+            <input class="w-full border rounded px-3 py-2" placeholder="Acme Capital" />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Company ID</label>
+            <input class="w-full border rounded px-3 py-2" placeholder="CMP-44556" />
+          </div>
+        </div>
+      </div>
+
+      <!-- LLM CONFIGURATION -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">LLM Provider</h2>
+
+        <p class="text-sm text-gray-600 mb-4">
+          Choose which language model your version of Orion should run on.
+        </p>
+
+        <div class="space-y-3">
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="llm" class="h-4 w-4" />
+            <span>OpenAI</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="llm" class="h-4 w-4" />
+            <span>Anthropic</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="llm" class="h-4 w-4" />
+            <span>Grok</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="llm" class="h-4 w-4" />
+            <span>Mistral</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="llm" class="h-4 w-4" />
+            <span>Cohere</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- DATABASE -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Primary Database</h2>
+
+        <p class="text-sm text-gray-600 mb-4">
+          Select the database Orion uses for structured storage.
+        </p>
+
+        <div class="space-y-3">
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="database" class="h-4 w-4" />
+            <span>PostgreSQL</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="database" class="h-4 w-4" />
+            <span>Snowflake</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="database" class="h-4 w-4" />
+            <span>Local / Embedded</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="database" class="h-4 w-4" />
+            <span>MySQL</span>
+          </label>
+
+        </div>
+      </div>
+
+      <!-- VECTOR DATABASE -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Vector Database</h2>
+
+        <p class="text-sm text-gray-600 mb-4">
+          Choose where embeddings are stored for semantic search & retrieval.
+        </p>
+
+        <div class="space-y-3">
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="vectordb" class="h-4 w-4" />
+            <span>Pinecone</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="vectordb" class="h-4 w-4" />
+            <span>Weaviate</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="vectordb" class="h-4 w-4" />
+            <span>Milvus</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="radio" name="vectordb" class="h-4 w-4" />
+            <span>Local (FAISS)</span>
+          </label>
+
+        </div>
+      </div>
+
+      <!-- API KEYS -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">API Keys</h2>
+
+        <p class="text-sm text-gray-600 mb-4">
+          Securely store the keys needed for your AI and database providers.
+        </p>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">OpenAI API Key</label>
+            <input class="w-full border rounded px-3 py-2"
+                   placeholder="sk-xxxxxxxxxxxxxxxxxxxx" type="password" />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Anthropic API Key</label>
+            <input class="w-full border rounded px-3 py-2"
+                   placeholder="sk-ant-xxxxxxxx" type="password" />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Pinecone API Key</label>
+            <input class="w-full border rounded px-3 py-2" placeholder="pc-xxxxx" type="password" />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Snowflake Token</label>
+            <input class="w-full border rounded px-3 py-2" placeholder="sn-xxxxx" type="password" />
+          </div>
+        </div>
+      </div>
+
+      <!-- SYSTEM PREFERENCES -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">System Preferences</h2>
+
+        <div class="space-y-4">
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" class="h-4 w-4" />
+            <span>Enable Dark Mode</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" class="h-4 w-4" />
+            <span>Auto-save Prompts</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" class="h-4 w-4" />
+            <span>Show Developer Tools</span>
+          </label>
+
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" class="h-4 w-4" />
+            <span>Enable Experimental Features</span>
+          </label>
+
+        </div>
+      </div>
+
+    </div> <!-- END GRID -->
+
+    <!-- Save Button -->
+    <div class="mt-10">
+      <button class="px-6 py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700">
+        Save Settings
+      </button>
+    </div>
+
+  </div> <!-- END PAGE WRAPPER -->
+
+</body>
+</html>
