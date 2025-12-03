@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Orion Deal Tearsheets</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 24px;
+    }
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #020617;
+      border-radius: 12px;
+      padding: 24px 28px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      border: 1px solid #1f2937;
+    }
+    h1, h2, h3 {
+      margin: 0 0 12px 0;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    h2 {
+      font-size: 18px;
+      margin-top: 24px;
+      border-bottom: 1px solid #1f2937;
+      padding-bottom: 4px;
+    }
+    .subtitle {
+      color: #9ca3af;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px 24px;
+    }
+    .field-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      margin-bottom: 2px;
+    }
+    .field-value {
+      font-size: 14px;
+      color: #e5e7eb;
+      white-space: pre-wrap;
+    }
+    .status {
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #9ca3af;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #111827;
+      border: 1px solid #1f2937;
+      color: #9ca3af;
+      margin-left: 8px;
+    }
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+    .header-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .file-id {
+      font-size: 11px;
+      color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header-row">
+      <div>
+        <h1 id="deal-title">Deal Title</h1>
+        <div class="subtitle" id="company-name">Company Name • Industry</div>
+      </div>
+      <div>
+        <span class="pill">
+          <span class="pill-dot"></span>
+          <span id="deal-status-pill">Draft</span>
+        </span>
+        <div class="file-id" id="file-id-display"></div>
+      </div>
+    </div>
+
+    <div class="status" id="status-text">Loading summary from Orion DB…</div>
+
+    <!-- Deal Overview -->
+    <h2>Deal Overview</h2>
+    <div class="grid">
+      <div>
+        <div class="field-label">Industry</div>
+        <div class="field-value" id="field-industry"></div>
+      </div>
+      <div>
+        <div class="field-label">Ownership</div>
+        <div class="field-value" id="field-ownership"></div>
+      </div>
+      <div>
+        <div class="field-label">Sponsor</div>
+        <div class="field-value" id="field-sponsor"></div>
+      </div>
+      <div>
+        <div class="field-label">Deal Status</div>
+        <div class="field-value" id="field-deal-status"></div>
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <div class="field-label">Business Description</div>
+        <div class="field-value" id="field-business-description"></div>
+      </div>
+    </div>
+
+    <!-- Financials -->
+    <h2>Financials (LTM)</h2>
+    <div class="grid">
+      <div>
+        <div class="field-label">Revenue ($mm)</div>
+        <div class="field-value" id="field-revenue"></div>
+      </div>
+      <div>
+        <div class="field-label">EBITDA ($mm)</div>
+        <div class="field-value" id="field-ebitda"></div>
+      </div>
+      <div>
+        <div class="field-label">EBITDA Margin (%)</div>
+        <div class="field-value" id="field-ebitda-margin"></div>
+      </div>
+      <div>
+        <div class="field-label">CapEx ($mm)</div>
+        <div class="field-value" id="field-capex"></div>
+      </div>
+      <div>
+        <div class="field-label">Cash on Balance Sheet ($mm)</div>
+        <div class="field-value" id="field-cash"></div>
+      </div>
+    </div>
+
+    <!-- Structure & Terms -->
+    <h2>Structure & Terms</h2>
+    <div class="grid">
+      <div>
+        <div class="field-label">Debt Amount (New Loan, $mm)</div>
+        <div class="field-value" id="field-debt-amount"></div>
+      </div>
+      <div>
+        <div class="field-label">Use of Proceeds</div>
+        <div class="field-value" id="field-use-of-proceeds"></div>
+      </div>
+      <div>
+        <div class="field-label">Term (Years)</div>
+        <div class="field-value" id="field-term"></div>
+      </div>
+      <div>
+        <div class="field-label">Interest Rate / Pricing</div>
+        <div class="field-value" id="field-pricing"></div>
+      </div>
+      <div>
+        <div class="field-label">Structure</div>
+        <div class="field-value" id="field-structure"></div>
+      </div>
+      <div>
+        <div class="field-label">Equity Contribution (%)</div>
+        <div class="field-value" id="field-equity"></div>
+      </div>
+      <div>
+        <div class="field-label">Leverage (Gross)</div>
+        <div class="field-value" id="field-lev-gross"></div>
+      </div>
+      <div>
+        <div class="field-label">Leverage (Net)</div>
+        <div class="field-value" id="field-lev-net"></div>
+      </div>
+      <div>
+        <div class="field-label">Security</div>
+        <div class="field-value" id="field-security"></div>
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <div class="field-label">Covenants</div>
+        <div class="field-value" id="field-covenants"></div>
+      </div>
+    </div>
+
+    <!-- Analysis -->
+    <h2>Analysis & Commentary</h2>
+    <div class="grid">
+      <div>
+        <div class="field-label">Key Strengths</div>
+        <div class="field-value" id="field-strengths"></div>
+      </div>
+      <div>
+        <div class="field-label">Key Risk Factors</div>
+        <div class="field-value" id="field-risks"></div>
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <div class="field-label">Notes / Commentary</div>
+        <div class="field-value" id="field-notes"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+
+    // 🔴 TODO: set this to the file_id that you summarized (Google Drive ID)
+    const FILE_ID = "YOUR_FILE_ID_HERE";
+
+    function setField(id, value) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = value && value !== "Not provided" && value !== "Not Provided"
+        ? value
+        : "Not Provided";
+    }
+
+    async function loadTearsheet() {
+      document.getElementById("file-id-display").textContent = `file_id: ${FILE_ID}`;
+      document.getElementById("status-text").textContent = "Loading summary from Orion DB…";
+
+      try {
+        const res = await fetch(`${API_BASE}/deal-summary/${FILE_ID}`);
+        if (!res.ok) {
+          document.getElementById("status-text").textContent =
+            `Error: ${res.status} – no summary found for this file_id`;
+          return;
+        }
+
+        const data = await res.json();
+        document.getElementById("status-text").textContent = "Loaded from Postgres (deal_summaries_json).";
+
+        // Header
+        setField("deal-title", data["Deal Title"]);
+        const companyName = data["Company Name"] || "Company Name";
+        const industry = data["Industry"] || "Industry";
+        document.getElementById("company-name").textContent = `${companyName} • ${industry}`;
+        setField("deal-status-pill", data["Deal Status"]);
+
+        // Overview
+        setField("field-industry", data["Industry"]);
+        setField("field-ownership", data["Ownership"]);
+        setField("field-sponsor", data["Sponsor"]);
+        setField("field-deal-status", data["Deal Status"]);
+        setField("field-business-description", data["Business Description"]);
+
+        // Financials
+        setField("field-revenue", data["Revenue (LTM, $mm)"]);
+        setField("field-ebitda", data["EBITDA (LTM, $mm)"]);
+        setField("field-ebitda-margin", data["EBITDA Margin (%)"]);
+        setField("field-capex", data["CapEx (LTM, $mm)"]);
+        setField("field-cash", data["Cash on Balance Sheet ($mm)"]);
+
+        // Structure & Terms
+        setField("field-debt-amount", data["Debt Amount (New Loan, $mm)"]);
+        setField("field-use-of-proceeds", data["Use of Proceeds"]);
+        setField("field-term", data["Term (Years)"]);
+        setField("field-pricing", data["Interest Rate / Pricing"]);
+        setField("field-structure", data["Structure"]);
+        setField("field-equity", data["Equity Contribution (%)"]);
+        setField("field-lev-gross", data["Leverage (Gross)"]);
+        setField("field-lev-net", data["Leverage (Net)"]);
+        setField("field-security", data["Security"]);
+        setField("field-covenants", data["Covenants"]);
+
+        // Analysis
+        setField("field-strengths", data["Key Strengths"]);
+        setField("field-risks", data["Key Risk Factors"]);
+        setField("field-notes", data["Notes / Commentary"]);
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById("status-text").textContent =
+          "Error loading summary (check console / backend).";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadTearsheet);
+  </script>
+</body>
+</html>
