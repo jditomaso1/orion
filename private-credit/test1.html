@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Orion Deal Summary</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 20px;
+      background: #f5f5f7;
+      color: #111827;
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: #6b7280;
+      margin-bottom: 1.5rem;
+    }
+    .controls {
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    input[type="text"] {
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      min-width: 320px;
+    }
+    button {
+      padding: 0.45rem 0.9rem;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      background: #111827;
+      color: white;
+      font-size: 0.9rem;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .status {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+      border: 1px solid #e5e7eb;
+    }
+    .card h2 {
+      font-size: 0.95rem;
+      margin: 0 0 0.5rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #4b5563;
+    }
+    .field-row {
+      margin-bottom: 0.35rem;
+    }
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #6b7280;
+    }
+    .field-value {
+      font-size: 0.9rem;
+      margin-top: 1px;
+      white-space: pre-wrap;
+    }
+    .pill {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: #f3f4f6;
+      color: #374151;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .error {
+      color: #b91c1c;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Orion Deal Summary</h1>
+  <div class="subtitle">
+    Shows the structured fields (Deal Title, Company Name, Leverage, Covenants, etc.) returned by your Orion API.
+  </div>
+
+  <div class="controls">
+    <input id="fileIdInput" type="text"
+           placeholder="Enter Google Drive file_id (e.g. 1CjJ-U8uBMopRqn2XunBKh4v2YQCaCFgF)" />
+    <button id="loadBtn" onclick="loadSummary()">Load Summary</button>
+    <span class="status" id="statusText"></span>
+  </div>
+  <div class="error" id="errorText"></div>
+
+  <div class="layout" id="sectionsContainer">
+    <!-- Cards will be injected here -->
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+
+    // Same sections you put in your JSON template
+    const SECTIONS = {
+      "Deal Overview": [
+        "Deal Title",
+        "Company Name",
+        "Industry",
+        "Business Description",
+        "Ownership",
+        "Sponsor",
+        "Deal Status"
+      ],
+      "Financials": [
+        "Revenue (LTM, $mm)",
+        "EBITDA (LTM, $mm)",
+        "EBITDA Margin (%)",
+        "CapEx (LTM, $mm)",
+        "Cash on Balance Sheet ($mm)"
+      ],
+      "Structure & Terms": [
+        "Debt Amount (New Loan, $mm)",
+        "Use of Proceeds",
+        "Term (Years)",
+        "Interest Rate / Pricing",
+        "Structure",
+        "Equity Contribution (%)",
+        "Leverage (Gross)",
+        "Leverage (Net)",
+        "Security",
+        "Covenants"
+      ],
+      "Analysis & Commentary": [
+        "Key Strengths",
+        "Key Risk Factors",
+        "Notes / Commentary"
+      ]
+    };
+
+    async function loadSummary() {
+      const fileIdInput = document.getElementById("fileIdInput");
+      const file_id = fileIdInput.value.trim();
+      const statusEl = document.getElementById("statusText");
+      const errorEl = document.getElementById("errorText");
+      const btn = document.getElementById("loadBtn");
+
+      errorEl.textContent = "";
+      statusEl.textContent = "";
+
+      if (!file_id) {
+        errorEl.textContent = "Please enter a file_id.";
+        return;
+      }
+
+      btn.disabled = true;
+      statusEl.textContent = "Loading summary from Orion…";
+
+      try {
+        const res = await fetch(`${API_BASE}/summarize-file`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            file_id: file_id,
+            prompt_type: "syndicated"
+          })
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`API error ${res.status}: ${text}`);
+        }
+
+        const data = await res.json();
+        const summary = data.summary || {};
+
+        statusEl.textContent = "Loaded.";
+        renderSections(summary, data.embedding_preview || {});
+      } catch (err) {
+        console.error(err);
+        errorEl.textContent = err.message || "Error loading summary.";
+        statusEl.textContent = "";
+        renderSections({}, {}); // clear
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function renderSections(summary, embeddingPreview) {
+      const container = document.getElementById("sectionsContainer");
+      container.innerHTML = "";
+
+      Object.entries(SECTIONS).forEach(([sectionName, fields]) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const h2 = document.createElement("h2");
+        h2.textContent = sectionName;
+        card.appendChild(h2);
+
+        fields.forEach(fieldName => {
+          const value = summary[fieldName] ?? "Not Provided";
+
+          const row = document.createElement("div");
+          row.className = "field-row";
+
+          const label = document.createElement("div");
+          label.className = "field-label";
+          label.textContent = fieldName;
+
+          const val = document.createElement("div");
+          val.className = "field-value";
+          val.textContent = value;
+
+          row.appendChild(label);
+          row.appendChild(val);
+          card.appendChild(row);
+        });
+
+        container.appendChild(card);
+      });
+
+      // Optional: show a little embedding pill so they see it's wired
+      if (embeddingPreview && embeddingPreview.dimension) {
+        const pill = document.createElement("div");
+        pill.className = "card";
+        pill.innerHTML = `
+          <h2>Embedding (Tech Debug)</h2>
+          <div class="field-row">
+            <div class="field-label">Model</div>
+            <div class="field-value">${embeddingPreview.model || "n/a"}</div>
+          </div>
+          <div class="field-row">
+            <div class="field-label">Dimension</div>
+            <div class="field-value">
+              ${embeddingPreview.dimension}
+              <span class="pill">stored in Postgres + Pinecone</span>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-label">Vector ID (hash)</div>
+            <div class="field-value">${embeddingPreview.vector_id || "n/a"}</div>
+          </div>
+        `;
+        container.appendChild(pill);
+      }
+    }
+  </script>
+</body>
+</html>
