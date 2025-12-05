@@ -29,10 +29,14 @@ const FILE_LABELS = {
 };
 
 function formatValue(val) {
-  if (typeof val === "object") {
+  if (Array.isArray(val)) {
+    return `<ul>${val.map(v => `<li>${v}</li>`).join("")}</ul>`;
+  }
+  if (val && typeof val === "object") {
+    // For now just pretty-print; later you can customize per field
     return `<pre>${JSON.stringify(val, null, 2)}</pre>`;
   }
-  return String(val);
+  return String(val ?? "");
 }
 
 async function loadMaster() {
