@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Master Tearsheet</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    .field { margin-bottom: 12px; }
+    .field strong { color: #333; }
+  </style>
+</head>
+<body>
+
+<h2>Master Tearsheet</h2>
+
+<button onclick="loadMaster()">Load Master</button>
+
+<div id="output"></div>
+
+
+<script>
+function formatValue(val) {
+  if (typeof val === "object") {
+    return JSON.stringify(val, null, 2);   // pretty print objects/arrays
+  }
+  return val;
+}
+
+async function loadMaster() {
+  const payload = {
+    file_ids: [
+      "1VvsuFbx1MrMu3TlXwvjbc4WNFQNdvu5Q",
+      "10623__NqsTWh83fROlLhYeZUinFfOPnZ",
+      "1aN6zQV9NXJ8pO2e-o-rhOHyZsyUJDavl",
+      "1oSxqCTu64EytukWH8bMKQu53WfrIAoet"
+    ]
+  };
+
+  const res = await fetch("http://127.0.0.1:8000/company-master", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+
+  const out = document.getElementById("output");
+  out.innerHTML = "";
+
+  const summary = data.master_summary || {};
+  const sources = data.field_sources || {};   // <-- comes from FastAPI
+
+  for (const field in summary) {
+    const value = formatValue(summary[field]);
+    const srcList = sources[field] || [];
+
+    out.innerHTML += `
+      <div class="field">
+        <strong>${field}:</strong> ${value}<br/>
+        <small>Source(s): ${srcList.length ? srcList.join(", ") : "—"}</small>
+      </div>
+    `;
+  }
+}
+</script>
+
+</body>
+</html>
