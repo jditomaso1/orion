@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Master Tearsheet – Source Comparison</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    h3 {
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px 8px;
+      vertical-align: top;
+    }
+    th {
+      background: #f3f4f6;
+      text-align: left;
+    }
+    .section-row {
+      background: #e5e7eb;
+      font-weight: bold;
+    }
+    .field-name {
+      white-space: nowrap;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Master Tearsheet – Source Comparison</h2>
+
+<button onclick="loadMaster()">Load Master</button>
+
+<div id="output" style="margin-top: 16px;"></div>
+
+<script>
+// 🔹 LABELS for each file_id (column headers)
+const FILE_LABELS = {
+  "1VvsuFbx1MrMu3TlXwvjbc4WNFQNdvu5Q": "CIM",
+  "1KOQxcc2kjBPfefREAv8d3Rf6KxwT25oz": "Credit Agreement",
+  "1aN6zQV9NXJ8pO2e-o-rhOHyZsyUJDavl": "Lender Presentation",
+  "1oSxqCTu64EytukWH8bMKQu53WfrIAoet": "Notes",
+  "10623__NqsTWh83fROlLhYeZUinFfOPnZ": "Compliance Certificate"
+};
+
+// 🔹 COLUMN ORDER – make sure these IDs EXACTLY match Postgres/file_ids
+const FILE_COLUMNS = [
+  "1VvsuFbx1MrMu3TlXwvjbc4WNFQNdvu5Q", // CIM
+  "1KOQxcc2kjBPfefREAv8d3Rf6KxwT25oz", // Credit Agreement
+  "1aN6zQV9NXJ8pO2e-o-rhOHyZsyUJDavl", // Lender Presentation
+  "1oSxqCTu64EytukWH8bMKQu53WfrIAoet", // Notes
+  "10623__NqsTWh83fROlLhYeZUinFfOPnZ"  // Compliance Certificate
+];
+
+// 🔹 Canonical schema (your analyst fields & sections)
+const FIELD_SCHEMA = {
+  sections: {
+    "Deal Overview": [
+      "Deal Title",
+      "Company Name",
+      "Industry",
+      "Business Description",
+      "Ownership",
+      "Sponsor",
+      "Deal Status"
+    ],
+    "Financials": [
+      "Revenue (LTM, $mm)",
+      "EBITDA (LTM, $mm)",
+      "EBITDA Margin (%)",
+      "CapEx (LTM, $mm)",
+      "Cash on Balance Sheet ($mm)"
+    ],
+    "Structure & Terms": [
+      "Debt Amount (New Loan, $mm)",
+      "Use of Proceeds",
+      "Term (Years)",
+      "Interest Rate / Pricing",
+      "Structure",
+      "Equity Contribution (%)",
+      "Leverage (Gross)",
+      "Leverage (Net)",
+      "Security",
+      "Covenants"
+    ],
+    "Analysis & Commentary": [
+      "Key Strengths",
+      "Key Risk Factors",
+      "Notes / Commentary"
+    ]
+  }
+};
+
+function formatCell(val) {
+  if (val === null || val === undefined || val === "") return "";
+  if (Array.isArray(val)) return val.join(" • ");
+  if (typeof val === "object") return JSON.stringify(val);
+  return String(val);
+}
+
+async function loadMaster() {
+  const out = document.getElementById("output");
+  out.innerHTML = "Loading…";
+
+  const payload = {
+    file_ids: [
+      "1VvsuFbx1MrMu3TlXwvjbc4WNFQNdvu5Q", // CIM
+      "10623__NqsTWh83fROlLhYeZUinFfOPnZ", // Compliance Certificate
+      "1KOQxcc2kjBPfefREAv8d3Rf6KxwT25oz", // Credit Agreement
+      "1aN6zQV9NXJ8pO2e-o-rhOHyZsyUJDavl", // Lender Presentation
+      "1oSxqCTu64EytukWH8bMKQu53WfrIAoet"  // Notes
+    ]
+  };
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/company-master", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("HTTP error", res.status, text);
+      out.innerHTML = `<div>Request failed: ${res.status}</div>`;
+      return;
+    }
+
+    const data = await res.json();
+    console.log("company-master response:", data);
+
+    const masterSummary = data.master_summary || {};
+    const perFileSummaries = data.per_file_summaries || {};
+
+    // Build the table HTML
+    let html = `
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            ${FILE_COLUMNS.map(id => `<th>${FILE_LABELS[id] || id}</th>`).join("")}
+            <th>Master</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    for (const [sectionName, fieldList] of Object.entries(FIELD_SCHEMA.sections)) {
+      // Section header row
+      html += `
+        <tr class="section-row">
+          <td colspan="${FILE_COLUMNS.length + 2}">${sectionName}</td>
+        </tr>
+      `;
+
+      fieldList.forEach(field => {
+        html += `<tr><td class="field-name">${field}</td>`;
+
+        // Per-file columns
+        FILE_COLUMNS.forEach(fileId => {
+          const summary = perFileSummaries[fileId] || {};
+          const val = Object.prototype.hasOwnProperty.call(summary, field)
+            ? summary[field]
+            : "";
+          html += `<td>${formatCell(val)}</td>`;
+        });
+
+        // Master column
+        const masterVal = Object.prototype.hasOwnProperty.call(masterSummary, field)
+          ? masterSummary[field]
+          : "Not Provided";
+        html += `<td>${formatCell(masterVal)}</td>`;
+
+        html += `</tr>`;
+      });
+    }
+
+    html += `</tbody></table>`;
+    out.innerHTML = html;
+
+  } catch (err) {
+    console.error("Error calling /company-master:", err);
+    out.innerHTML = `<div>JavaScript error: ${err}</div>`;
+  }
+}
+</script>
+
+</body>
+</html>
