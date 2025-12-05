@@ -40,51 +40,67 @@ function formatValue(val) {
 }
 
 async function loadMaster() {
+  const out = document.getElementById("output");
+  out.innerHTML = "Loading...";
+
   const payload = {
     file_ids: [
       "1VvsuFbx1MrMu3TlXwvjbc4WNFQNdvu5Q", // CIM
       "10623__NqsTWh83fROlLhYeZUinFfOPnZ", // Compliance Certificate
-      "1KOQxcc2kjBPfefREAv8d3Rf6KxwT25oz", // Credit Agreement  <<< ADD THIS
+      "1KOQxcc2kjBPfefREAv8d3Rf6KxwT25oz", // Credit Agreement
       "1aN6zQV9NXJ8pO2e-o-rhOHyZsyUJDavl", // Lender Presentation
       "1oSxqCTu64EytukWH8bMKQu53WfrIAoet"  // Notes
     ]
   };
 
-  const res = await fetch("http://127.0.0.1:8000/company-master", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(payload)
-  });
+  try {
+    const res = await fetch("http://127.0.0.1:8000/company-master", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
 
-  const data = await res.json();
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("HTTP error", res.status, text);
+      out.innerHTML = `<div>Request failed: ${res.status}</div>`;
+      return;
+    }
 
-  // 🔍 TEMP DEBUG
-  console.log("raw data from /company-master:", data);
-  console.log("master_summary:", data.master_summary);
-  console.log("field_sources:", data.field_sources);
-  
-  const out = document.getElementById("output");
-  out.innerHTML = "";
+    const data = await res.json();
 
-  const out = document.getElementById("output");
-  out.innerHTML = "";
+    // 🔍 TEMP DEBUG
+    console.log("raw data from /company-master:", data);
+    console.log("master_summary:", data.master_summary);
+    console.log("field_sources:", data.field_sources);
 
-  const summary = data.master_summary || {};
-  const sources = data.field_sources || {};
+    const summary = data.master_summary || {};
+    const sources = data.field_sources || {};
 
-  for (const field in summary) {
-    const valueHtml = formatValue(summary[field]);
+    out.innerHTML = "";
 
-    // map file_ids -> pretty labels
-    const srcIds = sources[field] || [];
-    const srcLabels = srcIds.map(id => FILE_LABELS[id] || id).join(", ");
+    for (const field in summary) {
+      const valueHtml = formatValue(summary[field]);
 
-    out.innerHTML += `
-      <div class="field">
-        <strong>${field}:</strong> ${valueHtml}
-        <div class="sources"><em>Source(s): ${srcLabels || "n/a"}</em></div>
-      </div>
-    `;
+      // map file_ids -> pretty labels
+      const srcIds = sources[field] || [];
+      const srcLabels = srcIds.map(id => FILE_LABELS[id] || id).join(", ");
+
+      out.innerHTML += `
+        <div class="field">
+          <strong>${field}:</strong> ${valueHtml}
+          <div class="sources"><em>Source(s): ${srcLabels || "n/a"}</em></div>
+        </div>
+      `;
+    }
+
+    if (Object.keys(summary).length === 0) {
+      out.innerHTML = "<div>No fields returned from /company-master.</div>";
+    }
+
+  } catch (err) {
+    console.error("Error calling /company-master:", err);
+    out.innerHTML = `<div>JavaScript error: ${err}</div>`;
   }
 }
 </script>
