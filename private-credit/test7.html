@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Master Tearsheet</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h2 { margin-bottom: 8px; }
+    h3 { margin-top: 20px; margin-bottom: 8px; }
+    .field { margin-bottom: 10px; }
+    .field strong { color: #333; display: inline-block; min-width: 260px; }
+    .sources { font-size: 12px; color: #666; margin-left: 8px; }
+    pre { margin: 4px 0 0 0; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+
+<h2>Master Tearsheet</h2>
+
+<button onclick="loadMaster()">Load Master</button>
+
+<div id="output"></div>
+
+<script>
+// 🔹 Labels for each file_id
+const FILE_LABELS = {
+  "1VvsuFbx1MrMu3TlXwvjbc4WNFQNdvu5Q": "CIM",
+  "1KOQxcc2kjBPfefREAv8d3Rf6KxwT25oz": "Credit Agreement",
+  "1aN6zQV9NXJ8pO2e-o-rhOHyZsyUJDavl": "Lender Presentation",
+  "1oSxqCTu64EytukWH8bMKQu53WfrIAoet": "Notes",
+  "10623__NqsTWh83fROlLhYeZUinFfOPnZ": "Compliance Certificate"
+};
+
+// 🔹 Canonical field & section schema (your analyst spec)
+const FIELD_SCHEMA = {
+  sections: {
+    "Deal Overview": [
+      "Deal Title",
+      "Company Name",
+      "Industry",
+      "Business Description",
+      "Ownership",
+      "Sponsor",
+      "Deal Status"
+    ],
+    "Financials": [
+      "Revenue (LTM, $mm)",
+      "EBITDA (LTM, $mm)",
+      "EBITDA Margin (%)",
+      "CapEx (LTM, $mm)",
+      "Cash on Balance Sheet ($mm)"
+    ],
+    "Structure & Terms": [
+      "Debt Amount (New Loan, $mm)",
+      "Use of Proceeds",
+      "Term (Years)",
+      "Interest Rate / Pricing",
+      "Structure",
+      "Equity Contribution (%)",
+      "Leverage (Gross)",
+      "Leverage (Net)",
+      "Security",
+      "Covenants"
+    ],
+    "Analysis & Commentary": [
+      "Key Strengths",
+      "Key Risk Factors",
+      "Notes / Commentary"
+    ]
+  }
+};
+
+function formatValue(val) {
+  if (Array.isArray(val)) {
+    return `<ul>${val.map(v => `<li>${v}</li>`).join("")}</ul>`;
+  }
+  if (val && typeof val === "object") {
+    return `<pre>${JSON.stringify(val, null, 2)}</pre>`;
+  }
+  const s = String(val ?? "");
+  return s.trim() === "" ? "Not Provided" : s;
+}
+
+async function loadMaster() {
+  const out = document.getElementById("output");
+  out.innerHTML = "Loading...";
+
+  const payload = {
+    file_ids: [
+      "1VvsuFbx1MrMu3TlXwvjbc4WNFQNdvu5Q", // CIM
+      "10623__NqsTWh83fROlLhYeZUinFfOPnZ", // Compliance Certificate
+      "1KOQxcc2kjBPfefREAv8d3Rf6KxwT25oz", // Credit Agreement
+      "1aN6zQV9NXJ8pO2e-o-rhOHyZsyUJDavl", // Lender Presentation
+      "1oSxqCTu64EytukWH8bMKQu53WfrIAoet"  // Notes
+    ]
+  };
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/company-master", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("HTTP error", res.status, text);
+      out.innerHTML = `<div>Request failed: ${res.status}</div>`;
+      return;
+    }
+
+    const data = await res.json();
+
+    console.log("raw data from /company-master:", data);
+
+    const summary = data.master_summary || {};
+    const sources = data.field_sources || {};
+
+    let html = "";
+
+    // 🔹 Render by section, in fixed order
+    for (const [sectionName, fieldList] of Object.entries(FIELD_SCHEMA.sections)) {
+      html += `<h3>${sectionName}</h3>`;
+
+      fieldList.forEach(field => {
+        const rawVal = Object.prototype.hasOwnProperty.call(summary, field)
+          ? summary[field]
+          : "Not Provided";
+
+        const valueHtml = formatValue(rawVal);
+
+        const srcIds = sources[field] || [];
+        const srcLabels = srcIds.map(id => FILE_LABELS[id] || id).join(", ");
+
+        html += `
+          <div class="field">
+            <strong>${field}:</strong> ${valueHtml}
+            <span class="sources"><em>Source(s): ${srcLabels || "n/a"}</em></span>
+          </div>
+        `;
+      });
+    }
+
+    out.innerHTML = html || "<div>No fields returned from /company-master.</div>";
+
+  } catch (err) {
+    console.error("Error calling /company-master:", err);
+    out.innerHTML = `<div>JavaScript error: ${err}</div>`;
+  }
+}
+</script>
+
+</body>
+</html>
