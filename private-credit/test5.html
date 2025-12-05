@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Master Tearsheet</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    .field { margin-bottom: 12px; }
+    .field strong { color: #333; }
+    .sources { font-size: 12px; color: #666; margin-left: 12px; }
+    pre { margin: 4px 0 0 0; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+
+<h2>Master Tearsheet</h2>
+
+<button onclick="loadMaster()">Load Master</button>
+
+<div id="output"></div>
+
+<script>
+// 🔹 TEMP: nice labels for each file_id
+const FILE_LABELS = {
+  "1VvsuFbx1MrMu3TlXwvjbc4WNFQNdvu5Q": "Pawsitive – CIM",
+  "10623__NqsTWh83fROlLhYeZUinFfOPnZ": "Pawsitive – Covenants Summary",
+  "1aN6zQV9NXJ8pO2e-o-rhOHyZsyUJDavl": "Pawsitive – Lender Presentation",
+  "1oSxqCTu64EytukWH8bMKQu53WfrIAoet": "Pawsitive – Credit Agreement"
+};
+
+function formatValue(val) {
+  if (typeof val === "object") {
+    return `<pre>${JSON.stringify(val, null, 2)}</pre>`;
+  }
+  return String(val);
+}
+
+async function loadMaster() {
+  const payload = {
+    file_ids: [
+      "1VvsuFbx1MrMu3TlXwvjbc4WNFQNdvu5Q",
+      "10623__NqsTWh83fROlLhYeZUinFfOPnZ",
+      "1aN6zQV9NXJ8pO2e-o-rhOHyZsyUJDavl",
+      "1oSxqCTu64EytukWH8bMKQu53WfrIAoet"
+    ]
+  };
+
+  const res = await fetch("http://127.0.0.1:8000/company-master", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+
+  const out = document.getElementById("output");
+  out.innerHTML = "";
+
+  const summary = data.master_summary || {};
+  const sources = data.field_sources || {};
+
+  for (const field in summary) {
+    const valueHtml = formatValue(summary[field]);
+
+    // map file_ids -> pretty labels
+    const srcIds = sources[field] || [];
+    const srcLabels = srcIds.map(id => FILE_LABELS[id] || id).join(", ");
+
+    out.innerHTML += `
+      <div class="field">
+        <strong>${field}:</strong> ${valueHtml}
+        <div class="sources"><em>Source(s): ${srcLabels || "n/a"}</em></div>
+      </div>
+    `;
+  }
+}
+</script>
+
+</body>
+</html>
