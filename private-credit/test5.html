@@ -58,6 +58,14 @@ async function loadMaster() {
 
   const data = await res.json();
 
+  // 🔍 TEMP DEBUG
+  console.log("raw data from /company-master:", data);
+  console.log("master_summary:", data.master_summary);
+  console.log("field_sources:", data.field_sources);
+  
+  const out = document.getElementById("output");
+  out.innerHTML = "";
+
   const out = document.getElementById("output");
   out.innerHTML = "";
 
