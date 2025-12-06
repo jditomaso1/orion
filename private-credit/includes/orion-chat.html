@@ -28,15 +28,21 @@
 
   <!-- Input -->
   <div class="p-4 border-t bg-[#f5f6f8]">
-    <div class="flex items-end gap-2 bg-white rounded-2xl px-3 py-2 border border-neutral-200">
-      <input id="orion-input" type="text"
-             class="flex-1 min-w-0 px-0 py-2 bg-transparent focus:outline-none text-sm"
-             placeholder="Ask Orion something like:  What is the debt amount for Pawsitive Brands?" />
-      <button id="orion-send"
-              class="px-3 py-1.5 rounded-xl text-xs bg-neutral-900 text-white hover:bg-black disabled:opacity-40">
+    <div class="bg-white rounded-2xl px-3 py-2 border border-neutral-200 space-y-2">
+      <input
+        id="orion-input"
+        type="text"
+        class="w-full px-0 py-2 bg-transparent focus:outline-none text-sm"
+        placeholder="Ask Orion something like:  What is the debt amount for Pawsitive Brands?"
+      />
+      <button
+        id="orion-send"
+        class="w-full px-3 py-2 rounded-xl text-sm bg-neutral-900 text-white hover:bg-black disabled:opacity-40"
+      >
         Ask
       </button>
     </div>
+
     <p class="mt-1 text-[10px] text-neutral-500">
       Powered by FastAPI /ask-orion · expects {"question": "...", "top_k": 5}
     </p>
