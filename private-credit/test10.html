@@ -580,6 +580,13 @@
         snippetModal.classList.add("hidden");
       };
 
+      // Close modal on ESC key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          snippetModal.classList.add("hidden");
+        }
+      });
+      
       // Event delegation: click on any source pill
       document.addEventListener("click", async (e) => {
         const btn = e.target.closest(".source-pill");
