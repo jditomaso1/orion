@@ -322,59 +322,68 @@
     function renderMasterFields(summary, sources, counts) {
       const container = document.getElementById("master-fields");
       if (!container) return;
-
+    
       let html = "";
-
+    
       for (const [sectionName, fieldList] of Object.entries(FIELD_SCHEMA.sections)) {
         html += `
-          <div class="space-y-2">
-            <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-2">
-              <i data-lucide="chevron-right" class="w-4 h-4"></i>${sectionName}
-            </h3>
+          <div class="space-y-3">
+            <div class="flex items-center gap-2 text-sm font-semibold text-gray-900">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              <span>${sectionName}</span>
+            </div>
         `;
-
+    
         fieldList.forEach(field => {
           const rawVal = Object.prototype.hasOwnProperty.call(summary, field)
             ? summary[field]
             : "Not Provided";
-
+    
           const formatted = formatValue(rawVal);
-
+    
           const srcIds = sources[field] || [];
           const count = counts[field] || srcIds.length || 0;
           const confidence = computeConfidence(count);
-
+    
           const confidenceClass =
             confidence === "High"   ? "confidence-high"   :
             confidence === "Medium" ? "confidence-medium" :
             confidence === "Low"    ? "confidence-low"    :
                                       "confidence-none";
-
+    
           const srcLabels = srcIds
             .map((id, i) => `${i + 1}) ${FILE_LABELS[id] || id}`)
             .join(", ");
-
+    
           html += `
-            <div class="border rounded-xl px-3 py-2 bg-white/50">
-              <div class="flex justify-between items-start gap-4">
-                <div class="text-xs font-medium text-gray-500">${field}</div>
-                <div class="text-sm text-gray-900 text-right whitespace-pre-wrap max-w-[60%]">
+            <div class="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
+              <!-- Top row: label + value -->
+              <div class="flex items-baseline justify-between gap-4">
+                <div class="text-xs font-medium text-gray-500">
+                  ${field}
+                </div>
+                <div class="text-sm font-semibold text-gray-900 text-right">
                   ${formatted}
                 </div>
               </div>
-              <div class="mt-1 text-[11px] text-gray-500 flex justify-between items-center">
+    
+              <!-- Bottom row: sources + confidence -->
+              <div class="mt-1 flex items-center justify-between text-[11px] text-gray-500">
                 <span>Source(s): ${srcLabels || "n/a"}</span>
                 <span class="${confidenceClass}">${confidence}</span>
               </div>
             </div>
           `;
         });
-
+    
         html += `</div>`;
       }
-
-      container.innerHTML = html || "<div class='text-xs text-gray-500'>No fields returned from /company-master.</div>";
-
+    
+      container.innerHTML = html || `
+        <div class="text-xs text-gray-500">
+          No fields returned from /company-master.
+        </div>`;
+    
       if (window.lucide) window.lucide.createIcons();
     }
 
