@@ -68,7 +68,13 @@ const FIELD_SCHEMA = {
     ]
   }
 };
-
+  
+function computeConfidence(count) {
+  if (count >= 3) return "High";
+  if (count === 2) return "Medium";
+  if (count === 1) return "Low";
+  return "None";
+}
 function formatValue(val) {
   if (Array.isArray(val)) {
     return `<ul>${val.map(v => `<li>${v}</li>`).join("")}</ul>`;
@@ -129,14 +135,19 @@ async function loadMaster() {
         const valueHtml = formatValue(rawVal);
 
         const srcIds = sources[field] || [];
+        const count = srcIds.length;
+        const confidence = computeConfidence(count);
+        
         const srcLabels = srcIds
-          .map((id, idx) => `${idx + 1}) ${FILE_LABELS[id] || id}`)
+          .map((id, i) => `${i + 1}) ${FILE_LABELS[id] || id}`)
           .join(", ");
 
         html += `
           <div class="field">
             <strong>${field}:</strong> ${valueHtml}
-            <span class="sources"><em>Source(s): ${srcLabels || "n/a"}</em></span>
+            <span class="sources">
+              <em>Source(s): ${srcLabels || "n/a"} | Confidence: ${confidence}</em>
+            </span>
           </div>
         `;
       });
