@@ -11,6 +11,14 @@
     .sources { font-size: 12px; color: #666; margin-left: 8px; }
     pre { margin: 4px 0 0 0; white-space: pre-wrap; }
   </style>
+
+  <style>
+    .confidence-high { color: green; font-weight: bold; }
+    .confidence-medium { color: orange; }
+    .confidence-low { color: #b45309; }
+    .confidence-none { color: #999; }
+  </style>
+  
 </head>
 <body>
 
@@ -142,14 +150,23 @@ async function loadMaster() {
           .map((id, i) => `${i + 1}) ${FILE_LABELS[id] || id}`)
           .join(", ");
 
+        const confidenceClass =
+          confidence === "High" ? "confidence-high" :
+          confidence === "Medium" ? "confidence-medium" :
+          confidence === "Low" ? "confidence-low" :
+          "confidence-none";
+        
         html += `
           <div class="field">
             <strong>${field}:</strong> ${valueHtml}
             <span class="sources">
-              <em>Source(s): ${srcLabels || "n/a"} | Confidence: ${confidence}</em>
+              <em>
+                Source(s): ${srcLabels || "n/a"} |
+                <span class="${confidenceClass}">Confidence: ${confidence}</span>
+              </em>
             </span>
           </div>
-        `;
+        `;  
       });
     }
 
