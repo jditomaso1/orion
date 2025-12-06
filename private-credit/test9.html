@@ -362,15 +362,15 @@
           html += `
             <div class="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
     
-              <!-- Label -->
-              <div class="text-sm font-medium text-gray-600">
-                ${field}
-              </div>
-    
-              <!-- Value -->
-              <div class="text-sm font-normal text-gray-900 mt-0.5">
-                ${formatted}
-              </div>
+                <!-- Label (bold) -->
+                <div class="text-base font-semibold text-gray-900">
+                  ${field}
+                </div>
+                
+                <!-- Value (normal) -->
+                <div class="text-sm font-normal text-gray-700 mt-0.5">
+                  ${formatted}
+                </div>
     
               <!-- Sources + Confidence inline -->
               <div class="mt-1.5 text-xs text-gray-500">
