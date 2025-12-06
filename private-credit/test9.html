@@ -354,25 +354,29 @@
             .map((id, i) => `${i + 1}) ${FILE_LABELS[id] || id}`)
             .join(", ");
     
+          // 🔹 HERE – build Sources + (Confidence) on one line
+          const sourceLine =
+            `Source(s): ${srcLabels || "n/a"} ` +
+            `<span class="${confidenceClass}">(${confidence})</span>`;
+    
           html += `
             <div class="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
-          
+    
               <!-- Label -->
               <div class="text-sm font-medium text-gray-600">
                 ${field}
               </div>
-          
+    
               <!-- Value -->
-              <div class="text-sm font-semibold text-gray-900 mt-0.5">
+              <div class="text-sm font-normal text-gray-900 mt-0.5">
                 ${formatted}
               </div>
-          
-              <!-- Sources + Confidence -->
-              <div class="mt-1.5 flex items-center justify-between text-xs text-gray-500">
-                <span>Source(s): ${srcLabels || "n/a"}</span>
-                <span class="${confidenceClass}">${confidence}</span>
+    
+              <!-- Sources + Confidence inline -->
+              <div class="mt-1.5 text-xs text-gray-500">
+                ${sourceLine}
               </div>
-          
+    
             </div>
           `;
         });
