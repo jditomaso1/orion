@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion — Master Tearsheet</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Base Styling -->
+  <style>
+    body { background: #f5f6f8; font-family: 'Poppins', sans-serif; }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff !important; }
+      a[href]:after { content: ""; }
+    }
+
+    /* Confidence colors (reused from Section 1) */
+    .confidence-high   { color: #16a34a; font-weight: 600; }  /* green */
+    .confidence-medium { color: #ea580c; font-weight: 500; }  /* orange */
+    .confidence-low    { color: #b45309; }                    /* dark amber */
+    .confidence-none   { color: #9ca3af; }                    /* gray */
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden")
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 space-y-8">
+
+    <!-- TITLE / HEADER -->
+    <section>
+      <h1 id="deal-title" class="text-3xl font-semibold tracking-tight flex items-center gap-2">
+        <i data-lucide="file-text" class="w-6 h-6"></i>
+        Master Tearsheet
+      </h1>
+      <p id="deal-subtitle" class="mt-1 text-sm text-gray-600">
+        Loading deal information…
+      </p>
+
+      <div id="deal-tags" class="mt-3 flex flex-wrap gap-2 text-xs">
+        <!-- Optional dynamic tags will be injected here -->
+      </div>
+    </section>
+
+    <!-- METRIC CARDS (dynamic) -->
+    <section id="metrics-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <!-- Filled dynamically from master_summary -->
+    </section>
+
+    <!-- MASTER TEARSHEET + RIGHT SIDEBAR -->
+    <section class="grid grid-cols-12 gap-4">
+      <!-- LEFT: MASTER TEARSHEET FIELDS -->
+      <div class="col-span-12 lg:col-span-8">
+        <div class="rounded-2xl border bg-white p-4 space-y-4">
+          <h2 class="text-lg font-medium flex items-center gap-2">
+            <i data-lucide="notebook-text" class="w-5 h-5"></i>
+            Master Tearsheet Fields
+          </h2>
+
+          <p class="text-xs text-gray-500">
+            Aggregated across CIM, Credit Agreement, Compliance Certificate, Lender Presentation, and Notes.
+            Each field shows the merged value, source documents, and confidence based on cross-document support.
+          </p>
+
+          <!-- Dynamic field render target -->
+          <div id="master-fields" class="mt-3 space-y-6 text-sm text-gray-800"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <aside class="col-span-12 lg:col-span-4 space-y-4">
+        <!-- Strategy Recommendation (you can later wire this to your strategy engine) -->
+        <div class="rounded-2xl border bg-white p-4">
+          <h3 class="text-sm font-medium flex items-center gap-2">
+            <i data-lucide="brain" class="w-4 h-4"></i> Strategy Recommendation
+          </h3>
+          <div id="strategy-box"
+               class="mt-2 p-3 text-sm bg-purple-50 border rounded-xl text-purple-900">
+            Loading…
+          </div>
+        </div>
+
+        <!-- Exports (hook these up to your backend later if needed) -->
+        <div class="rounded-2xl border bg-white p-4">
+          <h3 class="text-sm font-medium flex items-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i> Export
+          </h3>
+          <div class="mt-2 flex flex-wrap gap-2 text-xs">
+            <button class="border px-2 py-1 rounded-lg hover:bg-gray-50" id="btn-json">JSON</button>
+            <button class="border px-2 py-1 rounded-lg hover:bg-gray-50" id="btn-csv">CSV</button>
+            <button class="border px-2 py-1 rounded-lg hover:bg-gray-50" id="btn-text">Text</button>
+            <button onclick="window.print()" class="border px-2 py-1 rounded-lg hover:bg-gray-50">PDF</button>
+          </div>
+        </div>
+
+        <!-- FILES USED -->
+        <div class="rounded-2xl border bg-white p-4">
+          <h3 class="text-sm font-medium flex items-center gap-2">
+            <i data-lucide="paperclip" class="w-4 h-4"></i> Files Used
+          </h3>
+          <ul id="files-used-list" class="mt-2 text-sm text-gray-700 space-y-1">
+            <!-- Filled dynamically from FILE_LABELS -->
+          </ul>
+        </div>
+      </aside>
+    </section>
+
+    <!-- FINAL JSON VIEWER -->
+    <section class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 lg:col-span-8">
+        <div class="rounded-2xl border bg-white p-4">
+          <h2 class="text-lg font-medium flex items-center gap-2">
+            <i data-lucide="code" class="w-5 h-5"></i> Final Master JSON
+          </h2>
+          <details class="mt-2 text-xs">
+            <summary class="cursor-pointer text-gray-600">Show JSON</summary>
+            <pre id="json-output"
+                 class="mt-3 p-3 bg-gray-100 rounded-lg overflow-x-auto text-[11px] leading-snug">
+{ /* waiting for /company-master */ }
+            </pre>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- (You can keep your comments / data room / comms sections below if needed) -->
+
+  </main>
+
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+
+  <!-- METRIC CARD WEB COMPONENT -->
+  <script>
+    customElements.define('metric-card', class extends HTMLElement {
+      connectedCallback() {
+        const label = this.getAttribute("label") || "";
+        const value = this.getAttribute("value") || "";
+        this.innerHTML = `
+          <div class="rounded-2xl border bg-white p-3">
+            <div class="text-xs text-gray-500">${label}</div>
+            <div class="text-lg font-semibold text-gray-900">${value}</div>
+          </div>`;
+      }
+    });
+  </script>
+
+  <!-- Ask Orion Bot Include -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/private-credit/includes/orion-chat.html");
+      const html = await res.text();
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) {
+          newScript.src = oldScript.src;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+  <!-- MASTER TEARSHEET LOGIC (from Section 1, adapted to Tailwind dashboard) -->
+  <script>
+    // 🔹 Labels for each file_id
+    const FILE_LABELS = {
+      "1VvsuFbx1MrMu3TlXwvjbc4WNFQNdvu5Q": "CIM",
+      "1KOQxcc2kjBPfefREAv8d3Rf6KxwT25oz": "Credit Agreement",
+      "1aN6zQV9NXJ8pO2e-o-rhOHyZsyUJDavl": "Lender Presentation",
+      "1oSxqCTu64EytukWH8bMKQu53WfrIAoet": "Notes",
+      "10623__NqsTWh83fROlLhYeZUinFfOPnZ": "Compliance Certificate"
+    };
+
+    // 🔹 Canonical field & section schema
+    const FIELD_SCHEMA = {
+      sections: {
+        "Deal Overview": [
+          "Deal Title",
+          "Company Name",
+          "Industry",
+          "Business Description",
+          "Ownership",
+          "Sponsor",
+          "Deal Status"
+        ],
+        "Financials": [
+          "Revenue (LTM, $mm)",
+          "EBITDA (LTM, $mm)",
+          "EBITDA Margin (%)",
+          "CapEx (LTM, $mm)",
+          "Cash on Balance Sheet ($mm)"
+        ],
+        "Structure & Terms": [
+          "Debt Amount (New Loan, $mm)",
+          "Use of Proceeds",
+          "Term (Years)",
+          "Interest Rate / Pricing",
+          "Structure",
+          "Equity Contribution (%)",
+          "Leverage (Gross)",
+          "Leverage (Net)",
+          "Security",
+          "Covenants"
+        ],
+        "Analysis & Commentary": [
+          "Key Strengths",
+          "Key Risk Factors",
+          "Notes / Commentary"
+        ]
+      }
+    };
+
+    function computeConfidence(count) {
+      if (count >= 3) return "High";
+      if (count === 2) return "Medium";
+      if (count === 1) return "Low";
+      return "None";
+    }
+
+    function formatValue(val) {
+      if (Array.isArray(val)) {
+        if (!val.length) return "Not Provided";
+        return val.map(v => String(v)).join(" • ");
+      }
+      if (val && typeof val === "object") {
+        return JSON.stringify(val, null, 2);
+      }
+      const s = String(val ?? "");
+      return s.trim() === "" ? "Not Provided" : s;
+    }
+
+    function renderMetrics(summary) {
+      const container = document.getElementById("metrics-grid");
+      if (!container) return;
+
+      const rev  = summary["Revenue (LTM, $mm)"];
+      const ebitda = summary["EBITDA (LTM, $mm)"];
+      const margin = summary["EBITDA Margin (%)"];
+      const capex = summary["CapEx (LTM, $mm)"];
+      const cash  = summary["Cash on Balance Sheet ($mm)"];
+      const debt  = summary["Debt Amount (New Loan, $mm)"];
+      const term  = summary["Term (Years)"];
+      const pricing = summary["Interest Rate / Pricing"];
+      const levG = summary["Leverage (Gross)"];
+      const levN = summary["Leverage (Net)"];
+      const eq   = summary["Equity Contribution (%)"];
+
+      const metrics = [
+        { label: "Revenue (LTM)",     value: rev     ? `$${rev}mm`   : "—" },
+        { label: "EBITDA (LTM)",      value: ebitda  ? `$${ebitda}mm`: "—" },
+        { label: "EBITDA Margin",     value: margin  ? `${margin}%`  : "—" },
+        { label: "CapEx (LTM)",       value: capex   ? `$${capex}mm` : "—" },
+        { label: "Cash",              value: cash    ? `$${cash}mm`  : "—" },
+        { label: "Debt (New)",        value: debt    ? `$${debt}mm`  : "—" },
+        { label: "Term",              value: term    || "—" },
+        { label: "Pricing",           value: pricing || "—" },
+        { label: "Gross Leverage",    value: levG    ? `${levG}x`    : "—" },
+        { label: "Net Leverage",      value: levN    ? `${levN}x`    : "—" },
+        { label: "Equity Contrib.",   value: eq      ? `${eq}%`      : "—" }
+      ];
+
+      container.innerHTML = metrics.map(m => `
+        <div class="rounded-2xl border bg-white p-3">
+          <div class="text-xs text-gray-500">${m.label}</div>
+          <div class="text-lg font-semibold text-gray-900">${m.value}</div>
+        </div>
+      `).join("");
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderMasterFields(summary, sources, counts) {
+      const container = document.getElementById("master-fields");
+      if (!container) return;
+
+      let html = "";
+
+      for (const [sectionName, fieldList] of Object.entries(FIELD_SCHEMA.sections)) {
+        html += `
+          <div class="space-y-2">
+            <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-2">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>${sectionName}
+            </h3>
+        `;
+
+        fieldList.forEach(field => {
+          const rawVal = Object.prototype.hasOwnProperty.call(summary, field)
+            ? summary[field]
+            : "Not Provided";
+
+          const formatted = formatValue(rawVal);
+
+          const srcIds = sources[field] || [];
+          const count = counts[field] || srcIds.length || 0;
+          const confidence = computeConfidence(count);
+
+          const confidenceClass =
+            confidence === "High"   ? "confidence-high"   :
+            confidence === "Medium" ? "confidence-medium" :
+            confidence === "Low"    ? "confidence-low"    :
+                                      "confidence-none";
+
+          const srcLabels = srcIds
+            .map((id, i) => `${i + 1}) ${FILE_LABELS[id] || id}`)
+            .join(", ");
+
+          html += `
+            <div class="border rounded-xl px-3 py-2 bg-white/50">
+              <div class="flex justify-between items-start gap-4">
+                <div class="text-xs font-medium text-gray-500">${field}</div>
+                <div class="text-sm text-gray-900 text-right whitespace-pre-wrap max-w-[60%]">
+                  ${formatted}
+                </div>
+              </div>
+              <div class="mt-1 text-[11px] text-gray-500 flex justify-between items-center">
+                <span>Source(s): ${srcLabels || "n/a"}</span>
+                <span class="${confidenceClass}">${confidence}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        html += `</div>`;
+      }
+
+      container.innerHTML = html || "<div class='text-xs text-gray-500'>No fields returned from /company-master.</div>";
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderFilesUsed() {
+      const ul = document.getElementById("files-used-list");
+      if (!ul) return;
+      const items = Object.values(FILE_LABELS);
+      ul.innerHTML = items.map((name, idx) =>
+        `<li>${idx + 1}) ${name}</li>`
+      ).join("");
+    }
+
+    function renderHeader(summary) {
+      const titleEl = document.getElementById("deal-title");
+      const subtitleEl = document.getElementById("deal-subtitle");
+      const tagsEl = document.getElementById("deal-tags");
+
+      const title = summary["Deal Title"] || summary["Company Name"] || "Master Tearsheet";
+      const debt = summary["Debt Amount (New Loan, $mm)"];
+      const security = summary["Security"];
+      const industry = summary["Industry"];
+      const sponsor = summary["Sponsor"];
+      const ownership = summary["Ownership"];
+
+      if (titleEl) titleEl.textContent = title;
+
+      let subtitle = "";
+      if (debt) subtitle += `$${debt}mm `;
+      if (security) subtitle += security;
+      subtitleEl.textContent = subtitle || "Aggregated private credit deal profile";
+
+      const tags = [];
+      if (industry) tags.push(industry);
+      if (sponsor) tags.push(sponsor);
+      if (ownership) tags.push(ownership);
+
+      tagsEl.innerHTML = tags.map(t => `
+        <span class="inline-flex text-xs px-2 py-1 rounded-full border bg-gray-50 text-gray-700">
+          ${t}
+        </span>
+      `).join("");
+    }
+
+    function renderStrategy(summary) {
+      const box = document.getElementById("strategy-box");
+      if (!box) return;
+
+      const term = summary["Term (Years)"];
+      const lev = summary["Leverage (Gross)"];
+      const cov = (summary["Covenants"] || "").toString().toLowerCase();
+
+      let text = "Flexible SMA / Hybrid Strategy";
+
+      const termNum = parseFloat(term);
+      const levNum = parseFloat(lev);
+
+      if (!isNaN(termNum) && !isNaN(levNum)) {
+        if (termNum >= 7 && levNum > 5 && cov.includes("covenant-lite")) {
+          text = "Allocate to CLO B-/BB tranche profile";
+        } else if (levNum <= 3.0) {
+          text = "Senior Secured Direct Lending (low leverage)";
+        }
+      }
+
+      box.textContent = text;
+    }
+
+    function wireExports(summary) {
+      const jsonBtn = document.getElementById("btn-json");
+      const csvBtn  = document.getElementById("btn-csv");
+      const textBtn = document.getElementById("btn-text");
+      const jsonStr = JSON.stringify(summary, null, 2);
+
+      if (jsonBtn) {
+        jsonBtn.onclick = () => downloadBlob(jsonStr, "summary.json", "application/json");
+      }
+
+      if (csvBtn) {
+        const headers = Object.keys(summary);
+        const row = headers.map(h => `"${String(summary[h]).replace(/"/g, '""')}"`).join(",");
+        const csv = headers.join(",") + "\n" + row;
+        csvBtn.onclick = () => downloadBlob(csv, "summary.csv", "text/csv");
+      }
+
+      if (textBtn) {
+        let txt = "Private Credit Deal Summary\n============================\n\n";
+        for (const [k, v] of Object.entries(summary)) {
+          txt += `${k}:\n${typeof v === "object" ? JSON.stringify(v, null, 2) : v}\n\n`;
+        }
+        textBtn.onclick = () => downloadBlob(txt, "summary.txt", "text/plain");
+      }
+    }
+
+    function downloadBlob(data, filename, type) {
+      const blob = new Blob([data], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function loadMaster() {
+      const payload = {
+        file_ids: [
+          "1VvsuFbx1MrMu3TlXwvjbc4WNFQNdvu5Q", // CIM
+          "10623__NqsTWh83fROlLhYeZUinFfOPnZ", // Compliance Certificate
+          "1KOQxcc2kjBPfefREAv8d3Rf6KxwT25oz", // Credit Agreement
+          "1aN6zQV9NXJ8pO2e-o-rhOHyZsyUJDavl", // Lender Presentation
+          "1oSxqCTu64EytukWH8bMKQu53WfrIAoet"  // Notes
+        ]
+      };
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/company-master", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          console.error("HTTP error", res.status, await res.text());
+          document.getElementById("deal-subtitle").textContent =
+            `Request failed: ${res.status}`;
+          return;
+        }
+
+        const data = await res.json();
+        const summary = data.master_summary || {};
+        const sources = data.field_sources || {};
+        const counts  = data.field_counts || {};
+
+        // Core renders
+        renderHeader(summary);
+        renderMetrics(summary);
+        renderMasterFields(summary, sources, counts);
+        renderFilesUsed();
+        renderStrategy(summary);
+        wireExports(summary);
+
+        // JSON output
+        const jsonEl = document.getElementById("json-output");
+        if (jsonEl) {
+          jsonEl.textContent = JSON.stringify(summary, null, 2);
+        }
+
+      } catch (err) {
+        console.error("Error calling /company-master:", err);
+        const sub = document.getElementById("deal-subtitle");
+        if (sub) sub.textContent = `JavaScript error: ${err}`;
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", loadMaster);
+  </script>
+</body>
+</html>
