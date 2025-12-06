@@ -129,7 +129,9 @@ async function loadMaster() {
         const valueHtml = formatValue(rawVal);
 
         const srcIds = sources[field] || [];
-        const srcLabels = srcIds.map(id => FILE_LABELS[id] || id).join(", ");
+        const srcLabels = srcIds
+          .map((id, idx) => `${idx + 1}) ${FILE_LABELS[id] || id}`)
+          .join(", ");
 
         html += `
           <div class="field">
