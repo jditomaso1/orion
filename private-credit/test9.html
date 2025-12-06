@@ -356,18 +356,19 @@
     
           html += `
             <div class="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
-              <!-- Top row: label + value -->
-              <div class="flex items-baseline justify-between gap-4">
-                <div class="text-xs font-medium text-gray-500">
-                  ${field}
-                </div>
-                <div class="text-sm font-semibold text-gray-900 text-right">
-                  ${formatted}
-                </div>
+          
+              <!-- Label -->
+              <div class="text-[11px] font-medium text-gray-500">
+                ${field}
               </div>
-    
-              <!-- Bottom row: sources + confidence -->
-              <div class="mt-1 flex items-center justify-between text-[11px] text-gray-500">
+          
+              <!-- Value -->
+              <div class="mt-1 text-base font-semibold text-gray-900">
+                ${formatted}
+              </div>
+          
+              <!-- Sources + Confidence -->
+              <div class="mt-2 flex items-center justify-between text-[11px] text-gray-500">
                 <span>Source(s): ${srcLabels || "n/a"}</span>
                 <span class="${confidenceClass}">${confidence}</span>
               </div>
