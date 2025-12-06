@@ -551,55 +551,65 @@
         if (sub) sub.textContent = `JavaScript error: ${err}`;
       }
     }
-    // Simple modal container
-    const snippetModal = document.createElement("div");
-    snippetModal.id = "snippet-modal";
-    snippetModal.className =
-      "fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden";
-    snippetModal.innerHTML = `
-      <div class="bg-white rounded-xl shadow-xl max-w-xl w-full p-4 text-sm">
-        <div id="snippet-title" class="font-semibold mb-2"></div>
-        <pre id="snippet-body" class="whitespace-pre-wrap text-xs text-gray-800 max-h-80 overflow-y-auto"></pre>
-        <div class="mt-3 text-right">
-          <button id="snippet-close"
-            class="px-3 py-1 border rounded-lg text-xs hover:bg-gray-50">
-            Close
-          </button>
+    // Simple modal + snippet logic
+    function setupSnippetModal() {
+      // Create modal once
+      const snippetModal = document.createElement("div");
+      snippetModal.id = "snippet-modal";
+      snippetModal.className =
+        "fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden";
+      snippetModal.innerHTML = `
+        <div class="bg-white rounded-xl shadow-xl max-w-xl w-full p-4 text-sm">
+          <div id="snippet-title" class="font-semibold mb-2"></div>
+          <pre id="snippet-body" class="whitespace-pre-wrap text-xs text-gray-800 max-h-80 overflow-y-auto"></pre>
+          <div class="mt-3 text-right">
+            <button id="snippet-close"
+              class="px-3 py-1 border rounded-lg text-xs hover:bg-gray-50">
+              Close
+            </button>
+          </div>
         </div>
-      </div>
-    `;
-    document.body.appendChild(snippetModal);
-    
-    document.getElementById("snippet-close").onclick = () => {
-      snippetModal.classList.add("hidden");
-    };
-    
-    // Event delegation: click on any source pill
-    document.addEventListener("click", async (e) => {
-      const btn = e.target.closest(".source-pill");
-      if (!btn) return;
-    
-      const field = btn.dataset.field;
-      const fileId = btn.dataset["fileId"];
-    
-      try {
-        const res = await fetch("http://127.0.0.1:8000/field-source-snippet", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({ field, file_id: fileId })
-        });
-    
-        const data = await res.json();
-        document.getElementById("snippet-title").textContent =
-          `${field} — ${FILE_LABELS[fileId] || fileId}`;
-        document.getElementById("snippet-body").textContent = data.snippet || "No data.";
-        snippetModal.classList.remove("hidden");
-      } catch (err) {
-        console.error("Error loading snippet:", err);
-      }
+      `;
+      document.body.appendChild(snippetModal);
+
+      const closeBtn = document.getElementById("snippet-close");
+      const titleEl = document.getElementById("snippet-title");
+      const bodyEl  = document.getElementById("snippet-body");
+
+      closeBtn.onclick = () => {
+        snippetModal.classList.add("hidden");
+      };
+
+      // Event delegation: click on any source pill
+      document.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".source-pill");
+        if (!btn) return;
+
+        const field  = btn.dataset.field;
+        const fileId = btn.dataset.fileId;
+
+        try {
+          const res = await fetch("http://127.0.0.1:8000/field-source-snippet", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ field, file_id: fileId })
+          });
+
+          const data = await res.json();
+          titleEl.textContent = `${field} — ${FILE_LABELS[fileId] || fileId}`;
+          bodyEl.textContent  = data.snippet || "No data.";
+          snippetModal.classList.remove("hidden");
+        } catch (err) {
+          console.error("Error loading snippet:", err);
+        }
+      });
+    }
+
+    // When page is ready: load master + wire modal
+    window.addEventListener("DOMContentLoaded", () => {
+      loadMaster();
+      setupSnippetModal();
     });
-    
-    window.addEventListener("DOMContentLoaded", loadMaster);
   </script>
 </body>
 </html>
