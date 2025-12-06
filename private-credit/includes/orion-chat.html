@@ -23,61 +23,172 @@
 
   <!-- Chat Window -->
   <div id="orion-chat-window"
-       class="p-4 overflow-y-auto h-[calc(100%-120px)] text-sm space-y-3">
+       class="p-4 overflow-y-auto h-[calc(100%-120px)] text-sm space-y-3 bg-[#f5f6f8]">
   </div>
 
   <!-- Input -->
-  <div class="p-4 border-t">
-    <input id="orion-input" type="text"
-           class="w-full px-3 py-2 border rounded-lg focus:outline-none"
-           placeholder="Ask a question..." />
+  <div class="p-4 border-t bg-[#f5f6f8]">
+    <div class="flex items-end gap-2 bg-white rounded-2xl px-3 py-2 border border-neutral-200">
+      <input id="orion-input" type="text"
+             class="flex-1 px-0 py-2 bg-transparent focus:outline-none text-sm"
+             placeholder="Ask Orion something like:  What is the debt amount for Pawsitive Brands?" />
+      <button id="orion-send"
+              class="px-3 py-1.5 rounded-xl text-xs bg-neutral-900 text-white hover:bg-black disabled:opacity-40">
+        Ask
+      </button>
+    </div>
+    <p class="mt-1 text-[10px] text-neutral-500">
+      Powered by FastAPI /ask-orion · expects {"question": "...", "top_k": 5}
+    </p>
   </div>
 
 </div>
 
 <!-- Ask Orion Logic -->
 <script>
-  // Elements
-  const orionBtn = document.getElementById("ask-orion-btn");
-  const orionPanel = document.getElementById("orion-chat-panel");
-  const closeOrion = document.getElementById("close-orion-panel");
-  const orionInput = document.getElementById("orion-input");
-  const orionWindow = document.getElementById("orion-chat-window");
+  // ==========================
+  // CONFIG: where FastAPI lives
+  // ==========================
 
-  // Open panel
+  // If you open the dashboard from the same origin as FastAPI, you can
+  // change this to "" and rely on relative URLs. For now, keep localhost:
+  const ORION_API_BASE = "http://127.0.0.1:8000";
+
+  async function askOrionBackend(question, topK = 5) {
+    const res = await fetch(`${ORION_API_BASE}/ask-orion`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, top_k: topK }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+
+    return res.json(); // { answer, matches }
+  }
+
+  // ==========================
+  // UI ELEMENTS
+  // ==========================
+
+  const orionBtn     = document.getElementById("ask-orion-btn");
+  const orionPanel   = document.getElementById("orion-chat-panel");
+  const closeOrion   = document.getElementById("close-orion-panel");
+  const orionInput   = document.getElementById("orion-input");
+  const orionWindow  = document.getElementById("orion-chat-window");
+  const orionSendBtn = document.getElementById("orion-send");
+
+  // ==========================
+  // OPEN / CLOSE PANEL
+  // ==========================
+
   orionBtn.onclick = () => {
     orionPanel.classList.remove("translate-x-full");
     orionInput.focus();
+
+    // Optional: first-time greeting
+    if (!orionWindow.dataset.hasGreeted) {
+      pushMessage(
+        "orion",
+        "Joe — I’m wired into /ask-orion. Ask me anything about the deals I’ve ingested."
+      );
+      orionWindow.dataset.hasGreeted = "1";
+    }
   };
 
-  // Close panel
   closeOrion.onclick = () => {
     orionPanel.classList.add("translate-x-full");
   };
 
-  // Add message to window
+  // ==========================
+  // MESSAGE HELPERS
+  // ==========================
+
+  function markdownToHtml(text) {
+    return (text || "")
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\n/g, "<br/>");
+  }
+
   function pushMessage(sender, text) {
+    const wrapper = document.createElement("div");
+    wrapper.className = sender === "user" ? "text-right" : "text-left";
+
     const bubble = document.createElement("div");
     bubble.className =
       sender === "user"
-        ? "bg-blue-100 text-blue-900 px-3 py-2 rounded-lg ml-auto max-w-[80%]"
-        : "bg-gray-100 text-gray-800 px-3 py-2 rounded-lg mr-auto max-w-[80%]";
-    bubble.textContent = text;
-    orionWindow.appendChild(bubble);
+        ? "bg-[#187ABA] text-white px-3 py-2 rounded-lg ml-auto max-w-[80%] text-sm"
+        : "bg-white text-gray-800 px-3 py-2 rounded-lg mr-auto max-w-[80%] text-sm border border-neutral-200";
+
+    bubble.innerHTML = markdownToHtml(text);
+    wrapper.appendChild(bubble);
+    orionWindow.appendChild(wrapper);
     orionWindow.scrollTop = orionWindow.scrollHeight;
+
+    return bubble;
   }
 
-  // Handle user input
-  orionInput.addEventListener("keydown", async (e) => {
-    if (e.key === "Enter" && orionInput.value.trim() !== "") {
-      const userText = orionInput.value.trim();
-      pushMessage("user", userText);
-      orionInput.value = "";
+  function pushThinking() {
+    return pushMessage("orion", "_Checking Orion…_");
+  }
 
-      // Placeholder Orion reply (replace with API call later)
-      setTimeout(() => {
-        pushMessage("orion", "I'm processing that… (API integration coming soon)");
-      }, 300);
+  // ==========================
+  // SEND HANDLER
+  // ==========================
+
+  async function handleOrionSend() {
+    const q = orionInput.value.trim();
+    if (!q) return;
+
+    // Show user bubble
+    pushMessage("user", q);
+    orionInput.value = "";
+
+    // "Thinking" bubble
+    const thinkingBubble = pushThinking();
+    orionSendBtn.disabled = true;
+
+    try {
+      const data = await askOrionBackend(q, 5);
+      const answer  = data.answer || "Orion did not return an answer.";
+      const matches = Array.isArray(data.matches) ? data.matches : [];
+
+      const sources = matches.length
+        ? "\n\n_Source files:_\n" +
+          matches
+            .map((m) => {
+              const md = m.metadata || {};
+              const fn = md.file_name || m.id || "(no id)";
+              const sc = typeof m.score === "number" ? m.score.toFixed(3) : "";
+              return `• ${fn}${sc ? "  (score " + sc + ")" : ""}`;
+            })
+            .join("\n")
+        : "\n\n_No matching vectors returned._";
+
+      const full = `**Orion:** ${answer}${sources}`;
+
+      thinkingBubble.innerHTML = markdownToHtml(full);
+      orionWindow.scrollTop = orionWindow.scrollHeight;
+    } catch (err) {
+      console.error(err);
+      thinkingBubble.innerHTML = markdownToHtml("**Error:** " + err.message);
+    } finally {
+      orionSendBtn.disabled = false;
+    }
+  }
+
+  // ==========================
+  // EVENTS
+  // ==========================
+
+  orionSendBtn.addEventListener("click", handleOrionSend);
+
+  orionInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleOrionSend();
     }
   });
 </script>
