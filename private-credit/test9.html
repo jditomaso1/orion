@@ -33,31 +33,30 @@
 <body class="flex">
 
   <!-- SIDEBAR -->
+  <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
-
   <script>
     async function injectSidebar() {
       const res = await fetch("/private-credit/sidebar.html");
       document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
-      window.toggleSection = function (id) {
+      window.toggleSection = function(id) {
         const section = document.getElementById(id);
         const icon = document.getElementById("icon-" + id);
         if (!section || !icon) return;
+
         section.classList.toggle("hidden");
-        icon.style.transform = section.classList.contains("hidden")
-          ? "rotate(0deg)"
-          : "rotate(90deg)";
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
         localStorage.setItem("sidebar-open-section", id);
       };
 
       const last = localStorage.getItem("sidebar-open-section");
       if (last) {
-        const section = document.getElementById(last);
-        const icon = document.getElementById("icon-" + last);
-        if (section && icon) {
-          section.classList.remove("hidden");
-          icon.style.transform = "rotate(90deg)";
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
         }
       }
     }
