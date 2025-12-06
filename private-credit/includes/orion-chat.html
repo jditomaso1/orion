@@ -44,6 +44,14 @@
 
 </div>
 
+<style>
+.orion-bubble {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap; /* preserves newlines + wraps long text */
+}
+</style>
+
 <!-- Ask Orion Logic -->
 <script>
   // ==========================
@@ -119,8 +127,8 @@
     const bubble = document.createElement("div");
     bubble.className =
       sender === "user"
-        ? "bg-[#187ABA] text-white px-3 py-2 rounded-lg ml-auto max-w-[80%] text-sm"
-        : "bg-white text-gray-800 px-3 py-2 rounded-lg mr-auto max-w-[80%] text-sm border border-neutral-200";
+        ? "bg-[#187ABA] text-white px-3 py-2 rounded-lg ml-auto max-w-[80%] text-sm orion-bubble"
+        : "bg-white text-gray-800 px-3 py-2 rounded-lg mr-auto max-w-[80%] text-sm border border-neutral-200 orion-bubble";
 
     bubble.innerHTML = markdownToHtml(text);
     wrapper.appendChild(bubble);
