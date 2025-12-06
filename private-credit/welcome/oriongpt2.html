@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Orion Chat — Minimal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f6f8;
+    }
+    .thin-scrollbar::-webkit-scrollbar { width: 8px; }
+    .thin-scrollbar::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 8px; }
+    .thin-scrollbar { scrollbar-width: thin; scrollbar-color: #d4d4d8 transparent; }
+
+    .typing-cursor::after {
+      content: "|";
+      animation: blink 0.7s steps(1) infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+
+<body class="h-screen flex items-center justify-center">
+
+  <div class="w-full max-w-3xl h-[80vh] bg-white rounded-3xl shadow-lg flex flex-col border border-neutral-200">
+    <!-- Header -->
+    <div class="px-5 py-3 border-b border-neutral-200 flex items-center justify-between">
+      <div>
+        <div class="text-sm font-semibold">Orion — Ask the Deal Stack</div>
+        <div class="text-xs text-neutral-500">Backed by your Pinecone + Postgres infra</div>
+      </div>
+      <div class="text-[10px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+        Connected to /ask-orion
+      </div>
+    </div>
+
+    <!-- Chat stream -->
+    <div
+      id="chatStream"
+      class="flex-1 overflow-auto thin-scrollbar px-4 py-3 space-y-3 bg-[#f5f6f8]"
+    ></div>
+
+    <!-- Input -->
+    <div class="border-t border-neutral-200 bg-[#f5f6f8] px-4 py-3">
+      <div class="flex items-end gap-2 bg-white rounded-2xl px-3 py-2 border border-neutral-200">
+        <textarea
+          id="chatInput"
+          rows="1"
+          placeholder="Ask Orion something like:  What is the debt amount for Pawsitive Brands?"
+          class="flex-1 bg-transparent outline-none resize-none text-sm max-h-32 py-[6px] leading-[1.4]"
+        ></textarea>
+        <button
+          id="sendBtn"
+          class="px-3 py-2 rounded-xl text-sm bg-neutral-900 text-white hover:bg-black disabled:opacity-40"
+        >
+          Ask
+        </button>
+      </div>
+      <p class="mt-1 text-[10px] text-neutral-500">
+        Powered by FastAPI /ask-orion · expects {"question": "...", "top_k": 5}
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // ---------- CONFIG ----------
+    const ORION_API_BASE = "http://127.0.0.1:8000";
+
+    async function askOrionBackend(question, topK = 5) {
+      const res = await fetch(`${ORION_API_BASE}/ask-orion`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, top_k: topK }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      return res.json(); // { answer, matches }
+    }
+
+    // ---------- DOM HELPERS ----------
+    const $ = (sel, root = document) => root.querySelector(sel);
+
+    const stream = $("#chatStream");
+    const input  = $("#chatInput");
+    const sendBtn = $("#sendBtn");
+
+    function md(text) {
+      return (text || "")
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\n/g, "<br/>");
+    }
+
+    function addBubble(role, html, typing = false) {
+      const row = document.createElement("div");
+      row.className = role === "user" ? "text-right" : "text-left";
+
+      const bubble = document.createElement("div");
+      bubble.className =
+        "inline-block rounded-2xl px-4 py-3 max-w-[75%] text-sm " +
+        (role === "user"
+          ? "bg-[#187ABA] text-white"
+          : "bg-white border border-neutral-200");
+
+      bubble.innerHTML = html;
+      if (typing) {
+        bubble.classList.add("typing-cursor");
+      }
+
+      row.appendChild(bubble);
+      stream.appendChild(row);
+      stream.scrollTop = stream.scrollHeight;
+
+      return bubble;
+    }
+
+    function addAssistantStreaming(text) {
+      const bubble = addBubble("assistant", "", true);
+      const raw = text || "";
+      let i = 0;
+      const speed = 12;
+
+      const type = () => {
+        if (i <= raw.length) {
+          bubble.innerHTML = md(raw.slice(0, i));
+          stream.scrollTop = stream.scrollHeight;
+          i++;
+          setTimeout(type, speed);
+        } else {
+          bubble.classList.remove("typing-cursor");
+        }
+      };
+
+      setTimeout(type, 150);
+    }
+
+    // ---------- INITIAL MESSAGE ----------
+    addAssistantStreaming("**Joe — I'm wired into /ask-orion. Fire away.**");
+
+    // ---------- MAIN SEND HANDLER ----------
+    async function handleSend() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      // show user bubble
+      addBubble("user", md(text));
+      input.value = "";
+
+      // temporary "thinking" bubble
+      const thinkingBubble = addBubble(
+        "assistant",
+        md("_Checking Orion…_"),
+        true
+      );
+      sendBtn.disabled = true;
+
+      try {
+        const data = await askOrionBackend(text, 5);
+        const answer = data.answer || "Orion did not return an answer.";
+        const matches = Array.isArray(data.matches) ? data.matches : [];
+
+        // Build sources section
+        const sources = matches.length
+          ? "\n\n_Source files:_\n" +
+            matches
+              .map((m) => {
+                const fn = (m.metadata && m.metadata.file_name) || m.id || "(no id)";
+                const sc = (typeof m.score === "number") ? m.score.toFixed(3) : "";
+                return `• ${fn}${sc ? "  (score " + sc + ")" : ""}`;
+              })
+              .join("\n")
+          : "\n\n_No matching vectors returned._";
+
+        const fullAnswer = `**Orion:** ${answer}${sources}`;
+
+        // replace thinking bubble content
+        thinkingBubble.classList.remove("typing-cursor");
+        thinkingBubble.innerHTML = md(fullAnswer);
+        stream.scrollTop = stream.scrollHeight;
+      } catch (err) {
+        console.error(err);
+        thinkingBubble.classList.remove("typing-cursor");
+        thinkingBubble.innerHTML = md("**Error:** " + err.message);
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    // ---------- EVENTS ----------
+    sendBtn.addEventListener("click", handleSend);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    });
+  </script>
+</body>
+</html>
