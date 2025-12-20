@@ -1,0 +1,274 @@
+# edgar_ingest_streamlit.py
+import re
+import json
+import time
+import requests
+import streamlit as st
+from bs4 import BeautifulSoup
+import pandas as pd
+
+# -----------------------------
+# CONFIG
+# -----------------------------
+SEC_HEADERS = {
+    # REQUIRED by SEC: identify yourself (email + org)
+    "User-Agent": "OrionEdgarIngest/1.0 (contact: youremail@domain.com)"
+}
+
+TICKER_MAP_URL = "https://www.sec.gov/files/company_tickers.json"  # ticker -> cik
+SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik10}.json"
+
+ARCHIVES_BASE = "https://www.sec.gov/Archives/edgar/data/{cik}/{acc_nodash}/{filename}"
+FOLDER_INDEX_JSON = "https://www.sec.gov/Archives/edgar/data/{cik}/{acc_nodash}/index.json"
+
+
+# -----------------------------
+# HELPERS
+# -----------------------------
+@st.cache_data(show_spinner=False)
+def load_ticker_map():
+    """
+    Loads SEC's ticker->CIK mapping into dict: { "AAPL": "0000320193", ... }
+    """
+    r = requests.get(TICKER_MAP_URL, headers=SEC_HEADERS, timeout=30)
+    r.raise_for_status()
+    data = r.json()
+
+    # company_tickers.json is a dict keyed by integer-ish strings
+    out = {}
+    for _, row in data.items():
+        ticker = row.get("ticker", "").upper().strip()
+        cik = str(row.get("cik_str", "")).strip()
+        if ticker and cik.isdigit():
+            out[ticker] = cik.zfill(10)
+    return out
+
+
+def get_cik10_for_ticker(ticker: str) -> str:
+    ticker = (ticker or "").upper().strip()
+    m = load_ticker_map()
+    return m.get(ticker, "")
+
+
+@st.cache_data(show_spinner=False)
+def get_company_submissions(cik10: str) -> dict:
+    url = SUBMISSIONS_URL.format(cik10=cik10)
+    r = requests.get(url, headers=SEC_HEADERS, timeout=30)
+    r.raise_for_status()
+    return r.json()
+
+
+def list_recent_filings(submissions: dict, form_filter: str, limit: int = 50):
+    """
+    Returns list of dicts with key metadata for recent filings.
+    """
+    recent = submissions.get("filings", {}).get("recent", {})
+    forms = recent.get("form", [])
+    accs = recent.get("accessionNumber", [])
+    filing_dates = recent.get("filingDate", [])
+    primary_docs = recent.get("primaryDocument", [])
+    report_dates = recent.get("reportDate", [])
+
+    rows = []
+    for i in range(min(len(forms), limit)):
+        if form_filter and forms[i] != form_filter:
+            continue
+
+        acc = accs[i]
+        cik10 = str(submissions.get("cik", "")).zfill(10)  # numeric cik
+        cik_nolead = str(int(cik10))  # archives use no leading zeros
+        acc_nodash = acc.replace("-", "")
+        rows.append({
+            "form": forms[i],
+            "filingDate": filing_dates[i],
+            "reportDate": report_dates[i] if i < len(report_dates) else "",
+            "accessionNumber": acc,
+            "acc_nodash": acc_nodash,
+            "primaryDocument": primary_docs[i],
+            "cik10": cik10,
+            "cik_nolead": cik_nolead,
+        })
+    return rows
+
+
+def fetch_html(url: str) -> str:
+    r = requests.get(url, headers=SEC_HEADERS, timeout=30)
+    r.raise_for_status()
+    return r.text
+
+
+def html_to_clean_text(html: str) -> str:
+    """
+    Minimal cleaner: removes scripts/styles, pulls visible text.
+    For better results, you can add Readability or a custom EDGAR cleaner.
+    """
+    soup = BeautifulSoup(html, "lxml")
+
+    for tag in soup(["script", "style", "noscript"]):
+        tag.decompose()
+
+    text = soup.get_text(separator="\n")
+    # normalize
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    text = re.sub(r"[ \t]{2,}", " ", text)
+    return text.strip()
+
+
+def list_filing_folder_files(cik_nolead: str, acc_nodash: str):
+    """
+    Uses /index.json to list all files in the filing folder.
+    """
+    url = FOLDER_INDEX_JSON.format(cik=cik_nolead, acc_nodash=acc_nodash)
+    r = requests.get(url, headers=SEC_HEADERS, timeout=30)
+    r.raise_for_status()
+    data = r.json()
+    items = data.get("directory", {}).get("item", [])
+    # item entries have: name, type, size, last-modified
+    return items
+
+
+def pick_exhibit_10_files(items):
+    """
+    Heuristic: choose files that look like Exhibit 10.* or credit agreement exhibits.
+    You can expand rules as needed.
+    """
+    names = [it.get("name", "") for it in items]
+    candidates = []
+    for n in names:
+        nl = n.lower()
+        if any(k in nl for k in ["ex10", "exhibit10", "ex-10", "ex_10", "credit", "loan", "revolving", "termloan"]):
+            if nl.endswith((".htm", ".html", ".txt")):
+                candidates.append(n)
+    # de-dupe while preserving order
+    seen = set()
+    out = []
+    for c in candidates:
+        if c not in seen:
+            seen.add(c)
+            out.append(c)
+    return out
+
+
+# -----------------------------
+# STREAMLIT UI
+# -----------------------------
+st.set_page_config(page_title="Orion EDGAR Ingest", layout="wide")
+st.title("Orion — EDGAR Search & HTML Ingest")
+
+colA, colB, colC = st.columns([2, 2, 2])
+
+with colA:
+    ticker = st.text_input("Ticker", value="PLAY", help="Example: PLAY, AAL, CZR, DAL, MAR")
+with colB:
+    form = st.selectbox("Filing Type", ["10-K", "10-Q", "8-K"], index=1)
+with colC:
+    limit = st.number_input("Max filings to scan", min_value=10, max_value=200, value=60, step=10)
+
+include_exhibits = st.checkbox("Try to find Exhibit 10.x / credit docs in the filing folder", value=True)
+
+if st.button("Search EDGAR"):
+    cik10 = get_cik10_for_ticker(ticker)
+    if not cik10:
+        st.error("Could not find CIK for that ticker.")
+        st.stop()
+
+    submissions = get_company_submissions(cik10)
+    filings = list_recent_filings(submissions, form_filter=form, limit=int(limit))
+
+    if not filings:
+        st.warning("No filings found for that filter in the scanned window.")
+        st.stop()
+
+    st.subheader(f"Results for {ticker.upper()} ({form})")
+    df = pd.DataFrame([{
+        "Filing Date": f["filingDate"],
+        "Report Date": f["reportDate"],
+        "Form": f["form"],
+        "Accession": f["accessionNumber"],
+        "Primary Doc": f["primaryDocument"],
+    } for f in filings])
+
+    st.dataframe(df, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+    st.subheader("Ingest a filing")
+
+    selected_acc = st.selectbox(
+        "Choose accession to ingest",
+        options=[f["accessionNumber"] for f in filings]
+    )
+    selected = next(f for f in filings if f["accessionNumber"] == selected_acc)
+
+    filing_html_url = ARCHIVES_BASE.format(
+        cik=selected["cik_nolead"],
+        acc_nodash=selected["acc_nodash"],
+        filename=selected["primaryDocument"]
+    )
+
+    st.write("Primary filing HTML:", filing_html_url)
+
+    ingest_primary = st.button("Ingest Primary Filing (HTML)")
+
+    exhibit_choice = None
+    exhibit_url = None
+
+    if include_exhibits:
+        try:
+            items = list_filing_folder_files(selected["cik_nolead"], selected["acc_nodash"])
+            exhibit_candidates = pick_exhibit_10_files(items)
+            if exhibit_candidates:
+                exhibit_choice = st.selectbox("Optional: choose an exhibit-like file to ingest", ["(none)"] + exhibit_candidates)
+                if exhibit_choice != "(none)":
+                    exhibit_url = ARCHIVES_BASE.format(
+                        cik=selected["cik_nolead"],
+                        acc_nodash=selected["acc_nodash"],
+                        filename=exhibit_choice
+                    )
+                    st.write("Exhibit URL:", exhibit_url)
+            else:
+                st.info("No obvious Exhibit 10 / credit doc candidates found in the filing folder.")
+        except Exception as e:
+            st.warning(f"Could not read filing folder index.json (sometimes blocked/changed). Details: {e}")
+
+    ingest_exhibit = st.button("Ingest Selected Exhibit (HTML)") if exhibit_url else False
+
+    def run_ingest(target_url: str, meta: dict):
+        html = fetch_html(target_url)
+        clean_text = html_to_clean_text(html)
+
+        st.success("Ingest complete. Clean text ready for Orion extraction.")
+        st.write(f"Characters extracted: {len(clean_text):,}")
+
+        # ---- Hook into Orion here ----
+        # Example:
+        # structured = orion_extract(clean_text, meta=meta)
+        # st.json(structured)
+
+        st.text_area("Preview (first ~5k chars)", clean_text[:5000], height=250)
+
+        return clean_text
+
+    if ingest_primary:
+        meta = {
+            "source_type": "EDGAR_HTML_PRIMARY",
+            "ticker": ticker.upper(),
+            "cik": selected["cik_nolead"],
+            "form": selected["form"],
+            "filing_date": selected["filingDate"],
+            "accession": selected["accessionNumber"],
+            "url": filing_html_url,
+        }
+        run_ingest(filing_html_url, meta)
+
+    if ingest_exhibit and exhibit_url:
+        meta = {
+            "source_type": "EDGAR_HTML_EXHIBIT",
+            "ticker": ticker.upper(),
+            "cik": selected["cik_nolead"],
+            "form": selected["form"],
+            "filing_date": selected["filingDate"],
+            "accession": selected["accessionNumber"],
+            "exhibit_filename": exhibit_choice,
+            "url": exhibit_url,
+        }
+        run_ingest(exhibit_url, meta)
