@@ -158,58 +158,38 @@
 
     async function loadFilings() {
       $("out").innerHTML = "";
-      const ticker = $("ticker").value;
-      const wanted = new Set($("forms").value.split(",").map(s => s.trim().toUpperCase()));
+      const ticker = $("ticker").value.trim().toUpperCase();
+      const forms = $("forms").value;   // keep as "10-K,10-Q,8-K" etc
       const limit = Number($("limit").value || 25);
-
-      if (!ticker.trim()) return renderError("Enter a ticker.");
-
+    
+      if (!ticker) return renderError("Enter a ticker.");
+    
       try {
-        setStatus("1/3: Looking up CIK from ticker…");
-        const hit = await tickerToCIK(ticker);
-        if (!hit) return renderError(`Could not find CIK for ticker: ${ticker.toUpperCase()}`);
-
-        const cik10 = padCIK(hit.cik);
-
-        setStatus("2/3: Fetching SEC submissions JSON…");
-        const subUrl = `https://data.sec.gov/submissions/CIK${cik10}.json`;
-        const sub = await fetchJSON(subUrl);
-
-        const filings = sub?.filings?.recent;
-        if (!filings) return renderError("SEC submissions JSON had no recent filings block.");
-
-        // recent arrays are parallel arrays
-        const forms = filings.form || [];
-        const dates = filings.filingDate || [];
-        const accessions = filings.accessionNumber || [];
-        const primaryDocs = filings.primaryDocument || [];
-
-        setStatus("3/3: Filtering + building links…");
-
-        const rows = [];
-        for (let i = 0; i < forms.length; i++) {
-          const form = (forms[i] || "").toUpperCase();
-          if (!filterForms(form, wanted)) continue;
-
-          const accession = accessions[i];
-          const primaryDoc = primaryDocs[i];
-          const filed = dates[i];
-
-          if (!accession || !primaryDoc) continue;
-
-          const { indexUrl, primaryUrl } = buildFilingLinks(cik10, accession, primaryDoc);
-          rows.push({ filed, form, accession, indexUrl, primaryUrl });
-
-          if (rows.length >= limit) break;
+        setStatus("Fetching from Orion API…");
+    
+        const url = new URL("/api/sec-edgar", window.location.origin);
+        url.searchParams.set("ticker", ticker);
+        url.searchParams.set("forms", forms);
+        url.searchParams.set("limit", String(limit));
+    
+        const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
+        const data = await res.json();
+    
+        if (!res.ok) {
+          renderError(data?.error || `HTTP ${res.status}`);
+          setStatus("Failed.");
+          return;
         }
-
-        renderTable(sub.name || hit.title || ticker.toUpperCase(), cik10, rows);
+    
+        const rows = data.rows || [];
+        renderTable(data.company || ticker, data.cik10 || "—", rows);
         setStatus("Done.");
       } catch (e) {
         renderError(`Error: ${e.message}`);
         setStatus("Failed.");
       }
     }
+
 
     $("go").addEventListener("click", loadFilings);
 
