@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Orion Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- BRAND FONT + GLOBAL STYLES -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div id="sidebar-placeholder"></div>
+
+<script>
+fetch("sidebar.html")
+  .then(res => res.text())
+  .then(html => {
+    const container = document.getElementById("sidebar-placeholder");
+    container.innerHTML = html;
+
+    // execute <script> tags inside the loaded sidebar
+    const scripts = container.querySelectorAll("script");
+    scripts.forEach(oldScript => {
+      const newScript = document.createElement("script");
+      newScript.textContent = oldScript.textContent;
+      document.body.appendChild(newScript);
+    });
+  });
+</script>
+
+
+  <!-- MAIN WRAPPER -->
+  <div class="ml-64 p-8">
+
+    <!-- PAGE TITLE -->
+    <h1 class="text-3xl font-semibold mb-6">Dashboard</h1>
+
+    <!-- ============================== -->
+    <!-- TOP KPI CARDS -->
+    <!-- ============================== -->
+    <div class="grid grid-cols-3 gap-6 mb-10">
+      <div class="bg-white p-6 rounded-lg shadow">
+        <p class="text-sm text-gray-500">Total Exposure</p>
+        <p class="text-2xl font-bold">$4.6bn</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <p class="text-sm text-gray-500"># Deals</p>
+        <p class="text-2xl font-bold">83</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <p class="text-sm text-gray-500">In Compliance</p>
+        <p class="text-2xl font-bold">92%</p>
+      </div>
+    </div>
+
+    <!-- ============================== -->
+    <!-- WORKFLOW PIPELINE -->
+    <!-- ============================== -->
+    <div class="bg-white p-6 rounded-lg shadow mb-10">
+      <h2 class="text-xl font-semibold mb-4">Workflow Pipeline</h2>
+
+      <div class="grid grid-cols-6 gap-4 text-center">
+        <div class="p-4 border rounded-lg">
+          <p class="text-sm text-gray-500">Legal QC</p>
+          <p class="text-lg font-medium">1</p>
+        </div>
+        <div class="p-4 border rounded-lg">
+          <p class="text-sm text-gray-500">CP Tracker</p>
+          <p class="text-lg font-medium">2</p>
+        </div>
+        <div class="p-4 border rounded-lg">
+          <p class="text-sm text-gray-500">Approvals</p>
+          <p class="text-lg font-medium">1</p>
+        </div>
+        <div class="p-4 border rounded-lg">
+          <p class="text-sm text-gray-500">Funding</p>
+          <p class="text-lg font-medium">0</p>
+        </div>
+        <div class="p-4 border rounded-lg">
+          <p class="text-sm text-gray-500">Onboarding</p>
+          <p class="text-lg font-medium">1</p>
+        </div>
+        <div class="p-4 border rounded-lg">
+          <p class="text-sm text-gray-500">Monitoring</p>
+          <p class="text-lg font-medium">0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================== -->
+    <!-- UPCOMING KEY DATES -->
+    <!-- ============================== -->
+    <div class="bg-white p-6 rounded-lg shadow mb-10">
+      <h2 class="text-xl font-semibold mb-4">Upcoming Key Dates</h2>
+
+      <ul class="space-y-3">
+        <li class="flex justify-between">
+          <span>Pawsitive Brands – CP Due</span>
+          <span class="text-gray-500">2025-10-03</span>
+        </li>
+        <li class="flex justify-between">
+          <span>Meridian Behavioral Health – Committee</span>
+          <span class="text-gray-500">2025-10-10</span>
+        </li>
+        <li class="flex justify-between">
+          <span>Atlas Logistics – Legal QC</span>
+          <span class="text-gray-500">2025-10-01</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ============================== -->
+    <!-- WATCHLIST + RISK ALERTS -->
+    <!-- ============================== -->
+    <div class="grid grid-cols-2 gap-6 mb-10">
+      
+      <!-- WATCHLIST -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Watchlist</h2>
+        <ul class="space-y-3">
+          <li class="flex justify-between">
+            <span>MidTown Retail</span>
+            <span class="text-red-600">-2.4%</span>
+          </li>
+          <li class="flex justify-between">
+            <span>Ardent Chem</span>
+            <span class="text-red-600">-1.9%</span>
+          </li>
+          <li class="flex justify-between">
+            <span>NovaCloud</span>
+            <span class="text-red-600">-1.5%</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- RISK ALERTS -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Risk Alerts</h2>
+        <ul class="space-y-3">
+          <li>⚠️ 2 deals with falling ICR</li>
+          <li>⚠️ 3 deals near leverage floors</li>
+          <li>⚠️ 1 borrower with declining liquidity</li>
+          <li>⚠️ Covenant tests due within 10 days</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- ============================== -->
+    <!-- RECENT BORROWER ACTIVITY -->
+    <!-- ============================== -->
+    <div class="bg-white p-6 rounded-lg shadow mb-10">
+      <h2 class="text-xl font-semibold mb-4">Recent Borrower Activity</h2>
+
+      <ul class="space-y-3">
+        <li>📄 9/25 — Pawsitive uploaded Compliance Certificate (5.0x / 2.25x)</li>
+        <li>📄 9/24 — NovaCloud sent updated financials</li>
+        <li>📄 9/23 — Meridian requested covenant waiver review</li>
+      </ul>
+    </div>
+
+    <!-- ============================== -->
+    <!-- QUICK ACTIONS -->
+    <!-- ============================== -->
+    <div class="bg-white p-6 rounded-lg shadow mb-20">
+      <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+
+      <div class="flex space-x-4">
+        <button class="px-4 py-2 bg-gray-900 text-white rounded">+ Add Deal</button>
+        <button class="px-4 py-2 bg-gray-200 rounded">Upload Credit Agreement</button>
+        <button class="px-4 py-2 bg-gray-200 rounded">Run Summary</button>
+        <button class="px-4 py-2 bg-gray-200 rounded">Generate Tear Sheet</button>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
