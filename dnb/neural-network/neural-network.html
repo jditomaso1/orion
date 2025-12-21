@@ -1,0 +1,192 @@
+<!-- Neural Network + Source Documents (Dave & Buster's) — drop-in HTML -->
+<section class="card neural" aria-labelledby="neural-title">
+  <style>
+    .card.neural{
+      border:1px solid #e6e6e6;border-radius:14px;padding:16px;background:#fff;
+      max-width:1100px;margin-top:24px
+    }
+    .card.neural h2{margin:0 0 8px;font:700 18px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .card.neural p{margin:0 0 14px;color:#666;font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .legend{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid #eee;background:#fafafa;
+      font:600 12px/1 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#333}
+    .dot{width:10px;height:10px;border-radius:999px;background:#999;display:inline-block}
+    .dot.core{background:#111}
+    .dot.sec{background:#2f6fed}
+    .dot.legal{background:#a43fe3}
+    .dot.mgmt{background:#f2992e}
+    .dot.ops{background:#12a57a}
+    .dot.orion{background:#6b7280}
+    svg{width:100%;height:auto;display:block;border:1px solid #eee;border-radius:12px;background:radial-gradient(circle at 50% 35%, #ffffff 0%, #fbfbfb 55%, #f7f7f7 100%)}
+    .label{font:600 12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;fill:#111}
+    .sublabel{font:500 11px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;fill:#555}
+    .node{filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.08));}
+    .edge{stroke:#cfcfcf;stroke-width:1.2;opacity:.8}
+    .edgeStrong{stroke:#bdbdbd;stroke-width:1.6;opacity:.9}
+    .glow{filter:url(#glow)}
+  </style>
+
+  <h2 id="neural-title">Orion Neural Network — Dave &amp; Buster’s (PLAY)</h2>
+  <p>Mock network view linking source documents into a credit “knowledge graph” (central entity + document embeddings + thematic nodes).</p>
+
+  <svg viewBox="0 0 1100 640" role="img" aria-label="Neural network diagram for Dave & Buster’s with documents">
+    <defs>
+      <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <!-- Gradients -->
+      <radialGradient id="coreGrad" cx="50%" cy="40%" r="70%">
+        <stop offset="0%" stop-color="#111"/>
+        <stop offset="100%" stop-color="#2b2b2b"/>
+      </radialGradient>
+
+      <linearGradient id="secGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#2f6fed"/>
+        <stop offset="100%" stop-color="#6aa7ff"/>
+      </linearGradient>
+
+      <linearGradient id="legalGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#a43fe3"/>
+        <stop offset="100%" stop-color="#d08cff"/>
+      </linearGradient>
+
+      <linearGradient id="mgmtGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#f2992e"/>
+        <stop offset="100%" stop-color="#ffd199"/>
+      </linearGradient>
+
+      <linearGradient id="opsGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#12a57a"/>
+        <stop offset="100%" stop-color="#88e0c8"/>
+      </linearGradient>
+
+      <linearGradient id="grayGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#6b7280"/>
+        <stop offset="100%" stop-color="#c7c9cf"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Edges from core to document nodes -->
+    <line class="edgeStrong" x1="550" y1="320" x2="190" y2="140"/>
+    <line class="edgeStrong" x1="550" y1="320" x2="350" y2="95"/>
+    <line class="edgeStrong" x1="550" y1="320" x2="760" y2="95"/>
+    <line class="edgeStrong" x1="550" y1="320" x2="915" y2="140"/>
+
+    <line class="edgeStrong" x1="550" y1="320" x2="165" y2="350"/>
+    <line class="edgeStrong" x1="550" y1="320" x2="320" y2="520"/>
+    <line class="edgeStrong" x1="550" y1="320" x2="780" y2="520"/>
+    <line class="edgeStrong" x1="550" y1="320" x2="935" y2="350"/>
+
+    <!-- “Hidden layer” theme nodes connections -->
+    <!-- Left cluster -->
+    <line class="edge" x1="190" y1="140" x2="300" y2="250"/>
+    <line class="edge" x1="350" y1="95"  x2="300" y2="250"/>
+    <line class="edge" x1="165" y1="350" x2="300" y2="250"/>
+
+    <!-- Right cluster -->
+    <line class="edge" x1="760" y1="95"  x2="800" y2="250"/>
+    <line class="edge" x1="915" y1="140" x2="800" y2="250"/>
+    <line class="edge" x1="935" y1="350" x2="800" y2="250"/>
+
+    <!-- Bottom cluster -->
+    <line class="edge" x1="320" y1="520" x2="550" y2="470"/>
+    <line class="edge" x1="780" y1="520" x2="550" y2="470"/>
+
+    <!-- Hidden layer to core -->
+    <line class="edgeStrong" x1="300" y1="250" x2="550" y2="320"/>
+    <line class="edgeStrong" x1="800" y1="250" x2="550" y2="320"/>
+    <line class="edgeStrong" x1="550" y1="470" x2="550" y2="320"/>
+
+    <!-- Core node -->
+    <g class="node glow">
+      <circle cx="550" cy="320" r="62" fill="url(#coreGrad)"/>
+      <circle cx="550" cy="320" r="72" fill="none" stroke="#111" stroke-opacity=".15" stroke-width="18"/>
+      <text x="550" y="312" text-anchor="middle" class="label" fill="#fff">Dave &amp; Buster’s</text>
+      <text x="550" y="332" text-anchor="middle" class="sublabel" fill="#d7d7d7">PLAY · Company Node</text>
+    </g>
+
+    <!-- Hidden layer nodes (themes) -->
+    <g class="node">
+      <circle cx="300" cy="250" r="26" fill="url(#grayGrad)"/>
+      <text x="300" y="254" text-anchor="middle" class="sublabel" fill="#111">Covenants</text>
+    </g>
+    <g class="node">
+      <circle cx="800" cy="250" r="26" fill="url(#grayGrad)"/>
+      <text x="800" y="254" text-anchor="middle" class="sublabel" fill="#111">Liquidity</text>
+    </g>
+    <g class="node">
+      <circle cx="550" cy="470" r="26" fill="url(#grayGrad)"/>
+      <text x="550" y="474" text-anchor="middle" class="sublabel" fill="#111">KPIs</text>
+    </g>
+
+    <!-- Document nodes (top arc) -->
+    <g class="node">
+      <circle cx="190" cy="140" r="30" fill="url(#secGrad)"/>
+      <text x="190" y="136" text-anchor="middle" class="label" fill="#fff">10-K</text>
+      <text x="190" y="154" text-anchor="middle" class="sublabel" fill="#eef4ff">Annual</text>
+    </g>
+
+    <g class="node">
+      <circle cx="350" cy="95" r="30" fill="url(#secGrad)"/>
+      <text x="350" y="91" text-anchor="middle" class="label" fill="#fff">10-Q</text>
+      <text x="350" y="109" text-anchor="middle" class="sublabel" fill="#eef4ff">Quarterly</text>
+    </g>
+
+    <g class="node">
+      <circle cx="760" cy="95" r="30" fill="url(#secGrad)"/>
+      <text x="760" y="91" text-anchor="middle" class="label" fill="#fff">8-K</text>
+      <text x="760" y="109" text-anchor="middle" class="sublabel" fill="#eef4ff">Events</text>
+    </g>
+
+    <g class="node">
+      <circle cx="915" cy="140" r="30" fill="url(#legalGrad)"/>
+      <text x="915" y="136" text-anchor="middle" class="label" fill="#fff">Ex 10</text>
+      <text x="915" y="154" text-anchor="middle" class="sublabel" fill="#f7efff">Legal</text>
+    </g>
+
+    <!-- Document nodes (bottom arc) -->
+    <g class="node">
+      <circle cx="165" cy="350" r="30" fill="url(#legalGrad)"/>
+      <text x="165" y="346" text-anchor="middle" class="label" fill="#fff">Credit</text>
+      <text x="165" y="364" text-anchor="middle" class="sublabel" fill="#f7efff">Agreement</text>
+    </g>
+
+    <g class="node">
+      <circle cx="320" cy="520" r="30" fill="url(#mgmtGrad)"/>
+      <text x="320" y="516" text-anchor="middle" class="label" fill="#111">Model</text>
+      <text x="320" y="534" text-anchor="middle" class="sublabel" fill="#3a2a12">Proj.</text>
+    </g>
+
+    <g class="node">
+      <circle cx="780" cy="520" r="30" fill="url(#mgmtGrad)"/>
+      <text x="780" y="516" text-anchor="middle" class="label" fill="#111">Deck</text>
+      <text x="780" y="534" text-anchor="middle" class="sublabel" fill="#3a2a12">Lender</text>
+    </g>
+
+    <g class="node">
+      <circle cx="935" cy="350" r="30" fill="url(#opsGrad)"/>
+      <text x="935" y="346" text-anchor="middle" class="label" fill="#fff">KPIs</text>
+      <text x="935" y="364" text-anchor="middle" class="sublabel" fill="#eafff8">Ops</text>
+    </g>
+
+    <!-- Labels around clusters -->
+    <text x="120" y="60" class="sublabel">SEC Filings</text>
+    <text x="880" y="60" class="sublabel">Legal / Exhibits</text>
+    <text x="90" y="590" class="sublabel">Forecast / Model</text>
+    <text x="870" y="590" class="sublabel">Ops / KPIs</text>
+  </svg>
+
+  <div class="legend" aria-label="Legend">
+    <span class="chip"><span class="dot core"></span> Company</span>
+    <span class="chip"><span class="dot sec"></span> SEC Filings</span>
+    <span class="chip"><span class="dot legal"></span> Legal Docs</span>
+    <span class="chip"><span class="dot mgmt"></span> Management Materials</span>
+    <span class="chip"><span class="dot ops"></span> Operating KPIs</span>
+    <span class="chip"><span class="dot orion"></span> Orion Theme Nodes</span>
+  </div>
+</section>
