@@ -2,7 +2,16 @@ export default async function handler(req, res) {
   const symbol = (req.query.symbol || "PLAY").toUpperCase();
   const API_KEY = process.env.ALPHA_VANTAGE_KEY;
 
-  if (!API_KEY) return res.status(500).json({ error: "Missing Alpha Vantage API key" });
+  if (!API_KEY) {
+    return res.status(500).json({
+      error: "Missing Alpha Vantage API key",
+      hasKey: Boolean(process.env.ALPHA_VANTAGE_KEY),
+      vercel: Boolean(process.env.VERCEL),
+      env: process.env.VERCEL_ENV || null,
+      host: req.headers.host || null,
+    });
+  }
+
 
   const base = "https://www.alphavantage.co/query";
 
