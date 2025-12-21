@@ -1,1 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stock Quote</title>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; }
+    .wrap { max-width: 860px; }
+    .card { border: 1px solid #ddd; border-radius: 14px; padding: 16px; margin-top: 12px; }
+    .muted { color:#666; font-size: 12px; }
+    .title { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+    .sym { font-size: 20px; font-weight: 800; }
+    .name { font-size: 14px; color:#444; }
+    .big { font-size: 40px; font-weight: 900; margin: 8px 0 4px; }
+    .chg { font-weight: 800; }
+    .pos { color: #0a7a2f; }
+    .neg { color: #b00020; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    td { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    td:first-child { color:#444; }
+    .error { color:#b00020; font-weight: 700; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .pill { display:inline-flex; gap:6px; align-items:center; padding:4px 10px; border:1px solid #eee; border-radius: 999px; font-size:12px; color:#444; background:#fafafa; }
+  </style>
+</head>
 
+<body>
+  <div class="wrap">
+    <div class="title">
+      <div class="sym" id="sym">—</div>
+      <div class="name" id="name"></div>
+      <span class="pill" id="asof" style="display:none;"></span>
+    </div>
+    <div class="muted">
+      Source: <code>/api/alpha-quote</code> (Alpha Vantage key stays server-side)
+    </div>
+
+    <div class="card" id="out">
+      <div class="muted" id="status">Loading…</div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function fmtNumber(x, decimals = 2) {
+      const n = Number(x);
+      if (!Number.isFinite(n)) return "—";
+      return n.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    }
+
+    function fmtInt(x) {
+      if (x == null || x === "") return "—";
+      const n = Number(x);
+      if (!Number.isFinite(n)) return "—";
+      return n.toLocaleString();
+    }
+
+    function fmtMoney(x) {
+      if (x == null) return "—";
+      return `$${fmtNumber(x, 2)}`;
+    }
+
+    function renderError(title, detail) {
+      $("out").innerHTML = `
+        <div class="error">${title}</div>
+        ${detail ? `<div class="muted" style="margin-top:6px;">${detail}</div>` : ""}
+      `;
+    }
+
+    function render(data) {
+      const symbol = data.symbol || "—";
+      const name = data.name || "";
+      const asOf = data.asOf || data.latestTradingDay || null;
+
+      $("sym").textContent = symbol;
+      $("name").textContent = name;
+
+      if (asOf) {
+        $("asof").style.display = "inline-flex";
+        $("asof").textContent = `As of: ${asOf}`;
+      }
+
+      const price = data.price;
+      const change = data.change;
+      const changePercent = data.changePercent;
+      const isNeg = String(change || "").trim().startsWith("-");
+
+      $("out").innerHTML = `
+        <div class="big">${price ? fmtMoney(price) : "—"}</div>
+        <div class="chg ${isNeg ? "neg" : "pos"}">
+          ${change ? `${isNeg ? "" : "+"}${fmtNumber(change, 2)} (${changePercent || "—"})` : "—"}
+        </div>
+
+        <table>
+          <tr><td>Previous Close</td><td style="text-align:right;">${fmtMoney(data.previousClose)}</td></tr>
+          <tr><td>Open</td><td style="text-align:right;">${fmtMoney(data.open)}</td></tr>
+          <tr><td>High</td><td style="text-align:right;">${fmtMoney(data.high)}</td></tr>
+          <tr><td>Low</td><td style="text-align:right;">${fmtMoney(data.low)}</td></tr>
+          <tr><td>Volume</td><td style="text-align:right;">${fmtInt(data.volume)}</td></tr>
+        </table>
+
+        <div class="muted" style="margin-top:10px;">
+          Market cap: <b>${data.marketCap ? Number(data.marketCap).toLocaleString() : "—"}</b>
+          &nbsp;•&nbsp; P/E (TTM): <b>${data.peRatioTTM || "—"}</b>
+          &nbsp;•&nbsp; EPS (TTM): <b>${data.epsTTM || "—"}</b>
+        </div>
+      `;
+    }
+
+    async function load() {
+      const params = new URLSearchParams(window.location.search);
+      const symbol = (params.get("symbol") || "PLAY").trim().toUpperCase();
+
+      try {
+        const url = new URL("/api/yahoo-quote", window.location.origin);
+        url.searchParams.set("symbol", symbol);
+
+        const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
+        let data = null;
+        try { data = await res.json(); } catch {}
+
+        if (!res.ok) {
+          const msg = (data && (data.error || data.Note || data["Error Message"])) || `HTTP ${res.status}`;
+          renderError("Backend error:", String(msg));
+          return;
+        }
+
+        if (!data || data.error) {
+          renderError("No data returned.", data && data.error ? String(data.error) : "");
+          return;
+        }
+
+        render(data);
+      } catch (e) {
+        renderError("Request failed.", String(e));
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>
