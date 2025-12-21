@@ -124,7 +124,6 @@
         <div id="chartWrap" class="chart-wrap">
           <div id="chart"></div>
         </div>
-        <div class="chart-x-label">Date</div>
         <div class="muted" id="chartStatus" style="margin-top:8px;"></div>
       </div>
       <div class="grid2">
@@ -374,14 +373,15 @@
     }
     
     let chart, series;
-    const X_AXIS_GUTTER = 28;
+    const X_AXIS_GUTTER = 0;
     
     function initChart() {
       const wrap = $("chartWrap");
       const el = $("chart");
       el.innerHTML = "";
     
-      const h = Math.max(120, wrap.clientHeight - X_AXIS_GUTTER);
+    const h = wrap.clientHeight;
+    chart.applyOptions({ width: wrap.clientWidth, height: hh });
     
       chart = LightweightCharts.createChart(el, {
         width: wrap.clientWidth,
