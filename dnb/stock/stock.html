@@ -349,13 +349,17 @@
     
     let chart, series;
     
+    const CHART_CUSHION_PX = 18; // <-- tweak this (12–24 is typical)
+    
     function initChart() {
       const el = $("chart");
       el.innerHTML = "";
     
+      const calcHeight = () => Math.max(200, el.clientHeight - CHART_CUSHION_PX);
+    
       chart = LightweightCharts.createChart(el, {
         width: el.clientWidth,
-        height: el.clientHeight,
+        height: calcHeight(), // <-- chart is slightly shorter than the div
         layout: { background: { type: "solid", color: "#ffffff" }, textColor: "#111827" },
         grid: { vertLines: { color: "#f3f4f6" }, horzLines: { color: "#f3f4f6" } },
         rightPriceScale: { borderColor: "#e5e7eb" },
@@ -372,7 +376,10 @@
       });
     
       new ResizeObserver(() => {
-        chart.applyOptions({ width: el.clientWidth, height: el.clientHeight });
+        chart.applyOptions({
+          width: el.clientWidth,
+          height: calcHeight()
+        });
       }).observe(el);
     }
     
