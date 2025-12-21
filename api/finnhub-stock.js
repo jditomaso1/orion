@@ -53,7 +53,8 @@ export default async function handler(req, res) {
         high: quote?.h ?? null,
         low: quote?.l ?? null,
         open: quote?.o ?? null,
-        previousClose: quote?.pc ?? null
+        previousClose: quote?.pc ?? null,
+        asOfUnix: Math.floor(Date.now() / 1000)
       },
 
       valuation: {
