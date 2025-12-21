@@ -1,0 +1,74 @@
+<!-- Collapsible Sidebar -->
+<aside class="group w-20 hover:w-64 transition-all duration-200 h-screen bg-white border-r shadow-sm fixed top-0 left-0 z-50 flex flex-col">
+
+  <!-- Logo -->
+  <div class="p-6 text-lg font-semibold border-b whitespace-nowrap overflow-hidden group-hover:opacity-100 opacity-0 transition">
+    Orion Credit Manager
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 p-4 space-y-2">
+
+    <!-- Section -->
+    <div class="sidebar-section">Core</div>
+    <div class="sidebar-item">📊 <span>Dashboard</span></div>
+    <div class="sidebar-item">📄 <span>Tear Sheet</span></div>
+    <div class="sidebar-item">📈 <span>Deal Compare</span></div>
+    <div class="sidebar-item">📁 <span>Portfolio</span></div>
+
+    <div class="sidebar-section">Risk</div>
+    <div class="sidebar-item">📉 <span>Ratings Drift</span></div>
+    <div class="sidebar-item">🧭 <span>Monitoring</span></div>
+    <div class="sidebar-item">⚖️ <span>Legal</span></div>
+
+    <div class="sidebar-section">Workflow</div>
+    <div class="sidebar-item">✔️ <span>Approvals</span></div>
+    <div class="sidebar-item">📝 <span>Closing Queue</span></div>
+    <div class="sidebar-item">💬 <span>Borrower Portal</span></div>
+
+    <div class="sidebar-section">Data</div>
+    <div class="sidebar-item">📚 <span>Data Room</span></div>
+
+  </nav>
+</aside>
+
+<!-- Page content -->
+<div class="ml-20 group-hover:ml-64 transition-all p-6">
+  <!-- All content here -->
+</div>
+
+<style>
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .sidebar-item span {
+    margin-left: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .group:hover .sidebar-item span {
+    opacity: 1;
+  }
+  .sidebar-item:hover {
+    background: #f0f0f0;
+  }
+  .sidebar-section {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #999;
+    margin-top: 20px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .group:hover .sidebar-section {
+    opacity: 1;
+  }
+</style>
