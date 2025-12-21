@@ -389,8 +389,9 @@
       new ResizeObserver(() => {
         chart.applyOptions({
           width: wrap.clientWidth,
-          height: wrap.clientHeight - CHART_CUSHION_PX
+          height: wrap.clientHeight
         });
+
       }).observe(wrap);
     }
 
