@@ -1,0 +1,147 @@
+<section class="card neural-lite" aria-labelledby="neural-title">
+  <style>
+    .neural-lite{
+      border:1px solid #e6e6e6;border-radius:14px;padding:16px;background:#fff;
+      max-width:1120px;margin-top:24px
+    }
+    .neural-lite h2{margin:0 0 6px;font:700 18px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#111}
+    .neural-lite p{margin:0 0 12px;font:500 12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#666}
+    .neural-lite .viz{
+      border:1px solid #eee;border-radius:12px;overflow:hidden;background:
+      radial-gradient(circle at 50% 35%, #ffffff 0%, #fbfbfb 55%, #f6f6f6 100%);
+    }
+    .neural-lite svg{width:100%;height:auto;display:block}
+    .edge{stroke:#c7c7c7;stroke-width:2.2;opacity:0.95}
+    .edgeStrong{stroke:#a9a9a9;stroke-width:3.2;opacity:0.95}
+    .label{font:700 12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;fill:#111}
+    .sublabel{font:600 11px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;fill:#555}
+    .node{filter: drop-shadow(0 2px 2px rgba(0,0,0,0.08));}
+  </style>
+
+  <h2 id="neural-title">Neural Network — Dave &amp; Buster’s (PLAY)</h2>
+  <p>Source documents → theme nodes → company node</p>
+
+  <div class="viz">
+    <svg viewBox="0 0 1100 640" role="img" aria-label="Neural network diagram for Dave & Buster’s with source documents">
+      <defs>
+        <radialGradient id="coreGrad" cx="50%" cy="40%" r="70%">
+          <stop offset="0%" stop-color="#111"/>
+          <stop offset="100%" stop-color="#3a3a3a"/>
+        </radialGradient>
+        <linearGradient id="secGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#93c5fd"/>
+        </linearGradient>
+        <linearGradient id="legalGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#d8b4fe"/>
+        </linearGradient>
+        <linearGradient id="mgmtGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fde68a"/>
+        </linearGradient>
+        <linearGradient id="opsGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#a7f3d0"/>
+        </linearGradient>
+        <linearGradient id="themeGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#9ca3af"/><stop offset="100%" stop-color="#e5e7eb"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Connections (make them obvious) -->
+      <g>
+        <line class="edgeStrong" x1="550" y1="320" x2="190" y2="140"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="350" y2="95"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="760" y2="95"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="915" y2="140"/>
+
+        <line class="edgeStrong" x1="550" y1="320" x2="165" y2="350"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="320" y2="520"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="780" y2="520"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="935" y2="350"/>
+
+        <line class="edge" x1="190" y1="140" x2="300" y2="250"/>
+        <line class="edge" x1="350" y1="95"  x2="300" y2="250"/>
+        <line class="edge" x1="165" y1="350" x2="300" y2="250"/>
+
+        <line class="edge" x1="760" y1="95"  x2="800" y2="250"/>
+        <line class="edge" x1="915" y1="140" x2="800" y2="250"/>
+        <line class="edge" x1="935" y1="350" x2="800" y2="250"/>
+
+        <line class="edge" x1="320" y1="520" x2="550" y2="470"/>
+        <line class="edge" x1="780" y1="520" x2="550" y2="470"/>
+
+        <line class="edgeStrong" x1="300" y1="250" x2="550" y2="320"/>
+        <line class="edgeStrong" x1="800" y1="250" x2="550" y2="320"/>
+        <line class="edgeStrong" x1="550" y1="470" x2="550" y2="320"/>
+      </g>
+
+      <!-- Core node -->
+      <g class="node">
+        <circle cx="550" cy="320" r="62" fill="url(#coreGrad)"/>
+        <text x="550" y="312" text-anchor="middle" class="label" fill="#fff">Dave &amp; Buster’s</text>
+        <text x="550" y="332" text-anchor="middle" class="sublabel" fill="#d1d5db">PLAY · Company</text>
+      </g>
+
+      <!-- Theme nodes -->
+      <g class="node">
+        <circle cx="300" cy="250" r="26" fill="url(#themeGrad)"/>
+        <text x="300" y="254" text-anchor="middle" class="sublabel">Covenants</text>
+      </g>
+      <g class="node">
+        <circle cx="800" cy="250" r="26" fill="url(#themeGrad)"/>
+        <text x="800" y="254" text-anchor="middle" class="sublabel">Liquidity</text>
+      </g>
+      <g class="node">
+        <circle cx="550" cy="470" r="26" fill="url(#themeGrad)"/>
+        <text x="550" y="474" text-anchor="middle" class="sublabel">KPIs</text>
+      </g>
+
+      <!-- Document nodes -->
+      <g class="node">
+        <circle cx="190" cy="140" r="30" fill="url(#secGrad)"/>
+        <text x="190" y="136" text-anchor="middle" class="label" fill="#fff">10-K</text>
+        <text x="190" y="154" text-anchor="middle" class="sublabel" fill="#fff">Annual</text>
+      </g>
+
+      <g class="node">
+        <circle cx="350" cy="95" r="30" fill="url(#secGrad)"/>
+        <text x="350" y="91" text-anchor="middle" class="label" fill="#fff">10-Q</text>
+        <text x="350" y="109" text-anchor="middle" class="sublabel" fill="#fff">Quarterly</text>
+      </g>
+
+      <g class="node">
+        <circle cx="760" cy="95" r="30" fill="url(#secGrad)"/>
+        <text x="760" y="91" text-anchor="middle" class="label" fill="#fff">8-K</text>
+        <text x="760" y="109" text-anchor="middle" class="sublabel" fill="#fff">Events</text>
+      </g>
+
+      <g class="node">
+        <circle cx="915" cy="140" r="30" fill="url(#legalGrad)"/>
+        <text x="915" y="136" text-anchor="middle" class="label" fill="#fff">Ex 10</text>
+        <text x="915" y="154" text-anchor="middle" class="sublabel" fill="#fff">Legal</text>
+      </g>
+
+      <g class="node">
+        <circle cx="165" cy="350" r="30" fill="url(#legalGrad)"/>
+        <text x="165" y="346" text-anchor="middle" class="label" fill="#fff">Credit</text>
+        <text x="165" y="364" text-anchor="middle" class="sublabel" fill="#fff">Agmt</text>
+      </g>
+
+      <g class="node">
+        <circle cx="320" cy="520" r="30" fill="url(#mgmtGrad)"/>
+        <text x="320" y="516" text-anchor="middle" class="label" fill="#111">Model</text>
+        <text x="320" y="534" text-anchor="middle" class="sublabel" fill="#111">Proj.</text>
+      </g>
+
+      <g class="node">
+        <circle cx="780" cy="520" r="30" fill="url(#mgmtGrad)"/>
+        <text x="780" y="516" text-anchor="middle" class="label" fill="#111">Deck</text>
+        <text x="780" y="534" text-anchor="middle" class="sublabel" fill="#111">Lender</text>
+      </g>
+
+      <g class="node">
+        <circle cx="935" cy="350" r="30" fill="url(#opsGrad)"/>
+        <text x="935" y="346" text-anchor="middle" class="label" fill="#fff">KPIs</text>
+        <text x="935" y="364" text-anchor="middle" class="sublabel" fill="#fff">Ops</text>
+      </g>
+    </svg>
+  </div>
+</section>
