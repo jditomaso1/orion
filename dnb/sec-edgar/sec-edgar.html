@@ -155,7 +155,7 @@
     async function loadFilings() {
       $("out").innerHTML = "";
       const ticker = $("ticker").value.trim().toUpperCase();
-      const forms = $("forms").value;   // keep as "10-K,10-Q,8-K" etc
+      const forms = $("forms").value;
       const limit = Number($("limit").value || 25);
     
       if (!ticker) return renderError("Enter a ticker.");
@@ -168,7 +168,10 @@
         url.searchParams.set("forms", forms);
         url.searchParams.set("limit", String(limit));
     
-        const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
+        const res = await fetch(url.toString(), {
+          headers: { "Accept": "application/json" }
+        });
+    
         const data = await res.json();
     
         if (!res.ok) {
@@ -177,20 +180,13 @@
           return;
         }
     
-        const rows = data.rows || [];
-        renderTable(data.company || ticker, data.cik10 || "—", rows);
+        renderTable(data.company || ticker, data.cik10 || "—", data.rows || []);
         setStatus("Done.");
       } catch (e) {
-        const msg =
-          (e && e.message) ? e.message :
-          (typeof e === "string") ? e :
-          (() => { try { return JSON.stringify(e); } catch { return String(e); } })();
-      
-        renderError(`Error: ${msg}`);
+        renderError(`Error: ${e?.message || e}`);
         setStatus("Failed.");
       }
-
-
+    }
 
     $("go").addEventListener("click", loadFilings);
 
