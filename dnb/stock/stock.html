@@ -51,6 +51,7 @@
     }
 
     function fmtInt(x) {
+      if (x == null || x === "") return "—";
       const n = Number(x);
       if (!Number.isFinite(n)) return "—";
       return n.toLocaleString();
