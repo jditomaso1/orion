@@ -3,6 +3,12 @@ export default async function handler(req, res) {
   const symbol = (req.query.symbol || "PLAY").toUpperCase().trim();
   const token = process.env.FINNHUB_API_KEY;
 
+  console.log("Finnhub key present:", token ? token.length : "MISSING");
+  
+  if (!token) {
+    return res.status(500).json({ error: "FINNHUB_API_KEY is undefined" });
+  }  
+
   // Supported: 1, 5, 15, 30, 60, D, W, M (Finnhub uses numeric resolution or string)
   const resolution = (req.query.resolution || "D").toString().trim();
 
