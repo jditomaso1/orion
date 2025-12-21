@@ -354,11 +354,22 @@
       el.innerHTML = ""; // reset
     
       chart = LightweightCharts.createChart(el, {
-        height: 280,
-        layout: { background: { type: "solid", color: "#ffffff" }, textColor: "#111827" },
-        grid: { vertLines: { color: "#f3f4f6" }, horzLines: { color: "#f3f4f6" } },
+        width: el.clientWidth,
+        height: el.clientHeight, // 🔑 critical line
+        layout: {
+          background: { type: "solid", color: "#ffffff" },
+          textColor: "#111827"
+        },
+        grid: {
+          vertLines: { color: "#f3f4f6" },
+          horzLines: { color: "#f3f4f6" }
+        },
         rightPriceScale: { borderColor: "#e5e7eb" },
-        timeScale: { borderColor: "#e5e7eb" }
+        timeScale: {
+          borderColor: "#e5e7eb",
+          fixLeftEdge: true,
+          fixRightEdge: true
+        }
       });
     
       series = chart.addCandlestickSeries({
@@ -370,14 +381,14 @@
         wickDownColor: "#dc2626"
       });
     
-      // Resize on window resize
       const ro = new ResizeObserver(() => {
-        chart.applyOptions({ width: el.clientWidth });
+        chart.applyOptions({
+          width: el.clientWidth,
+          height: el.clientHeight // 🔑 keep height synced
+        });
       });
-      ro.observe(el);
     
-      // Set initial width
-      chart.applyOptions({ width: el.clientWidth });
+      ro.observe(el);
     }
     
     async function loadChart(symbol) {
