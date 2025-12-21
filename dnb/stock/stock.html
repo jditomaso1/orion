@@ -387,7 +387,6 @@
         }
       });
 
-    
       series = chart.addCandlestickSeries();
     
       new ResizeObserver(() => {
@@ -398,6 +397,14 @@
       }).observe(wrap);
     }
     
+    chart.applyOptions({
+      layout: {
+        padding: {
+          bottom: 20
+        }
+      }
+    });
+
     async function loadChart(symbol) {
       $("chartStatus").textContent = "Loading chart…";
     
