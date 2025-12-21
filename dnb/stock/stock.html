@@ -424,9 +424,6 @@
           close: Number(c.c[i]),
         }));
     
-        // Optional but helps prevent weirdness if reloading symbol
-        if (chart) { chart.remove(); chart = null; series = null; }
-    
         initChart();
         series.setData(bars);
         chart.timeScale().fitContent();
@@ -436,7 +433,6 @@
         $("chartStatus").textContent = `Chart failed: ${String(e?.message || e)}`;
       }
     }
-
 
     load().catch(console.error);
     loadChart(symbol).catch(console.error);
