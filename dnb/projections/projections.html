@@ -1,0 +1,91 @@
+<section class="card projections" aria-labelledby="proj-title">
+  <style>
+    .card.projections{
+      border:1px solid #e6e6e6;border-radius:14px;padding:16px;background:#fff;
+      max-width:980px
+    }
+    .card.projections h2{margin:0 0 10px;font:600 18px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .subnote{margin:0 0 12px;color:#666;font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .table-wrap{overflow:auto;border:1px solid #eee;border-radius:12px}
+    table{width:100%;border-collapse:separate;border-spacing:0;min-width:720px}
+    thead th{
+      position:sticky;top:0;background:#fafafa;z-index:1;
+      text-align:right;padding:12px 12px;border-bottom:1px solid #eee;
+      font:600 12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#333
+    }
+    thead th:first-child{text-align:left}
+    tbody td{
+      padding:12px 12px;border-bottom:1px solid #f0f0f0;
+      font:13px/1.3 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#111
+    }
+    tbody tr:last-child td{border-bottom:0}
+    tbody td:first-child{font-weight:600;text-align:left;color:#222;white-space:nowrap}
+    tbody td:not(:first-child){text-align:right;white-space:nowrap}
+    .muted{color:#666;font-weight:500}
+    .pill{
+      display:inline-block;padding:2px 8px;border-radius:999px;
+      background:#f2f2f2;color:#444;font:600 11px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial
+    }
+  </style>
+
+  <h2 id="proj-title">Financial Projections <span class="pill">Base Case</span></h2>
+  <p class="subnote">All figures in USD millions unless noted</p>
+
+  <div class="table-wrap" role="region" aria-label="Financial projections table">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Metric</th>
+          <th scope="col">2024A</th>
+          <th scope="col">2025E</th>
+          <th scope="col">2026E</th>
+          <th scope="col">2027E</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Revenue</td>
+          <td>$2,133</td>
+          <td>$2,220</td>
+          <td>$2,310</td>
+          <td>$2,405</td>
+        </tr>
+        <tr>
+          <td>EBITDA</td>
+          <td>$506</td>
+          <td>$540</td>
+          <td>$565</td>
+          <td>$590</td>
+        </tr>
+        <tr>
+          <td>EBITDA Margin</td>
+          <td>23.7%</td>
+          <td>24.3%</td>
+          <td>24.5%</td>
+          <td>24.5%</td>
+        </tr>
+        <tr>
+          <td>CapEx</td>
+          <td>$120</td>
+          <td>$130</td>
+          <td>$135</td>
+          <td>$140</td>
+        </tr>
+        <tr>
+          <td>FCF</td>
+          <td>$260</td>
+          <td>$285</td>
+          <td>$305</td>
+          <td>$320</td>
+        </tr>
+        <tr>
+          <td>Net Leverage</td>
+          <td class="muted">X.Xx</td>
+          <td class="muted">X.Xx</td>
+          <td class="muted">X.Xx</td>
+          <td class="muted">X.Xx</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
