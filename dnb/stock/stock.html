@@ -374,7 +374,7 @@
     }
     
     let chart, series;
-    
+    const X_AXIS_GUTTER = 28;   // 👈 PUT IT HERE
     const CHART_CUSHION_PX = 0;
     
     function initChart() {
@@ -384,7 +384,7 @@
     
       chart = LightweightCharts.createChart(el, {
         width: wrap.clientWidth,
-        height: wrap.clientHeight,
+        height: wrap.clientHeight - X_AXIS_GUTTER,
         layout: {
           background: { type: "solid", color: "#ffffff" },
           textColor: "#111827",
@@ -414,7 +414,7 @@
       new ResizeObserver(() => {
         chart.applyOptions({
           width: wrap.clientWidth,
-          height: wrap.clientHeight
+          height: wrap.clientHeight - X_AXIS_GUTTER
         });
 
       }).observe(wrap);
