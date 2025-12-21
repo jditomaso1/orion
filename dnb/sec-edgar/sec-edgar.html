@@ -2,361 +2,219 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Orion — EDGAR Search & HTML Ingest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SEC EDGAR Pull (Ticker → Latest Filings)</title>
   <style>
     body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; }
-    .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    .card { border: 1px solid #ddd; border-radius: 12px; padding: 14px; margin-top: 14px; }
-    label { display:block; font-size: 12px; color:#333; margin-bottom:6px; }
-    input, select { width:100%; padding:10px; border:1px solid #ccc; border-radius:10px; }
-    button { padding:10px 14px; border:0; border-radius:10px; cursor:pointer; }
-    button.primary { background:#111; color:#fff; }
-    button.secondary { background:#eee; }
-    .muted { color:#666; font-size: 12px; }
-    table { width:100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border-bottom: 1px solid #eee; text-align: left; padding: 8px; font-size: 13px; }
-    .ok { color: #0a7; font-weight: 600; }
-    .err { color: #c00; font-weight: 600; }
-    textarea { width:100%; border:1px solid #ccc; border-radius:10px; padding:10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas; }
-    .actions { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    input, button, select { padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; }
+    button { cursor: pointer; }
+    .card { border: 1px solid #eee; border-radius: 14px; padding: 14px; margin-top: 14px; }
+    .muted { color: #666; font-size: 12px; }
+    .err { color: #b00020; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px 6px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
+    a { text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
   </style>
-<script src="https://cdn.tailwindcss.com"></script>  
 </head>
-
-<body class="flex">
-
-  <!-- SIDEBAR -->
-  <div id="sidebar-placeholder"></div>
-  <script>
-    async function injectSidebar() {
-      const res = await fetch("/dnb/sidebar.html");
-      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-
-      window.toggleSection = function(id) {
-        const section = document.getElementById(id);
-        const icon = document.getElementById("icon-" + id);
-        if (!section || !icon) return;
-
-        section.classList.toggle("hidden");
-        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
-        localStorage.setItem("sidebar-open-section", id);
-      };
-
-      const last = localStorage.getItem("sidebar-open-section");
-      if (last) {
-        const s = document.getElementById(last);
-        const i = document.getElementById("icon-" + last);
-        if (s && i) {
-          s.classList.remove("hidden");
-          i.style.transform = "rotate(90deg)";
-        }
-      }
-    }
-    injectSidebar();
-  </script>
-
-  <!-- MAIN CONTENT -->
-  <main class="flex-1 ml-64 p-8 flex flex-col">
-
-    <!-- PAGE HEADER -->
-  
-  <h1>Orion — EDGAR Search & HTML Ingest</h1>
-  <p class="muted">Front-end UI. Requires a backend endpoint at <code>/api/edgar</code> to fetch SEC data.</p>
+<body>
+  <h2>SEC EDGAR Pull</h2>
+  <div class="muted">
+    Uses SEC official endpoints: <code>sec.gov/files/company_tickers.json</code> and <code>data.sec.gov/submissions/</code>.
+    (SEC requires a real <code>User-Agent</code> header. Put your email in the code.)
+  </div>
 
   <div class="card">
     <div class="row">
-      <div>
-        <label>Ticker</label>
-        <input id="ticker" value="PLAY" placeholder="AAPL, MAR, DAL, ..." />
-      </div>
-      <div>
-        <label>Filing Type</label>
-        <select id="form">
-          <option>10-K</option>
-          <option selected>10-Q</option>
-          <option>8-K</option>
-        </select>
-      </div>
-      <div>
-        <label>Max filings to scan</label>
-        <input id="limit" type="number" min="10" max="200" value="60" />
-      </div>
+      <label class="muted">Ticker</label>
+      <input id="ticker" value="PLAY" style="min-width:120px" />
+      <label class="muted">Forms</label>
+      <select id="forms">
+        <option value="10-K,10-Q,8-K" selected>10-K / 10-Q / 8-K</option>
+        <option value="10-K">10-K only</option>
+        <option value="10-Q">10-Q only</option>
+        <option value="8-K">8-K only</option>
+        <option value="ALL">All</option>
+      </select>
+
+      <label class="muted">Limit</label>
+      <select id="limit">
+        <option value="10">10</option>
+        <option value="25" selected>25</option>
+        <option value="50">50</option>
+      </select>
+
+      <button id="go">Fetch filings</button>
     </div>
 
-    <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">
-      <input id="includeExhibits" type="checkbox" checked />
-      <label for="includeExhibits" style="margin:0;">Try to find Exhibit 10.x / credit docs in the filing folder</label>
-    </div>
-
-    <div style="margin-top:12px;" class="actions">
-      <button class="primary" id="btnSearch">Search EDGAR</button>
-      <span id="status" class="muted"></span>
-    </div>
+    <div id="status" class="muted" style="margin-top:10px;">Ready.</div>
+    <div id="out"></div>
   </div>
 
-  <div class="card" id="resultsCard" style="display:none;">
-    <h3 style="margin:0;">Results</h3>
-    <div class="muted" id="resultsMeta" style="margin-top:6px;"></div>
-
-    <table id="resultsTable">
-      <thead>
-        <tr>
-          <th>Filing Date</th>
-          <th>Report Date</th>
-          <th>Form</th>
-          <th>Accession</th>
-          <th>Primary Doc</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <hr style="border:none;border-top:1px solid #eee;margin:14px 0;" />
-
-    <h3 style="margin:0;">Ingest a filing</h3>
-
-    <div style="margin-top:10px;">
-      <label>Choose accession to ingest</label>
-      <select id="accession"></select>
-      <div class="muted" style="margin-top:8px;">
-        Primary filing HTML: <a id="primaryUrl" target="_blank" rel="noreferrer"></a>
-      </div>
-    </div>
-
-    <div style="margin-top:12px;" class="actions">
-      <button class="primary" id="btnIngestPrimary">Ingest Primary Filing (HTML)</button>
-      <button class="secondary" id="btnRefreshExhibits">Find Exhibits</button>
-      <select id="exhibitSelect" style="min-width:260px; display:none;"></select>
-      <button class="primary" id="btnIngestExhibit" style="display:none;">Ingest Selected Exhibit (HTML)</button>
-    </div>
-
-    <div id="ingestOutput" style="margin-top:14px; display:none;">
-      <div id="ingestMsg" class="muted"></div>
-      <textarea id="preview" rows="12"></textarea>
-    </div>
-  </div>
-
-<script>
-  const $ = (id) => document.getElementById(id);
-
-  let filings = [];
-  let selected = null;
-  let exhibits = [];
-
-  function setStatus(msg, kind="muted") {
-    const el = $("status");
-    el.className = kind === "err" ? "err" : kind === "ok" ? "ok" : "muted";
-    el.textContent = msg || "";
-  }
-
-  function apiPost(action, payload) {
-    return fetch("/api/edgar", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ action, ...payload })
-    }).then(async (r) => {
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(data?.error || `HTTP ${r.status}`);
-      return data;
-    });
-  }
-
-  function renderTable(rows) {
-    const tbody = $("resultsTable").querySelector("tbody");
-    tbody.innerHTML = "";
-    rows.forEach(r => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${r.filingDate || ""}</td>
-        <td>${r.reportDate || ""}</td>
-        <td>${r.form || ""}</td>
-        <td>${r.accessionNumber || ""}</td>
-        <td>${r.primaryDocument || ""}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  function updateAccessionDropdown() {
-    const sel = $("accession");
-    sel.innerHTML = "";
-    filings.forEach(f => {
-      const opt = document.createElement("option");
-      opt.value = f.accessionNumber;
-      opt.textContent = f.accessionNumber;
-      sel.appendChild(opt);
-    });
-    sel.value = filings[0]?.accessionNumber || "";
-    onAccessionChange();
-  }
-
-  function onAccessionChange() {
-    const acc = $("accession").value;
-    selected = filings.find(f => f.accessionNumber === acc) || null;
-    const a = $("primaryUrl");
-    if (selected) {
-      a.href = selected.primaryUrl;
-      a.textContent = selected.primaryUrl;
-    } else {
-      a.href = "";
-      a.textContent = "";
-    }
-    $("exhibitSelect").style.display = "none";
-    $("btnIngestExhibit").style.display = "none";
-  }
-
-  async function searchEdgar() {
-    setStatus("Searching EDGAR…");
-    $("resultsCard").style.display = "none";
-    $("ingestOutput").style.display = "none";
-
-    const ticker = $("ticker").value.trim().toUpperCase();
-    const form = $("form").value;
-    const limit = parseInt($("limit").value || "60", 10);
-    const includeExhibits = $("includeExhibits").checked;
-
-    try {
-      const res = await apiPost("search", { ticker, form, limit, includeExhibits });
-      filings = res.filings || [];
-      if (!filings.length) throw new Error("No filings returned.");
-
-      $("resultsCard").style.display = "block";
-      $("resultsMeta").textContent = `Results for ${ticker} (${form}) — ${filings.length} filings`;
-      renderTable(filings);
-      updateAccessionDropdown();
-      setStatus("Done.", "ok");
-    } catch (e) {
-      setStatus(e.message || "Search failed.", "err");
-    }
-  }
-
-  async function ingestPrimary() {
-    if (!selected) return;
-    setStatus("Ingesting primary HTML…");
-    $("ingestOutput").style.display = "none";
-    try {
-      const res = await apiPost("ingest", { url: selected.primaryUrl, meta: selected.metaPrimary });
-      $("ingestOutput").style.display = "block";
-      $("ingestMsg").textContent = `Ingest complete. Characters extracted: ${res.length?.toLocaleString?.() || res.length || "?"}`;
-      $("preview").value = (res.preview || "").slice(0, 5000);
-      setStatus("Done.", "ok");
-    } catch (e) {
-      setStatus(e.message || "Ingest failed.", "err");
-    }
-  }
-
-  async function findExhibits() {
-    if (!selected) return;
-    setStatus("Scanning filing folder for exhibits…");
-    try {
-      const res = await apiPost("exhibits", { cik: selected.cik_nolead, acc_nodash: selected.acc_nodash });
-      exhibits = res.exhibits || [];
-      const sel = $("exhibitSelect");
-      sel.innerHTML = "";
-      const none = document.createElement("option");
-      none.value = "";
-      none.textContent = "(none)";
-      sel.appendChild(none);
-
-      exhibits.forEach(ex => {
-        const opt = document.createElement("option");
-        opt.value = ex.url;
-        opt.textContent = ex.filename;
-        sel.appendChild(opt);
-      });
-
-      sel.style.display = "inline-block";
-      $("btnIngestExhibit").style.display = "inline-block";
-      setStatus(exhibits.length ? "Exhibits found." : "No exhibit candidates found.", exhibits.length ? "ok" : "muted");
-    } catch (e) {
-      setStatus(e.message || "Exhibit scan failed.", "err");
-    }
-  }
-
-  async function ingestExhibit() {
-    const url = $("exhibitSelect").value;
-    if (!url) return;
-    setStatus("Ingesting exhibit HTML…");
-    $("ingestOutput").style.display = "none";
-    try {
-      const res = await apiPost("ingest", { url, meta: { source_type: "EDGAR_HTML_EXHIBIT" } });
-      $("ingestOutput").style.display = "block";
-      $("ingestMsg").textContent = `Ingest complete. Characters extracted: ${res.length?.toLocaleString?.() || res.length || "?"}`;
-      $("preview").value = (res.preview || "").slice(0, 5000);
-      setStatus("Done.", "ok");
-    } catch (e) {
-      setStatus(e.message || "Ingest failed.", "err");
-    }
-  }
-
-  $("btnSearch").addEventListener("click", searchEdgar);
-  $("accession").addEventListener("change", onAccessionChange);
-  $("btnIngestPrimary").addEventListener("click", ingestPrimary);
-  $("btnRefreshExhibits").addEventListener("click", findExhibits);
-  $("btnIngestExhibit").addEventListener("click", ingestExhibit);
-</script>
-
-  <!-- Chat Logic -->
   <script>
-    const input = document.getElementById("chatInput");
-    const btn = document.getElementById("sendBtn");
-    const windowEl = document.getElementById("chatWindow");
+    // IMPORTANT: SEC asks for a descriptive User-Agent with contact info.
+    // Put YOUR real email here.
+    const SEC_HEADERS = {
+      "User-Agent": "Orion EDGAR Tool (contact: youremail@domain.com)",
+      "Accept": "application/json"
+    };
 
-    function sendMessage() {
-      const text = input.value.trim();
-      if (!text) return;
+    const $ = (id) => document.getElementById(id);
 
-      const msg = document.createElement("div");
-      msg.className = "flex items-start gap-3";
-
-      msg.innerHTML = `
-        <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">J</div>
-        <div>
-          <div class="font-semibold text-gray-800">You <span class="text-gray-400 text-xs ml-2">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
-          <div class="bg-blue-50 p-3 rounded-lg text-sm text-gray-800 max-w-xl border border-blue-200">
-            ${text}
-          </div>
-        </div>
-      `;
-
-      windowEl.appendChild(msg);
-      windowEl.scrollTop = windowEl.scrollHeight;
-
-      input.value = "";
+    function padCIK(cik) {
+      const s = String(cik).replace(/^0+/, "");
+      return s.padStart(10, "0");
     }
 
-    btn.onclick = sendMessage;
-    input.addEventListener("keypress", e => {
-      if (e.key === "Enter") sendMessage();
-    });
-  </script>
-    <!--Ask Orion Bot -->
-    <div id="orion-chat-include"></div>
-    <script>
-      async function loadOrionChat() {
-        const res = await fetch("/dnb/includes/orion-chat.html");
-        const html = await res.text();
-    
-        // Insert into DOM
-        const container = document.getElementById("orion-chat-include");
-        container.innerHTML = html;
-    
-        // --- EXECUTE SCRIPTS ---
-        const scripts = container.querySelectorAll("script");
-        scripts.forEach(oldScript => {
-          const newScript = document.createElement("script");
-          if (oldScript.src) {
-            newScript.src = oldScript.src;
-          } else {
-            newScript.textContent = oldScript.textContent;
-          }
-          document.body.appendChild(newScript);
-          oldScript.remove();
-        });
+    function stripDashes(accession) {
+      return String(accession).replace(/-/g, "");
+    }
+
+    function setStatus(msg) {
+      $("status").textContent = msg;
+    }
+
+    function renderError(msg) {
+      $("out").innerHTML = `<div class="err">${msg}</div>`;
+    }
+
+    async function fetchJSON(url) {
+      const res = await fetch(url, { headers: SEC_HEADERS });
+      if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+      return await res.json();
+    }
+
+    async function tickerToCIK(ticker) {
+      // Official SEC ticker mapping:
+      // Returns an object list keyed by index: { cik_str, ticker, title }
+      const mapUrl = "https://www.sec.gov/files/company_tickers.json";
+      const data = await fetchJSON(mapUrl);
+
+      const t = ticker.trim().toUpperCase();
+      for (const k of Object.keys(data)) {
+        if ((data[k].ticker || "").toUpperCase() === t) {
+          return {
+            cik: data[k].cik_str,
+            title: data[k].title
+          };
+        }
       }
-    
-      loadOrionChat();
-    </script>  
+      return null;
+    }
+
+    function filterForms(form, wantedSet) {
+      if (wantedSet.has("ALL")) return true;
+      return wantedSet.has(form);
+    }
+
+    function buildFilingLinks(cik10, accession, primaryDoc) {
+      // Filing index page:
+      const accNoNoDash = stripDashes(accession);
+      const indexUrl = `https://www.sec.gov/Archives/edgar/data/${Number(cik10)}/${accNoNoDash}/${accession}-index.html`;
+
+      // Direct primary doc (often HTML):
+      const primaryUrl = `https://www.sec.gov/Archives/edgar/data/${Number(cik10)}/${accNoNoDash}/${primaryDoc}`;
+
+      return { indexUrl, primaryUrl };
+    }
+
+    function renderTable(companyTitle, cik10, rows) {
+      if (!rows.length) {
+        $("out").innerHTML = `<div class="muted">No filings found for your filters.</div>`;
+        return;
+      }
+
+      const html = `
+        <div class="muted">Company: <b>${companyTitle}</b> • CIK: <b>${cik10}</b></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Filed</th>
+              <th>Form</th>
+              <th>Accession</th>
+              <th>Links</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td>${r.filed || "—"}</td>
+                <td><b>${r.form || "—"}</b></td>
+                <td><code>${r.accession || "—"}</code></td>
+                <td>
+                  <a href="${r.indexUrl}" target="_blank" rel="noopener">Index</a>
+                  &nbsp;•&nbsp;
+                  <a href="${r.primaryUrl}" target="_blank" rel="noopener">Primary</a>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+      $("out").innerHTML = html;
+    }
+
+    async function loadFilings() {
+      $("out").innerHTML = "";
+      const ticker = $("ticker").value;
+      const wanted = new Set($("forms").value.split(",").map(s => s.trim().toUpperCase()));
+      const limit = Number($("limit").value || 25);
+
+      if (!ticker.trim()) return renderError("Enter a ticker.");
+
+      try {
+        setStatus("1/3: Looking up CIK from ticker…");
+        const hit = await tickerToCIK(ticker);
+        if (!hit) return renderError(`Could not find CIK for ticker: ${ticker.toUpperCase()}`);
+
+        const cik10 = padCIK(hit.cik);
+
+        setStatus("2/3: Fetching SEC submissions JSON…");
+        const subUrl = `https://data.sec.gov/submissions/CIK${cik10}.json`;
+        const sub = await fetchJSON(subUrl);
+
+        const filings = sub?.filings?.recent;
+        if (!filings) return renderError("SEC submissions JSON had no recent filings block.");
+
+        // recent arrays are parallel arrays
+        const forms = filings.form || [];
+        const dates = filings.filingDate || [];
+        const accessions = filings.accessionNumber || [];
+        const primaryDocs = filings.primaryDocument || [];
+
+        setStatus("3/3: Filtering + building links…");
+
+        const rows = [];
+        for (let i = 0; i < forms.length; i++) {
+          const form = (forms[i] || "").toUpperCase();
+          if (!filterForms(form, wanted)) continue;
+
+          const accession = accessions[i];
+          const primaryDoc = primaryDocs[i];
+          const filed = dates[i];
+
+          if (!accession || !primaryDoc) continue;
+
+          const { indexUrl, primaryUrl } = buildFilingLinks(cik10, accession, primaryDoc);
+          rows.push({ filed, form, accession, indexUrl, primaryUrl });
+
+          if (rows.length >= limit) break;
+        }
+
+        renderTable(sub.name || hit.title || ticker.toUpperCase(), cik10, rows);
+        setStatus("Done.");
+      } catch (e) {
+        renderError(`Error: ${e.message}`);
+        setStatus("Failed.");
+      }
+    }
+
+    $("go").addEventListener("click", loadFilings);
+
+    // Auto-load for PLAY on first open
+    loadFilings();
+  </script>
 </body>
 </html>
