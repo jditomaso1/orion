@@ -39,7 +39,8 @@
     #stock-main a:hover { text-decoration: underline; }
 
     #sidebar-placeholder { width: 280px; flex-shrink: 0; }
-    #chart { height: 100%; }
+    /**#chart { height: 100%; }**/
+    #chart {height: calc(100% - 18px);   /* <-- this is the gutter */overflow: visible;}
     #chartWrap.chart-wrap {height: 320px;          /* ← change this number to whatever you want */margin-top: 10px; box-sizing: border-box; overflow: visible;}
     .chart-x-label {
       margin-top: 4px;
@@ -371,7 +372,7 @@
     
       chart = LightweightCharts.createChart(el, {
         width: wrap.clientWidth,
-        height: wrap.clientHeight,
+        height: el.clientHeight,
         layout: {
           background: { type: "solid", color: "#ffffff" },
           textColor: "#111827",
