@@ -39,17 +39,29 @@
     #stock-main a:hover { text-decoration: underline; }
 
     #sidebar-placeholder { width: 280px; flex-shrink: 0; }
-    /**#chart { height: 100%; }**/
-    #chart {height: calc(100% - 18px);   /* <-- this is the gutter */overflow: visible;}
-    #chartWrap.chart-wrap {height: 320px;          /* ← change this number to whatever you want */margin-top: 10px; box-sizing: border-box; overflow: visible;}
-    .chart-x-label {
+    
+    #chartWrap.chart-wrap{
+      height: 320px;          /* adjust as needed */
+      margin-top: 5px;
+      box-sizing: border-box;
+      position: relative;
+      padding-bottom: 22px;   /* gutter space for x-axis labels */
+      overflow: visible;
+    }
+    
+    #chart{
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      bottom: 22px;           /* must match padding-bottom */
+    }
+    
+    .chart-x-label{
       margin-top: 4px;
       text-align: center;
       font-size: 11px;
-      color: #6b7280; /* Tailwind gray-500 */
+      color: #6b7280;
       letter-spacing: 0.02em;
     }
-
   </style>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -110,7 +122,7 @@
         <div class="font-semibold text-gray-800">Price Chart</div>
         <div class="muted" style="margin-top:4px;">Daily candles (last ~6 months)</div>
         <div id="chartWrap" class="chart-wrap">
-          <div id="chart" style="height:100%;"></div>
+          <div id="chart"></div>
         </div>
         <div class="chart-x-label">Date</div>
         <div class="muted" id="chartStatus" style="margin-top:8px;"></div>
