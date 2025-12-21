@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stock Quote</title>
+
+  <style>
+    /* Scope styles to main content ONLY so sidebar isn't impacted */
+    #stock-main { padding: 16px; }
+
+    #stock-main .wrap { max-width: 980px; }
+    #stock-main .card { border: 1px solid #ddd; border-radius: 14px; padding: 16px; margin-top: 12px; background: #fff; }
+    #stock-main .muted { color:#666; font-size: 12px; }
+    #stock-main .title { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+    #stock-main .sym { font-size: 20px; font-weight: 800; }
+    #stock-main .name { font-size: 14px; color:#444; }
+    #stock-main .big { font-size: 40px; font-weight: 900; margin: 8px 0 4px; }
+    #stock-main .chg { font-weight: 800; }
+    #stock-main .pos { color: #0a7a2f; }
+    #stock-main .neg { color: #b00020; }
+
+    #stock-main .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 900px) { #stock-main .grid2 { grid-template-columns: 1fr; } }
+
+    #stock-main table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    #stock-main td { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; vertical-align: top; }
+    #stock-main td:first-child { color:#444; }
+
+    #stock-main .error { color:#b00020; font-weight: 700; }
+    #stock-main code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    #stock-main .pill {
+      display:inline-flex; gap:6px; align-items:center; padding:4px 10px;
+      border:1px solid #eee; border-radius: 999px; font-size:12px; color:#444; background:#fafafa;
+    }
+
+    #stock-main a { text-decoration: none; }
+    #stock-main a:hover { text-decoration: underline; }
+
+    #sidebar-placeholder { width: 280px; flex-shrink: 0; }
+  </style>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex bg-gray-50">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/dnb/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main id="stock-main" class="flex-1 ml-64">
+    <div class="wrap">
+      <div class="title">
+        <div class="sym" id="sym">—</div>
+        <div class="name" id="name"></div>
+        <span class="pill" id="asof" style="display:none;"></span>
+        <span class="pill" id="exchange" style="display:none;"></span>
+      </div>
+
+      <div class="muted">
+        Source: <code>/api/finnhub-stock</code> (Finnhub key stays server-side)
+      </div>
+
+      <div class="card" id="out">
+        <div class="muted" id="status">Loading…</div>
+      </div>
+
+      <div class="grid2">
+        <div class="card" id="earningsCard"><div class="muted">Loading earnings…</div></div>
+        <div class="card" id="analystCard"><div class="muted">Loading analyst data…</div></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card" id="fundCard"><div class="muted">Loading fundamentals…</div></div>
+        <div class="card" id="marketCard"><div class="muted">Loading market stats…</div></div>
+      </div>
+
+      <div class="card" id="newsCard"><div class="muted">Loading news…</div></div>
+
+    </div>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function fmtNumber(x, decimals = 2) {
+      const n = Number(x);
+      if (!Number.isFinite(n)) return "—";
+      return n.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    }
+
+    function fmtInt(x) {
+      const n = Number(x);
+      if (!Number.isFinite(n)) return "—";
+      return n.toLocaleString();
+    }
+
+    function fmtMoney(x) {
+      const n = Number(x);
+      if (!Number.isFinite(n)) return "—";
+      return `$${fmtNumber(n, 2)}`;
+    }
+
+    function fmtPct(x, decimals = 1) {
+      const n = Number(x);
+      if (!Number.isFinite(n)) return "—";
+      return `${fmtNumber(n, decimals)}%`;
+    }
+
+    function unixToLocal(unix) {
+      if (!unix) return null;
+      const d = new Date(unix * 1000);
+      return d.toLocaleString();
+    }
+
+    function renderError(title, detail) {
+      $("out").innerHTML = `
+        <div class="error">${title}</div>
+        ${detail ? `<div class="muted" style="margin-top:6px;">${detail}</div>` : ""}
+      `;
+      $("earningsCard").innerHTML = `<div class="error">Failed.</div><div class="muted">${detail || ""}</div>`;
+      $("analystCard").innerHTML = `<div class="error">Failed.</div><div class="muted">${detail || ""}</div>`;
+      $("fundCard").innerHTML = `<div class="error">Failed.</div><div class="muted">${detail || ""}</div>`;
+      $("marketCard").innerHTML = `<div class="error">Failed.</div><div class="muted">${detail || ""}</div>`;
+      $("newsCard").innerHTML = `<div class="error">Failed.</div><div class="muted">${detail || ""}</div>`;
+    }
+
+    function renderTop(data) {
+      const q = data.quote || {};
+      const price = q.price;
+      const change = q.change;
+      const changePercent = q.changePercent;
+      const isNeg = String(change ?? "").trim().startsWith("-");
+
+      $("sym").textContent = data.symbol || "—";
+      $("name").textContent = data.name || "";
+      if (data.exchange) {
+        $("exchange").style.display = "inline-flex";
+        $("exchange").textContent = data.exchange;
+      }
+
+      if (q.asOfUnix) {
+        $("asof").style.display = "inline-flex";
+        $("asof").textContent = `As of: ${unixToLocal(q.asOfUnix)}`;
+      }
+
+      $("out").innerHTML = `
+        <div class="big">${price != null ? fmtMoney(price) : "—"}</div>
+        <div class="chg ${isNeg ? "neg" : "pos"}">
+          ${change != null ? `${isNeg ? "" : "+"}${fmtNumber(change, 2)} (${fmtPct(changePercent, 2)})` : "—"}
+        </div>
+
+        <table>
+          <tr><td>Previous Close</td><td style="text-align:right;">${fmtMoney(q.previousClose)}</td></tr>
+          <tr><td>Open</td><td style="text-align:right;">${fmtMoney(q.open)}</td></tr>
+          <tr><td>High</td><td style="text-align:right;">${fmtMoney(q.high)}</td></tr>
+          <tr><td>Low</td><td style="text-align:right;">${fmtMoney(q.low)}</td></tr>
+        </table>
+      `;
+    }
+
+    function renderEarnings(data) {
+      const e = data.earnings || {};
+      const next = e.next || null;
+      const last = e.last || null;
+
+      $("earningsCard").innerHTML = `
+        <div class="font-semibold text-gray-800">Earnings Snapshot</div>
+        <div class="muted" style="margin-top:4px;">Next + last reported (when available)</div>
+
+        <table>
+          <tr><td>Next Earnings Date</td><td style="text-align:right;">${next?.date || "—"}</td></tr>
+          <tr><td>Next EPS Est.</td><td style="text-align:right;">${next?.epsEstimate != null ? fmtNumber(next.epsEstimate, 2) : "—"}</td></tr>
+          <tr><td>Last Period</td><td style="text-align:right;">${last?.period || "—"}</td></tr>
+          <tr><td>Last EPS (Actual)</td><td style="text-align:right;">${last?.actual != null ? fmtNumber(last.actual, 2) : "—"}</td></tr>
+          <tr><td>Last EPS (Estimate)</td><td style="text-align:right;">${last?.estimate != null ? fmtNumber(last.estimate, 2) : "—"}</td></tr>
+          <tr><td>Surprise %</td><td style="text-align:right;">${last?.surprisePercent != null ? fmtPct(last.surprisePercent, 2) : "—"}</td></tr>
+        </table>
+      `;
+    }
+
+    function renderAnalyst(data) {
+      const a = data.analyst || {};
+      const r = a.recommendation || null;
+      const pt = a.priceTarget || {};
+      const price = data.quote?.price ?? null;
+      const target = pt.targetMean ?? null;
+
+      let implied = "—";
+      if (price != null && target != null && Number(price) > 0) {
+        implied = fmtPct(((Number(target) / Number(price)) - 1) * 100, 1);
+      }
+
+      $("analystCard").innerHTML = `
+        <div class="font-semibold text-gray-800">Analyst Sentiment</div>
+        <div class="muted" style="margin-top:4px;">Latest consensus + target</div>
+
+        <table>
+          <tr><td>Period</td><td style="text-align:right;">${r?.period || "—"}</td></tr>
+          <tr><td>Buy / Hold / Sell</td><td style="text-align:right;">${r ? `${r.buy ?? 0} / ${r.hold ?? 0} / ${r.sell ?? 0}` : "—"}</td></tr>
+          <tr><td>Target (Mean)</td><td style="text-align:right;">${target != null ? fmtMoney(target) : "—"}</td></tr>
+          <tr><td>Implied Upside</td><td style="text-align:right;">${implied}</td></tr>
+        </table>
+      `;
+    }
+
+    function renderFundamentals(data) {
+      const f = data.fundamentalsTTM || {};
+
+      $("fundCard").innerHTML = `
+        <div class="font-semibold text-gray-800">Key Fundamentals (TTM)</div>
+        <div class="muted" style="margin-top:4px;">High-signal metrics only</div>
+
+        <table>
+          <tr><td>Revenue (TTM)</td><td style="text-align:right;">${f.revenueTTM != null ? fmtMoney(f.revenueTTM) : "—"}</td></tr>
+          <tr><td>EBITDA (TTM)</td><td style="text-align:right;">${f.ebitdaTTM != null ? fmtMoney(f.ebitdaTTM) : "—"}</td></tr>
+          <tr><td>EBITDA Margin</td><td style="text-align:right;">${(f.ebitdaTTM != null && f.revenueTTM != null && Number(f.revenueTTM) !== 0)
+            ? fmtPct((Number(f.ebitdaTTM)/Number(f.revenueTTM))*100, 1) : "—"}</td></tr>
+          <tr><td>EV / EBITDA</td><td style="text-align:right;">${f.evEbitdaTTM != null ? fmtNumber(f.evEbitdaTTM, 2) : "—"}</td></tr>
+          <tr><td>P/E (TTM)</td><td style="text-align:right;">${f.peTTM != null ? fmtNumber(f.peTTM, 2) : "—"}</td></tr>
+          <tr><td>EPS (TTM)</td><td style="text-align:right;">${f.epsTTM != null ? fmtNumber(f.epsTTM, 2) : "—"}</td></tr>
+          <tr><td>Net Debt (TTM)</td><td style="text-align:right;">${f.netDebtTTM != null ? fmtMoney(f.netDebtTTM) : "—"}</td></tr>
+          <tr><td>Free Cash Flow (TTM)</td><td style="text-align:right;">${f.freeCashFlowTTM != null ? fmtMoney(f.freeCashFlowTTM) : "—"}</td></tr>
+        </table>
+      `;
+    }
+
+    function renderMarket(data) {
+      const m = data.market || {};
+
+      $("marketCard").innerHTML = `
+        <div class="font-semibold text-gray-800">Market Stats</div>
+        <div class="muted" style="margin-top:4px;">Context around the price</div>
+
+        <table>
+          <tr><td>52w High</td><td style="text-align:right;">${m.week52High != null ? fmtMoney(m.week52High) : "—"}</td></tr>
+          <tr><td>52w Low</td><td style="text-align:right;">${m.week52Low != null ? fmtMoney(m.week52Low) : "—"}</td></tr>
+          <tr><td>Avg Volume (approx)</td><td style="text-align:right;">${m.avgVolume30d != null ? fmtNumber(m.avgVolume30d, 2) : "—"}</td></tr>
+          <tr><td>Shares Out.</td><td style="text-align:right;">${m.sharesOutstanding != null ? fmtNumber(m.sharesOutstanding, 2) + "M" : "—"}</td></tr>
+          <tr><td>Market Cap</td><td style="text-align:right;">${m.marketCap != null ? "$" + fmtNumber(m.marketCap, 0) + "M" : "—"}</td></tr>
+        </table>
+      `;
+    }
+
+    function renderNews(data) {
+      const items = Array.isArray(data.news) ? data.news : [];
+
+      if (!items.length) {
+        $("newsCard").innerHTML = `
+          <div class="font-semibold text-gray-800">Recent News</div>
+          <div class="muted" style="margin-top:6px;">No recent headlines returned.</div>
+        `;
+        return;
+      }
+
+      $("newsCard").innerHTML = `
+        <div class="font-semibold text-gray-800">Recent News</div>
+        <div class="muted" style="margin-top:4px;">Last 5 headlines (no fluff)</div>
+        <div style="margin-top:10px; display:flex; flex-direction:column; gap:10px;">
+          ${items.map(n => `
+            <div>
+              <a href="${n.url}" target="_blank" rel="noopener" class="text-sm font-medium text-gray-800">${n.headline}</a>
+              <div class="muted">${n.source || ""}${n.datetime ? " • " + new Date(n.datetime*1000).toLocaleString() : ""}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    async function load() {
+      const params = new URLSearchParams(window.location.search);
+      const symbol = (params.get("symbol") || "PLAY").trim().toUpperCase();
+
+      try {
+        const url = new URL("/api/finnhub-stock", window.location.origin);
+        url.searchParams.set("symbol", symbol);
+
+        const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
+        let data = null;
+        try { data = await res.json(); } catch {}
+
+        if (!res.ok) {
+          const msg = (data && (data.error || data.Note || data["Error Message"])) || `HTTP ${res.status}`;
+          renderError("Backend error:", String(msg));
+          return;
+        }
+
+        if (!data || data.error) {
+          renderError("No data returned.", data && data.error ? String(data.error) : "");
+          return;
+        }
+
+        renderTop(data);
+        renderEarnings(data);
+        renderAnalyst(data);
+        renderFundamentals(data);
+        renderMarket(data);
+        renderNews(data);
+
+      } catch (e) {
+        renderError("Request failed.", String(e?.message || e));
+      }
+    }
+
+    load();
+  </script>
+
+</body>
+</html>
