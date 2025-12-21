@@ -21,6 +21,7 @@
     textarea { width:100%; border:1px solid #ccc; border-radius:10px; padding:10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas; }
     .actions { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
   </style>
+<script src="https://cdn.tailwindcss.com"></script>  
 </head>
 
 <body class="flex">
@@ -126,7 +127,7 @@
     <div style="margin-top:12px;" class="actions">
       <button class="primary" id="btnIngestPrimary">Ingest Primary Filing (HTML)</button>
       <button class="secondary" id="btnRefreshExhibits">Find Exhibits</button>
-      <select id="exhibitSelect” style="min-width:260px; display:none;"></select>
+      <select id="exhibitSelect" style="min-width:260px; display:none;"></select>
       <button class="primary" id="btnIngestExhibit" style="display:none;">Ingest Selected Exhibit (HTML)</button>
     </div>
 
