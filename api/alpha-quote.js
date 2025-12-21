@@ -10,12 +10,13 @@ export default async function handler(req, res) {
   const oUrl = `${base}?function=OVERVIEW&symbol=${encodeURIComponent(symbol)}&apikey=${API_KEY}`;
   const iUrl = `${base}?function=TIME_SERIES_INTRADAY&symbol=${encodeURIComponent(symbol)}&interval=1min&outputsize=compact&apikey=${API_KEY}`;
 
+
   try {
     const [qr, or, ir] = await Promise.all([fetch(qUrl), fetch(oUrl), fetch(iUrl)]);
     const [qData, oData, iData] = await Promise.all([qr.json(), or.json(), ir.json()]);
 
     // Alpha Vantage throttling / errors
-    const err = qData.Note || qData["Error Message"] || oData.Note || oData["Error Message"] || iData.Note || iData["Error Message"];
+    const err = qData.Note || qData.Information || qData["Error Message"] || oData.Note || oData.Information || oData["Error Message"] || iData.Note || iData.Information || iData["Error Message"];
     if (err) return res.status(429).json({ error: String(err) });
 
     const quote = qData["Global Quote"] || {};
