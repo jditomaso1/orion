@@ -185,10 +185,15 @@
         renderTable(data.company || ticker, data.cik10 || "—", rows);
         setStatus("Done.");
       } catch (e) {
-        renderError(`Error: ${e.message}`);
+        const msg =
+          (e && e.message) ? e.message :
+          (typeof e === "string") ? e :
+          (() => { try { return JSON.stringify(e); } catch { return String(e); } })();
+      
+        renderError(`Error: ${msg}`);
         setStatus("Failed.");
       }
-    }
+
 
 
     $("go").addEventListener("click", loadFilings);
