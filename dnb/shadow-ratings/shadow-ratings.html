@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shadow Ratings | Private Credit AI</title>
+  <meta name="description" content="Rules-based shadow ratings for private credit: leverage, coverage, size, structure, covenants, liquidity, sponsor, sector." />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    :root{ --bg:#f4f4f4; --card:#fff; --text:#111; --muted:#666; --border:#e8e8e8; }
+    *{ box-sizing:border-box }
+    body{ font-family:Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin:0; background:var(--bg); color:var(--text); }
+    .page{ max-width:1100px; margin:24px auto; padding:20px }
+    .grid{ display:grid; grid-template-columns:1.2fr 1fr; gap:18px }
+    @media (max-width:900px){ .grid{ grid-template-columns:1fr } }
+    .cardish{ background:var(--card); border-radius:12px; border:1px solid var(--border); box-shadow:0 4px 12px rgba(0,0,0,.05); padding:16px; }
+    .h{ margin:0 0 12px; font-size:1rem; font-weight:700; color:#222 }
+    .row{ display:grid; grid-template-columns:1fr 180px; gap:12px; align-items:center; margin-bottom:12px }
+    label{ font-size:.92rem; color:#444 }
+    input[type="number"], select{ width:100%; padding:10px 12px; font-size:14px; border:1px solid #d9d9d9; border-radius:10px; background:#fff }
+    button.primary{ padding:10px 16px; border-radius:8px; border:1px solid #111; background:#111; color:#fff; font-weight:600; cursor:pointer }
+    button.primary:hover{ opacity:.92 }
+    .result{ display:flex; align-items:baseline; gap:12px; }
+    .rating{ font-weight:700; font-size:28px }
+    .pill{ display:inline-block; padding:4px 8px; border:1px solid #e5e7eb; background:#f9fafb; color:#374151; border-radius:999px; font-size:12px }
+    .muted{ color:#666; font-size:13px; margin-top:6px }
+    table{ width:100%; border-collapse:collapse; margin-top:14px; font-size:13px }
+    th, td{ text-align:left; padding:8px 6px; border-bottom:1px solid #f0f0f0 }
+    th{ font-weight:600; color:#333 }
+    .footer-note{ margin-top:12px; color:#666; font-size:12px }
+  </style>
+</head>
+  
+<body class="flex">
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/private-credit/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const s = document.getElementById(last);
+      const i = document.getElementById("icon-" + last);
+      if (s && i) {
+        s.classList.remove("hidden");
+        i.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+
+  <!-- MAIN CONTENT -->
+  
+  <main class="flex-1 ml-64 page">
+    <h1 style="margin:0 0 8px;font-size:26px;font-weight:700;">Shadow Ratings</h1>
+    <p style="margin:0 0 20px;color:#666;">Transparent, rules-based scoring. Toggle framework & industry, enter inputs on the left, see the result on the right.</p>
+
+    <div class="grid">
+      <!-- LEFT: INPUTS -->
+      <div class="cardish">
+        <h2 class="h">Inputs</h2>
+
+        <!-- Framework / Industry selectors -->
+        <div class="row">
+          <label for="framework">Framework</label>
+          <select id="framework">
+            <option value="moodys">Moody’s</option>
+            <option value="sp" selected>S&amp;P</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="industry">Industry</label>
+          <select id="industry"></select>
+        </div>
+
+        <!-- Dynamic inputs from the active module -->
+        <div id="inputs"></div>
+
+        <button id="calcBtn" class="primary" style="margin-top:8px;">Calculate Rating</button>
+      </div>
+
+      <!-- RIGHT: OUTPUTS -->
+      <div class="cardish">
+        <h2 class="h">Result</h2>
+        <div class="result">
+          <div class="rating" id="finalRating">—</div>
+          <div class="pill" id="numeric">Score: —</div>
+        </div>
+        <div class="muted" id="explain">Enter inputs and click calculate.</div>
+
+        <table id="metricsTable" aria-label="Key metrics">
+          <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+          <tbody></tbody>
+        </table>
+
+        <h3 class="h" style="margin-top:16px;">Drivers</h3>
+        <ul id="drivers" style="margin:0;padding-left:18px;"></ul>
+      </div>
+    </div>
+
+    <p class="footer-note">UI only re-skin. Scoring logic & inputs are loaded from the active module (e.g., <code>frameworks/sp/media.js</code>).</p>
+  </main>
+
+  <!-- App wiring -->
+  <script type="module" src="./js/main.js"></script>
+      <!--Ask Orion Bot -->
+    <div id="orion-chat-include"></div>
+    <script>
+      async function loadOrionChat() {
+        const res = await fetch("/private-credit/includes/orion-chat.html");
+        const html = await res.text();
+    
+        // Insert into DOM
+        const container = document.getElementById("orion-chat-include");
+        container.innerHTML = html;
+    
+        // --- EXECUTE SCRIPTS ---
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement("script");
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+          oldScript.remove();
+        });
+      }
+    
+      loadOrionChat();
+    </script>
+</body>
+</html>
