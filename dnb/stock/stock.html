@@ -360,7 +360,7 @@
     
       chart = LightweightCharts.createChart(el, {
         width: wrap.clientWidth,
-        height: wrap.clientHeight - 18, // must match the padding-bottom
+        height: wrap.clientHeight - CHART_CUSHION_PX,
         layout: { background: { type: "solid", color: "#ffffff" }, textColor: "#111827" },
         grid: { vertLines: { color: "#f3f4f6" }, horzLines: { color: "#f3f4f6" } },
         rightPriceScale: { borderColor: "#e5e7eb" },
@@ -379,7 +379,7 @@
       new ResizeObserver(() => {
         chart.applyOptions({
           width: wrap.clientWidth,
-          height: wrap.clientHeight - 18
+          height: wrap.clientHeight - CHART_CUSHION_PX
         });
       }).observe(wrap);
     }
