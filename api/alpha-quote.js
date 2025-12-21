@@ -3,7 +3,7 @@ export default async function handler(req, res) {
   const API_KEY = process.env.ALPHA_VANTAGE_KEY;
 
   if (!API_KEY) {
-    return res.status(500).json({ error: "Missing Alpha Vantage API key" });
+    return res.status(500).json({ error: "HW1PGZHEQTKQLR7Z" });
   }
 
   const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`;
