@@ -7,10 +7,11 @@ export default async function handler(req, res) {
   try {
     const r = await fetch(url, {
       headers: {
-        // Helps avoid some blocks
-        "User-Agent": "Mozilla/5.0",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
         "Accept": "application/json",
-      },
+        "Referer": "https://finance.yahoo.com/",
+        "Origin": "https://finance.yahoo.com"
+      }
     });
 
     if (!r.ok) {
