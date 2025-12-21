@@ -52,7 +52,7 @@
 
   <script>
   async function injectSidebar() {
-    const res = await fetch("/private-credit/sidebar.html");
+    const res = await fetch("/dnb/sidebar.html");
     document.getElementById("sidebar-placeholder").innerHTML = await res.text();
   
     window.toggleSection = function (id) {
@@ -110,7 +110,7 @@
       // Inject your existing sidebar HTML
       async function injectSidebar() {
         try {
-          const res = await fetch("/private-credit/sidebar.html");
+          const res = await fetch("/dnb/sidebar.html");
           if (res.ok) {
             const html = await res.text();
             document.getElementById("sidebar-placeholder").innerHTML = html;
@@ -431,7 +431,7 @@
     <div id="orion-chat-include"></div>
     <script>
       async function loadOrionChat() {
-        const res = await fetch("/private-credit/includes/orion-chat.html");
+        const res = await fetch("/dnb/includes/orion-chat.html");
         const html = await res.text();
     
         // Insert into DOM
