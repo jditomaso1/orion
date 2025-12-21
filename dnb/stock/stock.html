@@ -41,18 +41,18 @@
     #sidebar-placeholder { width: 280px; flex-shrink: 0; }
     
     #chartWrap.chart-wrap{
-      height: 320px;          /* adjust as needed */
+      height: 360px;          /* adjust as needed */
       margin-top: 5px;
       box-sizing: border-box;
+      overflow: hidden;
       position: relative;
-      padding-bottom: 50px;   /* gutter space for x-axis labels */
-      overflow: visible;
+      padding-bottom: 0;   /* gutter space for x-axis labels */
     }
     
     #chart{
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      bottom: 22px;           /* must match padding-bottom */
+      width: 100%;
+      height: 100%;        /* <- chart fills the wrap */
+      position: relative;  /* <- no absolute positioning */
     }
     
     .chart-x-label{
@@ -384,7 +384,7 @@
     
       chart = LightweightCharts.createChart(el, {
         width: wrap.clientWidth,
-        height: el.clientHeight,
+        height: wrap.clientHeight,
         layout: {
           background: { type: "solid", color: "#ffffff" },
           textColor: "#111827",
