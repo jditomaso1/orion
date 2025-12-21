@@ -405,46 +405,38 @@
         url.searchParams.set("symbol", symbol);
         url.searchParams.set("resolution", "D");
     
-        console.log("Candles URL:", url.toString());
-        
-        const r = await fetch(url.toString());
-        const t = await r.text();
-        
-        console.log("Candles HTTP:", r.status);
-        console.log("Candles body (first 300):", t.slice(0, 300));
-        
-        let data = null;
-        try { data = t ? JSON.parse(t) : null; } catch (e) {
-          throw new Error("Response was not JSON");
-        }
+        // ✅ use the same safe fetch you used for /api/finnhub-stock
+        const data = await fetchJsonSafe(url.toString());
         const c = data?.candles;
     
-        if (!c) { $("chartStatus").textContent = "No response body."; return; }
+        if (!c) { $("chartStatus").textContent = "No candles object returned."; return; }
         if (c.s === "no_data") { $("chartStatus").textContent = "No candle data available for this symbol."; return; }
         if (c.s !== "ok" || !Array.isArray(c.t) || c.t.length === 0) {
-          $("chartStatus").textContent = "Unexpected candle response.";
+          $("chartStatus").textContent = `Unexpected candle response: ${JSON.stringify(c).slice(0, 200)}`;
           return;
         }
     
         const bars = c.t.map((t, i) => ({
-          time: t,
-          open: c.o[i],
-          high: c.h[i],
-          low: c.l[i],
-          close: c.c[i],
+          time: t,                 // expects unix seconds; finnhub uses seconds
+          open: Number(c.o[i]),
+          high: Number(c.h[i]),
+          low: Number(c.l[i]),
+          close: Number(c.c[i]),
         }));
     
-        requestAnimationFrame(() => {
-          initChart();
-          series.setData(bars);
-          chart.timeScale().fitContent();
-        });
+        // Optional but helps prevent weirdness if reloading symbol
+        if (chart) { chart.remove(); chart = null; series = null; }
+    
+        initChart();
+        series.setData(bars);
+        chart.timeScale().fitContent();
     
         $("chartStatus").textContent = "";
       } catch (e) {
         $("chartStatus").textContent = `Chart failed: ${String(e?.message || e)}`;
       }
     }
+
 
     load().catch(console.error);
     loadChart(symbol).catch(console.error);
