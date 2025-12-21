@@ -364,7 +364,7 @@
         layout: {
           background: { type: "solid", color: "#ffffff" },
           textColor: "#111827",
-          padding: { bottom: 20 } // ✅ move padding here
+          padding: { bottom: 20 }
         },
         grid: {
           vertLines: { color: "#f3f4f6" },
@@ -393,12 +393,6 @@
       }).observe(wrap);
     }
     
-    chart.applyOptions({
-      layout: {
-        padding: {
-          bottom: 20
-        }
-      }
     });
 
     async function loadChart(symbol) {
