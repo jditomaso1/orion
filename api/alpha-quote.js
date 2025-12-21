@@ -1,25 +1,24 @@
-export default async function handler(req, res) {
-  const symbol = (req.query.symbol || "PLAY").toUpperCase();
-  const API_KEY = process.env.ALPHA_VANTAGE_KEY;
+<script>
+  async function fetchQuote() {
+    const symbol = document.getElementById("ticker").value.trim().toUpperCase() || "PLAY";
 
-  if (!API_KEY) {
-    return res.status(500).json({ error: "HW1PGZHEQTKQLR7Z" });
-  }
-
-  const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`;
-
-  try {
-    const r = await fetch(url);
+    const r = await fetch(`/api/alpha-quote?symbol=${encodeURIComponent(symbol)}`);
     const data = await r.json();
 
-    if (data.Note || data["Error Message"]) {
-      return res.status(429).json(data);
+    if (!r.ok) {
+      alert(data?.error || JSON.stringify(data));
+      return;
     }
 
-    res.setHeader("Cache-Control", "s-maxage=60"); // cache 1 min
-    return res.status(200).json(data);
+    const q = data["Global Quote"];
+    if (!q) {
+      alert("No quote returned: " + JSON.stringify(data));
+      return;
+    }
 
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
+    document.getElementById("price").textContent = `$${Number(q["05. price"]).toFixed(2)}`;
+    document.getElementById("change").textContent =
+      `${q["09. change"]} (${q["10. change percent"]})`;
+    document.getElementById("day").textContent = q["07. latest trading day"];
   }
-}
+</script>
