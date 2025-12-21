@@ -420,15 +420,6 @@
       }).observe(wrap);
     }
 
-    
-      series = chart.addCandlestickSeries();
-    
-      new ResizeObserver(() => {
-        const hh = Math.max(120, wrap.clientHeight - X_AXIS_GUTTER);
-        chart.applyOptions({ width: wrap.clientWidth, height: hh });
-      }).observe(wrap);
-    }
-
     async function loadChart(symbol) {
       $("chartStatus").textContent = "Loading chart…";
     
