@@ -121,7 +121,24 @@
     const params = new URLSearchParams(window.location.search);
     const symbol = (params.get("symbol") || "PLAY").trim().toUpperCase();
 
-
+    // ✅ PUT IT HERE
+    async function fetchJsonSafe(url) {
+      const res = await fetch(url, { headers: { Accept: "application/json" } });
+      const raw = await res.text();
+  
+      let data = null;
+      try { data = raw ? JSON.parse(raw) : null; } catch {}
+  
+      if (!res.ok) {
+        const msg =
+          (data && (data.error || data.message)) ||
+          raw ||
+          `HTTP ${res.status}`;
+        throw new Error(String(msg));
+      }
+      return data;
+    }
+    
     function fmtNumber(x, decimals = 2) {
       const n = Number(x);
       if (!Number.isFinite(n)) return "—";
@@ -379,36 +396,22 @@
         url.searchParams.set("symbol", symbol);
         url.searchParams.set("resolution", "D");
     
-        const res = await fetch(url.toString(), { headers: { Accept: "application/json" } });
-        let data = null;
-        let txt = "";
-        try { data = await res.json(); } catch { txt = await res.text(); }
-        if (!res.ok) throw new Error((data && data.error) || txt || `HTTP ${res.status}`);
-
+        const data = await fetchJsonSafe(url.toString());
         const c = data?.candles;
-        
-        if (!c) {
-          $("chartStatus").textContent = "No response body.";
-          return;
-        }
-        
-        if (c.s === "no_data") {
-          $("chartStatus").textContent = "No candle data available for this symbol.";
-          return;
-        }
-        
+    
+        if (!c) { $("chartStatus").textContent = "No response body."; return; }
+        if (c.s === "no_data") { $("chartStatus").textContent = "No candle data available for this symbol."; return; }
         if (c.s !== "ok" || !Array.isArray(c.t) || c.t.length === 0) {
           $("chartStatus").textContent = "Unexpected candle response.";
           return;
         }
     
-        // Convert Finnhub arrays -> lightweight-charts format
         const bars = c.t.map((t, i) => ({
-          time: t,          // unix seconds
+          time: t,
           open: c.o[i],
           high: c.h[i],
           low: c.l[i],
-          close: c.c[i]
+          close: c.c[i],
         }));
     
         initChart();
