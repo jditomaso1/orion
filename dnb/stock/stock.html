@@ -98,9 +98,7 @@
       <div class="card" id="chartCard">
         <div class="font-semibold text-gray-800">Price Chart</div>
         <div class="muted" style="margin-top:4px;">Daily candles (last ~6 months)</div>
-        <div id="chartWrap" style="height:340px; margin-top:10px; padding-bottom:18px; box-sizing:border-box;">
-          <div id="chart" style="height:calc(100% - 18px);"></div>
-        </div>
+        <div id="chart" style="height:340px; margin-top:10px; padding-bottom:18px; box-sizing:border-box;"></div>
         <div class="muted" id="chartStatus" style="margin-top:8px;"></div>
       </div>
       <div class="grid2">
@@ -351,16 +349,13 @@
     
     let chart, series;
     
-    const CHART_CUSHION_PX = 18; // <-- tweak this (12–24 is typical)
-    
     function initChart() {
-      const wrap = $("chartWrap");
       const el = $("chart");
       el.innerHTML = "";
     
       chart = LightweightCharts.createChart(el, {
-        width: wrap.clientWidth,
-        height: wrap.clientHeight - CHART_CUSHION_PX,
+        width: el.clientWidth,
+        height: el.clientHeight, // ✅ DO NOT subtract anything
         layout: { background: { type: "solid", color: "#ffffff" }, textColor: "#111827" },
         grid: { vertLines: { color: "#f3f4f6" }, horzLines: { color: "#f3f4f6" } },
         rightPriceScale: { borderColor: "#e5e7eb" },
@@ -378,10 +373,10 @@
     
       new ResizeObserver(() => {
         chart.applyOptions({
-          width: wrap.clientWidth,
-          height: wrap.clientHeight - CHART_CUSHION_PX
+          width: el.clientWidth,
+          height: el.clientHeight
         });
-      }).observe(wrap);
+      }).observe(el);
     }
     
     async function loadChart(symbol) {
