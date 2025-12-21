@@ -3,57 +3,42 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Alpha Vantage Stock Quote (Basic)</title>
+  <title>Stock Quote</title>
   <style>
     body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 760px; }
-    .card { border: 1px solid #ddd; border-radius: 12px; padding: 14px; }
-    label { display:block; font-size: 12px; color:#444; margin-bottom:6px; }
-    input { width:100%; padding:10px; border:1px solid #ccc; border-radius:10px; }
-    button { padding:10px 12px; border:0; border-radius:10px; background:#111; color:#fff; cursor:pointer; }
-    button:disabled { opacity: .6; cursor: not-allowed; }
+    .wrap { max-width: 860px; }
+    .card { border: 1px solid #ddd; border-radius: 14px; padding: 16px; margin-top: 12px; }
     .muted { color:#666; font-size: 12px; }
-    .big { font-size: 32px; font-weight: 800; margin: 6px 0; }
-    .chg { font-weight: 700; }
+    .title { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+    .sym { font-size: 20px; font-weight: 800; }
+    .name { font-size: 14px; color:#444; }
+    .big { font-size: 40px; font-weight: 900; margin: 8px 0 4px; }
+    .chg { font-weight: 800; }
     .pos { color: #0a7a2f; }
     .neg { color: #b00020; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     td { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
     td:first-child { color:#444; }
-    .error { color:#b00020; font-weight: 600; }
+    .error { color:#b00020; font-weight: 700; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .pill { display:inline-flex; gap:6px; align-items:center; padding:4px 10px; border:1px solid #eee; border-radius: 999px; font-size:12px; color:#444; background:#fafafa; }
   </style>
 </head>
 
 <body>
-  <h2 style="margin:0 0 8px;">Alpha Vantage — Basic Quote Pull</h2>
-  <div class="muted">
-    Uses <code>GLOBAL_QUOTE</code> via your backend proxy at <code>/api/alpha-quote</code>.
-    (API key stays server-side in <code>ALPHA_VANTAGE_KEY</code>.)
-  </div>
-
-  <div class="row" style="margin-top:14px;">
-    <div class="card">
-      <label>Backend endpoint</label>
-      <input id="endpoint" value="/api/alpha-quote" autocomplete="off" />
-      <div class="muted" style="margin-top:8px;">
-        If you deploy under a different path, update this.
-      </div>
+  <div class="wrap">
+    <div class="title">
+      <div class="sym" id="sym">—</div>
+      <div class="name" id="name"></div>
+      <span class="pill" id="asof" style="display:none;"></span>
+    </div>
+    <div class="muted">
+      Source: <code>/api/alpha-quote</code> (Alpha Vantage key stays server-side)
     </div>
 
-    <div class="card">
-      <label>Ticker</label>
-      <input id="symbol" value="PLAY" />
-      <div style="margin-top:10px; display:flex; gap:10px; align-items:center;">
-        <button id="btn">Fetch Quote</button>
-        <span id="status" class="muted"></span>
-      </div>
-      <div class="muted" style="margin-top:8px;">Tip: press Enter to fetch.</div>
+    <div class="card" id="out">
+      <div class="muted" id="status">Loading…</div>
     </div>
-  </div>
-
-  <div id="out" class="card" style="margin-top:14px; max-width:760px;">
-    <div class="muted">Result will appear here.</div>
   </div>
 
   <script>
@@ -71,7 +56,10 @@
       return n.toLocaleString();
     }
 
-    function setStatus(msg) { $("status").textContent = msg || ""; }
+    function fmtMoney(x) {
+      if (x == null) return "—";
+      return `$${fmtNumber(x, 2)}`;
+    }
 
     function renderError(title, detail) {
       $("out").innerHTML = `
@@ -80,63 +68,55 @@
       `;
     }
 
-    function normalizeQuote(data, fallbackSymbol) {
-      // Your backend shape (combined object)
-      if (data && (data.price || data.change || data.latestTradingDay)) {
-        return {
-          symbol: data.symbol || fallbackSymbol,
-          latestTradingDay: data.latestTradingDay || "—",
-          price: data.price,
-          change: data.change,
-          changePercent: data.changePercent,
-          previousClose: data.previousClose,
-          open: data.open,
-          high: data.high,
-          low: data.low,
-          volume: data.volume,
-        };
+    function render(data) {
+      const symbol = data.symbol || "—";
+      const name = data.name || "";
+      const asOf = data.asOf || data.latestTradingDay || null;
+
+      $("sym").textContent = symbol;
+      $("name").textContent = name;
+
+      if (asOf) {
+        $("asof").style.display = "inline-flex";
+        $("asof").textContent = `As of: ${asOf}`;
       }
 
-      // Raw Alpha Vantage shape
-      const q = data && data["Global Quote"];
-      if (q && Object.keys(q).length) {
-        return {
-          symbol: q["01. symbol"] || fallbackSymbol,
-          latestTradingDay: q["07. latest trading day"] || "—",
-          price: q["05. price"],
-          change: q["09. change"],
-          changePercent: q["10. change percent"],
-          previousClose: q["08. previous close"],
-          open: q["02. open"],
-          high: q["03. high"],
-          low: q["04. low"],
-          volume: q["06. volume"],
-        };
-      }
+      const price = data.price;
+      const change = data.change;
+      const changePercent = data.changePercent;
+      const isNeg = String(change || "").trim().startsWith("-");
 
-      return null;
+      $("out").innerHTML = `
+        <div class="big">${price ? fmtMoney(price) : "—"}</div>
+        <div class="chg ${isNeg ? "neg" : "pos"}">
+          ${change ? `${isNeg ? "" : "+"}${fmtNumber(change, 2)} (${changePercent || "—"})` : "—"}
+        </div>
+
+        <table>
+          <tr><td>Previous Close</td><td style="text-align:right;">${fmtMoney(data.previousClose)}</td></tr>
+          <tr><td>Open</td><td style="text-align:right;">${fmtMoney(data.open)}</td></tr>
+          <tr><td>High</td><td style="text-align:right;">${fmtMoney(data.high)}</td></tr>
+          <tr><td>Low</td><td style="text-align:right;">${fmtMoney(data.low)}</td></tr>
+          <tr><td>Volume</td><td style="text-align:right;">${fmtInt(data.volume)}</td></tr>
+        </table>
+
+        <div class="muted" style="margin-top:10px;">
+          Market cap: <b>${data.marketCap ? Number(data.marketCap).toLocaleString() : "—"}</b>
+          &nbsp;•&nbsp; P/E (TTM): <b>${data.peRatioTTM || "—"}</b>
+          &nbsp;•&nbsp; EPS (TTM): <b>${data.epsTTM || "—"}</b>
+        </div>
+      `;
     }
 
-    async function fetchQuote() {
-      const endpoint = $("endpoint").value.trim() || "/api/alpha-quote";
-      const symbol = $("symbol").value.trim().toUpperCase();
-
-      if (!symbol) {
-        renderError("Missing ticker symbol.");
-        return;
-      }
-
-      $("btn").disabled = true;
-      setStatus("Fetching…");
+    async function load() {
+      const params = new URLSearchParams(window.location.search);
+      const symbol = (params.get("symbol") || "PLAY").trim().toUpperCase();
 
       try {
-        const url = new URL(endpoint, window.location.origin);
+        const url = new URL("/api/alpha-quote", window.location.origin);
         url.searchParams.set("symbol", symbol);
 
-        const res = await fetch(url.toString(), {
-          headers: { "Accept": "application/json" }
-        });
-
+        const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
         let data = null;
         try { data = await res.json(); } catch {}
 
@@ -146,59 +126,18 @@
           return;
         }
 
-        // Still handle Alpha Vantage throttle fields if they ever leak through
-        if (data && data.Note) {
-          renderError("Rate limit hit:", data.Note);
-          return;
-        }
-        if (data && data["Error Message"]) {
-          renderError("API error:", data["Error Message"]);
+        if (!data || data.error) {
+          renderError("No data returned.", data && data.error ? String(data.error) : "");
           return;
         }
 
-        const q = normalizeQuote(data, symbol);
-        if (!q) {
-          renderError("No quote returned.", "Check the ticker symbol and try again.");
-          return;
-        }
-
-        const isNeg = String(q.change || "").trim().startsWith("-");
-
-        $("out").innerHTML = `
-          <div class="muted">${q.symbol} — last trading day: ${q.latestTradingDay}</div>
-          <div class="big">$${fmtNumber(q.price, 2)}</div>
-          <div class="chg ${isNeg ? "neg" : "pos"}">
-            ${isNeg ? "" : "+"}${fmtNumber(q.change, 2)} (${q.changePercent || "—"})
-          </div>
-
-          <table>
-            <tr><td>Previous Close</td><td style="text-align:right;">$${fmtNumber(q.previousClose, 2)}</td></tr>
-            <tr><td>Open</td><td style="text-align:right;">$${fmtNumber(q.open, 2)}</td></tr>
-            <tr><td>High</td><td style="text-align:right;">$${fmtNumber(q.high, 2)}</td></tr>
-            <tr><td>Low</td><td style="text-align:right;">$${fmtNumber(q.low, 2)}</td></tr>
-            <tr><td>Volume</td><td style="text-align:right;">${fmtInt(q.volume)}</td></tr>
-          </table>
-
-          <div class="muted" style="margin-top:10px;">
-            Fetched from <code>${endpoint}</code>
-          </div>
-        `;
-      } catch (err) {
-        renderError("Request failed.", String(err));
-      } finally {
-        $("btn").disabled = false;
-        setStatus("");
+        render(data);
+      } catch (e) {
+        renderError("Request failed.", String(e));
       }
     }
 
-    // Click + Enter-to-fetch
-    $("btn").addEventListener("click", fetchQuote);
-    $("symbol").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") fetchQuote();
-    });
-
-    // Optional: auto-fetch on load
-    // fetchQuote();
+    load();
   </script>
 </body>
 </html>
