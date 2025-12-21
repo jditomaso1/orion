@@ -360,13 +360,33 @@
       el.innerHTML = "";
     
       chart = LightweightCharts.createChart(el, {
-        width: wrap.clientWidth,
-        height: wrap.clientHeight - CHART_CUSHION_PX,
-        layout: { background: { type: "solid", color: "#ffffff" }, textColor: "#111827" },
-        grid: { vertLines: { color: "#f3f4f6" }, horzLines: { color: "#f3f4f6" } },
-        rightPriceScale: { borderColor: "#e5e7eb" },
-        timeScale: { borderColor: "#e5e7eb" }
+        height: 320,
+        layout: {
+          background: { type: "solid", color: "#ffffff" },
+          textColor: "#111827"
+        },
+        grid: {
+          vertLines: { color: "#f3f4f6" },
+          horzLines: { color: "#f3f4f6" }
+        },
+        rightPriceScale: {
+          borderColor: "#e5e7eb"
+        },
+        timeScale: {
+          borderColor: "#e5e7eb",
+          timeVisible: true,
+          secondsVisible: false
+        },
+        // 👇 THIS is the key fix
+        localization: {
+          dateFormat: "MMM dd"
+        },
+        crosshair: {
+          vertLine: { visible: true },
+          horzLine: { visible: true }
+        }
       });
+
     
       series = chart.addCandlestickSeries();
     
