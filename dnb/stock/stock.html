@@ -307,9 +307,6 @@
     }
 
     async function load() {
-      const params = new URLSearchParams(window.location.search);
-      const symbol = (params.get("symbol") || "PLAY").trim().toUpperCase();
-
       try {
         const url = new URL("/api/finnhub-stock", window.location.origin);
         url.searchParams.set("symbol", symbol);
