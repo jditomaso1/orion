@@ -327,29 +327,21 @@
       try {
         const url = new URL("/api/finnhub-stock", window.location.origin);
         url.searchParams.set("symbol", symbol);
-
-        const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
-        let data = null;
-        try { data = await res.json(); } catch {}
-
-        if (!res.ok) {
-          const msg = (data && (data.error || data.Note || data["Error Message"])) || `HTTP ${res.status}`;
-          renderError("Backend error:", String(msg));
-          return;
-        }
-
+    
+        const data = await fetchJsonSafe(url.toString());
+    
         if (!data || data.error) {
-          renderError("No data returned.", data && data.error ? String(data.error) : "");
+          renderError("No data returned.", data?.error ? String(data.error) : "");
           return;
         }
-
+    
         renderTop(data);
         renderEarnings(data);
         renderAnalyst(data);
         renderFundamentals(data);
         renderMarket(data);
         renderNews(data);
-
+    
       } catch (e) {
         renderError("Request failed.", String(e?.message || e));
       }
