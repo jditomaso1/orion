@@ -301,7 +301,8 @@
       const symbol = (params.get("symbol") || "PLAY").trim().toUpperCase();
 
       try {
-        const url = new URL("/api/finnhub-stock", window.location.origin);
+        const API_BASE = "https://YOUR-VERCEL-PROJECT.vercel.app";
+        const url = new URL("/api/finnhub-stock", API_BASE);
         url.searchParams.set("symbol", symbol);
 
         const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
