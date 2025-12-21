@@ -380,10 +380,11 @@
         url.searchParams.set("resolution", "D");
     
         const res = await fetch(url.toString(), { headers: { Accept: "application/json" } });
-        const data = await res.json();
-    
-        if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
-    
+        let data = null;
+        let txt = "";
+        try { data = await res.json(); } catch { txt = await res.text(); }
+        if (!res.ok) throw new Error((data && data.error) || txt || `HTTP ${res.status}`);
+
         const c = data?.candles;
         if (!c || c.s !== "ok" || !Array.isArray(c.t) || c.t.length === 0) {
           $("chartStatus").textContent = "No candle data returned.";
