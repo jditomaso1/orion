@@ -21,7 +21,6 @@
     td { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
     td:first-child { color:#444; }
     .error { color:#b00020; font-weight: 600; }
-    .ok { color:#0a7a2f; font-weight: 700; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
   </style>
 </head>
@@ -81,6 +80,43 @@
       `;
     }
 
+    function normalizeQuote(data, fallbackSymbol) {
+      // Your backend shape (combined object)
+      if (data && (data.price || data.change || data.latestTradingDay)) {
+        return {
+          symbol: data.symbol || fallbackSymbol,
+          latestTradingDay: data.latestTradingDay || "—",
+          price: data.price,
+          change: data.change,
+          changePercent: data.changePercent,
+          previousClose: data.previousClose,
+          open: data.open,
+          high: data.high,
+          low: data.low,
+          volume: data.volume,
+        };
+      }
+
+      // Raw Alpha Vantage shape
+      const q = data && data["Global Quote"];
+      if (q && Object.keys(q).length) {
+        return {
+          symbol: q["01. symbol"] || fallbackSymbol,
+          latestTradingDay: q["07. latest trading day"] || "—",
+          price: q["05. price"],
+          change: q["09. change"],
+          changePercent: q["10. change percent"],
+          previousClose: q["08. previous close"],
+          open: q["02. open"],
+          high: q["03. high"],
+          low: q["04. low"],
+          volume: q["06. volume"],
+        };
+      }
+
+      return null;
+    }
+
     async function fetchQuote() {
       const endpoint = $("endpoint").value.trim() || "/api/alpha-quote";
       const symbol = $("symbol").value.trim().toUpperCase();
@@ -101,21 +137,16 @@
           headers: { "Accept": "application/json" }
         });
 
-        // Try to parse JSON even on non-200 (your API returns json on errors)
         let data = null;
         try { data = await res.json(); } catch {}
 
-        // Handle backend error payloads
         if (!res.ok) {
-          // Common cases: missing env var, throttling, etc.
-          const msg =
-            (data && (data.error || data.Note || data["Error Message"])) ||
-            `HTTP ${res.status}`;
+          const msg = (data && (data.error || data.Note || data["Error Message"])) || `HTTP ${res.status}`;
           renderError("Backend error:", String(msg));
           return;
         }
 
-        // If you proxy Alpha Vantage directly, you may still receive Note/Error Message fields
+        // Still handle Alpha Vantage throttle fields if they ever leak through
         if (data && data.Note) {
           renderError("Rate limit hit:", data.Note);
           return;
@@ -125,30 +156,27 @@
           return;
         }
 
-        const q = data && data["Global Quote"];
-        if (!q || Object.keys(q).length === 0) {
+        const q = normalizeQuote(data, symbol);
+        if (!q) {
           renderError("No quote returned.", "Check the ticker symbol and try again.");
           return;
         }
 
-        const price = q["05. price"];
-        const change = q["09. change"];
-        const changePct = q["10. change percent"]; // includes % sign
-        const isNeg = String(change || "").trim().startsWith("-");
+        const isNeg = String(q.change || "").trim().startsWith("-");
 
         $("out").innerHTML = `
-          <div class="muted">${q["01. symbol"] || symbol} — last trading day: ${q["07. latest trading day"] || "—"}</div>
-          <div class="big">$${fmtNumber(price, 2)}</div>
+          <div class="muted">${q.symbol} — last trading day: ${q.latestTradingDay}</div>
+          <div class="big">$${fmtNumber(q.price, 2)}</div>
           <div class="chg ${isNeg ? "neg" : "pos"}">
-            ${isNeg ? "" : "+"}${fmtNumber(change, 2)} (${changePct || "—"})
+            ${isNeg ? "" : "+"}${fmtNumber(q.change, 2)} (${q.changePercent || "—"})
           </div>
 
           <table>
-            <tr><td>Previous Close</td><td style="text-align:right;">$${fmtNumber(q["08. previous close"], 2)}</td></tr>
-            <tr><td>Open</td><td style="text-align:right;">$${fmtNumber(q["02. open"], 2)}</td></tr>
-            <tr><td>High</td><td style="text-align:right;">$${fmtNumber(q["03. high"], 2)}</td></tr>
-            <tr><td>Low</td><td style="text-align:right;">$${fmtNumber(q["04. low"], 2)}</td></tr>
-            <tr><td>Volume</td><td style="text-align:right;">${fmtInt(q["06. volume"])}</td></tr>
+            <tr><td>Previous Close</td><td style="text-align:right;">$${fmtNumber(q.previousClose, 2)}</td></tr>
+            <tr><td>Open</td><td style="text-align:right;">$${fmtNumber(q.open, 2)}</td></tr>
+            <tr><td>High</td><td style="text-align:right;">$${fmtNumber(q.high, 2)}</td></tr>
+            <tr><td>Low</td><td style="text-align:right;">$${fmtNumber(q.low, 2)}</td></tr>
+            <tr><td>Volume</td><td style="text-align:right;">${fmtInt(q.volume)}</td></tr>
           </table>
 
           <div class="muted" style="margin-top:10px;">
@@ -163,4 +191,14 @@
       }
     }
 
-    $("btn").addEventListener("click", fetchQ
+    // Click + Enter-to-fetch
+    $("btn").addEventListener("click", fetchQuote);
+    $("symbol").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") fetchQuote();
+    });
+
+    // Optional: auto-fetch on load
+    // fetchQuote();
+  </script>
+</body>
+</html>
