@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     const wanted = new Set(formsParam.split(",").map((s) => s.trim()).filter(Boolean));
 
     // IMPORTANT: put a REAL email you control here.
-    const USER_AGENT = "Orion EDGAR Tool (contact: your-real-email@domain.com)";
+    const USER_AGENT = "Orion EDGAR Tool (contact: joseph.ditomaso@gmail.com)";
 
     const SEC_HEADERS = {
       "User-Agent": USER_AGENT,
