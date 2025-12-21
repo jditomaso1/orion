@@ -59,21 +59,23 @@
   </script>
 
   <!-- MAIN CONTENT -->
-  <div class="wrap">
-    <div class="title">
-      <div class="sym" id="sym">—</div>
-      <div class="name" id="name"></div>
-      <span class="pill" id="asof" style="display:none;"></span>
-    </div>
-    <div class="muted">
-      Source: <code>/api/finnhub-quote</code> (Finnhub key stays server-side)
-    </div>
-
-    <div class="card" id="out">
-      <div class="muted" id="status">Loading…</div>
+  <div class="main">
+    <div class="wrap">
+      <div class="title">
+        <div class="sym" id="sym">—</div>
+        <div class="name" id="name"></div>
+        <span class="pill" id="asof" style="display:none;"></span>
+      </div>
+      <div class="muted">
+        Source: <code>/api/finnhub-quote</code> (Finnhub key stays server-side)
+      </div>
+  
+      <div class="card" id="out">
+        <div class="muted" id="status">Loading…</div>
+      </div>
     </div>
   </div>
-
+  
   <script>
     const $ = (id) => document.getElementById(id);
 
