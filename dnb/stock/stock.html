@@ -98,7 +98,9 @@
       <div class="card" id="chartCard">
         <div class="font-semibold text-gray-800">Price Chart</div>
         <div class="muted" style="margin-top:4px;">Daily candles (last ~6 months)</div>
-        <div id="chart" style="height:340px; margin-top:10px; padding-bottom:18px; box-sizing:border-box;"></div>
+        <div id="chartWrap" style="height:340px; margin-top:10px; padding-bottom:18px; box-sizing:border-box;">
+          <div id="chart" style="height:100%;"></div>
+        </div>
         <div class="muted" id="chartStatus" style="margin-top:8px;"></div>
       </div>
       <div class="grid2">
@@ -349,34 +351,30 @@
     
     let chart, series;
     
+    const CHART_CUSHION_PX = 18;
+    
     function initChart() {
+      const wrap = $("chartWrap");
       const el = $("chart");
       el.innerHTML = "";
     
       chart = LightweightCharts.createChart(el, {
-        width: el.clientWidth,
-        height: el.clientHeight, // ✅ DO NOT subtract anything
+        width: wrap.clientWidth,
+        height: wrap.clientHeight - CHART_CUSHION_PX,
         layout: { background: { type: "solid", color: "#ffffff" }, textColor: "#111827" },
         grid: { vertLines: { color: "#f3f4f6" }, horzLines: { color: "#f3f4f6" } },
         rightPriceScale: { borderColor: "#e5e7eb" },
         timeScale: { borderColor: "#e5e7eb" }
       });
     
-      series = chart.addCandlestickSeries({
-        upColor: "#16a34a",
-        downColor: "#dc2626",
-        borderUpColor: "#16a34a",
-        borderDownColor: "#dc2626",
-        wickUpColor: "#16a34a",
-        wickDownColor: "#dc2626"
-      });
+      series = chart.addCandlestickSeries();
     
       new ResizeObserver(() => {
         chart.applyOptions({
-          width: el.clientWidth,
-          height: el.clientHeight
+          width: wrap.clientWidth,
+          height: wrap.clientHeight - CHART_CUSHION_PX
         });
-      }).observe(el);
+      }).observe(wrap);
     }
     
     async function loadChart(symbol) {
