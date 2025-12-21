@@ -21,17 +21,25 @@
     td { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
     td:first-child { color:#444; }
     .error { color:#b00020; font-weight: 600; }
+    .ok { color:#0a7a2f; font-weight: 700; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
   </style>
 </head>
 
 <body>
   <h2 style="margin:0 0 8px;">Alpha Vantage — Basic Quote Pull</h2>
-  <div class="muted">Uses <code>GLOBAL_QUOTE</code>. Free tier limits apply (5/min, 25/day).</div>
+  <div class="muted">
+    Uses <code>GLOBAL_QUOTE</code> via your backend proxy at <code>/api/alpha-quote</code>.
+    (API key stays server-side in <code>ALPHA_VANTAGE_KEY</code>.)
+  </div>
 
   <div class="row" style="margin-top:14px;">
     <div class="card">
-      <label>Alpha Vantage API Key (don’t commit this)</label>
-      <input id="apiKey" placeholder="Paste your API key here" autocomplete="off" />
+      <label>Backend endpoint</label>
+      <input id="endpoint" value="/api/alpha-quote" autocomplete="off" />
+      <div class="muted" style="margin-top:8px;">
+        If you deploy under a different path, update this.
+      </div>
     </div>
 
     <div class="card">
@@ -41,6 +49,7 @@
         <button id="btn">Fetch Quote</button>
         <span id="status" class="muted"></span>
       </div>
+      <div class="muted" style="margin-top:8px;">Tip: press Enter to fetch.</div>
     </div>
   </div>
 
@@ -65,16 +74,19 @@
 
     function setStatus(msg) { $("status").textContent = msg || ""; }
 
+    function renderError(title, detail) {
+      $("out").innerHTML = `
+        <div class="error">${title}</div>
+        ${detail ? `<div class="muted" style="margin-top:6px;">${detail}</div>` : ""}
+      `;
+    }
+
     async function fetchQuote() {
-      const apiKey = $("apiKey").value.trim();
+      const endpoint = $("endpoint").value.trim() || "/api/alpha-quote";
       const symbol = $("symbol").value.trim().toUpperCase();
 
-      if (!apiKey) {
-        $("out").innerHTML = `<div class="error">Missing API key.</div>`;
-        return;
-      }
       if (!symbol) {
-        $("out").innerHTML = `<div class="error">Missing ticker symbol.</div>`;
+        renderError("Missing ticker symbol.");
         return;
       }
 
@@ -82,27 +94,40 @@
       setStatus("Fetching…");
 
       try {
-        const url = new URL("https://www.alphavantage.co/query");
-        url.searchParams.set("function", "GLOBAL_QUOTE");
+        const url = new URL(endpoint, window.location.origin);
         url.searchParams.set("symbol", symbol);
-        url.searchParams.set("apikey", apiKey);
 
-        const res = await fetch(url.toString());
-        const data = await res.json();
+        const res = await fetch(url.toString(), {
+          headers: { "Accept": "application/json" }
+        });
 
-        // Alpha Vantage error / throttling cases
-        if (data["Note"]) {
-          $("out").innerHTML = `<div class="error">Rate limit hit:</div><div class="muted">${data["Note"]}</div>`;
+        // Try to parse JSON even on non-200 (your API returns json on errors)
+        let data = null;
+        try { data = await res.json(); } catch {}
+
+        // Handle backend error payloads
+        if (!res.ok) {
+          // Common cases: missing env var, throttling, etc.
+          const msg =
+            (data && (data.error || data.Note || data["Error Message"])) ||
+            `HTTP ${res.status}`;
+          renderError("Backend error:", String(msg));
           return;
         }
-        if (data["Error Message"]) {
-          $("out").innerHTML = `<div class="error">API error:</div><div class="muted">${data["Error Message"]}</div>`;
+
+        // If you proxy Alpha Vantage directly, you may still receive Note/Error Message fields
+        if (data && data.Note) {
+          renderError("Rate limit hit:", data.Note);
+          return;
+        }
+        if (data && data["Error Message"]) {
+          renderError("API error:", data["Error Message"]);
           return;
         }
 
-        const q = data["Global Quote"];
+        const q = data && data["Global Quote"];
         if (!q || Object.keys(q).length === 0) {
-          $("out").innerHTML = `<div class="error">No quote returned.</div><div class="muted">Check ticker and API key.</div>`;
+          renderError("No quote returned.", "Check the ticker symbol and try again.");
           return;
         }
 
@@ -125,16 +150,17 @@
             <tr><td>Low</td><td style="text-align:right;">$${fmtNumber(q["04. low"], 2)}</td></tr>
             <tr><td>Volume</td><td style="text-align:right;">${fmtInt(q["06. volume"])}</td></tr>
           </table>
+
+          <div class="muted" style="margin-top:10px;">
+            Fetched from <code>${endpoint}</code>
+          </div>
         `;
       } catch (err) {
-        $("out").innerHTML = `<div class="error">Request failed.</div><div class="muted">${String(err)}</div>`;
+        renderError("Request failed.", String(err));
       } finally {
         $("btn").disabled = false;
         setStatus("");
       }
     }
 
-    $("btn").addEventListener("click", fetchQuote);
-  </script>
-</body>
-</html>
+    $("btn").addEventListener("click", fetchQ
