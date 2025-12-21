@@ -373,19 +373,21 @@
     }
     
     let chart, series;
-    const X_AXIS_GUTTER = 0;
+    
+    // Give the time axis room so labels don't get clipped
+    const X_AXIS_GUTTER = 28;
     
     function initChart() {
       const wrap = $("chartWrap");
       const el = $("chart");
       el.innerHTML = "";
     
-    const h = wrap.clientHeight;
-    chart.applyOptions({ width: wrap.clientWidth, height: hh });
+      const height = Math.max(120, wrap.clientHeight - X_AXIS_GUTTER);
     
+      // ✅ Create the chart FIRST
       chart = LightweightCharts.createChart(el, {
         width: wrap.clientWidth,
-        height: h,
+        height,
         layout: {
           background: { type: "solid", color: "#ffffff" },
           textColor: "#111827",
@@ -408,6 +410,16 @@
           horzLine: { visible: true },
         },
       });
+    
+      series = chart.addCandlestickSeries();
+    
+      // ✅ Resize safely
+      new ResizeObserver(() => {
+        const h = Math.max(120, wrap.clientHeight - X_AXIS_GUTTER);
+        chart.applyOptions({ width: wrap.clientWidth, height: h });
+      }).observe(wrap);
+    }
+
     
       series = chart.addCandlestickSeries();
     
