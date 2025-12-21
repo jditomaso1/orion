@@ -41,6 +41,13 @@
     #sidebar-placeholder { width: 280px; flex-shrink: 0; }
     #chart { height: 100%; }
     #chartWrap.chart-wrap {height: 260px;          /* ← change this number to whatever you want */margin-top: 10px; box-sizing: border-box;}
+    .chart-x-label {
+      margin-top: 4px;
+      text-align: center;
+      font-size: 11px;
+      color: #6b7280; /* Tailwind gray-500 */
+      letter-spacing: 0.02em;
+    }
 
   </style>
 
@@ -104,6 +111,7 @@
         <div id="chartWrap" class="chart-wrap">
           <div id="chart" style="height:100%;"></div>
         </div>
+        <div class="chart-x-label">Date</div>
         <div class="muted" id="chartStatus" style="margin-top:8px;"></div>
       </div>
       <div class="grid2">
