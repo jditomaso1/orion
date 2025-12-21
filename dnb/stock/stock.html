@@ -374,25 +374,25 @@
     }
     
     let chart, series;
-    const X_AXIS_GUTTER = 28;   // 👈 PUT IT HERE
-    const CHART_CUSHION_PX = 0;
+    const X_AXIS_GUTTER = 28;
     
     function initChart() {
       const wrap = $("chartWrap");
       const el = $("chart");
       el.innerHTML = "";
     
+      const h = Math.max(120, wrap.clientHeight - X_AXIS_GUTTER);
+    
       chart = LightweightCharts.createChart(el, {
         width: wrap.clientWidth,
-        height: wrap.clientHeight - X_AXIS_GUTTER,
+        height: h,
         layout: {
           background: { type: "solid", color: "#ffffff" },
           textColor: "#111827",
-          padding: { bottom: 50 }
         },
         grid: {
           vertLines: { color: "#f3f4f6" },
-          horzLines: { color: "#f3f4f6" }
+          horzLines: { color: "#f3f4f6" },
         },
         rightPriceScale: { borderColor: "#e5e7eb" },
         timeScale: {
@@ -400,24 +400,22 @@
           timeVisible: true,
           secondsVisible: false,
           rightBarStaysOnScroll: true,
-          barSpacing: 12
+          barSpacing: 12,
         },
         localization: { dateFormat: "MMM dd" },
         crosshair: {
           vertLine: { visible: true },
-          horzLine: { visible: true }
-        }
+          horzLine: { visible: true },
+        },
       });
     
       series = chart.addCandlestickSeries();
     
       new ResizeObserver(() => {
-        chart.applyOptions({
-          width: wrap.clientWidth,
-          height: wrap.clientHeight - X_AXIS_GUTTER
-        });
-
+        const hh = Math.max(120, wrap.clientHeight - X_AXIS_GUTTER);
+        chart.applyOptions({ width: wrap.clientWidth, height: hh });
       }).observe(wrap);
+    }
     }
 
     async function loadChart(symbol) {
