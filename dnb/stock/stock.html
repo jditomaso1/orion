@@ -118,6 +118,9 @@
 
   <script>
     const $ = (id) => document.getElementById(id);
+    const params = new URLSearchParams(window.location.search);
+    const symbol = (params.get("symbol") || "PLAY").trim().toUpperCase();
+
 
     function fmtNumber(x, decimals = 2) {
       const n = Number(x);
@@ -409,8 +412,8 @@
       }
     }
 
-    load();
-    loadChart(symbol);
+    load().catch(console.error);
+    loadChart(symbol).catch(console.error);
 
   </script>
 
