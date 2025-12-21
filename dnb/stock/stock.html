@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alpha Vantage Stock Quote (Basic)</title>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 760px; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 14px; }
+    label { display:block; font-size: 12px; color:#444; margin-bottom:6px; }
+    input { width:100%; padding:10px; border:1px solid #ccc; border-radius:10px; }
+    button { padding:10px 12px; border:0; border-radius:10px; background:#111; color:#fff; cursor:pointer; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .muted { color:#666; font-size: 12px; }
+    .big { font-size: 32px; font-weight: 800; margin: 6px 0; }
+    .chg { font-weight: 700; }
+    .pos { color: #0a7a2f; }
+    .neg { color: #b00020; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    td { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    td:first-child { color:#444; }
+    .error { color:#b00020; font-weight: 600; }
+  </style>
+</head>
+
+<body>
+  <h2 style="margin:0 0 8px;">Alpha Vantage — Basic Quote Pull</h2>
+  <div class="muted">Uses <code>GLOBAL_QUOTE</code>. Free tier limits apply (5/min, 25/day).</div>
+
+  <div class="row" style="margin-top:14px;">
+    <div class="card">
+      <label>Alpha Vantage API Key (don’t commit this)</label>
+      <input id="apiKey" placeholder="Paste your API key here" autocomplete="off" />
+    </div>
+
+    <div class="card">
+      <label>Ticker</label>
+      <input id="symbol" value="PLAY" />
+      <div style="margin-top:10px; display:flex; gap:10px; align-items:center;">
+        <button id="btn">Fetch Quote</button>
+        <span id="status" class="muted"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="out" class="card" style="margin-top:14px; max-width:760px;">
+    <div class="muted">Result will appear here.</div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function fmtNumber(x, decimals = 2) {
+      const n = Number(x);
+      if (!Number.isFinite(n)) return "—";
+      return n.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    }
+
+    function fmtInt(x) {
+      const n = Number(x);
+      if (!Number.isFinite(n)) return "—";
+      return n.toLocaleString();
+    }
+
+    function setStatus(msg) { $("status").textContent = msg || ""; }
+
+    async function fetchQuote() {
+      const apiKey = $("apiKey").value.trim();
+      const symbol = $("symbol").value.trim().toUpperCase();
+
+      if (!apiKey) {
+        $("out").innerHTML = `<div class="error">Missing API key.</div>`;
+        return;
+      }
+      if (!symbol) {
+        $("out").innerHTML = `<div class="error">Missing ticker symbol.</div>`;
+        return;
+      }
+
+      $("btn").disabled = true;
+      setStatus("Fetching…");
+
+      try {
+        const url = new URL("https://www.alphavantage.co/query");
+        url.searchParams.set("function", "GLOBAL_QUOTE");
+        url.searchParams.set("symbol", symbol);
+        url.searchParams.set("apikey", apiKey);
+
+        const res = await fetch(url.toString());
+        const data = await res.json();
+
+        // Alpha Vantage error / throttling cases
+        if (data["Note"]) {
+          $("out").innerHTML = `<div class="error">Rate limit hit:</div><div class="muted">${data["Note"]}</div>`;
+          return;
+        }
+        if (data["Error Message"]) {
+          $("out").innerHTML = `<div class="error">API error:</div><div class="muted">${data["Error Message"]}</div>`;
+          return;
+        }
+
+        const q = data["Global Quote"];
+        if (!q || Object.keys(q).length === 0) {
+          $("out").innerHTML = `<div class="error">No quote returned.</div><div class="muted">Check ticker and API key.</div>`;
+          return;
+        }
+
+        const price = q["05. price"];
+        const change = q["09. change"];
+        const changePct = q["10. change percent"]; // includes % sign
+        const isNeg = String(change || "").trim().startsWith("-");
+
+        $("out").innerHTML = `
+          <div class="muted">${q["01. symbol"] || symbol} — last trading day: ${q["07. latest trading day"] || "—"}</div>
+          <div class="big">$${fmtNumber(price, 2)}</div>
+          <div class="chg ${isNeg ? "neg" : "pos"}">
+            ${isNeg ? "" : "+"}${fmtNumber(change, 2)} (${changePct || "—"})
+          </div>
+
+          <table>
+            <tr><td>Previous Close</td><td style="text-align:right;">$${fmtNumber(q["08. previous close"], 2)}</td></tr>
+            <tr><td>Open</td><td style="text-align:right;">$${fmtNumber(q["02. open"], 2)}</td></tr>
+            <tr><td>High</td><td style="text-align:right;">$${fmtNumber(q["03. high"], 2)}</td></tr>
+            <tr><td>Low</td><td style="text-align:right;">$${fmtNumber(q["04. low"], 2)}</td></tr>
+            <tr><td>Volume</td><td style="text-align:right;">${fmtInt(q["06. volume"])}</td></tr>
+          </table>
+        `;
+      } catch (err) {
+        $("out").innerHTML = `<div class="error">Request failed.</div><div class="muted">${String(err)}</div>`;
+      } finally {
+        $("btn").disabled = false;
+        setStatus("");
+      }
+    }
+
+    $("btn").addEventListener("click", fetchQuote);
+  </script>
+</body>
+</html>
