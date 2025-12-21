@@ -387,7 +387,18 @@
         url.searchParams.set("symbol", symbol);
         url.searchParams.set("resolution", "D");
     
-        const data = await fetchJsonSafe(url.toString());
+        console.log("Candles URL:", url.toString());
+        
+        const r = await fetch(url.toString());
+        const t = await r.text();
+        
+        console.log("Candles HTTP:", r.status);
+        console.log("Candles body (first 300):", t.slice(0, 300));
+        
+        let data = null;
+        try { data = t ? JSON.parse(t) : null; } catch (e) {
+          throw new Error("Response was not JSON");
+        }
         const c = data?.candles;
     
         if (!c) { $("chartStatus").textContent = "No response body."; return; }
