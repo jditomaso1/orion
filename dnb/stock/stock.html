@@ -42,6 +42,8 @@
   </style>
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js"></script>
+
 </head>
 
 <body class="flex bg-gray-50">
@@ -92,6 +94,13 @@
 
       <div class="card" id="out">
         <div class="muted" id="status">Loading…</div>
+      </div>
+      
+      <div class="card" id="chartCard">
+        <div class="font-semibold text-gray-800">Price Chart</div>
+        <div class="muted" style="margin-top:4px;">Daily candles (last ~6 months)</div>
+        <div id="chart" style="height:320px; margin-top:10px;"></div>
+        <div class="muted" id="chartStatus" style="margin-top:8px;"></div>
       </div>
 
       <div class="grid2">
@@ -330,8 +339,81 @@
         renderError("Request failed.", String(e?.message || e));
       }
     }
+    
+    let chart, series;
+    
+    function initChart() {
+      const el = $("chart");
+      el.innerHTML = ""; // reset
+    
+      chart = LightweightCharts.createChart(el, {
+        height: 320,
+        layout: { background: { type: "solid", color: "#ffffff" }, textColor: "#111827" },
+        grid: { vertLines: { color: "#f3f4f6" }, horzLines: { color: "#f3f4f6" } },
+        rightPriceScale: { borderColor: "#e5e7eb" },
+        timeScale: { borderColor: "#e5e7eb" }
+      });
+    
+      series = chart.addCandlestickSeries({
+        upColor: "#16a34a",
+        downColor: "#dc2626",
+        borderUpColor: "#16a34a",
+        borderDownColor: "#dc2626",
+        wickUpColor: "#16a34a",
+        wickDownColor: "#dc2626"
+      });
+    
+      // Resize on window resize
+      const ro = new ResizeObserver(() => {
+        chart.applyOptions({ width: el.clientWidth });
+      });
+      ro.observe(el);
+    
+      // Set initial width
+      chart.applyOptions({ width: el.clientWidth });
+    }
+    
+    async function loadChart(symbol) {
+      $("chartStatus").textContent = "Loading chart…";
+    
+      try {
+        const url = new URL("/api/finnhub-candles", window.location.origin);
+        url.searchParams.set("symbol", symbol);
+        url.searchParams.set("resolution", "D");
+    
+        const res = await fetch(url.toString(), { headers: { Accept: "application/json" } });
+        const data = await res.json();
+    
+        if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+    
+        const c = data?.candles;
+        if (!c || c.s !== "ok" || !Array.isArray(c.t) || c.t.length === 0) {
+          $("chartStatus").textContent = "No candle data returned.";
+          return;
+        }
+    
+        // Convert Finnhub arrays -> lightweight-charts format
+        const bars = c.t.map((t, i) => ({
+          time: t,          // unix seconds
+          open: c.o[i],
+          high: c.h[i],
+          low: c.l[i],
+          close: c.c[i]
+        }));
+    
+        initChart();
+        series.setData(bars);
+        chart.timeScale().fitContent();
+    
+        $("chartStatus").textContent = "";
+      } catch (e) {
+        $("chartStatus").textContent = `Chart failed: ${String(e?.message || e)}`;
+      }
+    }
 
     load();
+    loadChart(symbol);
+
   </script>
 
 </body>
