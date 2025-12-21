@@ -5,19 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SEC EDGAR Pull (Ticker → Latest Filings)</title>
   <style>
-    /* body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; } */
-    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    input, button, select { padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; }
-    button { cursor: pointer; }
-    .card { border: 1px solid #eee; border-radius: 14px; padding: 14px; margin-top: 14px; }
-    .muted { color: #666; font-size: 12px; }
-    .err { color: #b00020; font-weight: 700; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { padding: 10px 6px; border-bottom: 1px solid #eee; text-align: left; vertical-align: to }
-    a { text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    /* Scope styles to MAIN CONTENT ONLY so sidebar is untouched */
+  
+    #sec-edgar-main .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+  
+    #sec-edgar-main input,
+    #sec-edgar-main button,
+    #sec-edgar-main select {
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+    }
+  
+    #sec-edgar-main button {
+      cursor: pointer;
+    }
+  
+    #sec-edgar-main .card {
+      border: 1px solid #eee;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+  
+    #sec-edgar-main .muted {
+      color: #666;
+      font-size: 12px;
+    }
+  
+    #sec-edgar-main .err {
+      color: #b00020;
+      font-weight: 700;
+    }
+  
+    #sec-edgar-main table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+  
+    #sec-edgar-main th,
+    #sec-edgar-main td {
+      padding: 10px 6px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      vertical-align: top;
+    }
+  
+    #sec-edgar-main a {
+      text-decoration: none;
+    }
+  
+    #sec-edgar-main a:hover {
+      text-decoration: underline;
+    }
+  
+    #sec-edgar-main code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
   </style>
+
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
