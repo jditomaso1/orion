@@ -28,7 +28,9 @@ export default async function handler(req, res) {
     u.searchParams.set("token", token);
 
     const r = await fetch(u.toString());
-    const j = await r.json();
+    const j = await r.json()
+        
+    console.log("Finnhub candle status:", r.status, "body:", j);
 
     // Finnhub returns { s: "ok"|"no_data", t:[], c:[], o:[], h:[], l:[], v:[] }
     if (!r.ok) throw new Error(j?.error || `HTTP ${r.status}`);
