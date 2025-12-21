@@ -1,0 +1,236 @@
+<!-- Orion Neural Network — Themed / Professional (inherits site styles via CSS vars) -->
+<section class="orion-card orion-neural" aria-labelledby="neural-title">
+  <style>
+    /* Uses your site theme if these vars exist; otherwise falls back cleanly */
+    .orion-neural{
+      --bg: var(--orion-bg, var(--bg, #0b0f17));
+      --panel: var(--orion-panel, var(--panel, rgba(255,255,255,0.04)));
+      --panel2: var(--orion-panel2, rgba(255,255,255,0.06));
+      --text: var(--orion-text, var(--text, #e9eefb));
+      --muted: var(--orion-muted, var(--muted, rgba(233,238,251,0.70)));
+      --border: var(--orion-border, var(--border, rgba(255,255,255,0.10)));
+      --primary: var(--orion-primary, var(--primary, #7c3aed));
+      --accent: var(--orion-accent, var(--accent, #22c55e));
+      --info: var(--orion-info, var(--info, #60a5fa));
+      --warn: var(--orion-warn, var(--warn, #f59e0b));
+
+      color: var(--text);
+      max-width: 1120px;
+      margin-top: 24px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: linear-gradient(180deg, var(--panel), rgba(255,255,255,0.02));
+      padding: 16px;
+    }
+
+    .orion-neural .hdr{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;
+      margin-bottom: 12px;
+    }
+    .orion-neural h2{
+      margin:0;
+      font: 700 18px/1.15 var(--font-sans, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial);
+      letter-spacing: -0.02em;
+    }
+    .orion-neural p{
+      margin: 6px 0 0;
+      color: var(--muted);
+      font: 500 12px/1.4 var(--font-sans, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial);
+    }
+
+    .orion-neural .meta{
+      display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+      margin-top: 2px;
+    }
+    .orion-neural .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding: 6px 10px;border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      font: 650 12px/1 var(--font-sans, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial);
+      color: var(--text);
+    }
+    .orion-neural .dot{width:10px;height:10px;border-radius:999px;background:var(--muted);display:inline-block}
+    .orion-neural .dot.company{background:var(--primary)}
+    .orion-neural .dot.sec{background:var(--info)}
+    .orion-neural .dot.legal{background:color-mix(in oklab, var(--primary) 70%, white 10%)}
+    .orion-neural .dot.mgmt{background:var(--warn)}
+    .orion-neural .dot.ops{background:var(--accent)}
+    .orion-neural .dot.theme{background:rgba(233,238,251,0.55)}
+
+    .orion-neural .viz{
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background:
+        radial-gradient(800px 420px at 50% 35%, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 45%, rgba(255,255,255,0) 72%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+    }
+
+    svg{width:100%;height:auto;display:block}
+    .label{
+      font: 650 12px/1.2 var(--font-sans, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial);
+      fill: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .sublabel{
+      font: 520 11px/1.2 var(--font-sans, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial);
+      fill: color-mix(in oklab, var(--text) 70%, transparent);
+    }
+    .edge{stroke: color-mix(in oklab, var(--text) 18%, transparent);stroke-width:1.1;opacity:.9}
+    .edgeStrong{stroke: color-mix(in oklab, var(--text) 26%, transparent);stroke-width:1.6;opacity:.95}
+  </style>
+
+  <div class="hdr">
+    <div>
+      <h2 id="neural-title">Orion Neural Network — Dave &amp; Buster’s (PLAY)</h2>
+      <p>Document graph mock: SEC filings + legal docs + management materials + KPI nodes feeding the company embedding.</p>
+    </div>
+
+    <div class="meta" aria-label="Legend">
+      <span class="pill"><span class="dot company"></span> Company</span>
+      <span class="pill"><span class="dot sec"></span> SEC</span>
+      <span class="pill"><span class="dot legal"></span> Legal</span>
+      <span class="pill"><span class="dot mgmt"></span> Mgmt</span>
+      <span class="pill"><span class="dot ops"></span> KPIs</span>
+      <span class="pill"><span class="dot theme"></span> Theme</span>
+    </div>
+  </div>
+
+  <div class="viz">
+    <svg viewBox="0 0 1100 640" role="img" aria-label="Neural network diagram for Dave & Buster’s with documents">
+      <defs>
+        <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="7" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+
+        <radialGradient id="gCore" cx="50%" cy="40%" r="70%">
+          <stop offset="0%" stop-color="var(--primary)"/>
+          <stop offset="100%" stop-color="color-mix(in oklab, var(--primary) 40%, #0b0f17 60%)"/>
+        </radialGradient>
+
+        <linearGradient id="gSEC" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="var(--info)"/>
+          <stop offset="100%" stop-color="color-mix(in oklab, var(--info) 65%, white 10%)"/>
+        </linearGradient>
+
+        <linearGradient id="gLegal" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="color-mix(in oklab, var(--primary) 80%, white 10%)"/>
+          <stop offset="100%" stop-color="color-mix(in oklab, var(--primary) 55%, #0b0f17 45%)"/>
+        </linearGradient>
+
+        <linearGradient id="gMgmt" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="var(--warn)"/>
+          <stop offset="100%" stop-color="color-mix(in oklab, var(--warn) 60%, white 10%)"/>
+        </linearGradient>
+
+        <linearGradient id="gOps" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="var(--accent)"/>
+          <stop offset="100%" stop-color="color-mix(in oklab, var(--accent) 65%, white 10%)"/>
+        </linearGradient>
+
+        <linearGradient id="gTheme" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="color-mix(in oklab, var(--text) 40%, transparent)"/>
+          <stop offset="100%" stop-color="color-mix(in oklab, var(--text) 15%, transparent)"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Edges -->
+      <g>
+        <line class="edgeStrong" x1="550" y1="320" x2="190" y2="140"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="350" y2="95"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="760" y2="95"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="915" y2="140"/>
+
+        <line class="edgeStrong" x1="550" y1="320" x2="165" y2="350"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="320" y2="520"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="780" y2="520"/>
+        <line class="edgeStrong" x1="550" y1="320" x2="935" y2="350"/>
+
+        <line class="edge" x1="190" y1="140" x2="300" y2="250"/>
+        <line class="edge" x1="350" y1="95"  x2="300" y2="250"/>
+        <line class="edge" x1="165" y1="350" x2="300" y2="250"/>
+
+        <line class="edge" x1="760" y1="95"  x2="800" y2="250"/>
+        <line class="edge" x1="915" y1="140" x2="800" y2="250"/>
+        <line class="edge" x1="935" y1="350" x2="800" y2="250"/>
+
+        <line class="edge" x1="320" y1="520" x2="550" y2="470"/>
+        <line class="edge" x1="780" y1="520" x2="550" y2="470"/>
+
+        <line class="edgeStrong" x1="300" y1="250" x2="550" y2="320"/>
+        <line class="edgeStrong" x1="800" y1="250" x2="550" y2="320"/>
+        <line class="edgeStrong" x1="550" y1="470" x2="550" y2="320"/>
+      </g>
+
+      <!-- Core -->
+      <g filter="url(#softGlow)">
+        <circle cx="550" cy="320" r="70" fill="color-mix(in oklab, var(--primary) 18%, transparent)"/>
+        <circle cx="550" cy="320" r="56" fill="url(#gCore)"/>
+        <text x="550" y="312" text-anchor="middle" class="label">Dave &amp; Buster’s</text>
+        <text x="550" y="332" text-anchor="middle" class="sublabel">PLAY · Company Node</text>
+      </g>
+
+      <!-- Theme layer -->
+      <g>
+        <circle cx="300" cy="250" r="26" fill="url(#gTheme)"/>
+        <text x="300" y="254" text-anchor="middle" class="sublabel">Covenants</text>
+
+        <circle cx="800" cy="250" r="26" fill="url(#gTheme)"/>
+        <text x="800" y="254" text-anchor="middle" class="sublabel">Liquidity</text>
+
+        <circle cx="550" cy="470" r="26" fill="url(#gTheme)"/>
+        <text x="550" y="474" text-anchor="middle" class="sublabel">KPIs</text>
+      </g>
+
+      <!-- Documents -->
+      <g>
+        <!-- SEC -->
+        <circle cx="190" cy="140" r="30" fill="url(#gSEC)"/>
+        <text x="190" y="136" text-anchor="middle" class="label" fill="#fff">10-K</text>
+        <text x="190" y="154" text-anchor="middle" class="sublabel" fill="#fff">Annual</text>
+
+        <circle cx="350" cy="95" r="30" fill="url(#gSEC)"/>
+        <text x="350" y="91" text-anchor="middle" class="label" fill="#fff">10-Q</text>
+        <text x="350" y="109" text-anchor="middle" class="sublabel" fill="#fff">Quarterly</text>
+
+        <circle cx="760" cy="95" r="30" fill="url(#gSEC)"/>
+        <text x="760" y="91" text-anchor="middle" class="label" fill="#fff">8-K</text>
+        <text x="760" y="109" text-anchor="middle" class="sublabel" fill="#fff">Events</text>
+
+        <!-- Legal -->
+        <circle cx="915" cy="140" r="30" fill="url(#gLegal)"/>
+        <text x="915" y="136" text-anchor="middle" class="label" fill="#fff">Ex 10</text>
+        <text x="915" y="154" text-anchor="middle" class="sublabel" fill="#fff">Legal</text>
+
+        <circle cx="165" cy="350" r="30" fill="url(#gLegal)"/>
+        <text x="165" y="346" text-anchor="middle" class="label" fill="#fff">Credit</text>
+        <text x="165" y="364" text-anchor="middle" class="sublabel" fill="#fff">Agmt</text>
+
+        <!-- Mgmt -->
+        <circle cx="320" cy="520" r="30" fill="url(#gMgmt)"/>
+        <text x="320" y="516" text-anchor="middle" class="label" fill="#111">Model</text>
+        <text x="320" y="534" text-anchor="middle" class="sublabel" fill="#111">Proj.</text>
+
+        <circle cx="780" cy="520" r="30" fill="url(#gMgmt)"/>
+        <text x="780" y="516" text-anchor="middle" class="label" fill="#111">Deck</text>
+        <text x="780" y="534" text-anchor="middle" class="sublabel" fill="#111">Lender</text>
+
+        <!-- Ops -->
+        <circle cx="935" cy="350" r="30" fill="url(#gOps)"/>
+        <text x="935" y="346" text-anchor="middle" class="label" fill="#fff">KPIs</text>
+        <text x="935" y="364" text-anchor="middle" class="sublabel" fill="#fff">Ops</text>
+      </g>
+
+      <!-- Corner captions -->
+      <text x="86" y="60" class="sublabel">SEC Filings</text>
+      <text x="870" y="60" class="sublabel">Legal / Exhibits</text>
+      <text x="86" y="600" class="sublabel">Forecast / Model</text>
+      <text x="870" y="600" class="sublabel">Ops / KPIs</text>
+    </svg>
+  </div>
+</section>
