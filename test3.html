@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Orion Neural Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { background:#0b0f16; }
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-white">
+  <div class="max-w-6xl mx-auto px-4 py-4">
+    <div class="flex items-center justify-between mb-3">
+      <div>
+        <div class="text-xl font-semibold">Orion Neural Map</div>
+        <div class="text-xs text-white/60">vectors (dots) + nearest-neighbor fibers · hover for details</div>
+      </div>
+      <div class="text-xs text-white/60">
+        Data: <span class="font-mono">GET /neural-map</span>
+      </div>
+    </div>
+
+    <div class="card p-3">
+      <div id="status" class="text-xs text-white/70 mb-2">Loading…</div>
+      <div id="plot" style="width:100%; height:78vh;"></div>
+    </div>
+  </div>
+
+  <script>
+    // ----- CONFIG -----
+    const DATA_URL = "http://localhost:8000/neural-map"; // absolute to avoid origin confusion
+
+    // Fibers: how many nearest neighbors per point (2–4 is usually plenty)
+    const K_NEIGHBORS = 2;
+
+    // Safety caps so we don't draw a million lines
+    const MAX_POINTS_FOR_EDGES = 700;   // if more than this, we skip edges unless you raise it
+    const MAX_EDGES = 2500;             // hard cap on total drawn edges
+
+    async function fetchPoints() {
+      const res = await fetch(DATA_URL, { headers: { "Accept": "application/json" }});
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.json(); // your API returns an ARRAY
+    }
+
+    function safe(v) {
+      return (v === null || v === undefined) ? "" : String(v);
+    }
+
+    // ----- KNN EDGE BUILDING (client-side) -----
+    // Uses 2D coords to approximate "close connections" in the map view.
+    function buildEdges(points, k = 2, maxEdges = 2000) {
+      const edges = [];
+      const n = points.length;
+
+      for (let i = 0; i < n; i++) {
+        const ai = points[i];
+        const dists = [];
+
+        for (let j = 0; j < n; j++) {
+          if (i === j) continue;
+          const bj = points[j];
+          const dx = ai.x - bj.x;
+          const dy = ai.y - bj.y;
+          const d2 = dx*dx + dy*dy;
+          dists.push([d2, j]);
+        }
+
+        dists.sort((a, b) => a[0] - b[0]);
+
+        for (let t = 0; t < Math.min(k, dists.length); t++) {
+          edges.push({ source: i, target: dists[t][1], w: dists[t][0] });
+          if (edges.length >= maxEdges) return edges;
+        }
+      }
+      return edges;
+    }
+
+    function buildEdgeTrace(points, edges) {
+      if (!Array.isArray(edges) || edges.length === 0) return null;
+
+      const xs = [];
+      const ys = [];
+
+      for (const e of edges) {
+        const a = points[e.source];
+        const b = points[e.target];
+        if (!a || !b) continue;
+
+        xs.push(a.x, b.x, null);
+        ys.push(a.y, b.y, null);
+      }
+
+      return {
+        type: "scattergl",
+        mode: "lines",
+        x: xs,
+        y: ys,
+        hoverinfo: "skip",
+        line: { width: 1, color: "rgba(255,255,255,0.18)" },
+        name: "fibers"
+      };
+    }
+
+    function render(points) {
+      const status = document.getElementById("status");
+
+      // Build hover payload (works now for label/id/group; metadata fills only if API provides it)
+      const customdata = points.map(p => ([
+        safe(p.label),         // 0
+        safe(p.id),            // 1
+        safe(p.group),         // 2
+        (typeof p.x === "number" ? p.x.toFixed(4) : safe(p.x)), // 3
+        (typeof p.y === "number" ? p.y.toFixed(4) : safe(p.y)), // 4
+
+        // metadata (top-level OR nested under p.metadata)
+        safe(p.file_name || (p.metadata && p.metadata.file_name)),   // 5
+        safe(p.ticker || (p.metadata && p.metadata.ticker)),         // 6
+        safe(p.doc_type || (p.metadata && p.metadata.doc_type)),     // 7
+        safe(p.period_end || (p.metadata && p.metadata.period_end)), // 8
+        safe(p.anchor || (p.metadata && p.metadata.anchor))          // 9
+      ]));
+
+      const nodeTrace = {
+        type: "scattergl",
+        mode: "markers",
+        x: points.map(p => p.x),
+        y: points.map(p => p.y),
+        customdata,
+        marker: { size: 9, color: "rgba(53, 208, 186, 0.95)" },
+        hovertemplate:
+          "<b>%{customdata[0]}</b><br>" +
+          "<span style='opacity:0.75'>id:</span> <span style='font-family:monospace'>%{customdata[1]}</span><br>" +
+          "<span style='opacity:0.75'>group:</span> %{customdata[2]}<br>" +
+          "<span style='opacity:0.75'>x:</span> %{customdata[3]} &nbsp; <span style='opacity:0.75'>y:</span> %{customdata[4]}" +
+          "<br><br><span style='opacity:0.85'><b>metadata</b></span><br>" +
+          "file: %{customdata[5]}<br>" +
+          "ticker: %{customdata[6]}<br>" +
+          "type: %{customdata[7]}<br>" +
+          "period_end: %{customdata[8]}<br>" +
+          "anchor: %{customdata[9]}<br>" +
+          "<extra></extra>",
+        name: "vectors"
+      };
+
+      // Optional fibers
+      let edgeTrace = null;
+      let edgesDrawn = 0;
+
+      if (points.length <= MAX_POINTS_FOR_EDGES) {
+        const edges = buildEdges(points, K_NEIGHBORS, MAX_EDGES);
+        edgesDrawn = edges.length;
+        edgeTrace = buildEdgeTrace(points, edges);
+      }
+
+      status.textContent =
+        `Loaded ${points.length} vectors` +
+        (edgeTrace ? ` · ${edgesDrawn} fibers (k=${K_NEIGHBORS})` : ` · fibers skipped (too many points)`);
+
+      const layout = {
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+        margin: { l: 10, r: 10, t: 10, b: 10 },
+        showlegend: false,
+        xaxis: { visible: false },
+        yaxis: { visible: false },
+        hoverlabel: {
+          bgcolor: "rgba(20,20,25,0.95)",
+          bordercolor: "rgba(255,255,255,0.15)",
+          font: { color: "#fff", size: 12 }
+        }
+      };
+
+      const traces = [];
+      if (edgeTrace) traces.push(edgeTrace);
+      traces.push(nodeTrace);
+
+      Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
+    }
+
+    (async () => {
+      const status = document.getElementById("status");
+      try {
+        const points = await fetchPoints();
+
+        if (!Array.isArray(points)) {
+          status.textContent = "Expected /neural-map to return an array, but got something else.";
+          return;
+        }
+
+        const filtered = points.filter(p => typeof p.x === "number" && typeof p.y === "number");
+        if (!filtered.length) {
+          status.textContent = "No points with numeric x/y found.";
+          return;
+        }
+
+        render(filtered);
+      } catch (err) {
+        console.error(err);
+        status.textContent = `Error: ${err.message}`;
+      }
+    })();
+  </script>
+</body>
+</html>
