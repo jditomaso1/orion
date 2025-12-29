@@ -37,7 +37,7 @@
   </div>
 
   <script>
-    const DATA_URL = "/neural-map";
+    const DATA_URL = "http://localhost:8000/neural-map";;
 
     async function fetchPoints() {
       const res = await fetch(DATA_URL, { headers: { "Accept": "application/json" }});
