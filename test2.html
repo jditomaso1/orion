@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Orion Neural Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Plotly -->
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+  <!-- Tailwind (optional, just for layout) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { background:#0b0f16; }
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-white">
+  <div class="max-w-6xl mx-auto px-4 py-4">
+    <div class="flex items-center justify-between mb-3">
+      <div>
+        <div class="text-xl font-semibold">Orion Neural Map</div>
+        <div class="text-xs text-white/60">vectors (dots) + similarity fibers · hover for metadata</div>
+      </div>
+      <div class="text-xs text-white/60">
+        Data: <span class="font-mono">GET /neural-map</span>
+      </div>
+    </div>
+
+    <div class="card p-3">
+      <div id="status" class="text-xs text-white/70 mb-2">Loading…</div>
+      <div id="plot" style="width: 100%; height: 78vh;"></div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- CONFIG ----------
+    const API_BASE = ""; // same host
+    const DATA_URL = `${API_BASE}/neural-map`;
+
+    // Expecting:
+    // nodes: [{id,x,y,group,file_name,ticker,doc_type,period_end,anchor}, ...]
+    // edges: [{source,target,weight}, ...]  (optional)
+    async function fetchNeuralMap() {
+      const res = await fetch(DATA_URL, { headers: { "Accept": "application/json" }});
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.json();
+    }
+
+    function indexById(nodes) {
+      const m = new Map();
+      for (const n of nodes) m.set(n.id, n);
+      return m;
+    }
+
+    function buildEdgeTraces(nodes, edges) {
+      // Build one line-trace with "segments" separated by nulls (fast)
+      if (!Array.isArray(edges) || edges.length === 0) return null;
+
+      const byId = indexById(nodes);
+      const xs = [];
+      const ys = [];
+
+      for (const e of edges) {
+        const a = byId.get(e.source);
+        const b = byId.get(e.target);
+        if (!a || !b) continue;
+
+        xs.push(a.x, b.x, null);
+        ys.push(a.y, b.y, null);
+      }
+
+      return {
+        type: "scattergl",
+        mode: "lines",
+        x: xs,
+        y: ys,
+        hoverinfo: "skip",
+        line: { width: 1, color: "rgba(255,255,255,0.18)" },
+        name: "fibers"
+      };
+    }
+
+    function buildNodeTrace(nodes) {
+      const x = nodes.map(n => n.x);
+      const y = nodes.map(n => n.y);
+
+      // Put everything you want on hover into customdata (per-point array)
+      const customdata = nodes.map(n => ([
+        n.file_name ?? "",
+        n.ticker ?? "",
+        n.doc_type ?? "",
+        n.period_end ?? "",
+        n.anchor ?? "",
+        n.id ?? "",
+        n.group ?? ""
+      ]));
+
+      // NOTE: Plotly hovertemplate can reference customdata[i]
+      return {
+        type: "scattergl",
+        mode: "markers",
+        x,
+        y,
+        customdata,
+        // Single color by default; if you want groups colored, say so and I'll add.
+        marker: { size: 9, color: "rgba(53, 208, 186, 0.95)" },
+        hovertemplate:
+          "<b>%{customdata[0]}</b><br>" +
+          "ticker: %{customdata[1]}<br>" +
+          "type: %{customdata[2]}<br>" +
+          "period_end: %{customdata[3]}<br>" +
+          "anchor: %{customdata[4]}<br>" +
+          "<span style='opacity:0.75'>group:</span> %{customdata[6]}<br>" +
+          "<span style='opacity:0.75'>id:</span> <span style='font-family:monospace'>%{customdata[5]}</span>" +
+          "<extra></extra>",
+        name: "vectors"
+      };
+    }
+
+    function renderPlot(nodes, edges) {
+      const status = document.getElementById("status");
+      status.textContent = `Loaded ${nodes.length} vectors` + (edges?.length ? ` · ${edges.length} fibers` : "");
+
+      const traces = [];
+      const edgeTrace = buildEdgeTraces(nodes, edges);
+      if (edgeTrace) traces.push(edgeTrace);
+      traces.push(buildNodeTrace(nodes));
+
+      const layout = {
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+        margin: { l: 10, r: 10, t: 10, b: 10 },
+        showlegend: false,
+        xaxis: { visible: false },
+        yaxis: { visible: false },
+        hoverlabel: {
+          bgcolor: "rgba(20,20,25,0.95)",
+          bordercolor: "rgba(255,255,255,0.15)",
+          font: { color: "#fff", size: 12 }
+        }
+      };
+
+      const config = {
+        responsive: true,
+        displayModeBar: false
+      };
+
+      Plotly.newPlot("plot", traces, layout, config);
+    }
+
+    // ---------- BOOT ----------
+    (async () => {
+      const status = document.getElementById("status");
+      try {
+        const data = await fetchNeuralMap();
+
+        const nodes = Array.isArray(data.nodes) ? data.nodes : [];
+        const edges = Array.isArray(data.edges) ? data.edges : [];
+
+        if (!nodes.length) {
+          status.textContent = "No nodes returned from /neural-map.";
+          return;
+        }
+
+        // Basic validation for x/y
+        const filtered = nodes.filter(n => typeof n.x === "number" && typeof n.y === "number");
+        if (!filtered.length) {
+          status.textContent = "Nodes returned, but missing numeric x/y coordinates.";
+          return;
+        }
+
+        renderPlot(filtered, edges);
+      } catch (err) {
+        console.error(err);
+        status.textContent = `Error: ${err.message}`;
+      }
+    })();
+  </script>
+</body>
+</html>
