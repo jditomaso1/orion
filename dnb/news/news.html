@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion — PLAY News Dashboard</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background:#f5f6f8; }
+    * { box-sizing:border-box; }
+
+    .pill{ border:1px solid #d5d8dd; background:#fff; color:#222; border-radius:999px; padding:8px 12px; font-size:13px; cursor:pointer; }
+    .pill--active{ background:#2c7cf1; color:#fff; border-color:#2c7cf1; }
+
+    .grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    @media (max-width:820px){ .grid{ grid-template-columns:1fr; } }
+
+    .card{ background:#fff; border:1px solid #eee; border-radius:10px; padding:14px; display:block; color:#111; }
+    .card:hover{ box-shadow:0 6px 20px rgba(0,0,0,.08); transform:translateY(-1px); transition:all .15s; }
+    .card-title{ font-weight:600; margin:0 0 6px 0; line-height:1.3; }
+    .card-meta{ font-size:12px; color:#666; margin:0 0 6px 0; }
+    .card-tags{ font-size:12px; color:#666; }
+
+    .list a{ display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid #eee; padding:10px 0; color:#111; }
+    .list a:hover{ background:#fafbfc; }
+    .list .right{ white-space:nowrap; color:#666; font-size:12px; }
+
+    .badge{ display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; line-height:1.6; border:1px solid #e5e7eb; background:#f9fafb; color:#374151; margin-right:8px; vertical-align:middle; }
+    .badge .lock{ margin-left:4px; opacity:.7; }
+
+    .loader{ display:flex; align-items:center; gap:10px; padding:10px 12px; margin:6px 0 16px; background:#fff; border:1px solid #eee; border-radius:10px; color:#444; font-size:14px; }
+    .spinner{ width:16px;height:16px;border-radius:50%; border:2px solid #e5e7eb; border-top-color:#2c7cf1; animation:spin .8s linear infinite; }
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+
+    .source-toggles{ display:flex; gap:12px; align-items:center; margin:-8px 0 10px; }
+    .toggle{ font-size:13px; color:#444; }
+    .toggle input{ margin-right:6px; }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/dnb/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function (id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <h1 class="text-3xl font-semibold text-gray-900 tracking-tight mb-2">
+      Orion News Dashboard — Dave & Buster’s (PLAY)
+    </h1>
+    <p class="text-gray-500 text-[15px] mb-8">
+      PLAY + Eatertainment sector headlines, competitor moves, ratings actions, SEC filings, and sell-side chatter.
+    </p>
+
+    <section id="media-hub">
+      <header style="margin-bottom:16px;">
+        <h1 style="margin:0 0 6px 0;font-size:32px;font-weight:700;">Media Hub</h1>
+        <p style="margin:0;color:#555;">
+          Top headlines for Dave &amp; Buster’s (PLAY) + Eatertainment/FEC/Arcade dining — updated hourly.
+        </p>
+        <p id="last-updated" style="margin-top:8px; color:#666; font-size:13px;"></p>
+      </header>
+
+      <div id="loader" class="loader">
+        <div class="spinner" aria-hidden="true"></div>
+        <span>Loading latest headlines…</span>
+      </div>
+
+      <nav id="filters" style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 12px;">
+        <button data-tag="All" class="pill pill--active">All</button>
+        <button data-tag="PLAY" class="pill">PLAY</button>
+        <button data-tag="Competitors" class="pill">Competitors</button>
+        <button data-tag="Industry" class="pill">Industry</button>
+        <button data-tag="Earnings" class="pill">Earnings</button>
+        <button data-tag="Guidance" class="pill">Guidance</button>
+        <button data-tag="Ratings" class="pill">Ratings</button>
+        <button data-tag="SEC" class="pill">SEC</button>
+        <button data-tag="M&A" class="pill">M&A</button>
+        <button data-tag="Macro/Consumer" class="pill">Macro/Consumer</button>
+        <button data-tag="Openings/Closures" class="pill">Openings/Closures</button>
+      </nav>
+
+      <div class="source-toggles" style="margin: -6px 0 20px;">
+        <label class="toggle">
+          <input type="checkbox" id="toggle-sec" checked />
+          Include SEC filings
+        </label>
+      </div>
+
+      <h3 style="margin:10px 0 12px;font-size:20px;">Top 10 Today</h3>
+      <div id="top10" class="grid"></div>
+
+      <h3 style="margin:28px 0 12px;font-size:20px;">All Stories</h3>
+      <div id="feed" class="list"></div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="/includes/include.js"></script>
+
+  <script>
+    // ===== Config =====
+    // IMPORTANT: we now pass universe=play so the API switches to PLAY sources
+    const API = 'https://private-credit.ai/api/media-feed?universe=play';
+    let _items = [];
+    const _loader = document.getElementById('loader');
+
+    // ===== Utilities =====
+    function timeAgo(iso){
+      const d = new Date(iso);
+      const diffMs = Date.now() - d.getTime();
+      const m = Math.round(diffMs/60000);
+      if (m < 60) return `${m}m`;
+      const h = Math.round(m/60);
+      if (h < 24) return `${h}h`;
+      return `${Math.round(h/24)}d`;
+    }
+    function tagPills(tags=[]){ return !tags?.length ? '' : `<span class="card-tags">${tags.join(' · ')}</span>`; }
+    function prettyHost(host=''){ return String(host||'').replace(/^www\./,''); }
+    function formatDate(iso) {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      } catch { return ''; }
+    }
+
+    // --- Source badges ---
+    const SOURCE_BADGES = {
+      'reuters.com': {label:'Reuters', cls:'reuters'},
+      'bloomberg.com': {label:'Bloomberg', cls:'bloomberg'},
+      'ft.com': {label:'FT', cls:'ft'},
+      'wsj.com': {label:'WSJ', cls:'wsj'},
+      'barrons.com': {label:"Barron's", cls:'barrons'},
+      'spglobal.com': {label:'S&P Global', cls:'spglobal'},
+      'ratings.spglobal.com': {label:'S&P Ratings', cls:'spglobal'},
+      'moodys.com': {label:"Moody's", cls:'other'},
+      'sec.gov': {label:'SEC EDGAR', cls:'other'},
+      'prnewswire.com': {label:'PR Newswire', cls:'other'},
+      'businesswire.com': {label:'BusinessWire', cls:'other'},
+      'globenewswire.com': {label:'GlobeNewswire', cls:'other'},
+      'finance.yahoo.com': {label:'Yahoo Finance', cls:'other'},
+      'nasdaq.com': {label:'Nasdaq', cls:'other'},
+      'investopedia.com': {label:'Investopedia', cls:'other'},
+      'marketwatch.com': {label:'MarketWatch', cls:'other'}
+    };
+    const PAYWALLED = new Set(['ft.com','wsj.com','barrons.com','bloomberg.com']);
+    function badgeHTML(host=''){
+      const key = prettyHost(host);
+      const meta = SOURCE_BADGES[key] || {label: key || 'Source', cls: 'other'};
+      const lock = PAYWALLED.has(key) ? '<span class="lock">🔒</span>' : '';
+      return `<span class="badge badge--${meta.cls}" title="${meta.label}">${meta.label}${lock}</span>`;
+    }
+
+    // --- URL + publisher helpers ---
+    function rewriteGoogleNewsUrl(u=''){
+      try{
+        const url = new URL(u);
+        if (url.hostname.endsWith('news.google.com')){
+          const orig = url.searchParams.get('url') || url.searchParams.get('q');
+          if (orig){ try { return decodeURIComponent(orig); } catch { return orig; } }
+        }
+      }catch{}
+      return u;
+    }
+    function cleanTitle(title=''){
+      const parts = String(title).split(/\s[-–—]\s/);
+      return parts.length >= 2 ? parts.slice(0, -1).join(' - ').trim() : String(title).trim();
+    }
+    function extractPublisherFromTitle(title=''){
+      const parts = String(title).split(/\s[-–—]\s/);
+      if (parts.length >= 2){
+        const tail = parts[parts.length - 1].trim();
+        if (tail && tail.length <= 50 && !/google/i.test(tail)) return tail;
+      }
+      return '';
+    }
+    function publisherHost(i){
+      const source = prettyHost(i?.source || '');
+      if (source && source !== 'news.google.com') return source;
+      let host = '';
+      try { host = new URL(rewriteGoogleNewsUrl(i?.url || '')).hostname; } catch {}
+      host = prettyHost(host);
+      if (host && host !== 'news.google.com') return host;
+      const fromTitle = extractPublisherFromTitle(i?.title || '');
+      return fromTitle || (source || host || 'Source');
+    }
+
+    // --- Tags ---
+    const TAG_ALIASES = {
+      "sec":"SEC",
+      "m&a":"M&A",
+      "macro":"Macro/Consumer",
+      "macro/consumer":"Macro/Consumer",
+      "openings":"Openings/Closures",
+      "closures":"Openings/Closures",
+      "competitor":"Competitors",
+      "competitors":"Competitors"
+    };
+    function normalizeTag(s=""){ const k = String(s).trim().toLowerCase(); return TAG_ALIASES[k] || s; }
+    function toTagArray(t){ if (Array.isArray(t)) return t; if (typeof t === 'string') return t.split(',').map(x=>x.trim()).filter(Boolean); return []; }
+
+    function inferTagsFromText(text=""){
+      const t = text.toLowerCase();
+      const out = new Set();
+
+      // PLAY / company mentions
+      if (/(dave\s*&\s*buster|dave and buster|d&b\b|\bplay\b)/.test(t)) out.add("PLAY");
+
+      // Competitors / peer set (broad)
+      if (/(topgolf|bowlero|round1|round\s?one|main\s+event|cec\s+entertainment|chuck\s*e\.?\s*cheese|pinstripes|andretti|family\s+entertainment\s+center|\bfec\b|arcade\s+bar)/.test(t)) out.add("Competitors");
+
+      // Industry bucket
+      if (/(eatertainment|arcade|amusement|family entertainment|location-based entertainment|casual dining|restaurants|bar & grill|experiential dining)/.test(t)) out.add("Industry");
+
+      // Earnings / guidance
+      if (/(earnings|eps|revenue|same-store|comp(s)?|comparable sales|quarter|q[1-4]\b|results|guidance|outlook|raised guidance|cut guidance)/.test(t)) out.add("Earnings");
+      if (/(guidance|outlook|forecast|expects|reiterat(e|ed))/i.test(text)) out.add("Guidance");
+
+      // Ratings / credit
+      if (/(moody|s&p|spglobal|ratings|rating action|downgrade|upgrade|outlook revised|credit rating|issuer rating|probability of default|pd rating)/.test(t)) out.add("Ratings");
+
+      // SEC
+      if (/(sec\.gov|8-k|10-q|10-k|registration statement|prospectus|def 14a|proxy statement)/.test(t)) out.add("SEC");
+
+      // M&A / corporate actions
+      if (/(acquire|acquisition|merger|m&a|divest|sale-leaseback|strategic alternatives|buyback|repurchase|tender offer)/.test(t)) out.add("M&A");
+
+      // Macro / consumer
+      if (/(consumer|discretionary|traffic|inflation|tariff|wage|labor|recession|spending|credit card|holiday season)/.test(t)) out.add("Macro/Consumer");
+
+      // Openings / closures
+      if (/(new store|open(s|ed|ing)|grand opening|unit growth|store closure|close(s|d)|relocation)/.test(t)) out.add("Openings/Closures");
+
+      return Array.from(out);
+    }
+
+    // --- Renderers ---
+    function renderTop10(items){
+      const el = document.getElementById('top10');
+      el.innerHTML = (items||[]).slice(0,10).map(i=>{
+        const host = publisherHost(i);
+        const when = timeAgo(i.published_at || i.pubDate || Date.now());
+        const href = i.url || '#';
+        return `
+          <a class="card" href="${href}" target="_blank" rel="noopener">
+            <div class="card-title">${cleanTitle(i.title||'')}</div>
+            <div class="card-meta">${badgeHTML(host)} <strong>${host}</strong> · ${when} · ${formatDate(i.published_at)}</div>
+            ${tagPills(i.tags)}
+          </a>`;
+      }).join('');
+    }
+    function renderFeed(items){
+      const el = document.getElementById('feed');
+      el.innerHTML = (items||[]).map(i=>{
+        const host = publisherHost(i);
+        const when = timeAgo(i.published_at || i.pubDate || Date.now());
+        const href = i.url || '#';
+        return `
+          <a href="${href}" target="_blank" rel="noopener">
+            <span>${badgeHTML(host)}${cleanTitle(i.title||'')}</span>
+            <span class="right">${host} · ${when} · ${formatDate(i.published_at)}</span>
+          </a>`;
+      }).join('');
+    }
+
+    // --- Filter ---
+    function getSelectedTag(){
+      const active = document.querySelector('#filters .pill.pill--active');
+      return active ? active.dataset.tag : 'All';
+    }
+
+    function applyFilter(tag = getSelectedTag()){
+      const includeSEC = document.getElementById('toggle-sec')?.checked !== false;
+
+      let filtered = _items;
+      const selected = normalizeTag(tag);
+
+      if (selected !== 'All') {
+        filtered = filtered.filter(i =>
+          toTagArray(i.tags).map(t => normalizeTag(t)).includes(selected)
+        );
+      }
+
+      const nonSec = filtered.filter(i => (i.source || '').replace(/^www\./,'') !== 'sec.gov');
+      const sec    = filtered.filter(i => (i.source || '').replace(/^www\./,'') === 'sec.gov');
+      const ordered = includeSEC ? [...nonSec, ...sec] : nonSec;
+
+      if (!ordered.length) {
+        document.getElementById('top10').innerHTML = '';
+        document.getElementById('feed').innerHTML = '<div style="color:#6b7280">No matching stories. Try “All” or “Industry”.</div>';
+        return;
+      }
+
+      renderTop10(ordered);
+      renderFeed(ordered.slice(10, 280));
+    }
+
+    // --- Item normalizer ---
+    function massageItem(raw = {}) {
+      const url = rewriteGoogleNewsUrl(raw.url || '');
+      const published = raw.published_at || raw.pubDate || raw.date || null;
+      let published_at = null;
+      if (published) {
+        const d = new Date(published);
+        if (!isNaN(d.getTime())) published_at = d.toISOString();
+      }
+      const tags = toTagArray(raw.tags || []);
+      return { ...raw, url, published_at, tags };
+    }
+
+    function normalizeFeedData(data) {
+      if (!data) return [];
+      if (Array.isArray(data)) return data;
+      if (Array.isArray(data.items) && data.items.length) return data.items;
+      if (Array.isArray(data.top10) && data.top10.length) return data.top10;
+      if (data.title && data.url) return [data];
+      return [];
+    }
+
+    async function loadFeed(){
+      if (_loader) _loader.style.display = 'flex';
+      try{
+        const url = `${API}&ts=${Date.now()}`;
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Feed HTTP ${res.status}`);
+        const data = await res.json();
+
+        const rawItems = normalizeFeedData(data);
+        if (!rawItems.length) {
+          document.getElementById('feed').innerHTML = `
+            <div style="color:#6b7280">No stories available right now.</div>
+            <div><a href="${url}" target="_blank" rel="noopener">Open raw API response</a></div>
+          `;
+          document.getElementById('top10').innerHTML = '';
+          if (_loader) _loader.style.display = 'none';
+          return;
+        }
+
+        _items = rawItems.map(i => {
+          const baseTags = toTagArray(i.tags);
+          const inferred = inferTagsFromText([i.title, i.summary, i.description].filter(Boolean).join(' '));
+          const merged = Array.from(new Set([...baseTags, ...inferred]));
+          return massageItem({ ...i, tags: merged });
+        }).sort((a,b)=> new Date(b.published_at||b.pubDate||0) - new Date(a.published_at||a.pubDate||0));
+
+        applyFilter('All');
+        if (_loader) _loader.style.display = 'none';
+      }catch(e){
+        console.error('Feed load error', e);
+        document.getElementById('feed').innerHTML = `<div style="color:#b91c1c">⚠️ Failed to load feed: ${e.message}</div>`;
+        if (_loader) _loader.textContent = `⚠️ Failed to load feed: ${e.message}`;
+      }
+    }
+
+    function updateLastUpdated(){
+      const now = new Date();
+      const formatted = now.toLocaleString('en-US', { hour:'numeric', minute:'2-digit', hour12:true, month:'short', day:'numeric' });
+      const el = document.getElementById('last-updated');
+      if (el) el.textContent = `Last updated: ${formatted}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('#filters .pill').forEach(btn=>{
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#filters .pill').forEach(b=>b.classList.remove('pill--active'));
+          btn.classList.add('pill--active');
+          applyFilter(btn.dataset.tag);
+        });
+      });
+
+      const secToggle = document.getElementById('toggle-sec');
+      if (secToggle) secToggle.addEventListener('change', () => applyFilter(getSelectedTag()));
+
+      loadFeed().then(updateLastUpdated);
+    });
+  </script>
+
+  <!--Ask Orion Bot -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
