@@ -1,3 +1,4 @@
+export const config = { runtime: 'nodejs' };
 // api/media-feed.js
 import Parser from 'rss-parser';
 
