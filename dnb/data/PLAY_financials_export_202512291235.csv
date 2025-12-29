@@ -1,0 +1,44 @@
+"metric","Annual_1","Annual_2","Annual_3","Annual_4"
+BS: Accounts payable,134.4,118.6,882.0,62493.0
+BS: Accounts receivable,20.1,21.9,21.7,1.9
+BS: Accrued expenses,290.7,306.0,342.9,248493.0
+BS: Cash and cash equivalents,6.9,37.3,181.6,25910.0
+BS: Inventory,39.8,37.2,45.4,40319.0
+BS: Lease liabilities,2637.3,2598.0,2633585.0,2044537.0
+BS: Other current assets,,,9331.0,3105.0
+BS: Total assets,4161.6,4005.6,4171.5,2621250.0
+BS: Total current assets,94.4,137.5,293.7,145571.0
+BS: Total current liabilities,433.9,435.6,438.0,311515.0
+BS: Total debt (proxy),1524.3,1343.3,1287.9,440000.0
+BS: Total equity,145.8,251.2,410.5,275460.0
+BS: Total liabilities,4015.8,3754.4,3761.0,2345790.0
+CF: Acquisitions,,,818666.0,
+CF: Asset sales,184.7,84.2,,
+CF: Capex,530.2,330.2,234224.0,92197.0
+CF: Cash from operations,312.3,364.2,444.4,283.2
+CF: Cash interest paid,123.6,122.3,68656.0,44545.0
+CF: Cash taxes paid,20.1,9.7,30442.0,21549.0
+DER: Debt / EBITDA,3.32,2.61,0.0,1.35
+DER: Debt / EBITDAR,2.16,1.78,0.0,0.9
+DER: EBIT,220.4,306.6,262508.0,187181.0
+DER: EBIT / Interest expense,1.63,2.41,3.0,3.47
+DER: EBITDA,458.6,515.1,431810.0,325510.0
+DER: EBITDA margin,0.215,0.2336,0.1994,0.2496
+DER: EBITDAR,706.1,756.4000000000001,640471.0,491091.0
+DER: FCF / Debt,-0.14,0.03,-181.52,-0.21
+DER: Free cash flow,-217.90000000000003,34.0,-233779.6,-91913.8
+DER: Interest coverage (cash),3.71,4.21,6.29,7.31
+DER: Net debt,1517.3999999999999,1306.0,1106.3000000000002,414090.0
+DER: Net leverage,3.31,2.54,0.0,1.27
+DER: RCF / Debt,0.19,0.25,237.94,0.56
+DER: RCF / Net debt,0.2,0.26,276.99,0.6
+DER: ROA,0.0143,0.031,0.1045,0.0414
+DER: Rent coverage (EBITDAR / rent),2.85,3.13,3.07,2.97
+DER: Retained cash flow (RCF),296.5,335.4,306437.0,246969.0
+DER: Revenue growth (YoY),-0.0329,-0.999,0.6602,
+IS: Depreciation & amortization,238.2,208.5,169302.0,138329.0
+IS: Interest expense,135.3,127.4,87363.0,53910.0
+IS: Net income,58.3,126.9,137135.0,108640.0
+IS: Operating income,220.4,306.6,262508.0,187181.0
+IS: Rent expense,247.5,241.3,208661.0,165581.0
+IS: Revenue,2132.7,2205.3,2165040.0,1304056.0
