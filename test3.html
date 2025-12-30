@@ -116,20 +116,44 @@
       const status = document.getElementById("status");
 
       // Build hover payload (works now for label/id/group; metadata fills only if API provides it)
-      const customdata = points.map(p => ([
-        safe(p.label),         // 0
-        safe(p.id),            // 1
-        safe(p.group),         // 2
-        (typeof p.x === "number" ? p.x.toFixed(4) : safe(p.x)), // 3
-        (typeof p.y === "number" ? p.y.toFixed(4) : safe(p.y)), // 4
-
-        // metadata (top-level OR nested under p.metadata)
-        safe(p.file_name || (p.metadata && p.metadata.file_name)),   // 5
-        safe(p.ticker || (p.metadata && p.metadata.ticker)),         // 6
-        safe(p.doc_type || (p.metadata && p.metadata.doc_type)),     // 7
-        safe(p.period_end || (p.metadata && p.metadata.period_end)), // 8
-        safe(p.anchor || (p.metadata && p.metadata.anchor))          // 9
-      ]));
+      const customdata = points.map(p => {
+        const md = p.metadata || {};
+        return ([
+          safe(p.label),         // 0
+          safe(p.id),            // 1
+          safe(p.group),         // 2
+          (typeof p.x === "number" ? p.x.toFixed(4) : safe(p.x)), // 3
+          (typeof p.y === "number" ? p.y.toFixed(4) : safe(p.y)), // 4
+      
+          safe(md.file_name),        // 5
+          safe(md.file_id),          // 6
+          safe(md.company_name),     // 7
+          safe(md.ticker),           // 8
+          safe(md.doc_type),         // 9
+          safe(md.period_end),       // 10
+          safe(md.cik),              // 11
+      
+          // NEW: deal extras (must be present in API hover_md)
+          safe(md.deal_title),       // 12
+          safe(md.sponsor),          // 13
+          safe(md.industry),         // 14
+          safe(md.security),         // 15
+          safe(md.ownership),        // 16
+          safe(md.structure),        // 17
+          safe(md.use_of_proceeds),  // 18
+      
+          safe(md.debt_amount_mm),   // 19
+          safe(md.revenue_ltm_mm),   // 20
+          safe(md.ebitda_ltm_mm),    // 21
+          safe(md.ebitda_margin_pct),// 22
+          safe(md.leverage_gross),   // 23
+          safe(md.leverage_net),     // 24
+          safe(md.term_years),       // 25
+      
+          safe(md.key_strengths),    // 26
+          safe(md.key_risk_factors)  // 27
+        ]);
+      });
 
       const nodeTrace = {
         type: "scattergl",
@@ -143,12 +167,37 @@
           "<span style='opacity:0.75'>id:</span> <span style='font-family:monospace'>%{customdata[1]}</span><br>" +
           "<span style='opacity:0.75'>group:</span> %{customdata[2]}<br>" +
           "<span style='opacity:0.75'>x:</span> %{customdata[3]} &nbsp; <span style='opacity:0.75'>y:</span> %{customdata[4]}" +
-          "<br><br><span style='opacity:0.85'><b>metadata</b></span><br>" +
+        
+          "<br><br><span style='opacity:0.85'><b>core</b></span><br>" +
           "file: %{customdata[5]}<br>" +
-          "ticker: %{customdata[6]}<br>" +
-          "type: %{customdata[7]}<br>" +
-          "period_end: %{customdata[8]}<br>" +
-          "anchor: %{customdata[9]}<br>" +
+          "file_id: %{customdata[6]}<br>" +
+          "company: %{customdata[7]}<br>" +
+          "ticker: %{customdata[8]}<br>" +
+          "doc: %{customdata[9]}<br>" +
+          "period_end: %{customdata[10]}<br>" +
+          "cik: %{customdata[11]}<br>" +
+        
+          "<br><span style='opacity:0.85'><b>deal</b></span><br>" +
+          "deal_title: %{customdata[12]}<br>" +
+          "sponsor: %{customdata[13]}<br>" +
+          "industry: %{customdata[14]}<br>" +
+          "security: %{customdata[15]}<br>" +
+          "ownership: %{customdata[16]}<br>" +
+          "structure: %{customdata[17]}<br>" +
+          "use_of_proceeds: %{customdata[18]}<br>" +
+        
+          "<br><span style='opacity:0.85'><b>metrics</b></span><br>" +
+          "debt ($mm): %{customdata[19]}<br>" +
+          "revenue LTM ($mm): %{customdata[20]}<br>" +
+          "EBITDA LTM ($mm): %{customdata[21]}<br>" +
+          "EBITDA margin (%): %{customdata[22]}<br>" +
+          "leverage gross: %{customdata[23]}<br>" +
+          "leverage net: %{customdata[24]}<br>" +
+          "term (yrs): %{customdata[25]}<br>" +
+        
+          "<br><span style='opacity:0.85'><b>qual</b></span><br>" +
+          "key_strengths: %{customdata[26]}<br>" +
+          "key_risks: %{customdata[27]}<br>" +
           "<extra></extra>",
         name: "vectors"
       };
