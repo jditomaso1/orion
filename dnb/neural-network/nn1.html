@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Team Chat — Orion</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Plotly -->
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+  <!-- Base Styles -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/dnb/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 flex flex-col">
+
+    <!-- Neural Map (REAL DATA from FastAPI) -->
+    <section class="card neural" aria-labelledby="neural-title">
+      <style>
+        .card.neural{
+          border:1px solid #e6e6e6;border-radius:14px;padding:16px;background:#fff;
+          max-width:1100px;margin-top:24px
+        }
+        .card.neural h2{margin:0 0 8px;font:700 18px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+        .card.neural p{margin:0 0 14px;color:#666;font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+
+        /* Plot wrapper (keeps your light UI, but gives Plotly a clean canvas) */
+        .plotWrap{
+          border:1px solid #eee;border-radius:12px;
+          background: radial-gradient(circle at 50% 35%, #ffffff 0%, #fbfbfb 55%, #f7f7f7 100%);
+          padding:10px;
+        }
+        #status{font:500 12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#666;margin-bottom:8px}
+        #plot{width:100%; height:72vh;}
+        .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+      </style>
+
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <h2 id="neural-title">Orion Neural Map — Dave &amp; Buster’s (PLAY)</h2>
+          <p>Live map from FastAPI (<span class="mono">GET /neural-map</span>) · hover points for metadata · optional nearest-neighbor fibers</p>
+        </div>
+
+        <div class="text-xs text-gray-500">
+          Data: <span class="mono">http://localhost:8000/neural-map</span>
+        </div>
+      </div>
+
+      <div class="plotWrap">
+        <div id="status">Loading…</div>
+        <div id="plot"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Chat Logic (your existing simple UI; unchanged) -->
+  <script>
+    const input = document.getElementById("chatInput");
+    const btn = document.getElementById("sendBtn");
+    const windowEl = document.getElementById("chatWindow");
+
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      const msg = document.createElement("div");
+      msg.className = "flex items-start gap-3";
+
+      msg.innerHTML = `
+        <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">J</div>
+        <div>
+          <div class="font-semibold text-gray-800">You <span class="text-gray-400 text-xs ml-2">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
+          <div class="bg-blue-50 p-3 rounded-lg text-sm text-gray-800 max-w-xl border border-blue-200">
+            ${text}
+          </div>
+        </div>
+      `;
+
+      windowEl.appendChild(msg);
+      windowEl.scrollTop = windowEl.scrollHeight;
+
+      input.value = "";
+    }
+
+    if (btn) btn.onclick = sendMessage;
+    if (input) {
+      input.addEventListener("keypress", e => {
+        if (e.key === "Enter") sendMessage();
+      });
+    }
+  </script>
+
+  <!-- Ask Orion Bot include (unchanged) -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+  <!-- NEURAL MAP LOGIC (from your second file) -->
+  <script>
+    // ----- CONFIG -----
+    const DATA_URL = "http://localhost:8000/neural-map"; // absolute to avoid origin confusion
+    const K_NEIGHBORS = 2;
+    const MAX_POINTS_FOR_EDGES = 700;
+    const MAX_EDGES = 2500;
+
+    async function fetchPoints() {
+      const res = await fetch(DATA_URL, { headers: { "Accept": "application/json" }});
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.json();
+    }
+
+    function safe(v) {
+      return (v === null || v === undefined) ? "" : String(v);
+    }
+
+    function buildEdges(points, k = 2, maxEdges = 2000) {
+      const edges = [];
+      const n = points.length;
+
+      for (let i = 0; i < n; i++) {
+        const ai = points[i];
+        const dists = [];
+
+        for (let j = 0; j < n; j++) {
+          if (i === j) continue;
+          const bj = points[j];
+          const dx = ai.x - bj.x;
+          const dy = ai.y - bj.y;
+          const d2 = dx*dx + dy*dy;
+          dists.push([d2, j]);
+        }
+
+        dists.sort((a, b) => a[0] - b[0]);
+
+        for (let t = 0; t < Math.min(k, dists.length); t++) {
+          edges.push({ source: i, target: dists[t][1], w: dists[t][0] });
+          if (edges.length >= maxEdges) return edges;
+        }
+      }
+      return edges;
+    }
+
+    function buildEdgeTrace(points, edges) {
+      if (!Array.isArray(edges) || edges.length === 0) return null;
+
+      const xs = [];
+      const ys = [];
+
+      for (const e of edges) {
+        const a = points[e.source];
+        const b = points[e.target];
+        if (!a || !b) continue;
+        xs.push(a.x, b.x, null);
+        ys.push(a.y, b.y, null);
+      }
+
+      return {
+        type: "scattergl",
+        mode: "lines",
+        x: xs,
+        y: ys,
+        hoverinfo: "skip",
+        line: { width: 1, color: "rgba(0,0,0,0.14)" },
+        name: "fibers"
+      };
+    }
+
+    function render(points) {
+      const status = document.getElementById("status");
+
+      const customdata = points.map(p => {
+        const md = p.metadata || {};
+        return ([
+          safe(p.label),         // 0
+          safe(p.id),            // 1
+          safe(p.group),         // 2
+          (typeof p.x === "number" ? p.x.toFixed(4) : safe(p.x)), // 3
+          (typeof p.y === "number" ? p.y.toFixed(4) : safe(p.y)), // 4
+
+          safe(md.file_name),        // 5
+          safe(md.file_id),          // 6
+          safe(md.company_name),     // 7
+          safe(md.ticker),           // 8
+          safe(md.doc_type),         // 9
+          safe(md.period_end),       // 10
+          safe(md.cik),              // 11
+
+          safe(md.deal_title),       // 12
+          safe(md.sponsor),          // 13
+          safe(md.industry),         // 14
+          safe(md.security),         // 15
+          safe(md.ownership),        // 16
+          safe(md.structure),        // 17
+          safe(md.use_of_proceeds),  // 18
+
+          safe(md.debt_amount_mm),   // 19
+          safe(md.revenue_ltm_mm),   // 20
+          safe(md.ebitda_ltm_mm),    // 21
+          safe(md.ebitda_margin_pct),// 22
+          safe(md.leverage_gross),   // 23
+          safe(md.leverage_net),     // 24
+          safe(md.term_years),       // 25
+
+          safe(md.key_strengths),    // 26
+          safe(md.key_risk_factors)  // 27
+        ]);
+      });
+
+      const nodeTrace = {
+        type: "scattergl",
+        mode: "markers",
+        x: points.map(p => p.x),
+        y: points.map(p => p.y),
+        customdata,
+        marker: { size: 9, color: "rgba(53, 208, 186, 0.95)" },
+        hovertext: customdata.map(d => {
+          const rows = [];
+          const add = (label, val) => {
+            if (val === null || val === undefined) return;
+            const s = String(val).trim();
+            if (!s) return;
+            rows.push(`${label}: ${s}`);
+          };
+
+          const title = (d[0] || "").trim() || (d[1] || "").trim() || "point";
+
+          add("id", d[1]);
+          add("group", d[2]);
+          add("x", d[3]);
+          add("y", d[4]);
+
+          add("file", d[5]);
+          add("file_id", d[6]);
+          add("company", d[7]);
+          add("ticker", d[8]);
+          add("doc", d[9]);
+          add("period_end", d[10]);
+          add("cik", d[11]);
+
+          add("deal_title", d[12]);
+          add("sponsor", d[13]);
+          add("industry", d[14]);
+          add("security", d[15]);
+          add("ownership", d[16]);
+          add("structure", d[17]);
+          add("use_of_proceeds", d[18]);
+
+          add("debt ($mm)", d[19]);
+          add("revenue LTM ($mm)", d[20]);
+          add("EBITDA LTM ($mm)", d[21]);
+          add("EBITDA margin (%)", d[22]);
+          add("leverage gross", d[23]);
+          add("leverage net", d[24]);
+          add("term (yrs)", d[25]);
+
+          add("key_strengths", d[26]);
+          add("key_risks", d[27]);
+
+          return `<b>${title}</b><br>` + rows.join("<br>");
+        }),
+        hovertemplate: "%{hovertext}<extra></extra>",
+        name: "vectors"
+      };
+
+      let edgeTrace = null;
+      let edgesDrawn = 0;
+
+      if (points.length <= MAX_POINTS_FOR_EDGES) {
+        const edges = buildEdges(points, K_NEIGHBORS, MAX_EDGES);
+        edgesDrawn = edges.length;
+        edgeTrace = buildEdgeTrace(points, edges);
+      }
+
+      status.textContent =
+        `Loaded ${points.length} vectors` +
+        (edgeTrace ? ` · ${edgesDrawn} fibers (k=${K_NEIGHBORS})` : ` · fibers skipped (too many points)`);
+
+      const layout = {
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+        margin: { l: 10, r: 10, t: 10, b: 10 },
+        showlegend: false,
+        xaxis: { visible: false },
+        yaxis: { visible: false },
+        hoverlabel: {
+          bgcolor: "rgba(20,20,25,0.95)",
+          bordercolor: "rgba(255,255,255,0.15)",
+          font: { color: "#fff", size: 12 }
+        }
+      };
+
+      const traces = [];
+      if (edgeTrace) traces.push(edgeTrace);
+      traces.push(nodeTrace);
+
+      Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
+    }
+
+    (async () => {
+      const status = document.getElementById("status");
+      try {
+        const points = await fetchPoints();
+
+        if (!Array.isArray(points)) {
+          status.textContent = "Expected /neural-map to return an array, but got something else.";
+          return;
+        }
+
+        const filtered = points.filter(p => typeof p.x === "number" && typeof p.y === "number");
+        if (!filtered.length) {
+          status.textContent = "No points with numeric x/y found.";
+          return;
+        }
+
+        render(filtered);
+      } catch (err) {
+        console.error(err);
+        status.textContent = `Error: ${err.message}`;
+      }
+    })();
+  </script>
+
+</body>
+</html>
