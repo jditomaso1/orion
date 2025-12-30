@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orion — Command Center</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+    .thin-scrollbar::-webkit-scrollbar { width: 8px; }
+    .thin-scrollbar::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 8px; }
+    .thin-scrollbar { scrollbar-width: thin; scrollbar-color: #d4d4d8 transparent; }
+
+    .typing-cursor::after {
+      content: "|";
+      animation: blink 0.7s steps(1) infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+  </style>
+</head>
+
+<body class="flex h-screen overflow-hidden">
+
+<!-- SIDEBAR -->
+<div id="sidebar-placeholder" class="w-64 bg-white border-r border-neutral-200"></div>
+
+<script>
+async function injectSidebar() {
+  const res = await fetch("/dnb/sidebar.html");
+  document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+}
+injectSidebar();
+</script>
+
+<!-- MAIN -->
+<main class="flex-1 flex flex-col">
+
+  <!-- Header -->
+  <div class="px-6 py-4 border-b bg-white flex justify-between items-center">
+    <div>
+      <div class="text-sm font-semibold">Orion — Ask the Deal Stack</div>
+      <div class="text-xs text-neutral-500">Live Pinecone + Postgres</div>
+    </div>
+    <span class="text-[10px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+      Connected to /ask-orion
+    </span>
+  </div>
+
+  <!-- Chat Stream -->
+  <div id="chatStream"
+       class="flex-1 overflow-auto thin-scrollbar px-6 py-4 space-y-4 bg-[#f5f6f8]">
+  </div>
+
+  <!-- Input -->
+  <div class="border-t bg-[#f5f6f8] px-6 py-4">
+    <div class="flex items-end gap-2 bg-white rounded-2xl px-3 py-2 border border-neutral-200">
+      <textarea
+        id="chatInput"
+        rows="1"
+        placeholder="Ask Orion a real question…"
+        class="flex-1 bg-transparent outline-none resize-none text-sm max-h-32 py-[6px]"
+      ></textarea>
+      <button
+        id="sendBtn"
+        class="px-4 py-2 rounded-xl text-sm bg-neutral-900 text-white hover:bg-black disabled:opacity-40">
+        Ask
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ================= CONFIG ================= */
+const ORION_API_BASE = "http://127.0.0.1:8000";
+
+/* ================= API ================= */
+async function askOrionBackend(question, topK = 5) {
+  const res = await fetch(`${ORION_API_BASE}/ask-orion`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question, top_k: topK })
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+/* ================= HELPERS ================= */
+const $ = (s) => document.querySelector(s);
+const stream = $("#chatStream");
+const input = $("#chatInput");
+const sendBtn = $("#sendBtn");
+
+function md(text) {
+  return (text || "")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
+    .replace(/\n/g,"<br/>");
+}
+
+function addBubble(role, html, typing=false) {
+  const row = document.createElement("div");
+  row.className = role === "user" ? "text-right" : "text-left";
+
+  const bubble = document.createElement("div");
+  bubble.className =
+    "inline-block rounded-2xl px-4 py-3 max-w-[75%] text-sm " +
+    (role === "user"
+      ? "bg-[#187ABA] text-white"
+      : "bg-white border border-neutral-200");
+
+  bubble.innerHTML = html;
+  if (typing) bubble.classList.add("typing-cursor");
+
+  row.appendChild(bubble);
+  stream.appendChild(row);
+  stream.scrollTop = stream.scrollHeight;
+
+  return bubble;
+}
+
+/* ================= INIT ================= */
+addBubble("assistant", md("**Joe — Orion is live.**"));
+
+/* ================= SEND ================= */
+async function handleSend() {
+  const q = input.value.trim();
+  if (!q) return;
+
+  addBubble("user", md(q));
+  input.value = "";
+  sendBtn.disabled = true;
+
+  const thinking = addBubble("assistant", md("_Checking Orion…_"), true);
+
+  try {
+    const data = await askOrionBackend(q, 5);
+    const answer = data.answer || "No answer returned.";
+    const matches = data.matches || [];
+
+    const sources = matches.length
+      ? "<br/><br/><em>Sources:</em><br/>" +
+        matches.map(m =>
+          `• ${(m.metadata?.file_name || m.id)}`
+        ).join("<br/>")
+      : "";
+
+    thinking.classList.remove("typing-cursor");
+    thinking.innerHTML = md(`**Orion:** ${answer}`) + sources;
+
+  } catch (e) {
+    thinking.classList.remove("typing-cursor");
+    thinking.innerHTML = md("**Error:** " + e.message);
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+sendBtn.addEventListener("click", handleSend);
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    handleSend();
+  }
+});
+</script>
+
+</body>
+</html>
