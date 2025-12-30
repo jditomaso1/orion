@@ -34,18 +34,43 @@
 
 <body class="flex h-screen overflow-hidden">
 
-<!-- SIDEBAR -->
+<!-- ================= SIDEBAR ================= -->
 <div id="sidebar-placeholder" class="w-64 bg-white border-r border-neutral-200"></div>
 
 <script>
 async function injectSidebar() {
   const res = await fetch("/dnb/sidebar.html");
   document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+  // REQUIRED for sidebar clicks
+  window.toggleSection = function (id) {
+    const section = document.getElementById(id);
+    const icon = document.getElementById("icon-" + id);
+    if (!section || !icon) return;
+
+    section.classList.toggle("hidden");
+    icon.style.transform = section.classList.contains("hidden")
+      ? "rotate(0deg)"
+      : "rotate(90deg)";
+
+    localStorage.setItem("sidebar-open-section", id);
+  };
+
+  // Restore last open section
+  const last = localStorage.getItem("sidebar-open-section");
+  if (last) {
+    const section = document.getElementById(last);
+    const icon = document.getElementById("icon-" + last);
+    if (section && icon) {
+      section.classList.remove("hidden");
+      icon.style.transform = "rotate(90deg)";
+    }
+  }
 }
 injectSidebar();
 </script>
 
-<!-- MAIN -->
+<!-- ================= MAIN ================= -->
 <main class="flex-1 flex flex-col">
 
   <!-- Header -->
@@ -83,11 +108,12 @@ injectSidebar();
 
 </main>
 
+<!-- ================= CHAT LOGIC ================= -->
 <script>
-/* ================= CONFIG ================= */
+/* CONFIG */
 const ORION_API_BASE = "http://127.0.0.1:8000";
 
-/* ================= API ================= */
+/* API */
 async function askOrionBackend(question, topK = 5) {
   const res = await fetch(`${ORION_API_BASE}/ask-orion`, {
     method: "POST",
@@ -98,8 +124,8 @@ async function askOrionBackend(question, topK = 5) {
   return res.json();
 }
 
-/* ================= HELPERS ================= */
-const $ = (s) => document.querySelector(s);
+/* HELPERS */
+const $ = s => document.querySelector(s);
 const stream = $("#chatStream");
 const input = $("#chatInput");
 const sendBtn = $("#sendBtn");
@@ -132,10 +158,10 @@ function addBubble(role, html, typing=false) {
   return bubble;
 }
 
-/* ================= INIT ================= */
+/* INIT */
 addBubble("assistant", md("**Joe — Orion is live.**"));
 
-/* ================= SEND ================= */
+/* SEND */
 async function handleSend() {
   const q = input.value.trim();
   if (!q) return;
