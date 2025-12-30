@@ -162,43 +162,59 @@
         y: points.map(p => p.y),
         customdata,
         marker: { size: 9, color: "rgba(53, 208, 186, 0.95)" },
-        hovertemplate:
-          "<b>%{customdata[0]}</b><br>" +
-          "<span style='opacity:0.75'>id:</span> <span style='font-family:monospace'>%{customdata[1]}</span><br>" +
-          "<span style='opacity:0.75'>group:</span> %{customdata[2]}<br>" +
-          "<span style='opacity:0.75'>x:</span> %{customdata[3]} &nbsp; <span style='opacity:0.75'>y:</span> %{customdata[4]}" +
+        hovertext: customdata.map(d => {
+          const rows = [];
         
-          "<br><br><span style='opacity:0.85'><b>core</b></span><br>" +
-          "file: %{customdata[5]}<br>" +
-          "file_id: %{customdata[6]}<br>" +
-          "company: %{customdata[7]}<br>" +
-          "ticker: %{customdata[8]}<br>" +
-          "doc: %{customdata[9]}<br>" +
-          "period_end: %{customdata[10]}<br>" +
-          "cik: %{customdata[11]}<br>" +
+          const add = (label, val) => {
+            if (val === null || val === undefined) return;
+            const s = String(val).trim();
+            if (!s) return;
+            rows.push(`${label}: ${s}`);
+          };
         
-          "<br><span style='opacity:0.85'><b>deal</b></span><br>" +
-          "deal_title: %{customdata[12]}<br>" +
-          "sponsor: %{customdata[13]}<br>" +
-          "industry: %{customdata[14]}<br>" +
-          "security: %{customdata[15]}<br>" +
-          "ownership: %{customdata[16]}<br>" +
-          "structure: %{customdata[17]}<br>" +
-          "use_of_proceeds: %{customdata[18]}<br>" +
+          // header
+          const title = (d[0] || "").trim() || (d[1] || "").trim() || "point";
         
-          "<br><span style='opacity:0.85'><b>metrics</b></span><br>" +
-          "debt ($mm): %{customdata[19]}<br>" +
-          "revenue LTM ($mm): %{customdata[20]}<br>" +
-          "EBITDA LTM ($mm): %{customdata[21]}<br>" +
-          "EBITDA margin (%): %{customdata[22]}<br>" +
-          "leverage gross: %{customdata[23]}<br>" +
-          "leverage net: %{customdata[24]}<br>" +
-          "term (yrs): %{customdata[25]}<br>" +
+          // always show these if present
+          add("id", d[1]);
+          add("group", d[2]);
+          add("x", d[3]);
+          add("y", d[4]);
         
-          "<br><span style='opacity:0.85'><b>qual</b></span><br>" +
-          "key_strengths: %{customdata[26]}<br>" +
-          "key_risks: %{customdata[27]}<br>" +
-          "<extra></extra>",
+          // core
+          add("file", d[5]);
+          add("file_id", d[6]);
+          add("company", d[7]);
+          add("ticker", d[8]);
+          add("doc", d[9]);
+          add("period_end", d[10]);
+          add("cik", d[11]);
+        
+          // deal
+          add("deal_title", d[12]);
+          add("sponsor", d[13]);
+          add("industry", d[14]);
+          add("security", d[15]);
+          add("ownership", d[16]);
+          add("structure", d[17]);
+          add("use_of_proceeds", d[18]);
+        
+          // metrics
+          add("debt ($mm)", d[19]);
+          add("revenue LTM ($mm)", d[20]);
+          add("EBITDA LTM ($mm)", d[21]);
+          add("EBITDA margin (%)", d[22]);
+          add("leverage gross", d[23]);
+          add("leverage net", d[24]);
+          add("term (yrs)", d[25]);
+        
+          // qual
+          add("key_strengths", d[26]);
+          add("key_risks", d[27]);
+        
+          return `<b>${title}</b><br>` + rows.join("<br>") + "<extra></extra>";
+        }),
+        hoverinfo: "text",
         name: "vectors"
       };
 
