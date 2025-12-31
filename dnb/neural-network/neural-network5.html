@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion Neural Map — Full Graph</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Plotly -->
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f5f6f8; }
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;}
+    .card{
+      border:1px solid #e6e6e6;border-radius:14px;padding:16px;background:#fff;
+      max-width:1200px;margin-top:24px
+    }
+    .plotWrap{
+      border:1px solid #eee;border-radius:12px;
+      background: radial-gradient(circle at 50% 35%, #ffffff 0%, #fbfbfb 55%, #f7f7f7 100%);
+      padding:10px;
+    }
+    #plot{width:100%; height:74vh;}
+    .pill{border:1px solid #e5e7eb;border-radius:9999px;padding:6px 10px;font-size:12px;background:#fff;}
+    .btn{
+      border:1px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:12px;background:#fff;
+      transition: all .15s ease;
+    }
+    .btn:hover{transform: translateY(-1px);}
+    .btn-primary{background:#111827;color:#fff;border-color:#111827;}
+    .btn-danger{background:#fee2e2;border-color:#fecaca;color:#991b1b;}
+    .small{font-size:12px;color:#6b7280;}
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/dnb/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 flex flex-col">
+
+    <section class="card" aria-labelledby="neural-title">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h2 id="neural-title" class="text-lg font-bold text-gray-900">Orion Neural Map — Full Graph</h2>
+          <p class="small mt-1">
+            Live map from FastAPI (<span class="mono">GET /neural-map</span>) · progressive loading · filters · WebGL rendering
+          </p>
+        </div>
+        <div class="text-xs text-gray-500">
+          Data: <span class="mono" id="dataUrlLabel">http://localhost:8000/neural-map</span>
+        </div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <span class="pill">API: <span class="mono" id="apiBase">http://localhost:8000/neural-map</span></span>
+
+        <label class="pill">
+          Max points:
+          <select id="maxPoints" class="ml-2 bg-transparent outline-none">
+            <option value="1000">1,000</option>
+            <option value="3000">3,000</option>
+            <option value="7000">7,000</option>
+            <option value="15000" selected>15,000</option>
+            <option value="30000">30,000</option>
+          </select>
+        </label>
+
+        <label class="pill">
+          Page size:
+          <select id="pageSize" class="ml-2 bg-transparent outline-none">
+            <option value="250">250</option>
+            <option value="500">500</option>
+            <option value="1000" selected>1,000</option>
+            <option value="2000">2,000</option>
+          </select>
+        </label>
+
+        <label class="pill">
+          Doc filter:
+          <select id="docFilter" class="ml-2 bg-transparent outline-none">
+            <option value="ALL" selected>ALL</option>
+            <option value="10-K">10-K</option>
+            <option value="10-Q">10-Q</option>
+            <option value="CREDIT_AGREEMENT">CREDIT_AGREEMENT</option>
+            <option value="credit_qa">credit_qa</option>
+          </select>
+        </label>
+
+        <label class="pill">
+          Fibers:
+          <select id="fibersMode" class="ml-2 bg-transparent outline-none">
+            <option value="AUTO" selected>AUTO</option>
+            <option value="ON">ON</option>
+            <option value="OFF">OFF</option>
+          </select>
+        </label>
+
+        <label class="pill">
+          k:
+          <select id="kNeighbors" class="ml-2 bg-transparent outline-none">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+          </select>
+        </label>
+
+        <button id="loadBtn" class="btn btn-primary">Load Full Graph</button>
+        <button id="stopBtn" class="btn btn-danger hidden">Stop</button>
+
+        <span id="status" class="small ml-2">Idle.</span>
+      </div>
+
+      <div class="plotWrap mt-4">
+        <div id="plot"></div>
+      </div>
+
+      <div class="small mt-3">
+        Notes:
+        <ul class="list-disc ml-5 mt-1">
+          <li>If your API does <b>not</b> support <span class="mono">?limit=…&offset=…</span>, you will NOT get more than the single response.</li>
+          <li>Fibers are disabled automatically at high point counts (browser safety).</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Ask Orion Bot include (unchanged) -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+  <script>
+    // ===== CONFIG =====
+    const DATA_URL_BASE = "http://localhost:8000/neural-map";
+    document.getElementById("apiBase").textContent = DATA_URL_BASE;
+    document.getElementById("dataUrlLabel").textContent = DATA_URL_BASE;
+
+    // Edges safety: do not compute O(n^2) kNN above this
+    const MAX_POINTS_FOR_EDGES = 900;  // keep conservative
+    const MAX_EDGES = 2500;
+
+    let abortController = null;
+
+    function safe(v){ return (v === null || v === undefined) ? "" : String(v); }
+
+    function getDocType(p){
+      const md = p.metadata || {};
+      // normalize for your system
+      return (md.doc_type || p.doc_type || p.group || "").toString().toUpperCase();
+    }
+
+    function normalizeDocFilter(v){
+      if (v === "ALL") return "ALL";
+      if (v === "10-K") return "10-K";
+      if (v === "10-Q") return "10-Q";
+      if (v === "CREDIT_AGREEMENT") return "CREDIT_AGREEMENT";
+      if (v === "credit_qa") return "CREDIT_QA";
+      return v;
+    }
+
+    // ===== FETCH (paged) =====
+    async function fetchPage({limit, offset}) {
+      // expects backend to support limit/offset
+      const url = `${DATA_URL_BASE}?limit=${encodeURIComponent(limit)}&offset=${encodeURIComponent(offset)}`;
+      const res = await fetch(url, {
+        headers: { "Accept": "application/json" },
+        signal: abortController?.signal
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.json();
+    }
+
+    async function fetchAllPoints({maxPoints, pageSize}) {
+      const status = document.getElementById("status");
+      const all = [];
+
+      let offset = 0;
+      while (all.length < maxPoints) {
+        status.textContent = `Loading… ${all.length.toLocaleString()} points`;
+        const data = await fetchPage({limit: pageSize, offset});
+        if (!Array.isArray(data)) {
+          throw new Error("Expected /neural-map to return an array. If you return {points:[…]} update the client.");
+        }
+        if (data.length === 0) break;
+
+        for (const p of data) all.push(p);
+        offset += data.length;
+
+        // If backend ignores paging and always returns same set, detect it and stop.
+        if (data.length < pageSize) break;
+        if (abortController?.signal.aborted) break;
+      }
+
+      return all.slice(0, maxPoints);
+    }
+
+    // ===== EDGES (kNN in 2D) =====
+    function buildEdges(points, k = 2, maxEdges = 2000) {
+      const edges = [];
+      const n = points.length;
+
+      for (let i = 0; i < n; i++) {
+        const ai = points[i];
+        const dists = [];
+
+        for (let j = 0; j < n; j++) {
+          if (i === j) continue;
+          const bj = points[j];
+          const dx = ai.x - bj.x;
+          const dy = ai.y - bj.y;
+          const d2 = dx*dx + dy*dy;
+          dists.push([d2, j]);
+        }
+
+        dists.sort((a, b) => a[0] - b[0]);
+
+        for (let t = 0; t < Math.min(k, dists.length); t++) {
+          edges.push({ source: i, target: dists[t][1] });
+          if (edges.length >= maxEdges) return edges;
+        }
+      }
+      return edges;
+    }
+
+    function buildEdgeTrace(points, edges) {
+      if (!Array.isArray(edges) || edges.length === 0) return null;
+      const xs = [], ys = [];
+      for (const e of edges) {
+        const a = points[e.source], b = points[e.target];
+        if (!a || !b) continue;
+        xs.push(a.x, b.x, null);
+        ys.push(a.y, b.y, null);
+      }
+      return {
+        type: "scattergl",
+        mode: "lines",
+        x: xs,
+        y: ys,
+        hoverinfo: "skip",
+        line: { width: 1, color: "rgba(0,0,0,0.12)" },
+        name: "fibers"
+      };
+    }
+
+    // ===== RENDER =====
+    function render(points, {fibersMode, kNeighbors}) {
+      const status = document.getElementById("status");
+
+      const customdata = points.map(p => {
+        const md = p.metadata || {};
+        return ([
+          safe(p.label), safe(p.id), safe(p.group),
+          (typeof p.x === "number" ? p.x.toFixed(4) : safe(p.x)),
+          (typeof p.y === "number" ? p.y.toFixed(4) : safe(p.y)),
+          safe(md.file_name), safe(md.file_id),
+          safe(md.company_name), safe(md.ticker), safe(md.doc_type), safe(md.period_end), safe(md.cik),
+          safe(md.section), safe(md.source_anchor), safe(md.chunk_id)
+        ]);
+      });
+
+      const nodeTrace = {
+        type: "scattergl",
+        mode: "markers",
+        x: points.map(p => p.x),
+        y: points.map(p => p.y),
+        customdata,
+        marker: { size: 7, color: "rgba(53, 208, 186, 0.95)" },
+        hovertext: customdata.map(d => {
+          const rows = [];
+          const add = (label, val) => { if (val && String(val).trim()) rows.push(`${label}: ${String(val).trim()}`); };
+          const title = (d[0] || "").trim() || (d[1] || "").trim() || "point";
+          add("id", d[1]);
+          add("group", d[2]);
+          add("file", d[5]);
+          add("doc_type", d[9]);
+          add("period_end", d[10]);
+          add("section", d[12]);
+          add("anchor", d[13]);
+          add("chunk_id", d[14]);
+          return `<b>${title}</b><br>` + rows.join("<br>");
+        }),
+        hovertemplate: "%{hovertext}<extra></extra>",
+        name: "vectors"
+      };
+
+      // Fibers policy
+      let edgeTrace = null;
+      let edgesDrawn = 0;
+
+      const shouldDrawFibers =
+        (fibersMode === "ON") ||
+        (fibersMode === "AUTO" && points.length <= MAX_POINTS_FOR_EDGES);
+
+      if (shouldDrawFibers) {
+        const edges = buildEdges(points, kNeighbors, MAX_EDGES);
+        edgesDrawn = edges.length;
+        edgeTrace = buildEdgeTrace(points, edges);
+      }
+
+      const layout = {
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+        margin: { l: 10, r: 10, t: 10, b: 10 },
+        showlegend: false,
+        xaxis: { visible: false },
+        yaxis: { visible: false },
+        hoverlabel: {
+          bgcolor: "rgba(20,20,25,0.95)",
+          bordercolor: "rgba(255,255,255,0.15)",
+          font: { color: "#fff", size: 12 }
+        }
+      };
+
+      const traces = [];
+      if (edgeTrace) traces.push(edgeTrace);
+      traces.push(nodeTrace);
+
+      Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
+
+      status.textContent =
+        `Rendered ${points.length.toLocaleString()} vectors` +
+        (edgeTrace ? ` · ${edgesDrawn.toLocaleString()} fibers (k=${kNeighbors})` : ` · fibers off`);
+    }
+
+    // ===== LOAD BUTTON =====
+    document.getElementById("loadBtn").addEventListener("click", async () => {
+      const status = document.getElementById("status");
+      const stopBtn = document.getElementById("stopBtn");
+      stopBtn.classList.remove("hidden");
+
+      const maxPoints = parseInt(document.getElementById("maxPoints").value, 10);
+      const pageSize  = parseInt(document.getElementById("pageSize").value, 10);
+      const fibersMode = document.getElementById("fibersMode").value;
+      const kNeighbors = parseInt(document.getElementById("kNeighbors").value, 10);
+      const docFilterRaw = document.getElementById("docFilter").value;
+      const docFilter = normalizeDocFilter(docFilterRaw);
+
+      abortController = new AbortController();
+
+      try {
+        status.textContent = "Starting full load…";
+
+        // Pull everything (paged)
+        const raw = await fetchAllPoints({maxPoints, pageSize});
+
+        // Validate numeric coords
+        const numeric = raw.filter(p => typeof p.x === "number" && typeof p.y === "number");
+
+        // Optional doc_type filter
+        let filtered = numeric;
+        if (docFilter !== "ALL") {
+          filtered = numeric.filter(p => {
+            const dt = (p.metadata?.doc_type || "").toString();
+            const up = dt.toUpperCase();
+            if (docFilter === "10-K") return up.includes("10-K");
+            if (docFilter === "10-Q") return up.includes("10-Q");
+            if (docFilter === "CREDIT_AGREEMENT") return up.includes("CREDIT") || up.includes("AGREEMENT");
+            if (docFilter === "CREDIT_QA") return (p.metadata?.type || "").toString().toUpperCase() === "CREDIT_QA" || up.includes("CREDIT_QA");
+            return true;
+          });
+        }
+
+        if (!filtered.length) {
+          status.textContent = "No points after filtering (or API returned no numeric x/y).";
+          Plotly.purge("plot");
+          return;
+        }
+
+        render(filtered, {fibersMode, kNeighbors});
+
+        // sanity message if API ignored paging (common)
+        if (raw.length <= pageSize) {
+          status.textContent += " · (If you expected more: backend likely isn’t paging or isn’t returning full dataset)";
+        }
+
+      } catch (err) {
+        console.error(err);
+        status.textContent = `Error: ${err.message}`;
+      } finally {
+        stopBtn.classList.add("hidden");
+        abortController = null;
+      }
+    });
+
+    document.getElementById("stopBtn").addEventListener("click", () => {
+      if (abortController) abortController.abort();
+      document.getElementById("status").textContent = "Stopped.";
+      document.getElementById("stopBtn").classList.add("hidden");
+    });
+
+    // Initial blank plot
+    Plotly.newPlot("plot", [{
+      type:"scattergl", mode:"markers", x:[0], y:[0],
+      marker:{size:10, color:"rgba(0,0,0,0.25)"},
+      hoverinfo:"skip"
+    }], {
+      paper_bgcolor:"rgba(0,0,0,0)",
+      plot_bgcolor:"rgba(0,0,0,0)",
+      margin:{l:10,r:10,t:10,b:10},
+      xaxis:{visible:false}, yaxis:{visible:false},
+      showlegend:false
+    }, {responsive:true, displayModeBar:false});
+  </script>
+
+</body>
+</html>
