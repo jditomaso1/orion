@@ -158,6 +158,13 @@ function addBubble(role, html, typing=false) {
   return bubble;
 }
 
+function normalizeSourceName(fileName) {
+  const name = fileName || "";
+  if (name.includes("Dave & Buster") && name.includes("SEC Filing")) {
+    return "Dave & Buster’s — Credit Agreement & Amendments";
+  }
+  return name;
+}
 /* INIT */
 addBubble("assistant", md("**Joe — Orion is live.**"));
 
@@ -179,9 +186,17 @@ async function handleSend() {
 
     const sources = matches.length
       ? "<br/><br/><em>Sources:</em><br/>" +
-        matches.map(m =>
-          `• ${(m.metadata?.file_name || m.id)}`
-        ).join("<br/>")
+        matches.map(m => {
+          const rawName = (m.metadata?.file_name || m.id);
+          const pretty = normalizeSourceName(rawName);
+        
+          const fid = m.metadata?.file_id;
+          if (fid) {
+            const url = `https://drive.google.com/file/d/${fid}/view`;
+            return `• <a href="${url}" target="_blank" class="text-blue-600 underline">${pretty}</a>`;
+          }
+          return `• ${pretty}`;
+        }).join("<br/>")
       : "";
 
     thinking.classList.remove("typing-cursor");
