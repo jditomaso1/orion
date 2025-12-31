@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Orion — Credit Memo (Live)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f5f6f8; }
+    .confidence-high   { color: #16a34a; font-weight: 600; }
+    .confidence-medium { color: #ea580c; font-weight: 500; }
+    .confidence-low    { color: #b45309; }
+    .confidence-none   { color: #9ca3af; }
+
+    @media print {
+      @page { size: A4; margin: 10mm; }
+      nav, .sidebar, #sidebar-placeholder, .ask-orion-container, button, input, textarea,
+      .no-print, #orion-chat-include { display: none !important; }
+      .ml-64 { margin-left: 0 !important; }
+      .flex-1 { width: 100% !important; max-width: 100% !important; padding: 0 !important; }
+      body, .bg-white { background: white !important; box-shadow: none !important; }
+      .rounded, .rounded-lg, .rounded-2xl { border-radius: 0 !important; }
+      section { page-break-inside: avoid !important; break-inside: avoid !important; }
+      * { color: #000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    }
+  </style>
+</head>
+
+<body class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      try {
+        const res = await fetch("/dnb/sidebar.html");
+        document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+        window.toggleSection = function (id) {
+          const section = document.getElementById(id);
+          const icon = document.getElementById("icon-" + id);
+          if (!section || !icon) return;
+          section.classList.toggle("hidden");
+          icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+          localStorage.setItem("sidebar-open-section", id);
+        };
+
+        const last = localStorage.getItem("sidebar-open-section");
+        if (last) {
+          const section = document.getElementById(last);
+          const icon = document.getElementById("icon-" + last);
+          if (section && icon) {
+            section.classList.remove("hidden");
+            icon.style.transform = "rotate(90deg)";
+          }
+        }
+      } catch (e) {
+        // sidebar optional
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN WRAPPER -->
+  <div class="flex-1 ml-64 px-4 py-8">
+
+    <!-- HEADER -->
+    <header class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-semibold text-gray-900" id="page-title">
+          Orion | Credit Memo
+        </h1>
+        <p class="text-sm text-gray-500 mt-1" id="page-subtitle">
+          Loading via FastAPI…
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">Beta</span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">Internal Use</span>
+        <button onclick="window.print()"
+          class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 shadow-sm">
+          Print
+        </button>
+      </div>
+    </header>
+
+    <!-- COMPANY SNAPSHOT -->
+    <section class="mb-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900">Company Snapshot</h2>
+            <p class="text-sm text-gray-500 mt-1">High-level issuer + filing context.</p>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-700 font-medium" id="updated-pill">Updated: —</span>
+          </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+          <div>
+            <div class="text-gray-500 text-xs uppercase tracking-wide">Company</div>
+            <div class="font-semibold text-gray-900" id="snap-company">—</div>
+            <div class="text-xs text-gray-500" id="snap-ticker">Ticker: —</div>
+          </div>
+
+          <div>
+            <div class="text-gray-500 text-xs uppercase tracking-wide">Filing / Period</div>
+            <div class="font-semibold text-gray-900" id="snap-period">—</div>
+            <div class="text-xs text-gray-500" id="snap-filing">Filing: —</div>
+          </div>
+
+          <div>
+            <div class="text-gray-500 text-xs uppercase tracking-wide">Auditor / CIK</div>
+            <div class="font-semibold text-gray-900" id="snap-auditor">—</div>
+            <div class="text-xs text-gray-500" id="snap-cik">CIK: —</div>
+          </div>
+
+          <div>
+            <div class="text-gray-500 text-xs uppercase tracking-wide">Credit Rating</div>
+            <div class="font-semibold text-gray-900" id="snap-rating">—</div>
+            <div class="text-xs text-gray-500" id="snap-rating-note">—</div>
+          </div>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-700" id="snap-business">
+          <span class="font-semibold">Business / Segments:</span> —
+        </div>
+      </div>
+    </section>
+
+    <!-- TOP METRICS STRIP -->
+    <section class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4" id="metrics-strip"></section>
+
+    <!-- MAIN GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- LEFT (2/3) -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- CREDIT MEMO (ACTUAL DATA WE HAVE) -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Credit Memo (Live Data)</h2>
+            <span class="text-xs text-gray-500">Values + sources + confidence</span>
+          </div>
+
+          <div id="memo-sections" class="space-y-6 text-sm text-gray-800"></div>
+        </section>
+
+        <!-- FINAL JSON VIEW -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-gray-900">Final JSON</h2>
+            <span class="text-xs text-gray-500">Raw `master_summary`</span>
+          </div>
+          <details class="text-xs">
+            <summary class="cursor-pointer text-gray-600">Show JSON</summary>
+            <pre id="json-output" class="mt-3 p-3 bg-gray-100 rounded-lg overflow-x-auto text-[11px] leading-snug">{}</pre>
+          </details>
+        </section>
+
+      </div>
+
+      <!-- RIGHT (1/3) -->
+      <div class="space-y-6">
+
+        <!-- STRATEGY -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-2">Strategy Recommendation</h2>
+          <div id="strategy-pill"
+               class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-800 border border-purple-200">
+            Loading…
+          </div>
+          <p class="text-sm text-gray-700 leading-relaxed mt-3" id="strategy-detail">—</p>
+        </section>
+
+        <!-- FILES USED -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-3">Files Used</h2>
+          <ul class="text-sm text-gray-700 space-y-2" id="files-used-list"></ul>
+          <p class="mt-3 text-xs text-gray-500">
+            Click any source label under a field to open the snippet (via <code>/field-source-snippet</code>).
+          </p>
+        </section>
+
+        <!-- EXPORT -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6 no-print">
+          <h2 class="text-lg font-semibold text-gray-900 mb-3">Export</h2>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <button class="border px-2 py-1 rounded-lg hover:bg-gray-50" id="btn-json">JSON</button>
+            <button class="border px-2 py-1 rounded-lg hover:bg-gray-50" id="btn-csv">CSV</button>
+            <button class="border px-2 py-1 rounded-lg hover:bg-gray-50" id="btn-text">Text</button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Ask Orion Bot include -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      try {
+        const res = await fetch("/dnb/includes/orion-chat.html");
+        const html = await res.text();
+        const container = document.getElementById("orion-chat-include");
+        container.innerHTML = html;
+
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement("script");
+          if (oldScript.src) newScript.src = oldScript.src;
+          else newScript.textContent = oldScript.textContent;
+          document.body.appendChild(newScript);
+          oldScript.remove();
+        });
+      } catch (e) {}
+    }
+    loadOrionChat();
+  </script>
+
+  <script>
+    /* ==========================
+       CONFIG
+    ========================== */
+    const ORION_API_BASE = "http://127.0.0.1:8000";
+
+    // Your current test stack
+    const DEAL_FILE_IDS = [
+      "1gnjiw485nzbcs6mmkNLC61LGbAd5RUCR", // Credit Agreement
+      "13MghCjeTqVFrfvrbc8P3Vr_YauW5_biJ"  // 10-K 2025
+    ];
+
+    const FILE_LABELS = {
+      "1gnjiw485nzbcs6mmkNLC61LGbAd5RUCR": "Credit Agreement",
+      "13MghCjeTqVFrfvrbc8P3Vr_YauW5_biJ": "10-K (2025)"
+    };
+
+    /* ==========================
+       THE “WHAT WE ACTUALLY HAVE” CREDIT MEMO SCHEMA
+    ========================== */
+    const MEMO_SCHEMA = {
+      "Core Financials (Period)": [
+        "Revenue (Period, $mm)",
+        "Gross Profit (Period, $mm)",
+        "Gross Margin (%)",
+        "Operating Income (Period, $mm)",
+        "Net Income (Period, $mm)",
+        "Adjusted EBITDA (If stated, $mm)",
+        "EPS Basic",
+        "EPS Diluted"
+      ],
+      "Balance Sheet & Leverage (Period)": [
+        "Cash & Cash Equivalents ($mm)",
+        "Total Assets ($mm)",
+        "Total Liabilities ($mm)",
+        "Shareholders' Equity ($mm)",
+        "Total Debt ($mm)",
+        "Net Debt ($mm)"
+      ],
+      "Cash Flow / Investment": [
+        "Operating Cash Flow (Period, $mm)",
+        "CapEx (Period, $mm)"
+      ],
+      "Business / Segments": [
+        "Segments (names + revenue/profit if disclosed)"
+      ],
+      "Credit Agreement — Deal Terms": [
+        "Deal Title",
+        "Closing Date",
+        "Effective Date (if different)",
+        "Borrower / Issuer",
+        "Parent / HoldCo (if any)",
+        "Administrative Agent",
+        "Collateral Agent (if any)",
+        "Total Commitments ($)",
+        "Maturity Date",
+        "Term (Years) (if stated)",
+        "Purpose / Use of Proceeds",
+        "Collateral Package (summary)",
+        "Commitment Fee (Revolver)",
+        "OID / Upfront Fees",
+        "Default Interest Rate (if any)",
+        "Events of Default (list)",
+        "Remedies (high-level)",
+        "Governing Law",
+        "Jurisdiction / Venue"
+      ],
+      "Document Anchors / Exhibits": [
+        "Meta Tags (list)",
+        "Footnote Flags (list)",
+        "Source Anchors (list)"
+      ]
+    };
+
+    /* ==========================
+       HELPERS
+    ========================== */
+    function computeConfidence(count) {
+      if (count >= 3) return "High";
+      if (count === 2) return "Medium";
+      if (count === 1) return "Low";
+      return "None";
+    }
+
+    function confidenceClass(conf) {
+      return conf === "High" ? "confidence-high" :
+             conf === "Medium" ? "confidence-medium" :
+             conf === "Low" ? "confidence-low" : "confidence-none";
+    }
+
+    function formatValue(val) {
+      if (Array.isArray(val)) {
+        if (!val.length) return "Not Provided";
+        return val.map(v => String(v)).join(" • ");
+      }
+      if (val && typeof val === "object") return JSON.stringify(val, null, 2);
+      const s = String(val ?? "");
+      return s.trim() === "" ? "Not Provided" : s;
+    }
+
+    function safeText(x, fallback="—") {
+      const s = String(x ?? "").trim();
+      return s ? s : fallback;
+    }
+
+    function normalizeNumber(x) {
+      if (x === null || x === undefined) return null;
+      const n = Number(String(x).replace(/[^0-9.\-]/g, ""));
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function downloadBlob(data, filename, type) {
+      const blob = new Blob([data], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /* ==========================
+       UI RENDERERS
+    ========================== */
+    function renderFilesUsed() {
+      const ul = document.getElementById("files-used-list");
+      if (!ul) return;
+      ul.innerHTML = DEAL_FILE_IDS.map((id, idx) => {
+        const label = FILE_LABELS[id] || id;
+        const driveUrl = `https://drive.google.com/file/d/${id}/view`;
+        return `<li>${idx+1}) <a class="text-blue-600 underline" href="${driveUrl}" target="_blank">${label}</a></li>`;
+      }).join("");
+    }
+
+    function renderMetricsStrip(summary) {
+      const container = document.getElementById("metrics-strip");
+      if (!container) return;
+
+      const rev   = summary["Revenue (Period, $mm)"];
+      const ebit  = summary["Adjusted EBITDA (If stated, $mm)"];
+      const ni    = summary["Net Income (Period, $mm)"];
+      const debt  = summary["Total Debt ($mm)"];
+      const cash  = summary["Cash & Cash Equivalents ($mm)"];
+      const ocf   = summary["Operating Cash Flow (Period, $mm)"];
+
+      const cards = [
+        { label: "Revenue (Period)", value: rev ? `$${rev}mm` : "—", sub: safeText(summary["Period End Date"], "") },
+        { label: "Adj. EBITDA (if stated)", value: ebit ? `$${ebit}mm` : "—", sub: "" },
+        { label: "Net Income (Period)", value: ni ? `$${ni}mm` : "—", sub: "" },
+        { label: "Liquidity / Leverage", value: cash ? `$${cash}mm cash` : "—", sub: debt ? `Debt: $${debt}mm` : (ocf ? `OCF: $${ocf}mm` : "") }
+      ];
+
+      container.innerHTML = cards.map(c => `
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+          <div class="text-xs text-gray-500 uppercase tracking-wide">${c.label}</div>
+          <div class="mt-1 text-xl font-semibold text-gray-900">${c.value}</div>
+          <div class="text-xs text-gray-500 mt-1">${c.sub || ""}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderSnapshot(summary) {
+      const company = summary["Company Name"] || "—";
+      const dealTitle = summary["Deal Title"] || company || "Credit Memo";
+      document.getElementById("page-title").textContent = `Orion | Credit Memo — ${dealTitle}`;
+      document.getElementById("page-subtitle").textContent =
+        "Built only from fields currently available in `master_summary`. No fake LTM placeholders.";
+
+      const dt = new Date();
+      const yyyy = dt.getFullYear();
+      const mm = String(dt.getMonth()+1).padStart(2,"0");
+      const dd = String(dt.getDate()).padStart(2,"0");
+      document.getElementById("updated-pill").textContent = `Updated: ${yyyy}-${mm}-${dd}`;
+
+      document.getElementById("snap-company").textContent = safeText(company);
+      document.getElementById("snap-ticker").textContent = `Ticker: ${safeText(summary["Ticker"], "—")}`;
+
+      document.getElementById("snap-period").textContent = safeText(summary["Period End Date"], "—");
+      document.getElementById("snap-filing").textContent =
+        `Filing: ${safeText(summary["Filing Date"], "—")} • FY ${safeText(summary["Fiscal Year"], "—")}`;
+
+      document.getElementById("snap-auditor").textContent = safeText(summary["Auditor (10-K)"], "—");
+      document.getElementById("snap-cik").textContent = `CIK: ${safeText(summary["CIK"], "—")}`;
+
+      const rating = summary["Credit Rating"] || "Not Rated / Single-B Equivalent";
+      document.getElementById("snap-rating").textContent = rating;
+      document.getElementById("snap-rating-note").textContent = "Linked to Orion sources (if available)";
+
+      const seg = summary["Segments (names + revenue/profit if disclosed)"] || "";
+      document.getElementById("snap-business").innerHTML =
+        `<span class="font-semibold">Business / Segments:</span> ${safeText(seg, "—")}`;
+    }
+
+    function renderMemoSections(summary, sources, counts) {
+      const container = document.getElementById("memo-sections");
+      if (!container) return;
+
+      // sources/cnts may be missing or not aligned with these keys; that’s fine.
+      let html = "";
+
+      for (const [sectionName, fields] of Object.entries(MEMO_SCHEMA)) {
+        html += `
+          <div class="rounded-2xl border border-gray-200 bg-white p-4 md:p-5 shadow-sm">
+            <div class="text-sm font-semibold text-gray-900 mb-3">${sectionName}</div>
+            <div class="space-y-3">
+        `;
+
+        fields.forEach(field => {
+          const rawVal = Object.prototype.hasOwnProperty.call(summary, field) ? summary[field] : "Not Provided";
+          const formatted = formatValue(rawVal);
+
+          const srcIds = (sources && sources[field]) ? sources[field] : [];
+          const count = (counts && counts[field]) ? counts[field] : (srcIds ? srcIds.length : 0);
+          const conf = computeConfidence(count);
+          const cClass = confidenceClass(conf);
+
+          const srcLabels = (srcIds || []).map((id, i) => `
+            <button
+              class="source-pill text-xs underline decoration-dotted hover:text-gray-900"
+              data-field="${field}"
+              data-file-id="${id}"
+              type="button"
+            >${i+1}) ${FILE_LABELS[id] || id}</button>
+          `).join(", ");
+
+          const sourceLine = `Source(s): ${srcLabels || "n/a"} <span class="${cClass}">(${conf})</span>`;
+
+          html += `
+            <div class="rounded-xl border border-gray-200 bg-white px-4 py-3">
+              <div class="flex flex-col md:flex-row md:items-baseline md:gap-x-3">
+                <div class="text-xs uppercase tracking-wide text-gray-500 md:w-72">${field}</div>
+                <div class="font-medium text-gray-900 whitespace-pre-wrap">${formatted}</div>
+              </div>
+              <div class="mt-2 text-xs text-gray-500">${sourceLine}</div>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function renderStrategy(summary) {
+      const pill = document.getElementById("strategy-pill");
+      const detail = document.getElementById("strategy-detail");
+
+      // We don’t have leverage ratios/cov-lite flags reliably yet.
+      // So keep it honest: determine “style” based on presence of Term B / maturity tenor / commitments.
+      const maturity = String(summary["Maturity Date"] || "").toLowerCase();
+      const commitments = normalizeNumber(summary["Total Commitments ($)"]);
+
+      let tag = "TBD (Need leverage + covenants)";
+      let text = "Current dataset has deal terms and SEC financials, but not covenant package + leverage ratios for a real vehicle fit.";
+
+      if (maturity.includes("2031") || maturity.includes("term b")) {
+        tag = "Leveraged Loan / Institutional";
+        text = "Term B-style maturity profile detected. Good candidate for institutional leveraged credit analysis; still need covenants + leverage ratios for CLO fit call.";
+      } else if (commitments !== null && commitments >= 1000000000) {
+        tag = "Large-cap credit profile";
+        text = "Large commitment size suggests broadly syndicated / large-cap financing; still need covenants + leverage ratios to classify risk bucket.";
+      }
+
+      pill.textContent = tag;
+      detail.textContent = text;
+    }
+
+    function wireExports(finalObj) {
+      const jsonBtn = document.getElementById("btn-json");
+      const csvBtn  = document.getElementById("btn-csv");
+      const textBtn = document.getElementById("btn-text");
+
+      const jsonStr = JSON.stringify(finalObj, null, 2);
+      if (jsonBtn) jsonBtn.onclick = () => downloadBlob(jsonStr, "orion_credit_memo.json", "application/json");
+
+      if (csvBtn) {
+        const flat = { ...(finalObj.master_summary || {}) };
+        const headers = Object.keys(flat);
+        const row = headers.map(h => `"${String(flat[h]).replace(/"/g, '""')}"`).join(",");
+        const csv = headers.join(",") + "\n" + row;
+        csvBtn.onclick = () => downloadBlob(csv, "orion_credit_memo.csv", "text/csv");
+      }
+
+      if (textBtn) {
+        const flat = finalObj.master_summary || {};
+        let txt = "Orion Credit Memo\n=================\n\n";
+        for (const [k, v] of Object.entries(flat)) {
+          txt += `${k}:\n${typeof v === "object" ? JSON.stringify(v, null, 2) : v}\n\n`;
+        }
+        textBtn.onclick = () => downloadBlob(txt, "orion_credit_memo.txt", "text/plain");
+      }
+    }
+
+    /* ==========================
+       SNIPPET MODAL
+    ========================== */
+    function setupSnippetModal() {
+      const snippetModal = document.createElement("div");
+      snippetModal.id = "snippet-modal";
+      snippetModal.className = "fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden";
+      snippetModal.innerHTML = `
+        <div class="bg-white rounded-xl shadow-xl max-w-xl w-full p-4 text-sm">
+          <div id="snippet-title" class="font-semibold mb-2"></div>
+          <pre id="snippet-body" class="whitespace-pre-wrap text-xs text-gray-800 max-h-80 overflow-y-auto"></pre>
+          <div class="mt-3 text-right">
+            <button id="snippet-close" class="px-3 py-1 border rounded-lg text-xs hover:bg-gray-50">Close</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(snippetModal);
+
+      const closeBtn = document.getElementById("snippet-close");
+      const titleEl = document.getElementById("snippet-title");
+      const bodyEl  = document.getElementById("snippet-body");
+
+      closeBtn.onclick = () => snippetModal.classList.add("hidden");
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") snippetModal.classList.add("hidden"); });
+
+      document.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".source-pill");
+        if (!btn) return;
+
+        const field  = btn.dataset.field;
+        const fileId = btn.dataset.fileId;
+
+        try {
+          const res = await fetch(`${ORION_API_BASE}/field-source-snippet`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ field, file_id: fileId })
+          });
+
+          const data = await res.json();
+          titleEl.textContent = `${field} — ${FILE_LABELS[fileId] || fileId}`;
+          bodyEl.textContent  = data.snippet || "No data.";
+          snippetModal.classList.remove("hidden");
+        } catch (err) {
+          console.error("Error loading snippet:", err);
+        }
+      });
+    }
+
+    /* ==========================
+       LOAD FROM BACKEND
+    ========================== */
+    async function loadFromBackend() {
+      const payload = { file_ids: DEAL_FILE_IDS };
+
+      try {
+        const res = await fetch(`${ORION_API_BASE}/company-master`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const t = await res.text();
+          console.error("HTTP error", res.status, t);
+          document.getElementById("page-subtitle").textContent = `Request failed: ${res.status}`;
+          return;
+        }
+
+        const data = await res.json();
+
+        const summary = data.master_summary || {};
+        const sources = data.field_sources || {};   // may be missing; OK
+        const counts  = data.field_counts || {};    // may be missing; OK
+
+        renderSnapshot(summary);
+        renderMetricsStrip(summary);
+
+        renderMemoSections(summary, sources, counts);
+
+        renderFilesUsed();
+        renderStrategy(summary);
+
+        wireExports({ master_summary: summary, field_sources: sources, field_counts: counts });
+        document.getElementById("json-output").textContent = JSON.stringify(summary, null, 2);
+
+        document.getElementById("page-subtitle").textContent =
+          "Live memo generated from current extracted fields (SEC + credit agreement).";
+
+      } catch (err) {
+        console.error("Error calling /company-master:", err);
+        document.getElementById("page-subtitle").textContent = `JavaScript error: ${err}`;
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      setupSnippetModal();
+      loadFromBackend();
+    });
+  </script>
+</body>
+</html>
