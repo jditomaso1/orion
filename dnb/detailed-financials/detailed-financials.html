@@ -1,4 +1,3 @@
-PLAY
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -124,7 +123,8 @@ PLAY
           "Income Statement",
           "Cash Flow",
           "Balance Sheet",
-          "Leverage & Ratios"
+          "Leverage & Ratios",
+          "Credit Metrics and Ratios" // <- your CSV has this too
         ]);
 
         function splitCSVLine(line) {
@@ -163,26 +163,36 @@ PLAY
           return idx >= 0 ? metric.slice(idx + 1).trim() : metric.trim();
         }
 
-        function toNumber(x) {
-          if (x === null || x === undefined) return null;
-          let s = String(x).trim();
-          if (!s) return null;
-
-          // common missing tokens
-          if (s === "—" || s === "-" || s.toLowerCase() === "na" || s.toLowerCase() === "n/a") return null;
-
-          // remove thousands separators
-          s = s.replace(/,/g, "");
-
-          const n = Number(s);
-          return Number.isFinite(n) ? n : null;
+        function isMissingToken(s) {
+          const t = String(s ?? "").trim();
+          if (!t) return true;
+          const low = t.toLowerCase();
+          return (
+            t === "—" || t === "-" ||
+            low === "na" || low === "n/a" ||
+            low === "null" || low === "none"
+          );
         }
 
-        function fmt(metric, n) {
-          if (n === null) return "—";
-          const m = metric.toLowerCase();
+        // IMPORTANT FIX:
+        // If a cell already has "x" or "%" in the CSV, show it as-is.
+        // Otherwise parse as a number and format.
+        function renderCell(metric, raw) {
+          if (raw === null || raw === undefined) return "—";
+          const s0 = String(raw).trim();
+          if (isMissingToken(s0)) return "—";
 
-          const isPctMetric = (m.includes("margin") || m.includes("growth") || m.includes("roa"));
+          // Show pre-formatted multiples and percents directly (your CSV uses "3.3 x", "21.5%")
+          if (/%/.test(s0)) return s0;
+          if (/\bx\b/i.test(s0)) return s0;
+
+          // Otherwise parse numeric (handle commas)
+          const n = Number(s0.replace(/,/g, ""));
+          if (!Number.isFinite(n)) return "—";
+
+          const m = String(metric || "").toLowerCase();
+
+          // If you ever export ratios as plain numbers (no "x"), keep this logic
           const isRatioMetric =
             m.startsWith("der:") ||
             m.includes("leverage") ||
@@ -190,15 +200,7 @@ PLAY
             m.includes("debt /") ||
             m.includes(" / ");
 
-          if (isPctMetric) {
-            // if already in percent units (e.g., 12.3), don’t multiply by 100
-            const pct = Math.abs(n) > 1.5 ? n : (n * 100);
-            return pct.toFixed(FORMAT.pctDecimals) + "%";
-          }
-
-          if (isRatioMetric) {
-            return n.toFixed(FORMAT.ratioDecimals);
-          }
+          if (isRatioMetric) return n.toFixed(FORMAT.ratioDecimals);
 
           return n.toLocaleString(undefined, {
             minimumFractionDigits: FORMAT.currencyDecimals,
@@ -217,7 +219,7 @@ PLAY
 
             const { headers, rows } = parseCSV(csvText);
 
-            // NEW: metric column is whatever the first header is (e.g., "Annual Financials")
+            // metric column is first header (e.g., "Annual Financials")
             const metricCol = headers[0];
             const valueCols = headers.slice(1);
 
@@ -232,8 +234,6 @@ PLAY
 
             bodyEl.innerHTML = "";
 
-            // If your CSV already contains group header rows, use them.
-            // If not, we’ll fall back to your old prefix grouping.
             let currentGroup = null;
 
             function renderGroupRow(title) {
@@ -246,7 +246,7 @@ PLAY
               bodyEl.appendChild(trg);
             }
 
-            // Fallback grouping (old behavior) if no group headers appear
+            // Fallback grouping if your CSV doesn't include group header rows
             function groupLabelByPrefix(metric) {
               if (metric.startsWith("IS:")) return "Income Statement";
               if (metric.startsWith("CF:")) return "Cash Flow";
@@ -256,16 +256,14 @@ PLAY
             }
 
             let sawGroupHeaders = false;
+
             for (const r of rows) {
-              const metricRaw = (r[metricCol] || "").trim();
+              const metricRaw = String(r[metricCol] ?? "").trim();
               if (!metricRaw) continue;
 
-              const allBlank = valueCols.every(c => {
-                const v = (r[c] || "").trim();
-                return (!v || v === "—" || v === "-");
-              });
+              const allBlank = valueCols.every(c => isMissingToken(r[c]));
 
-              // treat explicit group title rows as group headers
+              // group header row in CSV
               if (GROUP_TITLES.has(metricRaw) && allBlank) {
                 sawGroupHeaders = true;
                 currentGroup = metricRaw;
@@ -273,12 +271,10 @@ PLAY
                 continue;
               }
 
-              // sometimes your CSV has blank separator rows -> ignore
-              if (allBlank && !GROUP_TITLES.has(metricRaw)) {
-                continue;
-              }
+              // ignore separator/blank rows
+              if (allBlank && !GROUP_TITLES.has(metricRaw)) continue;
 
-              // if no group headers were present at all, use prefix grouping
+              // If no explicit group headers exist, group by IS:/CF:/BS:/DER:
               if (!sawGroupHeaders) {
                 const g = groupLabelByPrefix(metricRaw);
                 if (g !== currentGroup) {
@@ -286,14 +282,13 @@ PLAY
                   renderGroupRow(currentGroup);
                 }
               } else {
-                // if group headers exist but we somehow haven't seen one yet, put these into "Other"
+                // If group headers exist but we haven’t hit one yet, start in Other
                 if (!currentGroup) {
                   currentGroup = "Other";
                   renderGroupRow(currentGroup);
                 }
               }
 
-              // render metric row
               const tr = document.createElement("tr");
 
               const td0 = document.createElement("td");
@@ -302,14 +297,13 @@ PLAY
 
               valueCols.forEach(c => {
                 const td = document.createElement("td");
-                td.textContent = fmt(metricRaw, toNumber(r[c]));
+                td.textContent = renderCell(metricRaw, r[c]);  // <- key fix
                 tr.appendChild(td);
               });
 
               bodyEl.appendChild(tr);
             }
 
-            // if nothing rendered
             if (!bodyEl.children.length) {
               const colCount = headRow.children.length || 2;
               bodyEl.innerHTML = `<tr><td class="muted" colspan="${colCount}">No rows found in CSV.</td></tr>`;
