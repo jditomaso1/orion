@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>What-If — Ratings Migration | Orion</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:#f5f6f8; }
+    .card { background:#fff; border:1px solid #e8e8e8; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .mono { font-variant-numeric: tabular-nums; }
+    .chip { border:1px solid #e5e7eb; background:#fafafa; border-radius:999px; padding:.2rem .55rem; font-size:12px; color:#374151; }
+    .btn { border:1px solid #111827; background:#111827; color:#fff; border-radius:10px; padding:.55rem .8rem; font-weight:600; font-size:13px; }
+    .btn:hover { opacity:.92; }
+    .btn2 { border:1px solid #e5e7eb; background:#fff; color:#111827; border-radius:10px; padding:.55rem .8rem; font-weight:600; font-size:13px; }
+    .btn2:hover { background:#fafafa; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { padding:10px 10px; border-bottom:1px solid #f0f0f0; font-size:13px; }
+    th { text-align:left; color:#374151; font-weight:600; }
+    td { color:#111827; }
+    .badge { display:inline-flex; align-items:center; justify-content:center; min-width:38px; height:22px; padding:0 10px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid #e5e7eb; background:#fff; }
+    .b-good { color:#065f46; background:#ecfdf5; border-color:#a7f3d0; }
+    .b-warn { color:#92400e; background:#fffbeb; border-color:#fde68a; }
+    .b-bad  { color:#991b1b; background:#fef2f2; border-color:#fecaca; }
+    .small { font-size:12px; }
+    .tile { border:1px solid #e5e7eb; border-radius:14px; background:#fff; padding:12px; }
+    .tile .k { font-size:11px; color:#6b7280; }
+    .tile .v { margin-top:2px; font-weight:700; }
+    .divider { height:1px; background:#eee; }
+    .note { font-size:12px; color:#6b7280; line-height:1.35; }
+    input, select { border:1px solid #e5e7eb; border-radius:10px; padding:8px 10px; width:100%; font-size:13px; background:#fff; }
+    input:focus, select:focus { outline:none; border-color:#c7c7c7; box-shadow:0 0 0 3px rgba(17,24,39,.06); }
+  </style>
+</head>
+
+<body class="flex text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      try {
+        const res = await fetch("/dnb/sidebar.html");
+        document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+        window.toggleSection = function(id) {
+          const section = document.getElementById(id);
+          const icon = document.getElementById("icon-" + id);
+          if (!section || !icon) return;
+          section.classList.toggle("hidden");
+          icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+          localStorage.setItem("sidebar-open-section", id);
+        };
+
+        const last = localStorage.getItem("sidebar-open-section");
+        if (last) {
+          const section = document.getElementById(last);
+          const icon = document.getElementById("icon-" + last);
+          if (section && icon) {
+            section.classList.remove("hidden");
+            icon.style.transform = "rotate(90deg)";
+          }
+        }
+      } catch (e) {}
+    }
+    injectSidebar();
+  </script>
+
+  <main class="flex-1 ml-64 p-8 max-w-[1250px]">
+
+    <section class="flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <h1 class="text-3xl font-semibold tracking-tight">Ratings Migration</h1>
+        <p class="muted mt-2 text-sm">
+          <span class="chip">PLAY · Dave &amp; Buster’s</span>
+          <span class="chip">Latest LTM snapshot</span>
+          <span class="chip">What-If scenarios</span>
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btnReset" class="btn2">Reset to LTM</button>
+        <button id="btnRecalc" class="btn">Recalculate</button>
+      </div>
+    </section>
+
+    <section class="mt-6 card p-5">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div class="text-sm font-semibold">What…If?</div>
+          <div class="note mt-1">Move a few inputs → scorecard + quant-only shadow rating updates.</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="chip" id="asOfChip">As of latest upload</span>
+          <span class="chip">Quant-only</span>
+          <span class="chip">Lower score = better</span>
+        </div>
+      </div>
+
+      <div class="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="tile"><div class="k">Revenue (LTM)</div><div class="v mono" id="tRevenue">—</div></div>
+        <div class="tile"><div class="k">EBITDA (LTM)</div><div class="v mono" id="tEbitda">—</div></div>
+        <div class="tile"><div class="k">Debt (proxy)</div><div class="v mono" id="tDebt">—</div></div>
+        <div class="tile"><div class="k">Leases</div><div class="v mono" id="tLeases">—</div></div>
+        <div class="tile"><div class="k">Adj Debt/EBITDA</div><div class="v mono" id="tLevAdj">—</div></div>
+        <div class="tile"><div class="k">EBIT/Interest</div><div class="v mono" id="tCov">—</div></div>
+
+        <div class="tile"><div class="k">RCF</div><div class="v mono" id="tRcf">—</div></div>
+        <div class="tile"><div class="k">RCF/Debt (Adj)</div><div class="v mono" id="tRcfDebt">—</div></div>
+        <div class="tile"><div class="k">ROA</div><div class="v mono" id="tRoa">—</div></div>
+        <div class="tile"><div class="k">Adj Debt</div><div class="v mono" id="tAdjDebt">—</div></div>
+        <div class="tile"><div class="k">Quant Rating</div><div class="v mono" id="tRating">—</div></div>
+        <div class="tile"><div class="k">Score</div><div class="v mono" id="tScore">—</div></div>
+      </div>
+    </section>
+
+    <section class="mt-6 grid grid-cols-12 gap-6">
+
+      <div class="col-span-12 lg:col-span-7 card p-5">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-base font-semibold">Moody’s-Style Quant Scorecard (Snapshot)</div>
+            <div class="note mt-1">Bucket → numeric → weight → points → rating (matches your latest “13.8 ⇒ B1” table).</div>
+          </div>
+          <div class="text-right">
+            <div class="text-xs muted">Quant-only Shadow Rating</div>
+            <div class="text-3xl font-bold mt-1 mono" id="snapLetter">—</div>
+            <div class="chip mt-2 inline-block mono" id="snapScoreChip">Score: —</div>
+          </div>
+        </div>
+
+        <div class="mt-4 overflow-auto">
+          <table>
+            <thead>
+              <tr>
+                <th style="min-width:220px;">Metric</th>
+                <th style="min-width:110px;">Value</th>
+                <th style="min-width:80px;">Bucket</th>
+                <th style="min-width:90px;">Numeric</th>
+                <th style="min-width:80px;">Weight</th>
+                <th style="min-width:90px;">Points</th>
+                <th>Driver note</th>
+              </tr>
+            </thead>
+            <tbody id="scorecardBody"></tbody>
+          </table>
+        </div>
+
+        <div class="divider my-4"></div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div class="tile">
+            <div class="k">Computed (from your chosen inputs)</div>
+            <div class="mt-2 space-y-1 small mono" id="computedBlock">—</div>
+          </div>
+          <div class="tile">
+            <div class="k">Category weights</div>
+            <div class="note mt-2 mono" id="weightsBlock">—</div>
+          </div>
+        </div>
+
+        <div class="note mt-3">
+          Numeric scale (lower = better): Aaa=1, Aa=3, A=6, Baa=9, Ba=12, B=15, Caa=18
+        </div>
+      </div>
+
+      <aside class="col-span-12 lg:col-span-5 card p-5">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-base font-semibold">What-If (basic)</div>
+            <div class="note mt-1">Tweak inputs → scorecard + shadow rating updates.</div>
+          </div>
+          <button id="btnReset2" class="btn2">Reset to LTM</button>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <div><label class="text-xs muted">Revenue (USD bn)</label><input id="inRevenue" type="number" step="0.0001" /></div>
+          <div><label class="text-xs muted">EBITDA (USD bn)</label><input id="inEbitda" type="number" step="0.0001" /></div>
+          <div><label class="text-xs muted">Funded Debt (USD bn)</label><input id="inDebt" type="number" step="0.0001" /></div>
+          <div><label class="text-xs muted">Lease Liabilities (USD bn)</label><input id="inLeases" type="number" step="0.0001" /></div>
+          <div><label class="text-xs muted">EBIT (USD bn)</label><input id="inEbit" type="number" step="0.0001" /></div>
+          <div><label class="text-xs muted">Interest Expense (USD bn)</label><input id="inInterest" type="number" step="0.0001" /></div>
+          <div><label class="text-xs muted">RCF (USD bn)</label><input id="inRcf" type="number" step="0.0001" /></div>
+          <div><label class="text-xs muted">ROA (%)</label><input id="inRoa" type="number" step="0.01" /></div>
+        </div>
+
+        <div class="mt-4 flex gap-2">
+          <button id="btnRun" class="btn">Recalculate</button>
+          <button id="btnSoftReset" class="btn2">Undo changes</button>
+        </div>
+
+        <div class="mt-4 tile">
+          <div class="k">Outputs</div>
+          <div class="mt-2 grid grid-cols-2 gap-2">
+            <div class="tile" style="padding:10px;"><div class="k">Quant Rating</div><div class="v mono" id="outRating">—</div></div>
+            <div class="tile" style="padding:10px;"><div class="k">Score</div><div class="v mono" id="outScore">—</div></div>
+          </div>
+          <div class="divider my-3"></div>
+          <div class="small mono space-y-1" id="outComputed">—</div>
+        </div>
+
+        <div class="note mt-3">
+          Uses your weights: 15% / 15% / 20% / 30% / 20%.
+        </div>
+      </aside>
+
+    </section>
+
+    <div id="orion-chat-include"></div>
+    <script>
+      async function loadOrionChat() {
+        try {
+          const res = await fetch("/dnb/includes/orion-chat.html");
+          const html = await res.text();
+          const container = document.getElementById("orion-chat-include");
+          container.innerHTML = html;
+          const scripts = container.querySelectorAll("script");
+          scripts.forEach(oldScript => {
+            const newScript = document.createElement("script");
+            if (oldScript.src) newScript.src = oldScript.src;
+            else newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+            oldScript.remove();
+          });
+        } catch (e) {}
+      }
+      loadOrionChat();
+    </script>
+
+  </main>
+
+  <script>
+    /******************************************************************
+     * LTM DATA (PLAY) — matches your “13.8 => B1” math
+     * NOTE: ROA default must be 7.50% per your scoring table.
+     ******************************************************************/
+    const PLAY_LTM_MM = {
+      ticker: "PLAY",
+      name: "Dave & Buster’s",
+      revenue: 2107.7,
+      ebitda: 391.1,
+      ebit: 135.7,
+      interest: 142.7,
+      debt: 1492.9,
+      leases: 2637.3,
+      rcf: 247.4,
+      roa_pct: 7.50
+    };
+
+    let lastApplied = null;
+
+    const BUCKET_NUMERIC = { Aaa:1, Aa:3, A:6, Baa:9, Ba:12, B:15, Caa:18 };
+
+    const WEIGHTS = { scale:0.15, profitability:0.15, cashflow:0.20, leverage:0.30, coverage:0.20 };
+
+    function bucketRevenueBn(revBn){
+      if (revBn >= 1.0) return "Ba";
+      if (revBn >= 0.25) return "B";
+      return "Caa";
+    }
+    function bucketRoaPct(roaPct){
+      if (roaPct >= 3.0) return "Ba";
+      if (roaPct >= 1.0) return "B";
+      return "Caa";
+    }
+    function bucketRcfDebtPct(pct){
+      if (pct >= 5.0) return "Ba";
+      if (pct >= 0.0) return "B";
+      return "Caa";
+    }
+    function bucketLevAdj(x){
+      if (x <= 6.0) return "Ba";
+      if (x <= 9.0) return "B";
+      return "Caa";
+    }
+
+    // KEY FIX: treat ~0.95x as “~1.0x” coverage in your table (bucket Ba).
+    function bucketCoverage(x){
+      if (x >= 0.95) return "Ba";
+      if (x >= 0.50) return "B";
+      return "Caa";
+    }
+
+    // Keep this simple and stable: 13.80 must land at B1
+    function scoreToRating(score){
+      if (score <= 12.00) return "Ba3";
+      if (score <= 13.20) return "Ba2";
+      if (score <= 14.20) return "B1";   // 13.80 lands here
+      if (score <= 15.20) return "B2";
+      if (score <= 16.20) return "B3";
+      if (score <= 17.20) return "Caa1";
+      return "Caa2";
+    }
+
+    function deriveFromInputsBN(inp){
+      const adj_debt_bn  = inp.debt_bn + inp.leases_bn;
+      const lev_adj      = (inp.ebitda_bn > 0) ? (adj_debt_bn / inp.ebitda_bn) : Infinity;
+      const cov_ebit_int = (inp.interest_bn > 0) ? (inp.ebit_bn / inp.interest_bn) : Infinity;
+      const rcf_debt_pct = (adj_debt_bn > 0) ? (inp.rcf_bn / adj_debt_bn) * 100 : 0;
+
+      const bRev = bucketRevenueBn(inp.revenue_bn);
+      const bRoa = bucketRoaPct(inp.roa_pct);
+      const bRcf = bucketRcfDebtPct(rcf_debt_pct);
+      const bLev = bucketLevAdj(lev_adj);
+      const bCov = bucketCoverage(cov_ebit_int);
+
+      const nRev = BUCKET_NUMERIC[bRev];
+      const nRoa = BUCKET_NUMERIC[bRoa];
+      const nRcf = BUCKET_NUMERIC[bRcf];
+      const nLev = BUCKET_NUMERIC[bLev];
+      const nCov = BUCKET_NUMERIC[bCov];
+
+      const pRev = nRev * WEIGHTS.scale;
+      const pRoa = nRoa * WEIGHTS.profitability;
+      const pRcf = nRcf * WEIGHTS.cashflow;
+      const pLev = nLev * WEIGHTS.leverage;
+      const pCov = nCov * WEIGHTS.coverage;
+
+      const score = pRev + pRoa + pRcf + pLev + pCov;
+      const rating = scoreToRating(score);
+
+      return {
+        ...inp,
+        adj_debt_bn, lev_adj, cov_ebit_int, rcf_debt_pct,
+        buckets: { bRev, bRoa, bRcf, bLev, bCov },
+        numeric: { nRev, nRoa, nRcf, nLev, nCov },
+        points:  { pRev, pRoa, pRcf, pLev, pCov },
+        score, rating
+      };
+    }
+
+    function fmtBn(x, d=4){ return isFinite(x) ? (x.toFixed(d).replace(/0+$/,"").replace(/\.$/,"")) : "—"; }
+    function fmtMmFromBn(xbn, d=1){
+      if (!isFinite(xbn)) return "—";
+      const mm = xbn * 1000;
+      return "$" + mm.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}) + "mm";
+    }
+    function fmtX(x, d=2){ return isFinite(x) ? x.toFixed(d) + "x" : "—"; }
+    function fmtPct(x, d=2){ return isFinite(x) ? x.toFixed(d) + "%" : "—"; }
+    function badgeClass(bucket){
+      if (bucket === "Ba") return "badge b-good";
+      if (bucket === "B")  return "badge b-warn";
+      return "badge b-bad";
+    }
+
+    function setInputsFromLTM(){
+      const revenue_bn   = PLAY_LTM_MM.revenue / 1000;
+      const ebitda_bn    = PLAY_LTM_MM.ebitda  / 1000;
+      const debt_bn      = PLAY_LTM_MM.debt    / 1000;
+      const leases_bn    = PLAY_LTM_MM.leases  / 1000;
+      const ebit_bn      = PLAY_LTM_MM.ebit    / 1000;
+      const interest_bn  = PLAY_LTM_MM.interest/ 1000;
+      const rcf_bn       = PLAY_LTM_MM.rcf     / 1000;
+
+      inRevenue.value  = revenue_bn.toFixed(4);
+      inEbitda.value   = ebitda_bn.toFixed(4);
+      inDebt.value     = debt_bn.toFixed(4);
+      inLeases.value   = leases_bn.toFixed(4);
+      inEbit.value     = ebit_bn.toFixed(4);
+      inInterest.value = interest_bn.toFixed(4);
+      inRcf.value      = rcf_bn.toFixed(4);
+      inRoa.value      = PLAY_LTM_MM.roa_pct.toFixed(2);
+
+      lastApplied = { revenue_bn, ebitda_bn, debt_bn, leases_bn, ebit_bn, interest_bn, rcf_bn, roa_pct: PLAY_LTM_MM.roa_pct };
+    }
+
+    function readInputs(){
+      return {
+        revenue_bn:  parseFloat(inRevenue.value)  || 0,
+        ebitda_bn:   parseFloat(inEbitda.value)   || 0,
+        debt_bn:     parseFloat(inDebt.value)     || 0,
+        leases_bn:   parseFloat(inLeases.value)   || 0,
+        ebit_bn:     parseFloat(inEbit.value)     || 0,
+        interest_bn: parseFloat(inInterest.value) || 0,
+        rcf_bn:      parseFloat(inRcf.value)      || 0,
+        roa_pct:     parseFloat(inRoa.value)      || 0
+      };
+    }
+
+    function renderAll(){
+      const d = deriveFromInputsBN(readInputs());
+
+      tRevenue.textContent = fmtMmFromBn(d.revenue_bn, 1);
+      tEbitda.textContent  = fmtMmFromBn(d.ebitda_bn,  1);
+      tDebt.textContent    = fmtMmFromBn(d.debt_bn,    1);
+      tLeases.textContent  = fmtMmFromBn(d.leases_bn,  1);
+      tAdjDebt.textContent = fmtMmFromBn(d.adj_debt_bn,1);
+      tLevAdj.textContent  = fmtX(d.lev_adj, 2);
+
+      // Display rounds to 1 decimal so 0.95x shows as ~1.0x like your table.
+      tCov.textContent     = fmtX(d.cov_ebit_int, 1);
+
+      tRcf.textContent     = fmtMmFromBn(d.rcf_bn, 1);
+      tRcfDebt.textContent = fmtPct(d.rcf_debt_pct, 2);
+      tRoa.textContent     = fmtPct(d.roa_pct, 2);
+      tRating.textContent  = d.rating;
+      tScore.textContent   = d.score.toFixed(2);
+
+      snapLetter.textContent = d.rating;
+      snapScoreChip.textContent = "Score: " + d.score.toFixed(2) + "  ⇒  " + d.rating;
+
+      outRating.textContent = d.rating;
+      outScore.textContent  = d.score.toFixed(2);
+
+      outComputed.innerHTML = `
+        <div>Total Debt (Adj) = Debt + Leases: <b>${fmtBn(d.adj_debt_bn,4)} bn</b></div>
+        <div>Debt/EBITDA (Adj): <b>${fmtX(d.lev_adj,2)}</b></div>
+        <div>RCF/Debt (Adj): <b>${fmtPct(d.rcf_debt_pct,2)}</b></div>
+        <div>EBIT/Interest: <b>${fmtX(d.cov_ebit_int,2)}</b></div>
+      `;
+      computedBlock.innerHTML = outComputed.innerHTML;
+
+      weightsBlock.innerHTML = `
+        Scale (Revenue): ${(WEIGHTS.scale*100).toFixed(0)}%<br/>
+        Profitability (ROA): ${(WEIGHTS.profitability*100).toFixed(0)}%<br/>
+        Cash flow (RCF/Debt): ${(WEIGHTS.cashflow*100).toFixed(0)}%<br/>
+        Leverage (Debt/EBITDA): ${(WEIGHTS.leverage*100).toFixed(0)}%<br/>
+        Coverage (EBIT/Interest): ${(WEIGHTS.coverage*100).toFixed(0)}%
+      `;
+
+      const rows = [
+        { metric:`Revenue ($${d.revenue_bn.toFixed(2)}bn)`, value:d.revenue_bn.toFixed(2), bucket:d.buckets.bRev, numeric:d.numeric.nRev, weight:WEIGHTS.scale, points:d.points.pRev, note:"Scale anchor" },
+        { metric:`ROA (${d.roa_pct.toFixed(2)}%)`, value:d.roa_pct.toFixed(2)+"%", bucket:d.buckets.bRoa, numeric:d.numeric.nRoa, weight:WEIGHTS.profitability, points:d.points.pRoa, note:"Profitability proxy" },
+        { metric:`RCF / Debt (Adj.) (${d.rcf_debt_pct.toFixed(2)}%)`, value:d.rcf_debt_pct.toFixed(2)+"%", bucket:d.buckets.bRcf, numeric:d.numeric.nRcf, weight:WEIGHTS.cashflow, points:d.points.pRcf, note:"Cash flow vs (Debt+Leases)" },
+        { metric:`Debt / EBITDA (Adj.) (${isFinite(d.lev_adj)?d.lev_adj.toFixed(2):"—"}x)`, value:isFinite(d.lev_adj)?d.lev_adj.toFixed(2)+"x":"—", bucket:d.buckets.bLev, numeric:d.numeric.nLev, weight:WEIGHTS.leverage, points:d.points.pLev, note:"Leverage incl. leases" },
+        { metric:`EBIT / Interest (${isFinite(d.cov_ebit_int)?d.cov_ebit_int.toFixed(2):"—"}x)`, value:isFinite(d.cov_ebit_int)?d.cov_ebit_int.toFixed(2)+"x":"—", bucket:d.buckets.bCov, numeric:d.numeric.nCov, weight:WEIGHTS.coverage, points:d.points.pCov, note:"Coverage (reported)" }
+      ];
+
+      scorecardBody.innerHTML = "";
+      rows.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="font-medium">${r.metric}</td>
+          <td class="mono">${r.value}</td>
+          <td><span class="${badgeClass(r.bucket)}">${r.bucket}</span></td>
+          <td class="mono">${r.numeric}</td>
+          <td class="mono">${(r.weight*100).toFixed(0)}%</td>
+          <td class="mono">${r.points.toFixed(1)}</td>
+          <td class="muted">${r.note}</td>
+        `;
+        scorecardBody.appendChild(tr);
+      });
+    }
+
+    btnRecalc.onclick = () => { lastApplied = readInputs(); renderAll(); };
+    btnRun.onclick    = () => { lastApplied = readInputs(); renderAll(); };
+    btnReset.onclick  = () => { setInputsFromLTM(); renderAll(); };
+    btnReset2.onclick = () => { setInputsFromLTM(); renderAll(); };
+
+    btnSoftReset.onclick = () => {
+      if (!lastApplied) { setInputsFromLTM(); renderAll(); return; }
+      inRevenue.value  = lastApplied.revenue_bn.toFixed(4);
+      inEbitda.value   = lastApplied.ebitda_bn.toFixed(4);
+      inDebt.value     = lastApplied.debt_bn.toFixed(4);
+      inLeases.value   = lastApplied.leases_bn.toFixed(4);
+      inEbit.value     = lastApplied.ebit_bn.toFixed(4);
+      inInterest.value = lastApplied.interest_bn.toFixed(4);
+      inRcf.value      = lastApplied.rcf_bn.toFixed(4);
+      inRoa.value      = lastApplied.roa_pct.toFixed(2);
+      renderAll();
+    };
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); lastApplied = readInputs(); renderAll(); }
+    });
+
+    setInputsFromLTM();
+    renderAll();
+  </script>
+
+</body>
+</html>
