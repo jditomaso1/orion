@@ -180,7 +180,7 @@ async function handleSend() {
   const thinking = addBubble("assistant", md("_Checking Orion…_"), true);
 
   try {
-    const data = await askOrionBackend(q, 5);
+    const data = await askOrionBackend(q, 20);
     const answer = data.answer || "No answer returned.";
     const matches = data.matches || [];
 
