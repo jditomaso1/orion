@@ -191,12 +191,12 @@
       ebit_to_interest: 1.0,
       cash_interest_coverage: 2.4,
       rent_coverage: 2.6,
-      roa: 0.0001, // 0.01% as decimal
+      roa: 0.001, // 0.01% as decimal
 
       // Scorecard buckets you used
       scorecard: {
         revenue_bucket: "Ba",
-        roa_bucket: "Ba",
+        roa_bucket: "B",
         rcf_debt_bucket: "Ba",
         leverage_bucket: "Caa",
         coverage_bucket: "Ba"
@@ -225,7 +225,7 @@
       document.getElementById("snapScore").textContent = "Weighted score: " + PLAY_LTM.weighted_score.toFixed(2);
       document.getElementById("snapMethod").textContent = "Quant-only";
       document.getElementById("snapExplain").textContent =
-        "LTM ROA collapsed (~0%), lease-adjusted leverage remains very high, and coverage is weak (~1.0x).";
+        "LTM ROA is very low (~0.10%), lease-adjusted leverage remains very high, and coverage is weak (~1.0x).";
 
       const rows = [
         ["Revenue", "$" + fmtNum(PLAY_LTM.revenue, 1) + " mm"],
