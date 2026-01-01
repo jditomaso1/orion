@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ratings Drift — Orion Private Credit</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .metric-card { display:block; }
+    .chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; border:1px solid #e5e7eb; background:#f9fafb; font-size:12px; color:#374151; }
+    .mono { font-variant-numeric: tabular-nums; }
+    .tight td, .tight th { padding-top: 8px; padding-bottom: 8px; }
+  </style>
+</head>
+
+<body class="flex bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/dnb/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 space-y-8">
+
+    <!-- PAGE TITLE -->
+    <section class="flex items-start justify-between flex-wrap gap-3">
+      <div>
+        <h1 class="text-3xl font-semibold tracking-tight">Ratings Drift & Shadow Rating Engine</h1>
+        <p class="text-gray-600 mt-2 text-sm">
+          Credit quality projection, migration dynamics, and Moody’s-style quant scorecarding.
+        </p>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <span class="chip">Ticker: <b>PLAY</b></span>
+        <span class="chip">Period: <b>LTM</b></span>
+        <span class="chip">Mode: <b>Quant-only</b></span>
+      </div>
+    </section>
+
+    <!-- TOP: TEAR SHEET SUMMARY -->
+    <div class="grid grid-cols-12 gap-6">
+
+      <!-- LEFT COLUMN -->
+      <div class="col-span-12 lg:col-span-7 space-y-6">
+
+        <!-- METRICS (UPDATED TO YOUR LTM) -->
+        <section class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3" id="metricCards"></section>
+
+        <!-- SCORECARD / RATINGS TABLE (THIS IS THE “RATINGS TABLE BACK”) -->
+        <div class="rounded-2xl border bg-white p-5">
+          <div class="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <h2 class="text-lg font-semibold mb-1">Moody’s-Style Quant Scorecard (Snapshot)</h2>
+              <p class="text-xs text-gray-500">
+                Uses your lease-adjusted leverage (Debt+Leases) and basic coverage. This is the transparent “bucket table”.
+              </p>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-gray-500">Quant-only Shadow Rating</div>
+              <div class="text-3xl font-bold mt-1" id="shadowRating">—</div>
+              <div class="text-xs mt-1 inline-block px-2 py-1 rounded-full border bg-gray-50 mono" id="shadowScore">Score: —</div>
+            </div>
+          </div>
+
+          <div class="mt-4 overflow-auto">
+            <table class="w-full text-sm tight" aria-label="Quant scorecard table">
+              <thead>
+                <tr class="text-xs text-gray-500">
+                  <th class="text-left font-medium">Metric</th>
+                  <th class="text-right font-medium">Value</th>
+                  <th class="text-center font-medium">Bucket</th>
+                  <th class="text-right font-medium">Points</th>
+                  <th class="text-left font-medium">Driver note</th>
+                </tr>
+              </thead>
+              <tbody id="scorecardBody"></tbody>
+            </table>
+          </div>
+
+          <div class="mt-3 text-xs text-gray-500">
+            Note: “Points” here is a simple weighted mapping so you can see directionally what’s pushing the rating. You can tune thresholds later.
+          </div>
+        </div>
+
+        <!-- MIGRATION MATRIX (THIS IS THE “RATINGS MATRIX BACK”) -->
+        <div class="rounded-2xl border bg-white p-5 h-[360px]">
+          <h2 class="text-lg font-semibold mb-1">Ratings Migration Matrix (1-Year)</h2>
+          <p class="text-xs text-gray-500">Rows = current rating bucket, columns = next-year rating bucket.</p>
+          <div class="mt-3 overflow-auto h-[calc(100%-3rem)]">
+            <table id="migrationTable" class="w-full text-sm table-fixed"></table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: WHAT-IF CONTROLS -->
+      <aside class="col-span-12 lg:col-span-5 space-y-6">
+
+        <!-- WHAT-IF PANEL (BASIC MODIFICATION ONLY) -->
+        <div class="rounded-2xl border bg-white p-5">
+          <div class="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <h2 class="text-lg font-semibold">What-If (basic)</h2>
+              <p class="text-xs text-gray-500">Tweak a few inputs → scorecard + shadow rating updates.</p>
+            </div>
+            <button id="resetBtn" class="text-sm rounded-lg px-3 py-2 border hover:bg-gray-50">Reset to LTM</button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div>
+              <label class="text-xs text-gray-500">Revenue (USD bn)</label>
+              <input id="i_rev" type="number" step="0.01" class="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm mono" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">EBITDA (USD bn)</label>
+              <input id="i_ebitda" type="number" step="0.01" class="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm mono" />
+            </div>
+
+            <div>
+              <label class="text-xs text-gray-500">Funded Debt (USD bn)</label>
+              <input id="i_debt" type="number" step="0.01" class="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm mono" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Lease Liabilities (USD bn)</label>
+              <input id="i_leases" type="number" step="0.01" class="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm mono" />
+            </div>
+
+            <div>
+              <label class="text-xs text-gray-500">EBIT (USD bn)</label>
+              <input id="i_ebit" type="number" step="0.01" class="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm mono" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Interest Expense (USD bn)</label>
+              <input id="i_interest" type="number" step="0.001" class="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm mono" />
+            </div>
+
+            <div>
+              <label class="text-xs text-gray-500">RCF (USD bn)</label>
+              <input id="i_rcf" type="number" step="0.01" class="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm mono" />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">ROA (%)</label>
+              <input id="i_roa" type="number" step="0.01" class="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm mono" />
+            </div>
+          </div>
+
+          <div class="mt-4 flex gap-2">
+            <button id="recalcBtn" class="text-sm rounded-lg px-3 py-2 border bg-gray-900 text-white hover:opacity-95">Recalculate</button>
+          </div>
+
+          <div class="mt-4 border rounded-xl p-4">
+            <div class="text-xs text-gray-500">Computed (from your chosen inputs)</div>
+            <table class="mt-2 w-full text-sm"><tbody id="computedRatios"></tbody></table>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+    <!-- 5-YEAR BELL CURVE -->
+    <section class="rounded-2xl border bg-white p-5">
+      <h2 class="text-lg font-semibold mb-2">Portfolio Credit Quality Drift — 5-Year Projection</h2>
+      <div class="h-[400px]">
+        <canvas id="bellChart"></canvas>
+      </div>
+      <p class="text-xs text-gray-500 mt-2">
+        Distributions based on real data — illustrates expected migration dispersion over time.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- METRIC CARD COMPONENT -->
+  <script>
+    customElements.define("metric-card", class extends HTMLElement {
+      connectedCallback() {
+        this.innerHTML = `
+          <div class="rounded-2xl border bg-white p-3">
+            <div class="text-xs text-gray-500">${this.getAttribute("label")}</div>
+            <div class="text-lg font-semibold mono">${this.getAttribute("value")}</div>
+          </div>`;
+      }
+    });
+  </script>
+
+  <script>
+    // ===========
+    // PLAY LTM (LATEST YOU PROVIDED)
+    // ===========
+    const PLAY_LTM = {
+      revenue_bn: 2.1077,          // 2,107.7mm
+      ebitda_bn: 0.3911,           // 391.1mm
+      debt_bn: 1.4929,             // funded debt proxy
+      leases_bn: 2.6373,           // lease liabilities
+      ebit_bn: 0.1357,             // 135.7mm
+      interest_bn: 0.1427,         // 142.7mm
+      rcf_bn: 0.2474,              // 247.4mm
+      roa_pct: 0.01                // 0.01% (as provided)
+    };
+
+    // ===========
+    // UTIL
+    // ===========
+    const $ = (id) => document.getElementById(id);
+    const fmtBn = (x, d=2) => (x==null||Number.isNaN(x)) ? "—" : x.toFixed(d);
+    const fmtX  = (x, d=2) => (!isFinite(x)) ? "—" : x.toFixed(d) + "x";
+    const fmtPct= (x, d=2) => (x==null||Number.isNaN(x)) ? "—" : x.toFixed(d) + "%";
+
+    // ===========
+    // SIMPLE QUANT BUCKETING (TUNABLE)
+    // These thresholds are intentionally transparent + easy to change.
+    // ===========
+    function bucketRevenueBn(v){
+      if (v >= 10) return "Baa";
+      if (v >= 3)  return "Ba";
+      if (v >= 1)  return "B";
+      return "Caa";
+    }
+
+    function bucketROA(vPct){
+      if (vPct >= 8) return "A";
+      if (vPct >= 3) return "Baa";
+      if (vPct >= 1) return "Ba";
+      if (vPct >= 0) return "B";
+      return "Caa";
+    }
+
+    function bucketRCFDebt(vPct){
+      if (vPct >= 20) return "A";
+      if (vPct >= 10) return "Baa";
+      if (vPct >= 5)  return "Ba";
+      if (vPct >= 0)  return "B";
+      return "Caa";
+    }
+
+    function bucketLeverage(debtToEbitda){
+      if (debtToEbitda <= 3.0) return "Baa";
+      if (debtToEbitda <= 4.5) return "Ba";
+      if (debtToEbitda <= 6.0) return "B";
+      return "Caa";
+    }
+
+    function bucketCoverage(ebitToInterest){
+      if (ebitToInterest >= 3.0) return "A";
+      if (ebitToInterest >= 2.0) return "Baa";
+      if (ebitToInterest >= 1.0) return "Ba";
+      if (ebitToInterest >= 0.5) return "B";
+      return "Caa";
+    }
+
+    // ===========
+    // MAP BUCKET -> POINTS (lower points = better). Weighted sum gives a transparent “score”.
+    // ===========
+    const bucketPoints = { A:1, Baa:2, Ba:3, B:4, Caa:5 };
+
+    // weights roughly aligned to the scorecard idea (tune anytime)
+    const weights = {
+      revenue: 0.15,
+      roa:     0.15,
+      rcf:     0.20,
+      lev:     0.30,
+      cov:     0.20
+    };
+
+    function scoreToRating(score){
+      // score ranges ~1..5 (lower=better). Map to a rating band you’ve been using.
+      if (score <= 1.60) return "Baa1";
+      if (score <= 2.00) return "Baa3";
+      if (score <= 2.40) return "Ba1";
+      if (score <= 2.80) return "Ba2";
+      if (score <= 3.20) return "Ba3";
+      if (score <= 3.60) return "B1";
+      if (score <= 4.00) return "B2";
+      if (score <= 4.40) return "B3";
+      return "Caa";
+    }
+
+    function computeAll(inp){
+      // Moody’s-style adjustments you’re using: include leases in debt for leverage + RCF/Debt(Adj)
+      const totalDebtAdj = inp.debt_bn + inp.leases_bn;
+      const debtToEbitdaAdj = inp.ebitda_bn > 0 ? (totalDebtAdj / inp.ebitda_bn) : Infinity;
+
+      const rcfDebtAdjPct = totalDebtAdj > 0 ? (inp.rcf_bn / totalDebtAdj) * 100 : NaN;
+
+      const ebitToInterest = inp.interest_bn > 0 ? (inp.ebit_bn / inp.interest_bn) : Infinity;
+
+      const revBucket = bucketRevenueBn(inp.revenue_bn);
+      const roaBucket = bucketROA(inp.roa_pct);
+      const rcfBucket = bucketRCFDebt(rcfDebtAdjPct);
+      const levBucket = bucketLeverage(debtToEbitdaAdj);
+      const covBucket = bucketCoverage(ebitToInterest);
+
+      const score =
+        bucketPoints[revBucket] * weights.revenue +
+        bucketPoints[roaBucket] * weights.roa +
+        bucketPoints[rcfBucket] * weights.rcf +
+        bucketPoints[levBucket] * weights.lev +
+        bucketPoints[covBucket] * weights.cov;
+
+      const rating = scoreToRating(score);
+
+      return {
+        totalDebtAdj,
+        debtToEbitdaAdj,
+        rcfDebtAdjPct,
+        ebitToInterest,
+        buckets: { revBucket, roaBucket, rcfBucket, levBucket, covBucket },
+        score,
+        rating
+      };
+    }
+
+    function renderMetricCards(inp, computed){
+      const el = $("metricCards");
+      const cards = [
+        ["Revenue (LTM)", `$${(inp.revenue_bn*1000).toFixed(1)}mm`],
+        ["EBITDA (LTM)", `$${(inp.ebitda_bn*1000).toFixed(1)}mm`],
+        ["Debt (proxy)", `$${(inp.debt_bn*1000).toFixed(1)}mm`],
+        ["Leases", `$${(inp.leases_bn*1000).toFixed(1)}mm`],
+        ["Adj Debt/EBITDA", fmtX(computed.debtToEbitdaAdj, 2)],
+        ["EBIT/Interest", fmtX(computed.ebitToInterest, 2)],
+        ["RCF", `$${(inp.rcf_bn*1000).toFixed(1)}mm`],
+        ["RCF/Debt (Adj)", fmtPct(computed.rcfDebtAdjPct, 2)],
+        ["ROA", fmtPct(inp.roa_pct, 2)],
+        ["Adj Debt", `$${(computed.totalDebtAdj*1000).toFixed(1)}mm`],
+        ["Quant Rating", computed.rating],
+        ["Score", computed.score.toFixed(2)]
+      ];
+
+      el.innerHTML = cards.map(([label, value]) =>
+        `<metric-card class="metric-card" label="${label}" value="${value}"></metric-card>`
+      ).join("");
+    }
+
+    function renderScorecard(inp, computed){
+      $("shadowRating").textContent = computed.rating;
+      $("shadowScore").textContent = "Score: " + computed.score.toFixed(2);
+
+      const rows = [
+        {
+          name: "Revenue ($bn)",
+          value: inp.revenue_bn.toFixed(2),
+          bucket: computed.buckets.revBucket,
+          points: (bucketPoints[computed.buckets.revBucket]*weights.revenue).toFixed(2),
+          note: "Scale anchor"
+        },
+        {
+          name: "ROA (%)",
+          value: inp.roa_pct.toFixed(2) + "%",
+          bucket: computed.buckets.roaBucket,
+          points: (bucketPoints[computed.buckets.roaBucket]*weights.roa).toFixed(2),
+          note: "Profitability proxy"
+        },
+        {
+          name: "RCF / Debt (Adj.) (%)",
+          value: computed.rcfDebtAdjPct.toFixed(2) + "%",
+          bucket: computed.buckets.rcfBucket,
+          points: (bucketPoints[computed.buckets.rcfBucket]*weights.rcf).toFixed(2),
+          note: "Cash flow vs (Debt+Leases)"
+        },
+        {
+          name: "Debt / EBITDA (Adj.)",
+          value: computed.debtToEbitdaAdj.toFixed(2) + "x",
+          bucket: computed.buckets.levBucket,
+          points: (bucketPoints[computed.buckets.levBucket]*weights.lev).toFixed(2),
+          note: "Leverage incl. leases"
+        },
+        {
+          name: "EBIT / Interest",
+          value: computed.ebitToInterest.toFixed(2) + "x",
+          bucket: computed.buckets.covBucket,
+          points: (bucketPoints[computed.buckets.covBucket]*weights.cov).toFixed(2),
+          note: "Coverage (reported)"
+        }
+      ];
+
+      $("scorecardBody").innerHTML = rows.map(r => `
+        <tr>
+          <td class="font-medium">${r.name}</td>
+          <td class="text-right mono">${r.value}</td>
+          <td class="text-center"><span class="px-2 py-1 rounded-full border bg-gray-50 text-xs">${r.bucket}</span></td>
+          <td class="text-right mono">${r.points}</td>
+          <td class="text-gray-600">${r.note}</td>
+        </tr>
+      `).join("");
+
+      $("computedRatios").innerHTML = `
+        <tr><td class="py-1 text-gray-500">Total Debt (Adj) = Debt + Leases</td><td class="text-right font-medium mono">${fmtBn(computed.totalDebtAdj, 2)} bn</td></tr>
+        <tr><td class="py-1 text-gray-500">Debt/EBITDA (Adj)</td><td class="text-right font-medium mono">${fmtX(computed.debtToEbitdaAdj, 2)}</td></tr>
+        <tr><td class="py-1 text-gray-500">RCF/Debt (Adj)</td><td class="text-right font-medium mono">${fmtPct(computed.rcfDebtAdjPct, 2)}</td></tr>
+        <tr><td class="py-1 text-gray-500">EBIT/Interest</td><td class="text-right font-medium mono">${fmtX(computed.ebitToInterest, 2)}</td></tr>
+      `;
+    }
+
+    function setInputsFrom(inp){
+      $("i_rev").value     = inp.revenue_bn.toFixed(4);
+      $("i_ebitda").value  = inp.ebitda_bn.toFixed(4);
+      $("i_debt").value    = inp.debt_bn.toFixed(4);
+      $("i_leases").value  = inp.leases_bn.toFixed(4);
+      $("i_ebit").value    = inp.ebit_bn.toFixed(4);
+      $("i_interest").value= inp.interest_bn.toFixed(4);
+      $("i_rcf").value     = inp.rcf_bn.toFixed(4);
+      $("i_roa").value     = inp.roa_pct.toFixed(2);
+    }
+
+    function readInputs(){
+      return {
+        revenue_bn: +$("i_rev").value || 0,
+        ebitda_bn: +$("i_ebitda").value || 0,
+        debt_bn: +$("i_debt").value || 0,
+        leases_bn: +$("i_leases").value || 0,
+        ebit_bn: +$("i_ebit").value || 0,
+        interest_bn: +$("i_interest").value || 0,
+        rcf_bn: +$("i_rcf").value || 0,
+        roa_pct: +$("i_roa").value || 0
+      };
+    }
+
+    function renderAll(inp){
+      const computed = computeAll(inp);
+      renderMetricCards(inp, computed);
+      renderScorecard(inp, computed);
+    }
+  </script>
+
+  <!-- MIGRATION MATRIX -->
+  <script>
+    const MIG_BUCKETS=["aaa/aa","a","bbb","bb","b","c"];
+    const MIG_MATRIX=[
+      [85.7,14.3,0.0,0.0,0.0,0.0],
+      [0.0,76.5,20.2,2.5,0.8,0.0],
+      [0.0,4.3,65.1,24.7,4.3,1.6],
+      [0.0,0.0,4.8,68.7,21.0,5.5],
+      [0.0,0.0,0.7,10.1,67.4,21.7],
+      [0.0,0.0,0.0,0.0,0.0,100.0],
+    ];
+
+    function cellColor(p){
+      const L = 97 - (p/100)*72;
+      return `hsl(200 70% ${L}%)`;
+    }
+
+    function renderMigration(){
+      const tbl=document.getElementById("migrationTable");
+      let head=`<thead><tr>
+        <th class="text-left text-gray-500 font-medium py-1 pr-2">from \\ to</th>
+        ${MIG_BUCKETS.map(b=>`<th class="text-xs text-gray-500 font-medium px-2 py-1">${b}</th>`).join("")}
+      </tr></thead>`;
+
+      let body="<tbody>";
+
+      for(let r=0;r<MIG_BUCKETS.length;r++){
+        body+=`<tr>`;
+        body+=`<th class="text-xs text-gray-600 text-left pr-2 py-1">${MIG_BUCKETS[r]}</th>`;
+        for(let c=0;c<MIG_BUCKETS.length;c++){
+          const v=MIG_MATRIX[r][c];
+          const bg=cellColor(v);
+          body+=`
+            <td class="text-center px-2 py-1 rounded" style="background:${bg}">
+              <span class="text-[11px] font-medium" style="color:${v>60?"white":"#111"}">
+                ${v.toFixed(v<1?1:0)}%
+              </span>
+            </td>`;
+        }
+        body+="</tr>";
+      }
+
+      tbl.innerHTML = head + body + "</tbody>";
+    }
+  </script>
+
+  <!-- BELL CURVE -->
+  <script>
+    const X_POINTS = Array.from({length:301},(_,i)=>i*(5/300));
+    function normalPdf(x,mu,s){
+      const z=(x-mu)/s; return Math.exp(-0.5*z*z)/(s*Math.sqrt(2*Math.PI));
+    }
+    function makeSeries(mu,s){ return X_POINTS.map(x=>({x,y:normalPdf(x,mu,s)})); }
+
+    const rawCurves=[
+      {name:"Current", data:makeSeries(1.8,0.45)},
+      {name:"Year 1",  data:makeSeries(2.1,0.50)},
+      {name:"Year 2",  data:makeSeries(2.3,0.55)},
+      {name:"Year 3",  data:makeSeries(2.4,0.60)},
+      {name:"Year 4",  data:makeSeries(2.5,0.65)},
+      {name:"Year 5",  data:makeSeries(2.6,0.70)},
+    ];
+
+    const globalMax = Math.max(...rawCurves.flatMap(c=>c.data.map(p=>p.y)));
+    const scale = 0.9/globalMax;
+
+    const curves = rawCurves.map(c=>({
+      name:c.name,
+      data:c.data.map(p=>({x:p.x,y:p.y*scale}))
+    }));
+
+    function renderBell(){
+      const ctx=document.getElementById("bellChart")?.getContext("2d");
+      if(!ctx) return;
+
+      new Chart(ctx,{
+        type:"line",
+        data:{
+          datasets:curves.map(c=>({
+            label:c.name,
+            data:c.data,
+            borderWidth:2,
+            pointRadius:0,
+            tension:0.35,
+            fill:true,
+            backgroundColor:"rgba(0,0,0,0.05)"
+          }))
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          parsing:false,
+          interaction:{intersect:false,mode:"nearest"},
+          plugins:{
+            legend:{position:"right"},
+            tooltip:{
+              callbacks:{
+                title:(items)=>{
+                  const x=items[0]?.parsed?.x||0;
+                  const buckets=["BBB","BB","B","CCC","D"];
+                  return buckets[Math.min(buckets.length-1,Math.round(x))];
+                }
+              }
+            }
+          },
+          scales:{
+            x:{
+              type:"linear", min:0, max:5,
+              grid:{color:"rgba(0,0,0,0.05)"},
+              ticks:{
+                callback:(v)=>{
+                  const b=["BBB","BB","B","CCC","D"];
+                  return Number.isInteger(v)?b[Math.min(b.length-1,v)]: "";
+                }
+              }
+            },
+            y:{ grid:{color:"rgba(0,0,0,0.05)"} }
+          }
+        }
+      });
+    }
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // initialize to your LTM
+      setInputsFrom(PLAY_LTM);
+      renderAll(PLAY_LTM);
+
+      renderMigration();
+      renderBell();
+
+      $("recalcBtn").onclick = () => {
+        const inp = readInputs();
+        renderAll(inp);
+      };
+
+      $("resetBtn").onclick = () => {
+        setInputsFrom(PLAY_LTM);
+        renderAll(PLAY_LTM);
+      };
+    });
+  </script>
+
+  <!-- Ask Orion Bot -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
