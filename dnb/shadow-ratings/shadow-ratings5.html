@@ -51,7 +51,6 @@
   <!-- MAIN CONTENT -->
   <main class="flex-1 ml-64 p-8 flex flex-col">
 
-    <!-- CSV-DRIVEN FINANCIALS TABLE -->
     <section class="card historicals" aria-labelledby="hist-title">
       <style>
         .card.historicals{
@@ -59,7 +58,6 @@
           max-width:1100px;margin-top:24px
         }
         .card.historicals h2{margin:0 0 10px;font:600 18px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial}
-        .subnote{margin:0 0 12px;color:#666;font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial}
         .table-wrap{overflow:auto;border:1px solid #eee;border-radius:12px}
         table{width:100%;border-collapse:separate;border-spacing:0;min-width:760px}
         thead th{
@@ -112,8 +110,8 @@
         const CSV_URL = "/dnb/data/moodys_shadow_ratings.csv";
 
         const FORMAT = { currencyDecimals: 1, ratioDecimals: 2, pctDecimals: 2 };
+        const CANONICAL_COLS = ["LTM", "2025", "2024", "2023", "2022"];
 
-        // Titles that should render as "group" rows if they appear alone
         const GROUP_TITLES = new Set([
           "Moody’s-Adjusted Credit Metrics",
           "(company public financials)",
@@ -121,9 +119,6 @@
           "Metrics",
           "Metric (Moody’s scorecard)"
         ]);
-
-        // Only used for tables that are actually year-based
-        const CANONICAL_COLS = ["LTM", "2025", "2024", "2023", "2022"];
 
         function splitCSVLine(line) {
           const out = [];
@@ -147,40 +142,40 @@
           const t = String(v ?? "").trim();
           if (!t) return true;
           const low = t.toLowerCase();
-          return (
-            t === "—" || t === "-" ||
-            low === "na" || low === "n/a" ||
-            low === "null" || low === "none"
-          );
+          return (t === "—" || t === "-" || low === "na" || low === "n/a" || low === "null" || low === "none");
         }
 
         function isSeparatorRow(row) {
           const first = String(row?.[0] ?? "").trim();
-          if (first === "...") return true;              // IMPORTANT: your CSV includes a literal "..." line
-          if (row.every(c => isMissingToken(c))) return true;
-          return false;
+          if (first === "...") return true;
+          return row.every(c => isMissingToken(c));
         }
 
+        // ✅ FIXED: don't crush "LTM Rating" into "LTM"
         function normHeader(h) {
           let s = String(h ?? "").trim();
           if (!s) return "";
           s = s.replace(/\s+/g, " ").replace(/[()]/g, "");
-          if (/^ltm$/i.test(s) || /ltm/i.test(s)) return "LTM";
+
+          if (/^ltm\s*rating$/i.test(s)) return "LTM Rating";   // keep as-is
+          if (/^ltm$/i.test(s)) return "LTM";                   // only true LTM header
+
           const m = s.match(/(20\d{2})/);
           if (m) return m[1];
+
           return s;
         }
 
         function rowLooksLikeHeader(row) {
           const n = row.map(normHeader);
-          // header rows in your CSV look like: ["Output","LTM","2025","2024","2023","2022"]
-          // or: ["Metrics","LTM Rating","Numeric","Weights","Score","—"]
           return n.some(x => x === "LTM" || /^\d{4}$/.test(x) || x === "LTM Rating" || x === "Numeric" || x === "Weights" || x === "Score");
         }
 
+        // ✅ FIXED: only canonicalize tables that actually have YEAR columns
         function headerIsYearBased(headers) {
           const n = headers.map(normHeader);
-          return n.includes("LTM") || n.some(x => /^\d{4}$/.test(x));
+          const hasYear = n.some(x => /^\d{4}$/.test(x));
+          return hasYear; // <-- key change (prevents Score breakdown from being treated as year table)
         }
 
         function normalizeToCanonical(headers, rows) {
@@ -213,7 +208,6 @@
           const s0 = String(raw).trim();
           if (isMissingToken(s0)) return "—";
 
-          // keep literal "x" and "%" formats
           if (/%/.test(s0)) return s0;
           if (/\bx\b/i.test(s0)) return s0;
 
@@ -274,7 +268,6 @@
             const rest = r.slice(1);
             const restBlank = rest.every(v => isMissingToken(v));
 
-            // render group row if it's a known title and everything else is blank
             if (GROUP_TITLES.has(metricRaw) && restBlank) {
               const trg = document.createElement("tr");
               trg.className = "group";
@@ -286,7 +279,6 @@
               continue;
             }
 
-            // skip empty rows
             if (restBlank && !GROUP_TITLES.has(metricRaw)) continue;
 
             const tr = document.createElement("tr");
@@ -316,18 +308,15 @@
         }
 
         function parseCSVToSections(csvText) {
-          csvText = csvText.replace(/^\uFEFF/, ""); // strip BOM
+          csvText = csvText.replace(/^\uFEFF/, "");
           const lines = csvText.replace(/\r/g, "").split("\n").filter(l => l.length > 0);
 
-          // raw rows
           const rawRows = lines
             .map(splitCSVLine)
             .map(r => r.map(x => (x ?? "").trim()));
 
-          // remove pure trailing separator rows
           while (rawRows.length && isSeparatorRow(rawRows[rawRows.length - 1])) rawRows.pop();
 
-          // find first header row
           let firstHeaderIdx = -1;
           for (let i = 0; i < rawRows.length; i++) {
             if (isSeparatorRow(rawRows[i])) continue;
@@ -341,13 +330,11 @@
             .map(r => (r[0] || "").trim())
             .filter(Boolean);
 
-          // walk and carve sections by subsequent header rows
           const sections = [];
           let cur = null;
 
           for (let i = firstHeaderIdx; i < rawRows.length; i++) {
             const row = rawRows[i];
-
             if (isSeparatorRow(row)) continue;
 
             if (rowLooksLikeHeader(row)) {
@@ -355,13 +342,12 @@
               cur = { headers: row, rows: [] };
               continue;
             }
-
             if (!cur) continue;
             cur.rows.push(row);
           }
           if (cur) sections.push(cur);
 
-          // clean: drop completely empty columns per section (but keep header col count consistent)
+          // drop empty columns per section
           const cleaned = sections.map(sec => {
             const all = [sec.headers, ...sec.rows];
             const maxLen = Math.max(...all.map(r => r.length));
@@ -387,21 +373,16 @@
           return { titleLines, sections: cleaned };
         }
 
-        function buildSubtitle(mainTitleLines, sectionIdx, headers) {
+        function buildSubtitle(mainTitleLines, headers) {
           const h0 = String(headers?.[0] ?? "").trim();
           const n = headers.map(normHeader);
 
-          // Show the top title/subtitle on every card (keeps context)
-          const prefix = mainTitleLines.length
-            ? mainTitleLines.join(" · ")
-            : "";
+          const prefix = mainTitleLines.length ? mainTitleLines.join(" · ") : "";
 
-          // Disambiguate the second "Metrics" table (score breakdown)
-          if (/^metrics$/i.test(h0) && n.includes("Numeric") && n.includes("Weights")) {
+          if (/^metrics$/i.test(h0) && n.includes("LTM Rating") && n.includes("Numeric") && n.includes("Weights") && n.includes("Score")) {
             return (prefix ? prefix + " · " : "") + "Score breakdown (LTM Rating / Numeric / Weights / Score)";
           }
 
-          // Otherwise just show columns/rows
           return (prefix ? prefix + " · " : "") + `Columns: ${headers.length - 1}`;
         }
 
@@ -425,7 +406,7 @@
               let headers = sec.headers;
               let rows = sec.rows;
 
-              // Only canonical-normalize YEAR-BASED tables (Output/Metrics/Scorecard-by-year)
+              // ✅ Only normalize year-based sections
               if (headerIsYearBased(headers)) {
                 const normed = normalizeToCanonical(headers, rows);
                 headers = normed.headers;
@@ -433,7 +414,7 @@
               }
 
               const title = String(sec.headers?.[0] ?? "").trim() || `Section ${idx + 1}`;
-              const subtitle = buildSubtitle(parsed.titleLines, idx, sec.headers);
+              const subtitle = buildSubtitle(parsed.titleLines, sec.headers);
 
               root.appendChild(makeTableCard(title, subtitle, headers, rows));
             });
