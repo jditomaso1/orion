@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Financials — Orion</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f5f6f8; }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/dnb/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 flex flex-col gap-6">
+
+    <!-- Shared table styles -->
+    <style>
+      .card.orion-table {
+        border: 1px solid #e6e6e6;
+        border-radius: 14px;
+        padding: 16px;
+        background: #fff;
+        max-width: 1100px;
+      }
+      .card.orion-table h2 { margin: 0 0 10px; font: 600 18px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial; }
+      .subnote { margin: 0 0 12px; color: #666; font: 12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial; }
+      .table-wrap { overflow: auto; border: 1px solid #eee; border-radius: 12px; }
+      table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 760px; }
+      thead th {
+        position: sticky; top: 0; background: #fafafa; z-index: 1;
+        text-align: right; padding: 12px; border-bottom: 1px solid #eee;
+        font: 600 12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial; color: #333;
+      }
+      thead th:first-child { text-align: left; }
+      tbody td {
+        padding: 12px; border-bottom: 1px solid #f0f0f0;
+        font: 13px/1.3 system-ui,-apple-system,Segoe UI,Roboto,Arial; color: #111;
+      }
+      tbody tr:last-child td { border-bottom: 0; }
+      tbody td:first-child { font-weight: 600; text-align: left; color: #222; white-space: nowrap; }
+      tbody td:not(:first-child) { text-align: right; white-space: nowrap; }
+      .muted { color: #666; font-weight: 500; }
+      .group td { background: #fcfcfc; font-weight: 700; color: #111; border-bottom: 1px solid #eaeaea; }
+
+      /* keep Metric column visible when scrolling horizontally */
+      thead th:first-child,
+      tbody td:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        background: #fff;
+      }
+      thead th:first-child {
+        z-index: 3;
+        background: #fafafa;
+      }
+
+      /* subtle negative highlight */
+      .neg { color: #b91c1c; font-weight: 600; }
+    </style>
+
+    <!-- ===================================================== -->
+    <!-- NEW: PROJECTIONS TABLE (Single-sheet format)           -->
+    <!-- ===================================================== -->
+    <section class="card orion-table" aria-labelledby="proj-title">
+      <h2 id="proj-title">Forward Projections (LTM + 5Y)</h2>
+      <p class="subnote">Projections table · USD millions unless noted · % and x shown as-is</p>
+
+      <div class="table-wrap" role="region" aria-label="Projections table">
+        <table id="projTable">
+          <thead>
+            <tr id="projHeadRow">
+              <th scope="col">Metric</th>
+            </tr>
+          </thead>
+          <tbody id="projBody">
+            <tr><td class="muted" colspan="7">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- EXISTING: HISTORICALS TABLE (Grouped export)           -->
+    <!-- ===================================================== -->
+    <section class="card orion-table" aria-labelledby="hist-title">
+      <h2 id="hist-title">Detailed Historical Financials</h2>
+      <p class="subnote">Latest 4 annual periods (from Postgres export) · USD millions unless noted</p>
+
+      <div class="table-wrap" role="region" aria-label="Historical financials table">
+        <table id="histTable">
+          <thead>
+            <tr id="histHeadRow">
+              <th scope="col">Metric</th>
+            </tr>
+          </thead>
+          <tbody id="histBody">
+            <tr><td class="muted" colspan="7">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <script>
+      // ==============================
+      // CSV FILES (UPDATE AS NEEDED)
+      // ==============================
+      const PROJ_CSV_URL = "/dnb/data/projections.csv";
+      const HIST_CSV_URL = "/dnb/data/dnb_detailed_financials_2025.csv";
+
+      const FORMAT = { currencyDecimals: 1, ratioDecimals: 2, pctDecimals: 2 };
+
+      const GROUP_TITLES = new Set([
+        "Income Statement",
+        "Cash Flow",
+        "Balance Sheet",
+        "Leverage & Ratios",
+        "Credit Metrics and Ratios"
+      ]);
+
+      function splitCSVLine(line) {
+        const out = [];
+        let cur = "", inQ = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') {
+            if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+            else inQ = !inQ;
+          } else if (ch === "," && !inQ) {
+            out.push(cur); cur = "";
+          } else {
+            cur += ch;
+          }
+        }
+        out.push(cur);
+        return out;
+      }
+
+      function parseCSV(text) {
+        const lines = text.replace(/\r/g, "").split("\n").filter(l => l.trim().length);
+        const headers = splitCSVLine(lines[0]).map(h => h.trim());
+        const rows = [];
+        for (let i = 1; i < lines.length; i++) {
+          const cols = splitCSVLine(lines[i]);
+          const obj = {};
+          headers.forEach((h, idx) => obj[h] = (cols[idx] ?? "").trim());
+          rows.push(obj);
+        }
+        return { headers, rows };
+      }
+
+      function cleanMetricName(metric) {
+        const idx = metric.indexOf(":");
+        return idx >= 0 ? metric.slice(idx + 1).trim() : metric.trim();
+      }
+
+      function isMissingToken(s) {
+        const t = String(s ?? "").trim();
+        if (!t) return true;
+        const low = t.toLowerCase();
+        return (
+          t === "—" || t === "-" ||
+          low === "na" || low === "n/a" ||
+          low === "null" || low === "none"
+        );
+      }
+
+      function looksNegativeNumeric(s) {
+        const t = String(s ?? "").trim();
+        if (!t) return false;
+        if (t.includes("%") || /\bx\b/i.test(t)) return false;
+        const n = Number(t.replace(/,/g, ""));
+        return Number.isFinite(n) && n < 0;
+      }
+
+      // If a cell already has "x" or "%" in the CSV, show it as-is.
+      // Otherwise parse as a number and format.
+      function renderCell(metric, raw) {
+        if (raw === null || raw === undefined) return { text: "—", neg: false };
+        const s0 = String(raw).trim();
+        if (isMissingToken(s0)) return { text: "—", neg: false };
+
+        if (/%/.test(s0)) return { text: s0, neg: false };
+        if (/\bx\b/i.test(s0)) return { text: s0, neg: false };
+
+        const n = Number(s0.replace(/,/g, ""));
+        if (!Number.isFinite(n)) return { text: "—", neg: false };
+
+        const m = String(metric || "").toLowerCase();
+        const isRatioMetric =
+          m.startsWith("der:") ||
+          m.includes("leverage") ||
+          m.includes("coverage") ||
+          m.includes("debt /") ||
+          m.includes(" / ");
+
+        if (isRatioMetric) return { text: n.toFixed(FORMAT.ratioDecimals), neg: (n < 0) };
+
+        return {
+          text: n.toLocaleString(undefined, {
+            minimumFractionDigits: FORMAT.currencyDecimals,
+            maximumFractionDigits: FORMAT.currencyDecimals
+          }),
+          neg: (n < 0)
+        };
+      }
+
+      function groupLabelByPrefix(metric) {
+        if (metric.startsWith("IS:")) return "Income Statement";
+        if (metric.startsWith("CF:")) return "Cash Flow";
+        if (metric.startsWith("BS:")) return "Balance Sheet";
+        if (metric.startsWith("DER:")) return "Leverage & Ratios";
+        return "Other";
+      }
+
+      async function loadCsvIntoTable({ csvUrl, tableHeadRowId, tableBodyId, enableGroups }) {
+        const bodyEl = document.getElementById(tableBodyId);
+        const headRow = document.getElementById(tableHeadRowId);
+
+        try {
+          const res = await fetch(csvUrl, { cache: "no-store" });
+          if (!res.ok) throw new Error(`CSV fetch failed: ${res.status}`);
+          const csvText = await res.text();
+
+          const { headers, rows } = parseCSV(csvText);
+          const metricCol = headers[0];
+          const valueCols = headers.slice(1);
+
+          // Build header
+          while (headRow.children.length > 1) headRow.removeChild(headRow.lastChild);
+          valueCols.forEach(h => {
+            const th = document.createElement("th");
+            th.scope = "col";
+            th.textContent = h;
+            headRow.appendChild(th);
+          });
+
+          bodyEl.innerHTML = "";
+
+          let currentGroup = null;
+          let sawGroupHeaders = false;
+
+          function renderGroupRow(title) {
+            const trg = document.createElement("tr");
+            trg.className = "group";
+            const tdg = document.createElement("td");
+            tdg.colSpan = 1 + valueCols.length;
+            tdg.textContent = title;
+            trg.appendChild(tdg);
+            bodyEl.appendChild(trg);
+          }
+
+          for (const r of rows) {
+            const metricRaw = String(r[metricCol] ?? "").trim();
+            if (!metricRaw) continue;
+
+            const allBlank = valueCols.every(c => isMissingToken(r[c]));
+
+            if (enableGroups) {
+              // group header row in CSV
+              if (GROUP_TITLES.has(metricRaw) && allBlank) {
+                sawGroupHeaders = true;
+                currentGroup = metricRaw;
+                renderGroupRow(currentGroup);
+                continue;
+              }
+
+              // ignore separator/blank rows
+              if (allBlank && !GROUP_TITLES.has(metricRaw)) continue;
+
+              // If no explicit group headers exist, group by IS:/CF:/BS:/DER:
+              if (!sawGroupHeaders) {
+                const g = groupLabelByPrefix(metricRaw);
+                if (g !== currentGroup) {
+                  currentGroup = g;
+                  renderGroupRow(currentGroup);
+                }
+              } else {
+                if (!currentGroup) {
+                  currentGroup = "Other";
+                  renderGroupRow(currentGroup);
+                }
+              }
+            } else {
+              // projections table: skip blank lines only
+              if (allBlank) continue;
+            }
+
+            const tr = document.createElement("tr");
+
+            const td0 = document.createElement("td");
+            td0.textContent = enableGroups ? cleanMetricName(metricRaw) : metricRaw;
+            tr.appendChild(td0);
+
+            valueCols.forEach(c => {
+              const td = document.createElement("td");
+              const { text, neg } = renderCell(metricRaw, r[c]);
+              td.textContent = text;
+              if (neg || looksNegativeNumeric(text)) td.classList.add("neg");
+              tr.appendChild(td);
+            });
+
+            bodyEl.appendChild(tr);
+          }
+
+          if (!bodyEl.children.length) {
+            const colCount = headRow.children.length || 2;
+            bodyEl.innerHTML = `<tr><td class="muted" colspan="${colCount}">No rows found in CSV.</td></tr>`;
+          }
+
+        } catch (e) {
+          const colCount = document.getElementById(tableHeadRowId).children.length || 2;
+          bodyEl.innerHTML = `<tr><td class="muted" colspan="${colCount}">Failed to load CSV: ${e.message}</td></tr>`;
+        }
+      }
+
+      // Load projections (no grouping)
+      loadCsvIntoTable({
+        csvUrl: PROJ_CSV_URL,
+        tableHeadRowId: "projHeadRow",
+        tableBodyId: "projBody",
+        enableGroups: false
+      });
+
+      // Load historicals (grouping enabled)
+      loadCsvIntoTable({
+        csvUrl: HIST_CSV_URL,
+        tableHeadRowId: "histHeadRow",
+        tableBodyId: "histBody",
+        enableGroups: true
+      });
+    </script>
+
+  </main>
+
+  <!-- Ask Orion Bot -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
