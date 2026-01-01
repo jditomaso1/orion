@@ -402,7 +402,7 @@
     function renderSnapshot(summary) {
       const company = summary["Company Name"] || "—";
       const dealTitle = summary["Deal Title"] || company || "Credit Memo";
-      document.getElementById("page-title").textContent = `Orion | Credit Memo — ${dealTitle}`;
+      document.getElementById("page-title").textContent = `Orion | Credit Memo — ${company}`;
       document.getElementById("page-subtitle").textContent =
         "Live memo generated from current extracted fields (SEC + credit agreement).";
 
