@@ -106,7 +106,7 @@
       </style>
     
       <h2 id="hist-title">CSV Snapshot</h2>
-      <p class="subnote">Rendering all table blocks found in the CSV · auto-drops empty columns</p>
+      <!-- <p class="subnote">Rendering all table blocks found in the CSV · auto-drops empty columns</p> -->
     
       <div id="blocksRoot">
         <div class="muted">Loading…</div>
@@ -244,7 +244,44 @@
             maximumFractionDigits: FORMAT.currencyDecimals
           });
         }
-    
+          // Force every table to use the same columns, in the same order
+        const CANONICAL_COLS = ["LTM", "2025", "2024", "2023", "2022"];
+        
+        function normHeader(h) {
+          return String(h ?? "")
+            .trim()
+            .replace(/\s+/g, " ")
+            .replace(/^FY\s*/i, "")     // FY2025 -> 2025
+            .replace(/[()]/g, "");      // (USD) junk
+        }
+        
+        // Rebuild a block so it always has Metric + CANONICAL_COLS
+        function normalizeBlockToCanonical(block) {
+          const headers = block[0].map(normHeader);
+          const rows = block.slice(1);
+        
+          // Build index map: header name -> column index
+          const idx = {};
+          headers.forEach((h, i) => { if (h) idx[h] = i; });
+        
+          // Metric is always col 0 for your exports; keep it
+          const outHeaders = [headers[0] || "Metric", ...CANONICAL_COLS];
+        
+          const outRows = rows.map(r => {
+            const metric = r[0] ?? "";
+            const out = [metric];
+        
+            CANONICAL_COLS.forEach(col => {
+              // Try exact match, else blank
+              const j = idx[col];
+              out.push(j !== undefined ? (r[j] ?? "") : "");
+            });
+        
+            return out;
+          });
+        
+          return [outHeaders, ...outRows];
+        }  
         function makeTableCard(title, subtitle, headers, rows) {
           const card = document.createElement("div");
           card.className = "block-card";
@@ -343,12 +380,14 @@
             }
     
             blocks.forEach((block, idx) => {
-              const headers = block[0];
-              const rows = block.slice(1);
-    
+              const normalized = normalizeBlockToCanonical(block);
+            
+              const headers = normalized[0];
+              const rows = normalized.slice(1);
+            
               const title = headers[0] || `Block ${idx+1}`;
               const subtitle = `Columns: ${headers.length - 1} · Rows: ${rows.length}`;
-    
+            
               root.appendChild(makeTableCard(title, subtitle, headers, rows));
             });
     
