@@ -1,28 +1,145 @@
 {
   "documents": [
     {
-      "tag": "SEC",
-      "name": "Form 10-K",
-      "period": "FY 2023",
-      "description": "Audited annual financial statements, MD&A, risk factors, and footnotes",
-      "sourceLabel": "SEC EDGAR",
-      "url": "https://www.sec.gov/edgar/browse/?CIK=0000000000"
-    },
-    {
       "tag": "LEGAL",
-      "name": "Credit Agreement",
-      "period": "Executed 2023",
-      "description": "Senior secured term loan and revolver documentation, covenants, events of default",
-      "sourceLabel": "Exhibit 10.1",
-      "url": "https://drive.google.com/file/d/YOUR_FILE_ID/view"
+      "name": "Credit_Agreement__Dave & Buster's Entertainment, Inc._pdf",
+      "period": "Credit Agreement",
+      "description": "Senior secured credit agreement (terms, covenants, defaults, baskets, definitions).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/13MghCjeTqVFrfvrbc8P3Vr_YauW5_biJ/view"
+    },
+
+    {
+      "tag": "SEC",
+      "name": "PLAY-10Q-2022-05-01(1Q).pdf",
+      "period": "Q1 2022 (filed 2022-05-01)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1TT-SrFvMbqh_OU8PQWxSj_1eHhY5Q-kO/view"
     },
     {
-      "tag": "MGMT",
-      "name": "Management Projections",
-      "period": "2024–2027E",
-      "description": "Base case operating forecast including revenue, EBITDA, CapEx, and FCF",
-      "sourceLabel": "Open",
-      "url": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit"
+      "tag": "SEC",
+      "name": "PLAY-10Q-2022-07-31(2Q).pdf",
+      "period": "Q2 2022 (filed 2022-07-31)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1s0Q_oCSbuF5-7Vg-B71Ma8q05xMi0Gqv/view"
+    },
+    {
+      "tag": "SEC",
+      "name": "PLAY-10Q-2022-10-30(3Q).pdf",
+      "period": "Q3 2022 (filed 2022-10-30)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1FMAACsr1yZz26-wMuYUmosZ2jUOvzcIC/view"
+    },
+
+    {
+      "tag": "SEC",
+      "name": "PLAY-10Q-2023-04-30(1Q).pdf",
+      "period": "Q1 2023 (filed 2023-04-30)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1acFtDfMQCraIBOXnDWBCGecH4Ke_9Opz/view"
+    },
+    {
+      "tag": "SEC",
+      "name": "PLAY-10Q-2023-07-30(2Q).pdf",
+      "period": "Q2 2023 (filed 2023-07-30)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1Gli0V46DbuoI4L8FgPtf60txrXaRKlGL/view"
+    },
+    {
+      "tag": "SEC",
+      "name": "PLAY-10Q-2023-10-29(3Q).pdf",
+      "period": "Q3 2023 (filed 2023-10-29)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1fuDqBfeW2rBveLQowTCV_TI76Qcna2eD/view"
+    },
+
+    {
+      "tag": "SEC",
+      "name": "PLAY-10Q-2024-05-04(1Q).pdf",
+      "period": "Q1 2024 (filed 2024-05-04)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1HiePj4IhvNmfP5RVSN-zbcO1Q2sOziFH/view"
+    },
+    {
+      "tag": "SEC",
+      "name": "PLAY-10Q-2024-08-06(2Q).pdf",
+      "period": "Q2 2024 (filed 2024-08-06)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1GbFsGVKL7j5B5d4JebYfZ5zZyrlPEEum/view"
+    },
+    {
+      "tag": "SEC",
+      "name": "PLAY-10Q-2024-11-05(3Q).pdf",
+      "period": "Q3 2024 (filed 2024-11-05)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1V2uYobjzEjyqt9Y6G0yZRJxXuGPNz_Mg/view"
+    },
+
+    {
+      "tag": "SEC",
+      "name": "PLAY-10Q-2025-05-06(1Q).pdf",
+      "period": "Q1 2025 (filed 2025-05-06)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1AvxijaWHN5B-jdhJsLvRG940P1YX-gm5/view"
+    },
+    {
+      "tag": "SEC",
+      "name": "PLAY-10Q-2025-08-05(2Q).pdf",
+      "period": "Q2 2025 (filed 2025-08-05)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1f1rEtkC3fnm9aSjoV1fwhoXLH3uUOl0E/view"
+    },
+    {
+      "tag": "SEC",
+      "name": "PLAY-10Q-2025-11-04(3Q).pdf",
+      "period": "Q3 2025 (filed 2025-11-04)",
+      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/10brhmUeb4oRsC9kuVWjAmXYfmrBT03B4/view"
+    },
+
+    {
+      "tag": "SEC",
+      "name": "PLAY-10K-2022-03-29.pdf",
+      "period": "Form 10-K (filed 2022-03-29)",
+      "description": "Form 10-K filing (audited annual financials, MD&A, risk factors, footnotes).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1C_6QwJlVzJ3rQIAO4uTPY2tihtErGhqr/view"
+    },
+    {
+      "tag": "SEC",
+      "name": "PLAY-10K-2023-03-28.pdf",
+      "period": "Form 10-K (filed 2023-03-28)",
+      "description": "Form 10-K filing (audited annual financials, MD&A, risk factors, footnotes).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1uCrQJayi0iehvLaFM9vqheamCqgj34_-/view"
+    },
+    {
+      "tag": "SEC",
+      "name": "PLAY-10K-2024-04-02.pdf",
+      "period": "Form 10-K (filed 2024-04-02)",
+      "description": "Form 10-K filing (audited annual financials, MD&A, risk factors, footnotes).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1ie4CJ-7jaT3gbmnBaFdjmafWh_TCP2DK/view"
+    },
+    {
+      "tag": "SEC",
+      "name": "PLAY-10K-2025-04-07.pdf",
+      "period": "Form 10-K (filed 2025-04-07)",
+      "description": "Form 10-K filing (audited annual financials, MD&A, risk factors, footnotes).",
+      "sourceLabel": "Google Drive",
+      "url": "https://drive.google.com/file/d/1gnjiw485nzbcs6mmkNLC61LGbAd5RUCR/view"
     }
   ]
 }
