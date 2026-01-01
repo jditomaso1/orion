@@ -1,0 +1,28 @@
+{
+  "documents": [
+    {
+      "tag": "SEC",
+      "name": "Form 10-K",
+      "period": "FY 2023",
+      "description": "Audited annual financial statements, MD&A, risk factors, and footnotes",
+      "sourceLabel": "SEC EDGAR",
+      "url": "https://www.sec.gov/edgar/browse/?CIK=0000000000"
+    },
+    {
+      "tag": "LEGAL",
+      "name": "Credit Agreement",
+      "period": "Executed 2023",
+      "description": "Senior secured term loan and revolver documentation, covenants, events of default",
+      "sourceLabel": "Exhibit 10.1",
+      "url": "https://drive.google.com/file/d/YOUR_FILE_ID/view"
+    },
+    {
+      "tag": "MGMT",
+      "name": "Management Projections",
+      "period": "2024–2027E",
+      "description": "Base case operating forecast including revenue, EBITDA, CapEx, and FCF",
+      "sourceLabel": "Open",
+      "url": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit"
+    }
+  ]
+}
