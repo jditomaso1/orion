@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shadow Ratings | Private Credit AI</title>
+  <meta name="description" content="Rules-based shadow ratings for private credit: leverage, coverage, size, structure, covenants, liquidity, sponsor, sector." />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root{ --bg:#f4f4f4; --card:#fff; --text:#111; --muted:#666; --border:#e8e8e8; }
+    *{ box-sizing:border-box }
+    body{ font-family:Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin:0; background:var(--bg); color:var(--text); }
+    .page{ max-width:1100px; margin:24px auto; padding:20px }
+    .grid{ display:grid; grid-template-columns:1.2fr 1fr; gap:18px }
+    @media (max-width:900px){ .grid{ grid-template-columns:1fr } }
+    .cardish{ background:var(--card); border-radius:12px; border:1px solid var(--border); box-shadow:0 4px 12px rgba(0,0,0,.05); padding:16px; }
+    .h{ margin:0 0 12px; font-size:1rem; font-weight:700; color:#222 }
+    .row{ display:grid; grid-template-columns:1fr 180px; gap:12px; align-items:center; margin-bottom:12px }
+    label{ font-size:.92rem; color:#444 }
+    input[type="number"], select{ width:100%; padding:10px 12px; font-size:14px; border:1px solid #d9d9d9; border-radius:10px; background:#fff }
+    button.primary{ padding:10px 16px; border-radius:8px; border:1px solid #111; background:#111; color:#fff; font-weight:600; cursor:pointer }
+    button.primary:hover{ opacity:.92 }
+    .result{ display:flex; align-items:baseline; gap:12px; }
+    .rating{ font-weight:700; font-size:28px }
+    .pill{ display:inline-block; padding:4px 8px; border:1px solid #e5e7eb; background:#f9fafb; color:#374151; border-radius:999px; font-size:12px }
+    .muted{ color:#666; font-size:13px; margin-top:6px }
+    table{ width:100%; border-collapse:collapse; margin-top:14px; font-size:13px }
+    th, td{ text-align:left; padding:8px 6px; border-bottom:1px solid #f0f0f0 }
+    th{ font-weight:600; color:#333 }
+    .footer-note{ margin-top:12px; color:#666; font-size:12px }
+
+    .snap-head{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap; }
+    .snap-title{ margin:0; font-size:14px; font-weight:700; color:#111; }
+    .snap-sub{ margin:2px 0 0; font-size:12px; color:#666; }
+    .kv{ display:grid; grid-template-columns: 1fr auto; gap:8px; font-size:13px; margin-top:10px; }
+    .kv div{ padding:6px 0; border-bottom:1px solid #f0f0f0; }
+    .kv div:nth-child(2n){ text-align:right; font-variant-numeric: tabular-nums; }
+    .tag{ display:inline-block; padding:3px 8px; border-radius:999px; border:1px solid #e5e7eb; background:#fff; font-size:12px; color:#111; }
+    .tag-muted{ color:#555; background:#fafafa; }
+    .mini{ font-size:12px; color:#666; margin-top:8px; }
+    .divider{ height:1px; background:#eee; margin:12px 0; }
+    .good{ color:#0f766e; font-weight:700; }
+    .warn{ color:#b45309; font-weight:700; }
+    .bad{ color:#b91c1c; font-weight:700; }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+  async function injectSidebar() {
+    const res = await fetch("/dnb/sidebar.html");
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+    window.toggleSection = function (id) {
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+      if (!section || !icon) return;
+
+      section.classList.toggle("hidden");
+      icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    const last = localStorage.getItem("sidebar-open-section");
+    if (last) {
+      const s = document.getElementById(last);
+      const i = document.getElementById("icon-" + last);
+      if (s && i) {
+        s.classList.remove("hidden");
+        i.style.transform = "rotate(90deg)";
+      }
+    }
+  }
+  injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 page">
+    <h1 style="margin:0 0 8px;font-size:26px;font-weight:700;">Shadow Ratings</h1>
+    <p style="margin:0 0 20px;color:#666;">
+      Transparent, rules-based scoring. Toggle framework &amp; industry, enter inputs on the left, see the result on the right.
+      <span class="tag tag-muted" style="margin-left:8px;">Now showing PLAY (Dave &amp; Buster’s) latest LTM snapshot</span>
+    </p>
+
+    <div class="grid">
+      <!-- LEFT: INPUTS -->
+      <div class="cardish">
+        <h2 class="h">Inputs</h2>
+
+        <!-- Framework / Industry selectors -->
+        <div class="row">
+          <label for="framework">Framework</label>
+          <select id="framework">
+            <option value="moodys" selected>Moody’s</option>
+            <option value="sp">S&amp;P</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="industry">Industry</label>
+          <select id="industry"></select>
+        </div>
+
+        <!-- Dynamic inputs from the active module -->
+        <div id="inputs"></div>
+
+        <button id="calcBtn" class="primary" style="margin-top:8px;">Calculate Rating</button>
+
+        <div class="mini">
+          Tip: the panel on the right shows the <b>latest PLAY LTM snapshot</b> (quant-only) so you can compare against your manual inputs.
+        </div>
+      </div>
+
+      <!-- RIGHT: OUTPUTS -->
+      <div class="cardish">
+        <div class="snap-head">
+          <div>
+            <p class="snap-title">PLAY (Dave &amp; Buster’s) — Latest LTM Snapshot</p>
+            <p class="snap-sub">Quant-only shadow rating using Moody’s-style scorecard metrics (leases included in leverage)</p>
+          </div>
+          <div>
+            <span class="tag">LTM</span>
+            <span class="tag tag-muted" id="asOfTag">As of latest upload</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Snapshot result -->
+        <div class="result" style="margin-top:6px;">
+          <div class="rating" id="snapRating">B1</div>
+          <div class="pill" id="snapScore">Weighted score: 13.80</div>
+          <div class="pill" id="snapMethod">Quant-only</div>
+        </div>
+        <div class="muted" id="snapExplain">
+          LTM ROA collapsed (~0%), lease-adjusted leverage remains very high, and coverage is weak (~1.0x).
+        </div>
+
+        <!-- Snapshot metrics table -->
+        <table id="snapTable" aria-label="PLAY LTM key metrics">
+          <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+          <tbody></tbody>
+        </table>
+
+        <h3 class="h" style="margin-top:16px;">Drivers</h3>
+        <ul id="snapDrivers" style="margin:0;padding-left:18px;"></ul>
+
+        <div class="divider"></div>
+
+        <!-- Existing interactive result -->
+        <h2 class="h">Calculator Result</h2>
+        <div class="result">
+          <div class="rating" id="finalRating">—</div>
+          <div class="pill" id="numeric">Score: —</div>
+        </div>
+        <div class="muted" id="explain">Enter inputs and click calculate.</div>
+
+        <table id="metricsTable" aria-label="Key metrics">
+          <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+          <tbody></tbody>
+        </table>
+
+        <h3 class="h" style="margin-top:16px;">Drivers</h3>
+        <ul id="drivers" style="margin:0;padding-left:18px;"></ul>
+      </div>
+    </div>
+
+    <p class="footer-note">
+      UI only re-skin. Scoring logic &amp; inputs are loaded from the active module (e.g., <code>frameworks/moodys/restaurants.js</code>).
+      Snapshot block above is a static “latest LTM” readout for PLAY.
+    </p>
+  </main>
+
+  <!-- App wiring -->
+  <script type="module" src="./js/main.js"></script>
+
+  <!-- Snapshot data + render -->
+  <script>
+    // --- Latest PLAY LTM financials & derived metrics (from what you just provided) ---
+    const PLAY_LTM = {
+      ticker: "PLAY",
+      name: "Dave & Buster’s",
+      period: "LTM",
+      // Core financials (USD mm unless noted)
+      revenue: 2107.7,
+      ebitda_reported: 391.1,
+      ebit: 135.7,
+      interest_expense: 142.7,
+      cash_interest_paid: 123.6,
+      rent_expense: 247.5,
+      net_income: 0.3,
+      total_assets: 4015.8,
+      cash: 6.9,
+      funded_debt_proxy: 1492.9,
+      net_debt_reported: 1486.0,
+      lease_liabilities: 2637.3,
+      rcf: 247.4,
+      // Moody's-style adjusted debt metrics
+      total_debt_moodys_adj: 4130.2,            // debt + leases
+      net_debt_moodys_adj: 4123.3,              // net debt + leases
+      debt_to_ebitda_adj: 10.56,                // (debt+leases)/EBITDA
+      net_leverage_adj: 10.54,                  // (net debt+leases)/EBITDA
+      rcf_to_debt_adj: 0.060,                   // 6.00% = RCF/(debt+leases)
+      ebit_to_interest: 1.0,                    // reported proxy
+      cash_interest_coverage: 2.4,              // CFO / cash interest paid (your provided)
+      rent_coverage: 2.6,                       // EBITDAR / rent (your provided)
+      roa: 0.0001,                              // 0.01% expressed as decimal
+      // Scorecard bucket labels you used
+      scorecard: {
+        revenue_bucket: "Ba",
+        roa_bucket: "Ba",
+        rcf_debt_bucket: "Ba",
+        leverage_bucket: "Caa",
+        coverage_bucket: "Ba"
+      },
+      // Quant-only output you landed on
+      quant_only_rating: "B1",
+      weighted_score: 13.80
+    };
+
+    function fmtNum(n, decimals=1) {
+      if (n === null || n === undefined || Number.isNaN(n)) return "—";
+      return Number(n).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    }
+    function fmtX(n, decimals=2) {
+      if (n === null || n === undefined || Number.isNaN(n)) return "—";
+      return Number(n).toFixed(decimals) + "x";
+    }
+    function fmtPct(dec) {
+      if (dec === null || dec === undefined || Number.isNaN(dec)) return "—";
+      return (Number(dec) * 100).toFixed(2) + "%";
+    }
+
+    function renderSnapshot() {
+      // headline
+      document.getElementById("snapRating").textContent = PLAY_LTM.quant_only_rating;
+      document.getElementById("snapScore").textContent = "Weighted score: " + PLAY_LTM.weighted_score.toFixed(2);
+      document.getElementById("snapMethod").textContent = "Quant-only";
+
+      // snapshot table rows
+      const rows = [
+        ["Revenue", "$" + fmtNum(PLAY_LTM.revenue, 1) + " mm"],
+        ["EBITDA (reported)", "$" + fmtNum(PLAY_LTM.ebitda_reported, 1) + " mm"],
+        ["Funded Debt (proxy)", "$" + fmtNum(PLAY_LTM.funded_debt_proxy, 1) + " mm"],
+        ["Lease liabilities", "$" + fmtNum(PLAY_LTM.lease_liabilities, 1) + " mm"],
+        ["Total Debt (Moody’s Adj.) = Debt + Leases", "$" + fmtNum(PLAY_LTM.total_debt_moodys_adj, 1) + " mm"],
+        ["Debt / EBITDA (Moody’s Adj.)", fmtX(PLAY_LTM.debt_to_ebitda_adj, 2)],
+        ["Net Debt (Moody’s Adj.) = Net debt + Leases", "$" + fmtNum(PLAY_LTM.net_debt_moodys_adj, 1) + " mm"],
+        ["Net Leverage (Moody’s Adj.)", fmtX(PLAY_LTM.net_leverage_adj, 2)],
+        ["RCF (reported)", "$" + fmtNum(PLAY_LTM.rcf, 1) + " mm"],
+        ["RCF / Debt (Moody’s Adj.)", fmtPct(PLAY_LTM.rcf_to_debt_adj)],
+        ["EBIT / Interest (reported)", fmtX(PLAY_LTM.ebit_to_interest, 1)],
+        ["Interest coverage (cash)", fmtX(PLAY_LTM.cash_interest_coverage, 1)],
+        ["ROA", fmtPct(PLAY_LTM.roa)],
+        ["Rent coverage (EBITDAR / rent)", fmtX(PLAY_LTM.rent_coverage, 1)]
+      ];
+
+      const tb = document.querySelector("#snapTable tbody");
+      tb.innerHTML = "";
+      rows.forEach(([k,v]) => {
+        const tr = document.createElement("tr");
+        const td1 = document.createElement("td"); td1.textContent = k;
+        const td2 = document.createElement("td"); td2.textContent = v;
+        tr.appendChild(td1); tr.appendChild(td2);
+        tb.appendChild(tr);
+      });
+
+      // drivers (simple, readable)
+      const drivers = [
+        `Leverage: Debt/EBITDA (Moody’s Adj.) = ${PLAY_LTM.debt_to_ebitda_adj.toFixed(2)}x → bucket ${PLAY_LTM.scorecard.leverage_bucket}`,
+        `Profitability: ROA ≈ ${(PLAY_LTM.roa*100).toFixed(2)}% → bucket ${PLAY_LTM.scorecard.roa_bucket}`,
+        `Cash flow: RCF/Debt (Adj.) = ${(PLAY_LTM.rcf_to_debt_adj*100).toFixed(2)}% → bucket ${PLAY_LTM.scorecard.rcf_debt_bucket}`,
+        `Coverage: EBIT/Interest ≈ ${PLAY_LTM.ebit_to_interest.toFixed(1)}x → bucket ${PLAY_LTM.scorecard.coverage_bucket}`,
+        `Scale: Revenue ≈ $${(PLAY_LTM.revenue/1000).toFixed(2)}bn → bucket ${PLAY_LTM.scorecard.revenue_bucket}`
+      ];
+      const ul = document.getElementById("snapDrivers");
+      ul.innerHTML = "";
+      drivers.forEach(t => {
+        const li = document.createElement("li");
+        li.textContent = t;
+        ul.appendChild(li);
+      });
+    }
+
+    // Run snapshot render ASAP
+    renderSnapshot();
+  </script>
+
+  <!-- Ask Orion Bot -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
