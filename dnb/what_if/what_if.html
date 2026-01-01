@@ -397,9 +397,9 @@
       inRcf.value      = rcf_bn.toFixed(4);
   
       // KEY: default to the ROA proxy used in your B1 scorecard
-      inRoa.value      = PLAY_LTM_MM.roa_scorecard_pct.toFixed(2);
+      inRoa.value      = PLAY_LTM_MM.roa_reported_pct.toFixed(2);
   
-      lastApplied = { revenue_bn, ebitda_bn, debt_bn, leases_bn, ebit_bn, interest_bn, rcf_bn, roa_pct: PLAY_LTM_MM.roa_scorecard_pct };
+      lastApplied = { revenue_bn, ebitda_bn, debt_bn, leases_bn, ebit_bn, interest_bn, rcf_bn, roa_pct: PLAY_LTM_MM.roa_reported_pct };
     }
   
     function readInputs(){
