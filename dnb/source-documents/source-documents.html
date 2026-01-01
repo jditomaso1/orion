@@ -171,17 +171,17 @@
           const name = escapeHtml(doc.name || "Untitled");
           const period = escapeHtml(doc.period || "—");
           const desc = escapeHtml(doc.description || "—");
-
-          // You can use either:
-          // - doc.url (Drive "view" link or EDGAR link)
-          // - doc.sourceLabel (optional display text)
+        
           const url = (doc.url || "").trim();
-          const sourceLabel = escapeHtml(doc.sourceLabel || (url ? "Open" : "—"));
-
+        
+          // Force label for SEC docs
+          const defaultLabel = (tag === "SEC") ? "SEC EDGAR" : "Google Drive";
+          const sourceLabel = escapeHtml(doc.sourceLabel || (url ? defaultLabel : "—"));
+        
           const sourceCell = url
             ? `<a class="link" href="${escapeHtml(url)}" target="_blank" rel="noopener">${sourceLabel}</a>`
             : `<span class="muted">—</span>`;
-
+        
           return `
             <tr>
               <td class="doc-type"><span class="tag">${escapeHtml(tag)}</span>${name}</td>
