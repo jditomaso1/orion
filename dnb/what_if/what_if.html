@@ -236,13 +236,15 @@
 
   <script>
     /******************************************************************
-     * LTM DATA (PLAY) — matches your “13.8 => B1” math
-     * NOTE: ROA default must be 7.50% per your scoring table.
+     * LTM DATA (PLAY)
+     * IMPORTANT:
+     *  - Reported ROA is ~0.01% (your LTM table)
+     *  - Your B1 (13.8) scorecard uses an ROA PROXY of 7.50% (Ba / 12)
      ******************************************************************/
     const PLAY_LTM_MM = {
       ticker: "PLAY",
       name: "Dave & Buster’s",
-    
+  
       // Income statement (USD mm)
       revenue: 2107.7,
       ebitda: 391.1,
@@ -252,13 +254,13 @@
       operating_income: 165.0,
       da: 255.4,
       rent: 247.5,
-    
+  
       // Cash flow (USD mm)
       capex: 492.3,
       cfo: 296.7,
       cash_interest_paid: 123.6,
       cash_taxes_paid: 20.1,
-    
+  
       // Balance sheet (USD mm)
       debt: 1492.9,          // Total debt (proxy)
       leases: 2637.3,        // Lease liabilities
@@ -267,47 +269,55 @@
       total_assets: 4015.8,
       total_equity: 145.8,
       total_liabilities: 3870.0,
-    
-      // Ratios / credit metrics
+  
+      // Credit metrics
       rcf: 247.4,            // Retained cash flow (RCF)
-      roa_pct: 0.01          // <-- UPDATED per your latest table
+  
+      // ROA handling:
+      roa_reported_pct: 0.01,   // your LTM table
+      roa_scorecard_pct: 7.50   // the proxy used in your “13.8 => B1” scorecard
     };
-
+  
     let lastApplied = null;
-
+  
     const BUCKET_NUMERIC = { Aaa:1, Aa:3, A:6, Baa:9, Ba:12, B:15, Caa:18 };
-
     const WEIGHTS = { scale:0.15, profitability:0.15, cashflow:0.20, leverage:0.30, coverage:0.20 };
-
+  
     function bucketRevenueBn(revBn){
       if (revBn >= 1.0) return "Ba";
       if (revBn >= 0.25) return "B";
       return "Caa";
     }
+  
+    // Bucket rules are just “good enough” placeholders; they’re not Moody’s.
+    // Your B1 outcome is driven by the ROA PROXY value being in Ba (12).
     function bucketRoaPct(roaPct){
       if (roaPct >= 3.0) return "Ba";
       if (roaPct >= 1.0) return "B";
       return "Caa";
     }
+  
     function bucketRcfDebtPct(pct){
       if (pct >= 5.0) return "Ba";
       if (pct >= 0.0) return "B";
       return "Caa";
     }
+  
     function bucketLevAdj(x){
       if (x <= 6.0) return "Ba";
       if (x <= 9.0) return "B";
       return "Caa";
     }
-
-    // KEY FIX: treat ~0.95x as “~1.0x” coverage in your table (bucket Ba).
+  
+    // Your inputs produce ~0.9509x, and you’re treating that as “~1.0x” → Ba in your table.
     function bucketCoverage(x){
       if (x >= 0.95) return "Ba";
       if (x >= 0.50) return "B";
       return "Caa";
     }
-
-    // Keep this simple and stable: 13.80 must land at B1
+  
+    // Map weighted numeric score → “letter” result
+    // 13.80 must land at B1 per your table.
     function scoreToRating(score){
       if (score <= 12.00) return "Ba3";
       if (score <= 13.20) return "Ba2";
@@ -317,34 +327,34 @@
       if (score <= 17.20) return "Caa1";
       return "Caa2";
     }
-
+  
     function deriveFromInputsBN(inp){
       const adj_debt_bn  = inp.debt_bn + inp.leases_bn;
       const lev_adj      = (inp.ebitda_bn > 0) ? (adj_debt_bn / inp.ebitda_bn) : Infinity;
       const cov_ebit_int = (inp.interest_bn > 0) ? (inp.ebit_bn / inp.interest_bn) : Infinity;
       const rcf_debt_pct = (adj_debt_bn > 0) ? (inp.rcf_bn / adj_debt_bn) * 100 : 0;
-
+  
       const bRev = bucketRevenueBn(inp.revenue_bn);
       const bRoa = bucketRoaPct(inp.roa_pct);
       const bRcf = bucketRcfDebtPct(rcf_debt_pct);
       const bLev = bucketLevAdj(lev_adj);
       const bCov = bucketCoverage(cov_ebit_int);
-
+  
       const nRev = BUCKET_NUMERIC[bRev];
       const nRoa = BUCKET_NUMERIC[bRoa];
       const nRcf = BUCKET_NUMERIC[bRcf];
       const nLev = BUCKET_NUMERIC[bLev];
       const nCov = BUCKET_NUMERIC[bCov];
-
+  
       const pRev = nRev * WEIGHTS.scale;
       const pRoa = nRoa * WEIGHTS.profitability;
       const pRcf = nRcf * WEIGHTS.cashflow;
       const pLev = nLev * WEIGHTS.leverage;
       const pCov = nCov * WEIGHTS.coverage;
-
+  
       const score = pRev + pRoa + pRcf + pLev + pCov;
       const rating = scoreToRating(score);
-
+  
       return {
         ...inp,
         adj_debt_bn, lev_adj, cov_ebit_int, rcf_debt_pct,
@@ -354,7 +364,7 @@
         score, rating
       };
     }
-
+  
     function fmtBn(x, d=4){ return isFinite(x) ? (x.toFixed(d).replace(/0+$/,"").replace(/\.$/,"")) : "—"; }
     function fmtMmFromBn(xbn, d=1){
       if (!isFinite(xbn)) return "—";
@@ -368,7 +378,7 @@
       if (bucket === "B")  return "badge b-warn";
       return "badge b-bad";
     }
-
+  
     function setInputsFromLTM(){
       const revenue_bn   = PLAY_LTM_MM.revenue / 1000;
       const ebitda_bn    = PLAY_LTM_MM.ebitda  / 1000;
@@ -377,7 +387,7 @@
       const ebit_bn      = PLAY_LTM_MM.ebit    / 1000;
       const interest_bn  = PLAY_LTM_MM.interest/ 1000;
       const rcf_bn       = PLAY_LTM_MM.rcf     / 1000;
-
+  
       inRevenue.value  = revenue_bn.toFixed(4);
       inEbitda.value   = ebitda_bn.toFixed(4);
       inDebt.value     = debt_bn.toFixed(4);
@@ -385,11 +395,13 @@
       inEbit.value     = ebit_bn.toFixed(4);
       inInterest.value = interest_bn.toFixed(4);
       inRcf.value      = rcf_bn.toFixed(4);
-      inRoa.value      = PLAY_LTM_MM.roa_pct.toFixed(2);
-
-      lastApplied = { revenue_bn, ebitda_bn, debt_bn, leases_bn, ebit_bn, interest_bn, rcf_bn, roa_pct: PLAY_LTM_MM.roa_pct };
+  
+      // KEY: default to the ROA proxy used in your B1 scorecard
+      inRoa.value      = PLAY_LTM_MM.roa_scorecard_pct.toFixed(2);
+  
+      lastApplied = { revenue_bn, ebitda_bn, debt_bn, leases_bn, ebit_bn, interest_bn, rcf_bn, roa_pct: PLAY_LTM_MM.roa_scorecard_pct };
     }
-
+  
     function readInputs(){
       return {
         revenue_bn:  parseFloat(inRevenue.value)  || 0,
@@ -402,40 +414,44 @@
         roa_pct:     parseFloat(inRoa.value)      || 0
       };
     }
-
+  
     function renderAll(){
       const d = deriveFromInputsBN(readInputs());
-
+  
       tRevenue.textContent = fmtMmFromBn(d.revenue_bn, 1);
       tEbitda.textContent  = fmtMmFromBn(d.ebitda_bn,  1);
       tDebt.textContent    = fmtMmFromBn(d.debt_bn,    1);
       tLeases.textContent  = fmtMmFromBn(d.leases_bn,  1);
       tAdjDebt.textContent = fmtMmFromBn(d.adj_debt_bn,1);
       tLevAdj.textContent  = fmtX(d.lev_adj, 2);
-
-      // Display rounds to 1 decimal so 0.95x shows as ~1.0x like your table.
+  
+      // rounds ~0.9509x to ~1.0x display like your table
       tCov.textContent     = fmtX(d.cov_ebit_int, 1);
-
+  
       tRcf.textContent     = fmtMmFromBn(d.rcf_bn, 1);
       tRcfDebt.textContent = fmtPct(d.rcf_debt_pct, 2);
+  
+      // What you’re scoring (proxy)
       tRoa.textContent     = fmtPct(d.roa_pct, 2);
+  
       tRating.textContent  = d.rating;
       tScore.textContent   = d.score.toFixed(2);
-
+  
       snapLetter.textContent = d.rating;
       snapScoreChip.textContent = "Score: " + d.score.toFixed(2) + "  ⇒  " + d.rating;
-
+  
       outRating.textContent = d.rating;
       outScore.textContent  = d.score.toFixed(2);
-
+  
       outComputed.innerHTML = `
         <div>Total Debt (Adj) = Debt + Leases: <b>${fmtBn(d.adj_debt_bn,4)} bn</b></div>
         <div>Debt/EBITDA (Adj): <b>${fmtX(d.lev_adj,2)}</b></div>
         <div>RCF/Debt (Adj): <b>${fmtPct(d.rcf_debt_pct,2)}</b></div>
         <div>EBIT/Interest: <b>${fmtX(d.cov_ebit_int,2)}</b></div>
+        <div>ROA used in scorecard (proxy): <b>${fmtPct(d.roa_pct,2)}</b> <span class="muted">(reported ROA is ${PLAY_LTM_MM.roa_reported_pct.toFixed(2)}%)</span></div>
       `;
       computedBlock.innerHTML = outComputed.innerHTML;
-
+  
       weightsBlock.innerHTML = `
         Scale (Revenue): ${(WEIGHTS.scale*100).toFixed(0)}%<br/>
         Profitability (ROA): ${(WEIGHTS.profitability*100).toFixed(0)}%<br/>
@@ -443,15 +459,15 @@
         Leverage (Debt/EBITDA): ${(WEIGHTS.leverage*100).toFixed(0)}%<br/>
         Coverage (EBIT/Interest): ${(WEIGHTS.coverage*100).toFixed(0)}%
       `;
-
+  
       const rows = [
         { metric:`Revenue ($${d.revenue_bn.toFixed(2)}bn)`, value:d.revenue_bn.toFixed(2), bucket:d.buckets.bRev, numeric:d.numeric.nRev, weight:WEIGHTS.scale, points:d.points.pRev, note:"Scale anchor" },
-        { metric:`ROA (${d.roa_pct.toFixed(2)}%)`, value:d.roa_pct.toFixed(2)+"%", bucket:d.buckets.bRoa, numeric:d.numeric.nRoa, weight:WEIGHTS.profitability, points:d.points.pRoa, note:"Profitability proxy" },
+        { metric:`ROA (proxy) (${d.roa_pct.toFixed(2)}%)`, value:d.roa_pct.toFixed(2)+"%", bucket:d.buckets.bRoa, numeric:d.numeric.nRoa, weight:WEIGHTS.profitability, points:d.points.pRoa, note:`Scorecard proxy (reported ROA ≈ ${PLAY_LTM_MM.roa_reported_pct.toFixed(2)}%)` },
         { metric:`RCF / Debt (Adj.) (${d.rcf_debt_pct.toFixed(2)}%)`, value:d.rcf_debt_pct.toFixed(2)+"%", bucket:d.buckets.bRcf, numeric:d.numeric.nRcf, weight:WEIGHTS.cashflow, points:d.points.pRcf, note:"Cash flow vs (Debt+Leases)" },
         { metric:`Debt / EBITDA (Adj.) (${isFinite(d.lev_adj)?d.lev_adj.toFixed(2):"—"}x)`, value:isFinite(d.lev_adj)?d.lev_adj.toFixed(2)+"x":"—", bucket:d.buckets.bLev, numeric:d.numeric.nLev, weight:WEIGHTS.leverage, points:d.points.pLev, note:"Leverage incl. leases" },
         { metric:`EBIT / Interest (${isFinite(d.cov_ebit_int)?d.cov_ebit_int.toFixed(2):"—"}x)`, value:isFinite(d.cov_ebit_int)?d.cov_ebit_int.toFixed(2)+"x":"—", bucket:d.buckets.bCov, numeric:d.numeric.nCov, weight:WEIGHTS.coverage, points:d.points.pCov, note:"Coverage (reported)" }
       ];
-
+  
       scorecardBody.innerHTML = "";
       rows.forEach(r => {
         const tr = document.createElement("tr");
@@ -467,12 +483,12 @@
         scorecardBody.appendChild(tr);
       });
     }
-
+  
     btnRecalc.onclick = () => { lastApplied = readInputs(); renderAll(); };
     btnRun.onclick    = () => { lastApplied = readInputs(); renderAll(); };
     btnReset.onclick  = () => { setInputsFromLTM(); renderAll(); };
     btnReset2.onclick = () => { setInputsFromLTM(); renderAll(); };
-
+  
     btnSoftReset.onclick = () => {
       if (!lastApplied) { setInputsFromLTM(); renderAll(); return; }
       inRevenue.value  = lastApplied.revenue_bn.toFixed(4);
@@ -485,11 +501,11 @@
       inRoa.value      = lastApplied.roa_pct.toFixed(2);
       renderAll();
     };
-
+  
     document.addEventListener("keydown", (e) => {
       if (e.key === "Enter") { e.preventDefault(); lastApplied = readInputs(); renderAll(); }
     });
-
+  
     setInputsFromLTM();
     renderAll();
   </script>
