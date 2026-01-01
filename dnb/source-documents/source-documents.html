@@ -197,7 +197,7 @@
         }
         function renderRow(doc) {
           const tag = inferTag(doc);
-          const name = escapeHtml(doc.name || "Untitled");
+          const name = escapeHtml(formatDocName(doc));
           const period = escapeHtml(doc.period || "—");
           const desc = escapeHtml(doc.description || "—");
         
