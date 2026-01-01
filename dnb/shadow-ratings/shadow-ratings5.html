@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Financials — Orion</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f5f6f8; }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/dnb/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 flex flex-col">
+
+    <!-- CSV-DRIVEN FINANCIALS TABLE -->
+    <section class="card historicals" aria-labelledby="hist-title">
+      <style>
+        .card.historicals{
+          border:1px solid #e6e6e6;border-radius:14px;padding:16px;background:#fff;
+          max-width:1100px;margin-top:24px
+        }
+        .card.historicals h2{margin:0 0 10px;font:600 18px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+        .subnote{margin:0 0 12px;color:#666;font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+        .table-wrap{overflow:auto;border:1px solid #eee;border-radius:12px}
+        table{width:100%;border-collapse:separate;border-spacing:0;min-width:760px}
+        thead th{
+          position:sticky;top:0;background:#fafafa;z-index:1;
+          text-align:right;padding:12px;border-bottom:1px solid #eee;
+          font:600 12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#333
+        }
+        thead th:first-child{text-align:left}
+        tbody td{
+          padding:12px;border-bottom:1px solid #f0f0f0;
+          font:13px/1.3 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#111
+        }
+        tbody tr:last-child td{border-bottom:0}
+        tbody td:first-child{font-weight:600;text-align:left;color:#222;white-space:nowrap}
+        tbody td:not(:first-child){text-align:right;white-space:nowrap}
+        .muted{color:#666;font-weight:500}
+        .group td{
+          background:#fcfcfc;font-weight:700;color:#111;border-bottom:1px solid #eaeaea
+        }
+        thead th:first-child,
+        tbody td:first-child{
+          position: sticky;
+          left: 0;
+          z-index: 2;
+          background: #fff;
+        }
+        thead th:first-child{
+          z-index: 3;
+          background: #fafafa;
+        }
+        .block-card{
+          border:1px solid #eee;border-radius:14px;background:#fff;margin-top:14px;padding:14px;
+          box-shadow:0 2px 10px rgba(0,0,0,.03);
+        }
+        .block-title{
+          font:700 14px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0 0 8px;color:#111;
+        }
+        .block-sub{
+          margin:0 0 10px;color:#666;font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+        }
+      </style>
+
+      <h2 id="hist-title">CSV Snapshot</h2>
+
+      <div id="blocksRoot">
+        <div class="muted">Loading…</div>
+      </div>
+
+      <script>
+        const CSV_URL = "/dnb/data/moodys_shadow_ratings.csv";
+
+        const FORMAT = { currencyDecimals: 1, ratioDecimals: 2, pctDecimals: 2 };
+
+        // Titles that should render as "group" rows if they appear alone
+        const GROUP_TITLES = new Set([
+          "Moody’s-Adjusted Credit Metrics",
+          "(company public financials)",
+          "Output",
+          "Metrics",
+          "Metric (Moody’s scorecard)"
+        ]);
+
+        // Only used for tables that are actually year-based
+        const CANONICAL_COLS = ["LTM", "2025", "2024", "2023", "2022"];
+
+        function splitCSVLine(line) {
+          const out = [];
+          let cur = "", inQ = false;
+          for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (ch === '"') {
+              if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
+              else inQ = !inQ;
+            } else if (ch === "," && !inQ) {
+              out.push(cur); cur = "";
+            } else {
+              cur += ch;
+            }
+          }
+          out.push(cur);
+          return out;
+        }
+
+        function isMissingToken(v) {
+          const t = String(v ?? "").trim();
+          if (!t) return true;
+          const low = t.toLowerCase();
+          return (
+            t === "—" || t === "-" ||
+            low === "na" || low === "n/a" ||
+            low === "null" || low === "none"
+          );
+        }
+
+        function isSeparatorRow(row) {
+          const first = String(row?.[0] ?? "").trim();
+          if (first === "...") return true;              // IMPORTANT: your CSV includes a literal "..." line
+          if (row.every(c => isMissingToken(c))) return true;
+          return false;
+        }
+
+        function normHeader(h) {
+          let s = String(h ?? "").trim();
+          if (!s) return "";
+          s = s.replace(/\s+/g, " ").replace(/[()]/g, "");
+          if (/^ltm$/i.test(s) || /ltm/i.test(s)) return "LTM";
+          const m = s.match(/(20\d{2})/);
+          if (m) return m[1];
+          return s;
+        }
+
+        function rowLooksLikeHeader(row) {
+          const n = row.map(normHeader);
+          // header rows in your CSV look like: ["Output","LTM","2025","2024","2023","2022"]
+          // or: ["Metrics","LTM Rating","Numeric","Weights","Score","—"]
+          return n.some(x => x === "LTM" || /^\d{4}$/.test(x) || x === "LTM Rating" || x === "Numeric" || x === "Weights" || x === "Score");
+        }
+
+        function headerIsYearBased(headers) {
+          const n = headers.map(normHeader);
+          return n.includes("LTM") || n.some(x => /^\d{4}$/.test(x));
+        }
+
+        function normalizeToCanonical(headers, rows) {
+          const nh = headers.map(normHeader);
+          const idx = {};
+          nh.forEach((h, i) => { if (h) idx[h] = i; });
+
+          const outHeaders = [headers[0] || "Metric", ...CANONICAL_COLS];
+
+          const outRows = rows.map(r => {
+            const metric = r[0] ?? "";
+            const out = [metric];
+            CANONICAL_COLS.forEach(col => {
+              const j = idx[col];
+              out.push(j !== undefined ? (r[j] ?? "") : "");
+            });
+            return out;
+          });
+
+          return { headers: outHeaders, rows: outRows };
+        }
+
+        function cleanMetricName(metric) {
+          const idx = metric.indexOf(":");
+          return idx >= 0 ? metric.slice(idx + 1).trim() : metric.trim();
+        }
+
+        function renderCell(metric, raw) {
+          if (raw === null || raw === undefined) return "—";
+          const s0 = String(raw).trim();
+          if (isMissingToken(s0)) return "—";
+
+          // keep literal "x" and "%" formats
+          if (/%/.test(s0)) return s0;
+          if (/\bx\b/i.test(s0)) return s0;
+
+          const n = Number(s0.replace(/,/g, ""));
+          if (!Number.isFinite(n)) return s0;
+
+          const m = String(metric || "").toLowerCase();
+          const isRatioMetric =
+            m.includes(" / ") ||
+            m.includes("leverage") ||
+            m.includes("coverage") ||
+            m.includes("margin") ||
+            m.includes("growth") ||
+            m.includes("rate");
+
+          if (isRatioMetric) return n.toFixed(FORMAT.ratioDecimals);
+
+          return n.toLocaleString(undefined, {
+            minimumFractionDigits: FORMAT.currencyDecimals,
+            maximumFractionDigits: FORMAT.currencyDecimals
+          });
+        }
+
+        function makeTableCard(title, subtitle, headers, rows) {
+          const card = document.createElement("div");
+          card.className = "block-card";
+
+          const h = document.createElement("div");
+          h.className = "block-title";
+          h.textContent = title || "CSV Section";
+
+          const sub = document.createElement("div");
+          sub.className = "block-sub";
+          sub.textContent = subtitle || `${rows.length} rows`;
+
+          const wrap = document.createElement("div");
+          wrap.className = "table-wrap";
+          wrap.role = "region";
+
+          const table = document.createElement("table");
+
+          const thead = document.createElement("thead");
+          const trh = document.createElement("tr");
+          headers.forEach((hh, idx) => {
+            const th = document.createElement("th");
+            th.scope = "col";
+            th.textContent = hh || (idx === 0 ? "Metric" : `Col ${idx + 1}`);
+            trh.appendChild(th);
+          });
+          thead.appendChild(trh);
+
+          const tbody = document.createElement("tbody");
+
+          for (const r of rows) {
+            const metricRaw = String(r[0] ?? "").trim();
+            if (!metricRaw) continue;
+
+            const rest = r.slice(1);
+            const restBlank = rest.every(v => isMissingToken(v));
+
+            // render group row if it's a known title and everything else is blank
+            if (GROUP_TITLES.has(metricRaw) && restBlank) {
+              const trg = document.createElement("tr");
+              trg.className = "group";
+              const tdg = document.createElement("td");
+              tdg.colSpan = headers.length;
+              tdg.textContent = metricRaw;
+              trg.appendChild(tdg);
+              tbody.appendChild(trg);
+              continue;
+            }
+
+            // skip empty rows
+            if (restBlank && !GROUP_TITLES.has(metricRaw)) continue;
+
+            const tr = document.createElement("tr");
+
+            const td0 = document.createElement("td");
+            td0.textContent = cleanMetricName(metricRaw);
+            tr.appendChild(td0);
+
+            for (let i = 1; i < headers.length; i++) {
+              const td = document.createElement("td");
+              td.textContent = renderCell(metricRaw, r[i]);
+              tr.appendChild(td);
+            }
+
+            tbody.appendChild(tr);
+          }
+
+          table.appendChild(thead);
+          table.appendChild(tbody);
+
+          wrap.appendChild(table);
+          card.appendChild(h);
+          card.appendChild(sub);
+          card.appendChild(wrap);
+
+          return card;
+        }
+
+        function parseCSVToSections(csvText) {
+          csvText = csvText.replace(/^\uFEFF/, ""); // strip BOM
+          const lines = csvText.replace(/\r/g, "").split("\n").filter(l => l.length > 0);
+
+          // raw rows
+          const rawRows = lines
+            .map(splitCSVLine)
+            .map(r => r.map(x => (x ?? "").trim()));
+
+          // remove pure trailing separator rows
+          while (rawRows.length && isSeparatorRow(rawRows[rawRows.length - 1])) rawRows.pop();
+
+          // find first header row
+          let firstHeaderIdx = -1;
+          for (let i = 0; i < rawRows.length; i++) {
+            if (isSeparatorRow(rawRows[i])) continue;
+            if (rowLooksLikeHeader(rawRows[i])) { firstHeaderIdx = i; break; }
+          }
+          if (firstHeaderIdx === -1) return { titleLines: [], sections: [] };
+
+          const titleLines = rawRows
+            .slice(0, firstHeaderIdx)
+            .filter(r => !isSeparatorRow(r))
+            .map(r => (r[0] || "").trim())
+            .filter(Boolean);
+
+          // walk and carve sections by subsequent header rows
+          const sections = [];
+          let cur = null;
+
+          for (let i = firstHeaderIdx; i < rawRows.length; i++) {
+            const row = rawRows[i];
+
+            if (isSeparatorRow(row)) continue;
+
+            if (rowLooksLikeHeader(row)) {
+              if (cur) sections.push(cur);
+              cur = { headers: row, rows: [] };
+              continue;
+            }
+
+            if (!cur) continue;
+            cur.rows.push(row);
+          }
+          if (cur) sections.push(cur);
+
+          // clean: drop completely empty columns per section (but keep header col count consistent)
+          const cleaned = sections.map(sec => {
+            const all = [sec.headers, ...sec.rows];
+            const maxLen = Math.max(...all.map(r => r.length));
+            const padded = all.map(r => {
+              const rr = r.slice();
+              while (rr.length < maxLen) rr.push("");
+              return rr;
+            });
+
+            const keepIdx = [];
+            for (let c = 0; c < maxLen; c++) {
+              let any = false;
+              for (let r = 0; r < padded.length; r++) {
+                if (!isMissingToken(padded[r][c])) { any = true; break; }
+              }
+              if (any) keepIdx.push(c);
+            }
+
+            const trimmed = padded.map(r => keepIdx.map(i => r[i]));
+            return { headers: trimmed[0], rows: trimmed.slice(1) };
+          });
+
+          return { titleLines, sections: cleaned };
+        }
+
+        function buildSubtitle(mainTitleLines, sectionIdx, headers) {
+          const h0 = String(headers?.[0] ?? "").trim();
+          const n = headers.map(normHeader);
+
+          // Show the top title/subtitle on every card (keeps context)
+          const prefix = mainTitleLines.length
+            ? mainTitleLines.join(" · ")
+            : "";
+
+          // Disambiguate the second "Metrics" table (score breakdown)
+          if (/^metrics$/i.test(h0) && n.includes("Numeric") && n.includes("Weights")) {
+            return (prefix ? prefix + " · " : "") + "Score breakdown (LTM Rating / Numeric / Weights / Score)";
+          }
+
+          // Otherwise just show columns/rows
+          return (prefix ? prefix + " · " : "") + `Columns: ${headers.length - 1}`;
+        }
+
+        async function loadCSVBlocks() {
+          const root = document.getElementById("blocksRoot");
+          root.innerHTML = "";
+
+          try {
+            const res = await fetch(encodeURI(CSV_URL), { cache: "no-store" });
+            if (!res.ok) throw new Error(`CSV fetch failed: ${res.status}`);
+            const csvText = await res.text();
+
+            const parsed = parseCSVToSections(csvText);
+
+            if (!parsed.sections.length) {
+              root.innerHTML = `<div class="muted">No sections found in CSV.</div>`;
+              return;
+            }
+
+            parsed.sections.forEach((sec, idx) => {
+              let headers = sec.headers;
+              let rows = sec.rows;
+
+              // Only canonical-normalize YEAR-BASED tables (Output/Metrics/Scorecard-by-year)
+              if (headerIsYearBased(headers)) {
+                const normed = normalizeToCanonical(headers, rows);
+                headers = normed.headers;
+                rows = normed.rows;
+              }
+
+              const title = String(sec.headers?.[0] ?? "").trim() || `Section ${idx + 1}`;
+              const subtitle = buildSubtitle(parsed.titleLines, idx, sec.headers);
+
+              root.appendChild(makeTableCard(title, subtitle, headers, rows));
+            });
+
+          } catch (e) {
+            root.innerHTML = `<div class="muted">Failed to load CSV: ${e.message}</div>`;
+          }
+        }
+
+        loadCSVBlocks();
+      </script>
+    </section>
+
+  </main>
+
+  <!-- Ask Orion Bot -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
