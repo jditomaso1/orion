@@ -165,7 +165,36 @@
             return String(a.name || "").localeCompare(String(b.name || ""));
           });
         }
-
+        
+        function formatDocName(doc) {
+          const raw = String(doc.name || "").trim();
+        
+          // Credit Agreement cleanup
+          if (/credit[_\s-]*agreement/i.test(raw)) {
+            return "Credit Agreement";
+          }
+        
+          // 10-K cleanup
+          if (/10[-_]?k/i.test(raw)) {
+            return raw
+              .replace(/.*?(PLAY[-_]?10[-_]?K[-_]?)/i, "Form 10-K ")
+              .replace(/\.pdf$/i, "")
+              .replace(/[_-]/g, " ");
+          }
+        
+          // 10-Q cleanup
+          if (/10[-_]?q/i.test(raw)) {
+            return raw
+              .replace(/.*?(PLAY[-_]?10[-_]?Q[-_]?)/i, "Form 10-Q ")
+              .replace(/\.pdf$/i, "")
+              .replace(/[_-]/g, " ");
+          }
+        
+          // fallback: strip extension + underscores
+          return raw
+            .replace(/\.pdf$/i, "")
+            .replace(/[_-]+/g, " ");
+        }
         function renderRow(doc) {
           const tag = inferTag(doc);
           const name = escapeHtml(doc.name || "Untitled");
