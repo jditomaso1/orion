@@ -176,7 +176,11 @@
         
           // Force label for SEC docs
           const defaultLabel = (tag === "SEC") ? "SEC EDGAR" : "Google Drive";
-          const sourceLabel = escapeHtml(doc.sourceLabel || (url ? defaultLabel : "—"));
+          const sourceLabel = escapeHtml(
+            tag === "SEC"
+              ? "SEC EDGAR"
+              : (doc.sourceLabel || (url ? defaultLabel : "—"))
+          );
         
           const sourceCell = url
             ? `<a class="link" href="${escapeHtml(url)}" target="_blank" rel="noopener">${sourceLabel}</a>`
