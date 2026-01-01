@@ -242,14 +242,35 @@
     const PLAY_LTM_MM = {
       ticker: "PLAY",
       name: "Dave & Buster’s",
+    
+      // Income statement (USD mm)
       revenue: 2107.7,
       ebitda: 391.1,
       ebit: 135.7,
       interest: 142.7,
-      debt: 1492.9,
-      leases: 2637.3,
-      rcf: 247.4,
-      roa_pct: 7.50
+      net_income: 0.3,
+      operating_income: 165.0,
+      da: 255.4,
+      rent: 247.5,
+    
+      // Cash flow (USD mm)
+      capex: 492.3,
+      cfo: 296.7,
+      cash_interest_paid: 123.6,
+      cash_taxes_paid: 20.1,
+    
+      // Balance sheet (USD mm)
+      debt: 1492.9,          // Total debt (proxy)
+      leases: 2637.3,        // Lease liabilities
+      net_debt: 1486.0,
+      cash: 6.9,
+      total_assets: 4015.8,
+      total_equity: 145.8,
+      total_liabilities: 3870.0,
+    
+      // Ratios / credit metrics
+      rcf: 247.4,            // Retained cash flow (RCF)
+      roa_pct: 0.01          // <-- UPDATED per your latest table
     };
 
     let lastApplied = null;
