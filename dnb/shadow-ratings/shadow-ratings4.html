@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ratings Migration — Orion Private Credit</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { padding:10px 8px; border-bottom:1px solid #f1f5f9; vertical-align:top; }
+    th { text-align:left; font-weight:600; color:#111827; font-size:12px; }
+    td { font-size:13px; color:#111827; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+  </style>
+</head>
+
+<body class="flex bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/dnb/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 space-y-6 max-w-[1200px]">
+
+    <!-- PAGE TITLE -->
+    <section>
+      <h1 class="text-3xl font-semibold tracking-tight">Ratings Migration</h1>
+      <div class="mt-2 bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+        <div class="text-sm text-gray-700">
+          Transparent, rules-based scoring. Toggle framework &amp; industry, enter inputs on the left, see the result on the right.
+        </div>
+        <span class="pill">Now showing PLAY (Dave &amp; Buster’s) latest LTM snapshot</span>
+      </div>
+    </section>
+
+    <!-- TWO-COLUMN LAYOUT -->
+    <section class="grid grid-cols-12 gap-6">
+
+      <!-- LEFT: SNAPSHOT -->
+      <aside class="col-span-12 lg:col-span-5">
+        <div class="cardish p-5">
+          <div class="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">PLAY (Dave &amp; Buster’s) — Latest LTM Snapshot</div>
+              <div class="text-xs muted mt-1">
+                Quant-only shadow rating using Moody’s-style scorecard metrics (leases included in leverage)
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <span class="pill">LTM</span>
+              <span class="pill muted" id="asOfTag">As of latest upload</span>
+            </div>
+          </div>
+
+          <div class="mt-4 border rounded-2xl p-4 bg-white">
+            <div class="flex items-baseline gap-3 flex-wrap">
+              <div class="text-3xl font-bold" id="snapRating">—</div>
+              <span class="pill" id="snapScore">Weighted score: —</span>
+              <span class="pill" id="snapMethod">Quant-only</span>
+            </div>
+            <div class="text-xs muted mt-2" id="snapExplain">—</div>
+          </div>
+
+          <div class="mt-4">
+            <div class="text-xs font-semibold text-gray-700 mb-2">Metrics</div>
+            <div class="rounded-2xl border overflow-hidden bg-white">
+              <table id="snapTable" aria-label="PLAY LTM key metrics">
+                <thead>
+                  <tr>
+                    <th style="width:60%">Metric</th>
+                    <th style="width:40%">Value</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <div class="text-xs font-semibold text-gray-700 mb-2">Drivers</div>
+            <ul id="snapDrivers" class="text-sm list-disc pl-5 space-y-1 text-gray-800"></ul>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT: MATRIX + BELL -->
+      <div class="col-span-12 lg:col-span-7 space-y-6">
+
+        <!-- MIGRATION MATRIX -->
+        <div class="cardish p-5">
+          <div class="flex items-baseline justify-between flex-wrap gap-2">
+            <div>
+              <h2 class="text-lg font-semibold">Ratings Migration Matrix (1-Year)</h2>
+              <p class="text-xs muted mt-1">Rows = current rating bucket, columns = next-year rating bucket.</p>
+            </div>
+          </div>
+
+          <div class="mt-3 overflow-auto">
+            <table id="migrationTable" class="w-full text-sm table-fixed"></table>
+          </div>
+        </div>
+
+        <!-- BELL CURVE -->
+        <div class="cardish p-5">
+          <div>
+            <h2 class="text-lg font-semibold">Portfolio Credit Quality Drift — 5-Year Projection</h2>
+            <p class="text-xs muted mt-1">Distributions illustrate expected migration dispersion over time.</p>
+          </div>
+          <div class="h-[360px] mt-3">
+            <canvas id="bellChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SNAPSHOT DATA + RENDER -->
+  <script>
+    // Latest PLAY LTM financials & derived metrics (from your screenshot/table)
+    // NOTE: ROA is 0.10% (NOT 7.5%). As a decimal that is 0.0010.
+    const PLAY_LTM = {
+      ticker: "PLAY",
+      name: "Dave & Buster’s",
+      period: "LTM",
+
+      // Core financials (USD mm unless noted)
+      revenue: 2107.7,
+      ebitda_reported: 391.1,
+      ebit: 135.7,
+      interest_expense: 142.7,
+      cash_interest_paid: 123.6,
+      rent_expense: 247.5,
+      net_income: 0.3,
+      total_assets: 4015.8,
+      cash: 6.9,
+      funded_debt_proxy: 1492.9,
+      net_debt_reported: 1486.0,
+      lease_liabilities: 2637.3,
+      rcf: 247.4,
+
+      // Moody's-style adjusted debt metrics
+      total_debt_moodys_adj: 4130.2,    // debt + leases
+      net_debt_moodys_adj: 4123.3,      // net debt + leases
+      debt_to_ebitda_adj: 10.56,        // (debt+leases)/EBITDA
+      net_leverage_adj: 10.54,          // (net debt+leases)/EBITDA
+      rcf_to_debt_adj: 0.060,           // 6.00% = RCF/(debt+leases)
+      ebit_to_interest: 1.0,
+      cash_interest_coverage: 2.4,
+      rent_coverage: 2.6,
+
+      // ✅ ROA FIX: 0.10% as decimal
+      roa: 0.0010,
+
+      // Scorecard buckets you used
+      scorecard: {
+        revenue_bucket: "Ba",
+        roa_bucket: "Ba",
+        rcf_debt_bucket: "Ba",
+        leverage_bucket: "Caa",
+        coverage_bucket: "Ba"
+      },
+
+      // Quant-only output
+      quant_only_rating: "B1",
+      weighted_score: 13.80
+    };
+
+    function fmtNum(n, decimals=1) {
+      if (n === null || n === undefined || Number.isNaN(n)) return "—";
+      return Number(n).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    }
+    function fmtX(n, decimals=2) {
+      if (n === null || n === undefined || Number.isNaN(n)) return "—";
+      return Number(n).toFixed(decimals) + "x";
+    }
+    function fmtPct(dec) {
+      if (dec === null || dec === undefined || Number.isNaN(dec)) return "—";
+      return (Number(dec) * 100).toFixed(2) + "%";
+    }
+
+    function renderSnapshot() {
+      document.getElementById("snapRating").textContent = PLAY_LTM.quant_only_rating;
+      document.getElementById("snapScore").textContent = "Weighted score: " + PLAY_LTM.weighted_score.toFixed(2);
+      document.getElementById("snapMethod").textContent = "Quant-only";
+      document.getElementById("snapExplain").textContent =
+        `ROA is very low (${(PLAY_LTM.roa*100).toFixed(2)}%), lease-adjusted leverage is very high (${PLAY_LTM.debt_to_ebitda_adj.toFixed(2)}x), and coverage is weak (~${PLAY_LTM.ebit_to_interest.toFixed(1)}x).`;
+
+      const rows = [
+        ["Revenue", "$" + fmtNum(PLAY_LTM.revenue, 1) + " mm"],
+        ["EBITDA (reported)", "$" + fmtNum(PLAY_LTM.ebitda_reported, 1) + " mm"],
+        ["Funded Debt (proxy)", "$" + fmtNum(PLAY_LTM.funded_debt_proxy, 1) + " mm"],
+        ["Lease liabilities", "$" + fmtNum(PLAY_LTM.lease_liabilities, 1) + " mm"],
+        ["Total Debt (Moody’s Adj.) = Debt + Leases", "$" + fmtNum(PLAY_LTM.total_debt_moodys_adj, 1) + " mm"],
+        ["Debt / EBITDA (Moody’s Adj.)", fmtX(PLAY_LTM.debt_to_ebitda_adj, 2)],
+        ["Net Debt (Moody’s Adj.) = Net debt + Leases", "$" + fmtNum(PLAY_LTM.net_debt_moodys_adj, 1) + " mm"],
+        ["Net Leverage (Moody’s Adj.)", fmtX(PLAY_LTM.net_leverage_adj, 2)],
+        ["RCF (reported)", "$" + fmtNum(PLAY_LTM.rcf, 1) + " mm"],
+        ["RCF / Debt (Moody’s Adj.)", fmtPct(PLAY_LTM.rcf_to_debt_adj)],
+        ["EBIT / Interest (reported)", fmtX(PLAY_LTM.ebit_to_interest, 1)],
+        ["Interest coverage (cash)", fmtX(PLAY_LTM.cash_interest_coverage, 1)],
+        ["ROA", fmtPct(PLAY_LTM.roa)],
+        ["Rent coverage (EBITDAR / rent)", fmtX(PLAY_LTM.rent_coverage, 1)]
+      ];
+
+      const tb = document.querySelector("#snapTable tbody");
+      tb.innerHTML = "";
+      rows.forEach(([k,v]) => {
+        const tr = document.createElement("tr");
+        const td1 = document.createElement("td"); td1.textContent = k;
+        const td2 = document.createElement("td"); td2.textContent = v;
+        tr.appendChild(td1); tr.appendChild(td2);
+        tb.appendChild(tr);
+      });
+
+      const drivers = [
+        `Leverage: Debt/EBITDA (Moody’s Adj.) = ${PLAY_LTM.debt_to_ebitda_adj.toFixed(2)}x → bucket ${PLAY_LTM.scorecard.leverage_bucket}`,
+        `Profitability: ROA = ${(PLAY_LTM.roa*100).toFixed(2)}% → bucket ${PLAY_LTM.scorecard.roa_bucket}`,
+        `Cash flow: RCF/Debt (Adj.) = ${(PLAY_LTM.rcf_to_debt_adj*100).toFixed(2)}% → bucket ${PLAY_LTM.scorecard.rcf_debt_bucket}`,
+        `Coverage: EBIT/Interest ≈ ${PLAY_LTM.ebit_to_interest.toFixed(1)}x → bucket ${PLAY_LTM.scorecard.coverage_bucket}`,
+        `Scale: Revenue ≈ $${(PLAY_LTM.revenue/1000).toFixed(2)}bn → bucket ${PLAY_LTM.scorecard.revenue_bucket}`
+      ];
+
+      const ul = document.getElementById("snapDrivers");
+      ul.innerHTML = "";
+      drivers.forEach(t => {
+        const li = document.createElement("li");
+        li.textContent = t;
+        ul.appendChild(li);
+      });
+    }
+  </script>
+
+  <!-- MIGRATION MATRIX -->
+  <script>
+    // Buckets shown in your matrix
+    const MIG_BUCKETS = ["aaa/aa","a","bbb","bb","b","c"];
+    const MIG_MATRIX = [
+      [85.7,14.3,0.0,0.0,0.0,0.0],
+      [0.0,76.5,20.2,2.5,0.8,0.0],
+      [0.0,4.3,65.1,24.7,4.3,1.6],
+      [0.0,0.0,4.8,68.7,21.0,5.5],
+      [0.0,0.0,0.7,10.1,67.4,21.7],
+      [0.0,0.0,0.0,0.0,0.0,100.0],
+    ];
+
+    function cellColor(p){
+      const L = 97 - (p/100)*72;
+      return `hsl(200 70% ${L}%)`;
+    }
+
+    function renderMigration(){
+      const tbl = document.getElementById("migrationTable");
+
+      const head = `
+        <thead>
+          <tr>
+            <th class="text-left text-gray-500 font-medium py-2 pr-2">from \\ to</th>
+            ${MIG_BUCKETS.map(b=>`<th class="text-xs text-gray-500 font-medium px-2 py-2">${b}</th>`).join("")}
+          </tr>
+        </thead>`;
+
+      let body = "<tbody>";
+      for (let r=0;r<MIG_BUCKETS.length;r++){
+        body += `<tr>`;
+        body += `<th class="text-xs text-gray-600 text-left pr-2 py-2">${MIG_BUCKETS[r]}</th>`;
+        for (let c=0;c<MIG_BUCKETS.length;c++){
+          const v = MIG_MATRIX[r][c];
+          const bg = cellColor(v);
+          body += `
+            <td class="text-center px-2 py-2 rounded" style="background:${bg}">
+              <span class="text-[11px] font-medium" style="color:${v>60?"white":"#111"}">
+                ${v.toFixed(v<1?1:0)}%
+              </span>
+            </td>`;
+        }
+        body += `</tr>`;
+      }
+      body += "</tbody>";
+
+      tbl.innerHTML = head + body;
+    }
+  </script>
+
+  <!-- BELL CURVE -->
+  <script>
+    const X_POINTS = Array.from({length:301},(_,i)=>i*(5/300));
+    function normalPdf(x,mu,s){
+      const z=(x-mu)/s; return Math.exp(-0.5*z*z)/(s*Math.sqrt(2*Math.PI));
+    }
+    function makeSeries(mu,s){ return X_POINTS.map(x=>({x,y:normalPdf(x,mu,s)})); }
+
+    const rawCurves=[
+      {name:"Current", data:makeSeries(1.8,0.45)},
+      {name:"Year 1",  data:makeSeries(2.1,0.50)},
+      {name:"Year 2",  data:makeSeries(2.3,0.55)},
+      {name:"Year 3",  data:makeSeries(2.4,0.60)},
+      {name:"Year 4",  data:makeSeries(2.5,0.65)},
+      {name:"Year 5",  data:makeSeries(2.6,0.70)},
+    ];
+
+    const globalMax = Math.max(...rawCurves.flatMap(c=>c.data.map(p=>p.y)));
+    const scale = 0.9/globalMax;
+
+    const curves = rawCurves.map(c=>({
+      name:c.name,
+      data:c.data.map(p=>({x:p.x,y:p.y*scale}))
+    }));
+
+    function renderBell(){
+      const ctx = document.getElementById("bellChart")?.getContext("2d");
+      if (!ctx) return;
+
+      new Chart(ctx,{
+        type:"line",
+        data:{
+          datasets:curves.map(c=>({
+            label:c.name,
+            data:c.data,
+            borderWidth:2,
+            pointRadius:0,
+            tension:0.35,
+            fill:true,
+            backgroundColor:"rgba(0,0,0,0.05)"
+          }))
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          parsing:false,
+          interaction:{intersect:false,mode:"nearest"},
+          plugins:{
+            legend:{position:"right"},
+            tooltip:{
+              callbacks:{
+                title:(items)=>{
+                  const x=items[0]?.parsed?.x||0;
+                  const buckets=["BBB","BB","B","CCC","D"];
+                  return buckets[Math.min(buckets.length-1,Math.round(x))];
+                }
+              }
+            }
+          },
+          scales:{
+            x:{
+              type:"linear", min:0, max:5,
+              grid:{color:"rgba(0,0,0,0.05)"},
+              ticks:{
+                callback:(v)=>{
+                  const b=["BBB","BB","B","CCC","D"];
+                  return Number.isInteger(v)?b[Math.min(b.length-1,v)]: "";
+                }
+              }
+            },
+            y:{ grid:{color:"rgba(0,0,0,0.05)"} }
+          }
+        }
+      });
+    }
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      renderSnapshot();
+      renderMigration();
+      renderBell();
+    });
+  </script>
+
+  <!-- Ask Orion Bot -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
