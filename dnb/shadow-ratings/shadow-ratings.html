@@ -113,12 +113,10 @@
       </div>
     
       <script>
-        // ✅ point this at the file you uploaded (served from your app)
-        // If the filename has spaces, encodeURI() below will handle it.
         const CSV_URL = "/dnb/data/moodys_shadow_ratings.csv";
-    
+      
         const FORMAT = { currencyDecimals: 1, ratioDecimals: 2, pctDecimals: 2 };
-    
+      
         const GROUP_TITLES = new Set([
           "Income Statement",
           "Cash Flow",
@@ -127,17 +125,22 @@
           "Credit Metrics and Ratios",
           "Moody’s-Adjusted Credit Metrics (using your financials)",
           "Moody’s-Adjusted Credit Metrics (using company public financials)",
+          "Moody’s-Adjusted Credit Metrics",
           "Metrics",
-          "Output"
+          "Output",
+          "Metric (Moody’s scorecard)"
         ]);
-    
+      
+        // Canonical year columns you want aligned everywhere (when present)
+        const CANONICAL_COLS = ["LTM", "2025", "2024", "2023", "2022"];
+      
         function splitCSVLine(line) {
           const out = [];
           let cur = "", inQ = false;
           for (let i = 0; i < line.length; i++) {
             const ch = line[i];
             if (ch === '"') {
-              if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+              if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
               else inQ = !inQ;
             } else if (ch === "," && !inQ) {
               out.push(cur); cur = "";
@@ -148,35 +151,32 @@
           out.push(cur);
           return out;
         }
-    
+      
         function isMissingToken(v) {
           const t = String(v ?? "").trim();
           if (!t) return true;
           const low = t.toLowerCase();
-          return (
-            t === "—" || t === "-" ||
-            low === "na" || low === "n/a" ||
-            low === "null" || low === "none"
-          );
+          return (t === "—" || t === "-" || low === "na" || low === "n/a" || low === "null" || low === "none");
         }
-    
+      
         function allRowBlank(cells) {
           return cells.every(c => isMissingToken(c));
         }
-    
-        // Split the CSV into "blocks" separated by fully blank rows
+      
+        // Split CSV into blocks separated by fully blank rows
         function parseBlocks(text) {
+          // Strip BOM if present
+          text = text.replace(/^\uFEFF/, "");
+      
           const lines = text.replace(/\r/g, "").split("\n");
           const rows = lines
             .map(l => splitCSVLine(l))
             .map(r => r.map(x => (x ?? "").trim()));
-    
-          // Remove pure trailing empty lines
+      
           while (rows.length && allRowBlank(rows[rows.length - 1])) rows.pop();
-    
+      
           const blocks = [];
           let cur = [];
-    
           for (const r of rows) {
             if (allRowBlank(r)) {
               if (cur.length) { blocks.push(cur); cur = []; }
@@ -185,17 +185,16 @@
             cur.push(r);
           }
           if (cur.length) blocks.push(cur);
-    
-          // Normalize each block: drop empty columns (like Unnamed: 2..)
-          const norm = blocks.map(b => {
+      
+          // Normalize each block: pad to max cols, then drop columns that are entirely empty in that block
+          return blocks.map(b => {
             const maxLen = Math.max(...b.map(r => r.length));
             const padded = b.map(r => {
               const rr = r.slice();
               while (rr.length < maxLen) rr.push("");
               return rr;
             });
-    
-            // keep columns that have ANY non-missing cell in the block
+      
             const keepIdx = [];
             for (let c = 0; c < maxLen; c++) {
               let any = false;
@@ -204,125 +203,153 @@
               }
               if (any) keepIdx.push(c);
             }
-    
-            const trimmed = padded.map(r => keepIdx.map(i => r[i]));
-            return trimmed;
-          });
-    
-          return norm.filter(b => b.length >= 2 && b[0].length >= 2);
+            return padded.map(r => keepIdx.map(i => r[i]));
+          }).filter(b => b.length >= 1 && b[0].length >= 1);
         }
-    
+      
         function cleanMetricName(metric) {
           const idx = metric.indexOf(":");
           return idx >= 0 ? metric.slice(idx + 1).trim() : metric.trim();
         }
-    
-        // Show "3.8 x" or "16.60%" as-is. Otherwise format numeric.
+      
+        // Normalize headers so "FY2025" / "2025A" -> "2025", etc.
+        function normHeader(h) {
+          let s = String(h ?? "").trim();
+          if (!s) return "";
+          s = s.replace(/\s+/g, " ");
+          s = s.replace(/[()]/g, "");
+          if (/^ltm$/i.test(s) || /ltm/i.test(s)) return "LTM";
+      
+          // Pull a 4-digit year if present
+          const m = s.match(/(20\d{2})/);
+          if (m) return m[1];
+      
+          return s;
+        }
+      
+        function rowLooksLikeYearHeader(row) {
+          const norm = row.map(normHeader);
+          // must contain at least one of canonical columns (LTM or a year)
+          return norm.some(x => x === "LTM" || CANONICAL_COLS.includes(x));
+        }
+      
+        // Find the real header row inside a block (because your CSV now has title lines first)
+        function extractHeaderAndRows(block) {
+          let headerIdx = -1;
+          for (let i = 0; i < block.length; i++) {
+            if (rowLooksLikeYearHeader(block[i])) { headerIdx = i; break; }
+          }
+      
+          // If we never find a header, treat first row as header (old behavior fallback)
+          if (headerIdx === -1) {
+            return {
+              titleLines: [],
+              headers: block[0] || [],
+              rows: block.slice(1)
+            };
+          }
+      
+          const titleLines = block.slice(0, headerIdx).map(r => (r[0] || "").trim()).filter(Boolean);
+          const headers = block[headerIdx];
+          const rows = block.slice(headerIdx + 1);
+      
+          return { titleLines, headers, rows };
+        }
+      
+        function blockHasCanonical(headers) {
+          const norm = headers.map(normHeader);
+          return norm.includes("LTM") || norm.some(h => /^\d{4}$/.test(h));
+        }
+      
+        // Rebuild to Metric + CANONICAL_COLS (only when year columns exist)
+        function normalizeToCanonical(headers, rows) {
+          const nh = headers.map(normHeader);
+      
+          const idx = {};
+          nh.forEach((h, i) => { if (h) idx[h] = i; });
+      
+          const outHeaders = [headers[0] || "Metric", ...CANONICAL_COLS];
+      
+          const outRows = rows.map(r => {
+            const metric = r[0] ?? "";
+            const out = [metric];
+            CANONICAL_COLS.forEach(col => {
+              const j = idx[col];
+              out.push(j !== undefined ? (r[j] ?? "") : "");
+            });
+            return out;
+          });
+      
+          return { headers: outHeaders, rows: outRows };
+        }
+      
+        // Rendering: keep "x" and "%" as-is; otherwise format numbers
         function renderCell(metric, raw) {
           if (raw === null || raw === undefined) return "—";
           const s0 = String(raw).trim();
           if (isMissingToken(s0)) return "—";
-    
+      
           if (/%/.test(s0)) return s0;
           if (/\bx\b/i.test(s0)) return s0;
-    
+      
           const n = Number(s0.replace(/,/g, ""));
-          if (!Number.isFinite(n)) return s0; // keep literal (e.g., "—", or labels)
-    
+          if (!Number.isFinite(n)) return s0;
+      
           const m = String(metric || "").toLowerCase();
           const isRatioMetric =
             m.includes(" / ") ||
             m.includes("leverage") ||
             m.includes("coverage") ||
             m.includes("margin") ||
-            m.includes("growth");
-    
+            m.includes("growth") ||
+            m.includes("rate");
+      
           if (isRatioMetric) return n.toFixed(FORMAT.ratioDecimals);
-    
+      
           return n.toLocaleString(undefined, {
             minimumFractionDigits: FORMAT.currencyDecimals,
             maximumFractionDigits: FORMAT.currencyDecimals
           });
         }
-          // Force every table to use the same columns, in the same order
-        const CANONICAL_COLS = ["LTM", "2025", "2024", "2023", "2022"];
-        
-        function normHeader(h) {
-          return String(h ?? "")
-            .trim()
-            .replace(/\s+/g, " ")
-            .replace(/^FY\s*/i, "")     // FY2025 -> 2025
-            .replace(/[()]/g, "");      // (USD) junk
-        }
-        
-        // Rebuild a block so it always has Metric + CANONICAL_COLS
-        function normalizeBlockToCanonical(block) {
-          const headers = block[0].map(normHeader);
-          const rows = block.slice(1);
-        
-          // Build index map: header name -> column index
-          const idx = {};
-          headers.forEach((h, i) => { if (h) idx[h] = i; });
-        
-          // Metric is always col 0 for your exports; keep it
-          const outHeaders = [headers[0] || "Metric", ...CANONICAL_COLS];
-        
-          const outRows = rows.map(r => {
-            const metric = r[0] ?? "";
-            const out = [metric];
-        
-            CANONICAL_COLS.forEach(col => {
-              // Try exact match, else blank
-              const j = idx[col];
-              out.push(j !== undefined ? (r[j] ?? "") : "");
-            });
-        
-            return out;
-          });
-        
-          return [outHeaders, ...outRows];
-        }  
+      
         function makeTableCard(title, subtitle, headers, rows) {
           const card = document.createElement("div");
           card.className = "block-card";
-    
+      
           const h = document.createElement("div");
           h.className = "block-title";
           h.textContent = title || "CSV Block";
-    
+      
           const sub = document.createElement("div");
           sub.className = "block-sub";
           sub.textContent = subtitle || `${rows.length} rows`;
-    
+      
           const wrap = document.createElement("div");
           wrap.className = "table-wrap";
           wrap.role = "region";
-    
+      
           const table = document.createElement("table");
-    
+      
           const thead = document.createElement("thead");
           const trh = document.createElement("tr");
           headers.forEach((hh, idx) => {
             const th = document.createElement("th");
             th.scope = "col";
-            th.textContent = hh || (idx === 0 ? "Metric" : `Col ${idx+1}`);
+            th.textContent = hh || (idx === 0 ? "Metric" : `Col ${idx + 1}`);
             trh.appendChild(th);
           });
           thead.appendChild(trh);
-    
+      
           const tbody = document.createElement("tbody");
-    
-          const metricCol = 0;
-          const valueCols = headers.slice(1);
-    
-          // detect group rows (first col is group title AND rest blank)
+      
           for (const r of rows) {
-            const metricRaw = String(r[metricCol] ?? "").trim();
+            const metricRaw = String(r[0] ?? "").trim();
             if (!metricRaw) continue;
-    
+      
             const rest = r.slice(1);
             const restBlank = rest.every(v => isMissingToken(v));
-    
+      
+            // Group header rows (title + blanks)
             if (GROUP_TITLES.has(metricRaw) && restBlank) {
               const trg = document.createElement("tr");
               trg.className = "group";
@@ -333,69 +360,77 @@
               tbody.appendChild(trg);
               continue;
             }
-    
-            // skip fully blank numeric rows
-            const allBlank = rest.every(v => isMissingToken(v));
-            if (allBlank && !GROUP_TITLES.has(metricRaw)) continue;
-    
+      
+            // Skip fully empty data rows
+            if (restBlank && !GROUP_TITLES.has(metricRaw)) continue;
+      
             const tr = document.createElement("tr");
-    
+      
             const td0 = document.createElement("td");
             td0.textContent = cleanMetricName(metricRaw);
             tr.appendChild(td0);
-    
+      
             for (let i = 1; i < headers.length; i++) {
               const td = document.createElement("td");
               td.textContent = renderCell(metricRaw, r[i]);
               tr.appendChild(td);
             }
-    
+      
             tbody.appendChild(tr);
           }
-    
+      
           table.appendChild(thead);
           table.appendChild(tbody);
-    
+      
           wrap.appendChild(table);
           card.appendChild(h);
           card.appendChild(sub);
           card.appendChild(wrap);
-    
+      
           return card;
         }
-    
+      
         async function loadCSVBlocks() {
           const root = document.getElementById("blocksRoot");
           root.innerHTML = "";
-    
+      
           try {
             const res = await fetch(encodeURI(CSV_URL), { cache: "no-store" });
             if (!res.ok) throw new Error(`CSV fetch failed: ${res.status}`);
             const csvText = await res.text();
-    
+      
             const blocks = parseBlocks(csvText);
             if (!blocks.length) {
               root.innerHTML = `<div class="muted">No blocks found in CSV.</div>`;
               return;
             }
-    
+      
             blocks.forEach((block, idx) => {
-              const normalized = normalizeBlockToCanonical(block);
-            
-              const headers = normalized[0];
-              const rows = normalized.slice(1);
-            
-              const title = headers[0] || `Block ${idx+1}`;
-              const subtitle = `Columns: ${headers.length - 1} · Rows: ${rows.length}`;
-            
-              root.appendChild(makeTableCard(title, subtitle, headers, rows));
+              const { titleLines, headers, rows } = extractHeaderAndRows(block);
+      
+              let finalHeaders = headers;
+              let finalRows = rows;
+      
+              // Only canonical-normalize blocks that actually have year columns
+              if (blockHasCanonical(headers)) {
+                const normed = normalizeToCanonical(headers, rows);
+                finalHeaders = normed.headers;
+                finalRows = normed.rows;
+              }
+      
+              const title = (titleLines[0] || headers[0] || `Block ${idx + 1}`).trim();
+              const subtitle = titleLines.length > 1
+                ? titleLines.slice(1).join(" · ")
+                : `Columns: ${finalHeaders.length - 1} · Rows: ${finalRows.length}`;
+      
+              root.appendChild(makeTableCard(title, subtitle, finalHeaders, finalRows));
             });
-    
+      
           } catch (e) {
             root.innerHTML = `<div class="muted">Failed to load CSV: ${e.message}</div>`;
           }
         }
-    
+      
         loadCSVBlocks();
       </script>
     </section>
