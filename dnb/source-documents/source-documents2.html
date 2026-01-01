@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Team Chat — Orion</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base Styles -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/dnb/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 flex flex-col">
+
+    <section class="card sources" aria-labelledby="sources-title">
+      <style>
+        .card.sources{
+          border:1px solid #e6e6e6;border-radius:14px;padding:16px;background:#fff;
+          max-width:980px;margin-top:24px
+        }
+        .card.sources h2{
+          margin:0 0 10px;
+          font:600 18px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial
+        }
+        .subnote{
+          margin:0 0 14px;color:#666;
+          font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial
+        }
+        .table-wrap{overflow:auto;border:1px solid #eee;border-radius:12px}
+        table{width:100%;border-collapse:separate;border-spacing:0;min-width:760px}
+        thead th{
+          background:#fafafa;
+          text-align:left;padding:12px;border-bottom:1px solid #eee;
+          font:600 12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#333
+        }
+        tbody td{
+          padding:12px;border-bottom:1px solid #f0f0f0;
+          font:13px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#111;
+          vertical-align:top
+        }
+        tbody tr:last-child td{border-bottom:0}
+        .doc-type{font-weight:600;white-space:nowrap}
+        .tag{
+          display:inline-block;margin-right:6px;padding:2px 8px;border-radius:999px;
+          background:#f2f2f2;color:#444;font:600 11px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial
+        }
+        .muted{color:#666}
+        .link{
+          color:#0a58ca;text-decoration:none;font-weight:600
+        }
+        .link:hover{text-decoration:underline}
+      </style>
+
+      <h2 id="sources-title">Source Financial Documents</h2>
+      <p class="subnote">
+        Primary source materials ingested into Orion for financial, legal, and credit analysis
+      </p>
+
+      <div class="table-wrap" role="region" aria-label="Source financial documents table">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Document</th>
+              <th scope="col">Period / Date</th>
+              <th scope="col">Description</th>
+              <th scope="col">Source</th>
+            </tr>
+          </thead>
+
+          <!-- THIS IS NOW DYNAMIC -->
+          <tbody id="docsBody">
+            <tr>
+              <td class="muted" colspan="4">Loading…</td>
+            </tr>
+          </tbody>
+
+        </table>
+      </div>
+
+      <script>
+        // 1) Put this file in your repo:
+        //    /dnb/data/source_docs.json
+        const MANIFEST_URL = "/dnb/data/source_docs.json";
+
+        function escapeHtml(s) {
+          return String(s ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+        }
+
+        function inferTag(doc) {
+          const t = (doc.tag || "").trim();
+          if (t) return t.toUpperCase();
+
+          const name = (doc.name || "").toLowerCase();
+          if (name.includes("10-k") || name.includes("10k")) return "SEC";
+          if (name.includes("10-q") || name.includes("10q")) return "SEC";
+          if (name.includes("8-k") || name.includes("8k")) return "SEC";
+          if (name.includes("credit") || name.includes("agreement")) return "LEGAL";
+          if (name.includes("amend") || name.includes("waiver")) return "LEGAL";
+          if (name.includes("projection")) return "MGMT";
+          if (name.includes("lender") || name.includes("presentation")) return "MGMT";
+          if (name.includes("model") || name.includes("historical")) return "ANALYST";
+          if (name.includes("industry") || name.includes("market")) return "OTHER";
+          return "OTHER";
+        }
+
+        function sortDocs(docs) {
+          const rank = { SEC: 1, LEGAL: 2, MGMT: 3, ANALYST: 4, OTHER: 9 };
+          return docs.slice().sort((a, b) => {
+            const ta = inferTag(a), tb = inferTag(b);
+            const ra = rank[ta] ?? 99, rb = rank[tb] ?? 99;
+            if (ra !== rb) return ra - rb;
+            // then by name
+            return String(a.name || "").localeCompare(String(b.name || ""));
+          });
+        }
+
+        function renderRow(doc) {
+          const tag = inferTag(doc);
+          const name = escapeHtml(doc.name || "Untitled");
+          const period = escapeHtml(doc.period || "—");
+          const desc = escapeHtml(doc.description || "—");
+
+          // You can use either:
+          // - doc.url (Drive "view" link or EDGAR link)
+          // - doc.sourceLabel (optional display text)
+          const url = (doc.url || "").trim();
+          const sourceLabel = escapeHtml(doc.sourceLabel || (url ? "Open" : "—"));
+
+          const sourceCell = url
+            ? `<a class="link" href="${escapeHtml(url)}" target="_blank" rel="noopener">${sourceLabel}</a>`
+            : `<span class="muted">—</span>`;
+
+          return `
+            <tr>
+              <td class="doc-type"><span class="tag">${escapeHtml(tag)}</span>${name}</td>
+              <td>${period}</td>
+              <td>${desc}</td>
+              <td>${sourceCell}</td>
+            </tr>
+          `;
+        }
+
+        async function loadManifest() {
+          const body = document.getElementById("docsBody");
+          try {
+            const res = await fetch(MANIFEST_URL, { cache: "no-store" });
+            if (!res.ok) throw new Error(`Manifest fetch failed: ${res.status}`);
+
+            const data = await res.json();
+            const docs = Array.isArray(data?.documents) ? data.documents : [];
+
+            if (!docs.length) {
+              body.innerHTML = `<tr><td class="muted" colspan="4">No documents found in manifest.</td></tr>`;
+              return;
+            }
+
+            const ordered = sortDocs(docs);
+            body.innerHTML = ordered.map(renderRow).join("");
+          } catch (e) {
+            body.innerHTML = `<tr><td class="muted" colspan="4">Failed to load documents: ${escapeHtml(e.message)}</td></tr>`;
+          }
+        }
+
+        loadManifest();
+      </script>
+
+    </section>
+  </main>
+
+  <!-- Chat Logic (GUARDED so it won’t break pages without these elements) -->
+  <script>
+    const input = document.getElementById("chatInput");
+    const btn = document.getElementById("sendBtn");
+    const windowEl = document.getElementById("chatWindow");
+
+    if (input && btn && windowEl) {
+      function sendMessage() {
+        const text = input.value.trim();
+        if (!text) return;
+
+        const msg = document.createElement("div");
+        msg.className = "flex items-start gap-3";
+
+        msg.innerHTML = `
+          <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">J</div>
+          <div>
+            <div class="font-semibold text-gray-800">You
+              <span class="text-gray-400 text-xs ml-2">
+                ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+              </span>
+            </div>
+            <div class="bg-blue-50 p-3 rounded-lg text-sm text-gray-800 max-w-xl border border-blue-200">
+              ${text}
+            </div>
+          </div>
+        `;
+        windowEl.appendChild(msg);
+        windowEl.scrollTop = windowEl.scrollHeight;
+        input.value = "";
+      }
+
+      btn.onclick = sendMessage;
+      input.addEventListener("keypress", e => {
+        if (e.key === "Enter") sendMessage();
+      });
+    }
+  </script>
+
+  <!-- Ask Orion Bot -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      // Execute scripts inside include
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
