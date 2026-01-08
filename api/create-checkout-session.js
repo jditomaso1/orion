@@ -1,44 +1,62 @@
-const Stripe = require("stripe");
+const Stripe = require('stripe');
 
-const PRICE_MAP = {
-  "Starter:monthly": "price_1Sn83ICmHjC5cbxxxIaJwjB5",
-  "Starter:annual":  "price_1Sn81TCmHjC5cbxxl744a24o",
-  "Pro:monthly":     "price_1Sn81uCmHjC5cbxxu7g09mGc",
-  "Pro:annual":      "price_1Sn82RCmHjC5cbxxIIBI5pOy",
-};
+module.exports = async function handler(req, res) {
+  // Allow preflight
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(204).end();
+  }
 
-module.exports = async (req, res) => {
+  // Allow GET (browser) and POST (proper API usage)
+  if (req.method !== 'GET' && req.method !== 'POST') {
+    return res.status(405).send('Method Not Allowed');
+  }
+
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  const priceId = process.env.STRIPE_PRICE_ID; // put your Price ID here as env var
+  const successUrl = process.env.STRIPE_SUCCESS_URL || 'https://orion.private-credit.ai/?success=1';
+  const cancelUrl  = process.env.STRIPE_CANCEL_URL  || 'https://orion.private-credit.ai/?canceled=1';
+
+  if (!secretKey) return res.status(500).json({ error: 'Missing STRIPE_SECRET_KEY' });
+  if (!priceId)   return res.status(500).json({ error: 'Missing STRIPE_PRICE_ID' });
+
+  const stripe = new Stripe(secretKey, { apiVersion: '2024-06-20' });
+
   try {
-    if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-
-    const secret = process.env.STRIPE_SECRET_KEY;
-    if (!secret) return res.status(500).json({ error: "STRIPE_SECRET_KEY is not set in Vercel env vars" });
-
-    const stripe = new Stripe(secret);
-
-    const { plan, billing, email, name, company } = req.body || {};
-    const key = `${plan}:${billing}`;
-    const price_id = PRICE_MAP[key];
-
-    if (!price_id) return res.status(400).json({ error: `Invalid plan/billing: ${key}` });
-    if (!email) return res.status(400).json({ error: "Missing email" });
-
-    const origin = req.headers.origin || `https://${req.headers.host}`;
-    const success_url = `${origin}/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancel_url  = `${origin}/dnb/pricing/pricing.html`;
+    // If POST, accept optional JSON body (quantity, etc.)
+    let quantity = 1;
+    if (req.method === 'POST') {
+      try {
+        const chunks = [];
+        for await (const c of req) chunks.push(c);
+        const raw = Buffer.concat(chunks).toString('utf8') || '{}';
+        const body = JSON.parse(raw);
+        if (Number.isInteger(body.quantity) && body.quantity > 0) quantity = body.quantity;
+      } catch (_) {}
+    }
 
     const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      line_items: [{ price: price_id, quantity: 1 }],
-      customer_email: email,
-      success_url,
-      cancel_url,
-      metadata: { plan: plan || "", billing: billing || "", name: name || "", company: company || "" },
+      mode: 'subscription',
+      line_items: [{ price: priceId, quantity }],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      allow_promotion_codes: true,
     });
 
-    return res.status(200).json({ url: session.url });
+    // Browser-friendly: redirect on GET, return JSON on POST
+    if (req.method === 'GET') {
+      res.writeHead(302, { Location: session.url });
+      return res.end();
+    }
+
+    return res.status(200).json({ url: session.url, id: session.id });
   } catch (err) {
-    console.error("Stripe checkout error:", err);
-    return res.status(500).json({ error: "Checkout session failed", detail: err?.message || String(err) });
+    return res.status(500).json({
+      error: err?.message || 'Stripe session creation failed',
+      type: err?.type,
+      code: err?.code,
+    });
   }
 };
