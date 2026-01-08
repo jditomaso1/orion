@@ -1,6 +1,4 @@
-import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const Stripe = require("stripe");
 
 const PRICE_MAP = {
   "Starter:monthly": "price_1Sn83ICmHjC5cbxxxIaJwjB5",
@@ -9,10 +7,15 @@ const PRICE_MAP = {
   "Pro:annual":      "price_1Sn82RCmHjC5cbxxIIBI5pOy",
 };
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-
+module.exports = async (req, res) => {
   try {
+    if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
+
+    const secret = process.env.STRIPE_SECRET_KEY;
+    if (!secret) return res.status(500).json({ error: "STRIPE_SECRET_KEY is not set in Vercel env vars" });
+
+    const stripe = new Stripe(secret);
+
     const { plan, billing, email, name, company } = req.body || {};
     const key = `${plan}:${billing}`;
     const price_id = PRICE_MAP[key];
@@ -20,9 +23,7 @@ export default async function handler(req, res) {
     if (!price_id) return res.status(400).json({ error: `Invalid plan/billing: ${key}` });
     if (!email) return res.status(400).json({ error: "Missing email" });
 
-    // Build absolute URLs from the current host
     const origin = req.headers.origin || `https://${req.headers.host}`;
-
     const success_url = `${origin}/success?session_id={CHECKOUT_SESSION_ID}`;
     const cancel_url  = `${origin}/dnb/pricing/pricing.html`;
 
@@ -32,17 +33,12 @@ export default async function handler(req, res) {
       customer_email: email,
       success_url,
       cancel_url,
-      metadata: {
-        plan: plan || "",
-        billing: billing || "",
-        name: name || "",
-        company: company || "",
-      },
+      metadata: { plan: plan || "", billing: billing || "", name: name || "", company: company || "" },
     });
 
     return res.status(200).json({ url: session.url });
   } catch (err) {
     console.error("Stripe checkout error:", err);
-    return res.status(500).json({ error: "Checkout session failed" });
+    return res.status(500).json({ error: "Checkout session failed", detail: err?.message || String(err) });
   }
-}
+};
