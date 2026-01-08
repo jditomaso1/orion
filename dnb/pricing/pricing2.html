@@ -421,7 +421,7 @@
     
     // 2) Your FastAPI endpoint that creates a Checkout Session
     //    Change this to match YOUR FastAPI route
-    const CREATE_CHECKOUT_ENDPOINT = "/create-checkout-session";
+    const CREATE_CHECKOUT_ENDPOINT = "/api/create-checkout-session";
     
     // 3) Stripe Price IDs from your Stripe dashboard (NOT dollar amounts)
     const STRIPE_PRICE_IDS = {
@@ -559,6 +559,8 @@
     
       // Map plan/billing -> Stripe Price ID (do NOT send dollars)
       // send selected + billing; backend decides price_id
+      // Map plan/billing -> Stripe Price ID (do NOT send dollars)
+      const price_id = STRIPE_PRICE_IDS?.[selected]?.[billing];
       // Map plan/billing -> Stripe Price ID (do NOT send dollars)
       const price_id = STRIPE_PRICE_IDS?.[selected]?.[billing];
       if (!price_id) {
