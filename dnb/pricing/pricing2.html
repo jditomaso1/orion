@@ -558,10 +558,6 @@
       }
     
       // Map plan/billing -> Stripe Price ID (do NOT send dollars)
-      // send selected + billing; backend decides price_id
-      // Map plan/billing -> Stripe Price ID (do NOT send dollars)
-      const price_id = STRIPE_PRICE_IDS?.[selected]?.[billing];
-      // Map plan/billing -> Stripe Price ID (do NOT send dollars)
       const price_id = STRIPE_PRICE_IDS?.[selected]?.[billing];
       if (!price_id) {
         msg.textContent = `Missing Stripe price id for ${selected} (${billing}).`;
