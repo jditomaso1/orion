@@ -27,9 +27,9 @@ module.exports = async function handler(req, res) {
 
   const secretKey = process.env.STRIPE_SECRET_KEY;
   const successUrl =
-    process.env.STRIPE_SUCCESS_URL || "https://orion.private-credit.ai/dnb/tear-sheet/tear-sheet.html/?success=1";
+    process.env.STRIPE_SUCCESS_URL || "https://orion.private-credit.ai/dnb/tear-sheet/tear-sheet.html";
   const cancelUrl =
-    process.env.STRIPE_CANCEL_URL || "https://orion.private-credit.ai/dnb/pricing/pricing.html/?canceled=1";
+    process.env.STRIPE_CANCEL_URL || "https://orion.private-credit.ai/dnb/pricing/pricing.html";
 
   if (!secretKey) return res.status(500).json({ error: "Missing STRIPE_SECRET_KEY" });
 
@@ -70,7 +70,7 @@ module.exports = async function handler(req, res) {
       mode: 'subscription',
       line_items: [{ price: priceId, quantity }],
       success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl,
+      cancel_url: `${cancelUrl}?canceled=1`,
       allow_promotion_codes: true,
     });
 
