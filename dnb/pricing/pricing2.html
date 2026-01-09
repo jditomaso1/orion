@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pricing & Sign Up</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { padding:10px 8px; border-bottom:1px solid #f1f5f9; vertical-align:top; }
+    th { text-align:left; font-weight:600; color:#111827; font-size:12px; }
+    td { font-size:13px; color:#111827; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+
+    .inp { width:100%; border:1px solid #e5e7eb; border-radius:12px; padding:10px 12px; font-size:13px; background:#fff; outline:none; }
+    .inp:focus { border-color:#cbd5e1; box-shadow:0 0 0 3px rgba(148,163,184,.25); }
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+    .btn-soft { background:#eff6ff; border:1px solid #bfdbfe; color:#1d4ed8; }
+    .btn-soft:hover { background:#dbeafe; }
+
+    .seg { border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; padding:4px; display:inline-flex; gap:4px; }
+    .seg button { border-radius:999px; padding:6px 10px; font-size:12px; font-weight:600; }
+    .seg .on { background:#111827; color:#fff; }
+    .seg .off { background:transparent; color:#111827; }
+
+    .badge-pop { background:#111827; color:#fff; border-radius:999px; padding:4px 10px; font-size:11px; font-weight:700; }
+    .card-selected { border-color:#111827 !important; box-shadow:0 10px 26px rgba(17,24,39,.12); }
+  </style>
+</head>
+
+<body class="flex bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/dnb/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 space-y-6 max-w-[1200px]">
+
+    <!-- PAGE TITLE -->
+    <section>
+      <h1 class="text-3xl font-semibold tracking-tight">Pricing & Sign Up</h1>
+
+      <div class="mt-2 bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+        <div class="text-sm text-gray-700">
+          Choose a plan, create an account, then you’ll be redirected to Stripe Checkout for payment.
+        </div>
+        <span class="pill">Orion • Credit Neural Network access</span>
+      </div>
+    </section>
+
+    <!-- BILLING TOGGLE + TRUST STRIP -->
+    <section class="grid grid-cols-12 gap-6">
+      <div class="col-span-12 lg:col-span-8">
+        <div class="cardish p-5">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <div class="text-sm font-semibold">Billing mode</div>
+              <div class="text-xs muted mt-1">Annual saves 15% and is what institutions actually buy.</div>
+            </div>
+
+            <div class="seg" role="tablist" aria-label="Billing mode">
+              <button id="btnMonthly" class="on" type="button">Monthly</button>
+              <button id="btnAnnual" class="off" type="button">Annual</button>
+            </div>
+          </div>
+
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="pill">Shadow ratings + drift</span>
+            <span class="pill">Cross-doc citations</span>
+            <span class="pill">Tear sheets + memos</span>
+            <span class="pill">Export (CSV/PDF)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-12 lg:col-span-4">
+        <div class="cardish p-5">
+          <div class="text-sm font-semibold">What you get</div>
+          <div class="text-xs muted mt-1">A live credit brain, not a chat window.</div>
+          <ul class="mt-3 text-sm space-y-2">
+            <li class="flex gap-2"><span class="muted">✓</span> Structured fields with confidence</li>
+            <li class="flex gap-2"><span class="muted">✓</span> Source traceability by document</li>
+            <li class="flex gap-2"><span class="muted">✓</span> Ongoing monitoring & alerts</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING CARDS -->
+    <section class="grid grid-cols-12 gap-6">
+
+      <div class="col-span-12 lg:col-span-4">
+        <div id="cardStarter" class="cardish p-5 h-full">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-sm font-semibold">Starter</div>
+              <div class="text-xs muted mt-1">Solo / demo / early proof</div>
+            </div>
+            <span class="pill">Trial-friendly</span>
+          </div>
+
+          <div class="mt-4">
+            <div class="text-3xl font-bold" id="priceStarter">$249</div>
+            <div class="text-xs muted mt-1" id="suffixStarter">per month</div>
+          </div>
+
+          <ul class="mt-4 text-sm space-y-2">
+            <li class="flex gap-2"><span class="muted">✓</span> 1 credits active</li>
+            <li class="flex gap-2"><span class="muted">✓</span> Tear sheets + memo output</li>
+            <li class="flex gap-2"><span class="muted">✓</span> Citations + audit trail</li>
+            <li class="flex gap-2"><span class="muted">✓</span> Basic monitoring</li>
+          </ul>
+
+          <button class="btn btn-ghost w-full mt-5" type="button" onclick="selectPlan('Starter')">Choose Starter</button>
+          <div class="text-[11px] muted mt-3">Good for a clean “Dave & Busters” demo.</div>
+        </div>
+      </div>
+
+      <div class="col-span-12 lg:col-span-4">
+        <div id="cardPro" class="cardish p-5 h-full">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-sm font-semibold">Pro</div>
+              <div class="text-xs muted mt-1">Teams doing real work</div>
+            </div>
+            <span class="badge-pop">Most popular</span>
+          </div>
+
+          <div class="mt-4">
+            <div class="text-3xl font-bold" id="pricePro">$999</div>
+            <div class="text-xs muted mt-1" id="suffixPro">per month</div>
+          </div>
+
+          <ul class="mt-4 text-sm space-y-2">
+            <li class="flex gap-2"><span class="muted">✓</span> 5 credits active</li>
+            <li class="flex gap-2"><span class="muted">✓</span> Shadow ratings + drift tracking</li>
+            <li class="flex gap-2"><span class="muted">✓</span> Cross-doc merge + confidence</li>
+            <li class="flex gap-2"><span class="muted">✓</span> Team seats (up to 5)</li>
+            <li class="flex gap-2"><span class="muted">✓</span> Export (CSV/PDF)</li>
+          </ul>
+
+          <button class="btn btn-primary w-full mt-5" type="button" onclick="selectPlan('Pro')">Choose Pro</button>
+          <div class="text-[11px] muted mt-3">This is your “cheaper than an analyst” tier.</div>
+        </div>
+      </div>
+
+      <div class="col-span-12 lg:col-span-4">
+        <div id="cardEnterprise" class="cardish p-5 h-full">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-sm font-semibold">Enterprise</div>
+              <div class="text-xs muted mt-1">Security, SSO, private deployments</div>
+            </div>
+            <span class="pill">Custom</span>
+          </div>
+
+          <div class="mt-4">
+            <div class="text-3xl font-bold">Let’s talk</div>
+            <div class="text-xs muted mt-1">Annual contract • unlimited credits</div>
+          </div>
+
+          <ul class="mt-4 text-sm space-y-2">
+            <li class="flex gap-2"><span class="muted">✓</span> Unlimited credits + seats</li>
+            <li class="flex gap-2"><span class="muted">✓</span> SAML/SSO + RBAC</li>
+            <li class="flex gap-2"><span class="muted">✓</span> VPC / on-prem options</li>
+            <li class="flex gap-2"><span class="muted">✓</span> Dedicated SLA + support</li>
+          </ul>
+
+          <button class="btn btn-ghost w-full mt-5" type="button" onclick="selectPlan('Enterprise')">Contact sales</button>
+          <div class="text-[11px] muted mt-3">For buyers who care about deployment + controls.</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SIGN UP + CHECKOUT -->
+    <section class="grid grid-cols-12 gap-6">
+
+      <!-- LEFT: SUMMARY -->
+      <aside class="col-span-12 lg:col-span-5">
+        <div class="cardish p-5">
+          <div class="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Checkout summary</div>
+              <div class="text-xs muted mt-1">Plan selection updates this automatically.</div>
+            </div>
+            <span class="pill" id="billingPill">Monthly</span>
+          </div>
+
+          <div class="mt-4 border rounded-2xl p-4 bg-white">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="text-sm font-semibold" id="selPlanName">Pro</div>
+                <div class="text-xs muted mt-1" id="selPlanDesc">5 credits • up to 5 seats</div>
+              </div>
+              <div class="text-right">
+                <div class="text-2xl font-bold" id="selPlanPrice">$999</div>
+                <div class="text-xs muted mt-1" id="selPlanSuffix">per month</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <div class="text-xs font-semibold text-gray-700 mb-2">Notes</div>
+            <div class="rounded-2xl border p-4 bg-white text-sm text-gray-800">
+              <ul class="list-disc pl-5 space-y-1">
+                <li>Payment happens on Stripe Checkout (PCI handled by Stripe).</li>
+                <li>Enterprise uses invoice + MSA/SOW flow.</li>
+                <li>Cancel anytime (for monthly).</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-4 flex gap-2">
+            <button class="btn btn-soft flex-1" type="button" onclick="prefillDemo()">Prefill demo</button>
+            <button class="btn btn-primary flex-1" type="button" onclick="submitCheckout()">Continue to Stripe</button>
+          </div>
+
+          <div class="mt-3 text-xs muted" id="msgBox"></div>
+        </div>
+      </aside>
+
+      <!-- RIGHT: FORM -->
+      <div class="col-span-12 lg:col-span-7">
+        <div class="cardish p-5">
+          <div class="flex items-baseline justify-between flex-wrap gap-2">
+            <div>
+              <h2 class="text-lg font-semibold">Sign up</h2>
+              <p class="text-xs muted mt-1">Create your account. You’ll enter payment details on Stripe Checkout.</p>
+            </div>
+            <span class="pill">Secure checkout</span>
+          </div>
+
+          <form class="mt-4 space-y-5" onsubmit="event.preventDefault(); submitCheckout();">
+
+            <!-- Account -->
+            <div>
+              <div class="text-xs font-semibold text-gray-700 mb-2">Account</div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label class="text-xs muted">Full name</label>
+                  <input id="name" class="inp mt-1" placeholder="Joe DiTomaso" required />
+                </div>
+                <div>
+                  <label class="text-xs muted">Work email</label>
+                  <input id="email" type="email" class="inp mt-1" placeholder="name@firm.com" required />
+                </div>
+                <div>
+                  <label class="text-xs muted">Company</label>
+                  <input id="company" class="inp mt-1" placeholder="Private-Credit.ai" />
+                </div>
+                <div>
+                  <label class="text-xs muted">Password</label>
+                  <input id="password" type="password" class="inp mt-1" placeholder="••••••••••" required />
+                </div>
+              </div>
+            </div>
+
+            <!-- Terms -->
+            <div class="flex items-start gap-2">
+              <input id="tos" type="checkbox" class="mt-1" required />
+              <label for="tos" class="text-xs muted">
+                I agree to the Terms and Privacy Policy.
+              </label>
+            </div>
+
+            <div class="flex gap-2">
+              <button type="button" class="btn btn-ghost w-full" onclick="clearForm()">Clear</button>
+              <button type="submit" class="btn btn-primary w-full">Continue to Stripe</button>
+            </div>
+
+            <div class="text-[11px] muted">
+              You’ll complete billing and payment on Stripe Checkout.
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- FAQ -->
+    <section>
+      <div class="cardish p-5">
+        <div class="flex items-baseline justify-between flex-wrap gap-2">
+          <div>
+            <h2 class="text-lg font-semibold">FAQ</h2>
+            <p class="text-xs muted mt-1">Short answers. No fluff.</p>
+          </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="border rounded-2xl p-4 bg-white">
+            <div class="text-sm font-semibold">What’s a “credit”?</div>
+            <div class="text-xs muted mt-2">
+              A single company/deal with its own doc graph, extracted fields, tear sheet, and monitoring stream.
+            </div>
+          </div>
+          <div class="border rounded-2xl p-4 bg-white">
+            <div class="text-sm font-semibold">Can I add credits later?</div>
+            <div class="text-xs muted mt-2">
+              Yes. Start with 5 or 30 and expand. That’s the whole land-and-expand play.
+            </div>
+          </div>
+          <div class="border rounded-2xl p-4 bg-white">
+            <div class="text-sm font-semibold">Do you support private deployments?</div>
+            <div class="text-xs muted mt-2">
+              Enterprise supports VPC/on-prem, SSO, RBAC, and tighter data controls.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PRICING LOGIC -->
+  <script>
+    const CREATE_CHECKOUT_ENDPOINT = "/api/create-checkout-session";
+
+    const STRIPE_PRICE_IDS = {
+      Starter: {
+        monthly: "price_1Sn83ICmHjC5cbxxxIaJwjB5",
+        annual:  "price_1Sn81TCmHjC5cbxxl744a24o"
+      },
+      Pro: {
+        monthly: "price_1Sn81uCmHjC5cbxxu7g09mGc",
+        annual:  "price_1Sn82RCmHjC5cbxxIIBI5pOy"
+      }
+    };
+
+    const PRICES = {
+      Starter: { monthly: 249, annual: 2540 },
+      Pro:     { monthly: 999, annual: 10190 },
+      Enterprise: { monthly: null, annual: null }
+    };
+
+    const PLAN_DESC = {
+      Starter: "1 credits • solo seat",
+      Pro: "5 credits • up to 5 seats",
+      Enterprise: "Unlimited credits • custom seats"
+    };
+
+    let billing = "monthly";
+    let selected = "Pro";
+
+    function money(n) {
+      return new Intl.NumberFormat("en-US", { style:"currency", currency:"USD", maximumFractionDigits:0 }).format(n);
+    }
+
+    function setBilling(mode) {
+      billing = mode;
+
+      document.getElementById("btnMonthly").className = (mode === "monthly") ? "on" : "off";
+      document.getElementById("btnAnnual").className  = (mode === "annual")  ? "on" : "off";
+      document.getElementById("billingPill").textContent = (mode === "monthly") ? "Monthly" : "Annual";
+
+      document.getElementById("priceStarter").textContent = mode === "monthly" ? money(PRICES.Starter.monthly) : money(PRICES.Starter.annual);
+      document.getElementById("suffixStarter").textContent = mode === "monthly" ? "per month" : "per year";
+
+      document.getElementById("pricePro").textContent = mode === "monthly" ? money(PRICES.Pro.monthly) : money(PRICES.Pro.annual);
+      document.getElementById("suffixPro").textContent = mode === "monthly" ? "per month" : "per year";
+
+      refreshSummary();
+    }
+
+    function selectPlan(plan) {
+      selected = plan;
+
+      ["Starter","Pro","Enterprise"].forEach(p => {
+        const el = document.getElementById("card" + p);
+        if (!el) return;
+        el.classList.toggle("card-selected", p === plan);
+      });
+
+      refreshSummary();
+      document.getElementById("selPlanName").scrollIntoView({ behavior:"smooth", block:"center" });
+    }
+
+    function refreshSummary() {
+      document.getElementById("selPlanName").textContent = selected;
+      document.getElementById("selPlanDesc").textContent = PLAN_DESC[selected];
+
+      if (selected === "Enterprise") {
+        document.getElementById("selPlanPrice").textContent = "Let’s talk";
+        document.getElementById("selPlanSuffix").textContent = "annual contract";
+        return;
+      }
+
+      const amt = PRICES[selected][billing];
+      document.getElementById("selPlanPrice").textContent = money(amt);
+      document.getElementById("selPlanSuffix").textContent = (billing === "monthly") ? "per month" : "per year";
+    }
+
+    document.getElementById("btnMonthly").addEventListener("click", () => setBilling("monthly"));
+    document.getElementById("btnAnnual").addEventListener("click", () => setBilling("annual"));
+
+    function prefillDemo() {
+      document.getElementById("name").value = "Joe DiTomaso";
+      document.getElementById("email").value = "joe@private-credit.ai";
+      document.getElementById("company").value = "Private-Credit.ai";
+      document.getElementById("tos").checked = true;
+      document.getElementById("msgBox").textContent = "Demo fields filled.";
+    }
+
+    function clearForm() {
+      ["name","email","company","password"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+      document.getElementById("tos").checked = false;
+      document.getElementById("msgBox").textContent = "";
+    }
+
+    async function submitCheckout() {
+      const msg = document.getElementById("msgBox");
+
+      const required = ["name","email","password"];
+      for (const id of required) {
+        const el = document.getElementById(id);
+        if (!el || !el.value.trim()) {
+          msg.textContent = "Missing required fields: name, email, password.";
+          return;
+        }
+      }
+      if (!document.getElementById("tos").checked) {
+        msg.textContent = "You must accept the Terms to continue.";
+        return;
+      }
+
+      if (selected === "Enterprise") {
+        msg.textContent = "Enterprise selected — route this to sales (calendar/email).";
+        return;
+      }
+
+      const price_id = STRIPE_PRICE_IDS?.[selected]?.[billing];
+      if (!price_id) {
+        msg.textContent = `Missing Stripe price id for ${selected} (${billing}).`;
+        return;
+      }
+
+      const payload = {
+        price_id,
+        plan: selected,
+        billing,
+        customer: {
+          name: document.getElementById("name").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          company: document.getElementById("company").value.trim()
+        },
+        success_url: window.location.origin + "/dnb/pricing/success.html",
+        cancel_url: window.location.origin + "/dnb/pricing/pricing.html"
+      };
+
+      msg.textContent = "Creating Stripe checkout session…";
+
+      try {
+        const res = await fetch(CREATE_CHECKOUT_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          msg.textContent = "Checkout error: " + text;
+          return;
+        }
+
+        const data = await res.json();
+
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        }
+
+        msg.textContent = "Checkout error: backend returned no url/sessionId.";
+      } catch (err) {
+        msg.textContent = "Checkout error: " + (err?.message || err);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      setBilling("monthly");
+      selectPlan("Pro");
+    });
+  </script>
+
+  <!-- Ask Orion Bot include -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
