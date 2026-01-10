@@ -366,7 +366,7 @@
 
   <!-- PRICING LOGIC -->
   <script>
-    const CREATE_CHECKOUT_ENDPOINT = "/api/create-checkout-session";
+    const CREATE_CHECKOUT_ENDPOINT = "http://127.0.0.1:8000/api/create-checkout-session";
 
     const STRIPE_PRICE_IDS = {
       Starter: {
@@ -508,6 +508,7 @@
         const res = await fetch(CREATE_CHECKOUT_ENDPOINT, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify(payload)
         });
 
