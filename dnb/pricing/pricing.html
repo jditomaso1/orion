@@ -464,7 +464,7 @@
 
     async function submitCheckout() {
       const msg = document.getElementById("msgBox");
-
+    
       const required = ["name","email","password"];
       for (const id of required) {
         const el = document.getElementById(id);
@@ -477,54 +477,42 @@
         msg.textContent = "You must accept the Terms to continue.";
         return;
       }
-
+    
       if (selected === "Enterprise") {
         msg.textContent = "Enterprise selected — route this to sales (calendar/email).";
         return;
       }
-
-      const price_id = STRIPE_PRICE_IDS?.[selected]?.[billing];
-      if (!price_id) {
-        msg.textContent = `Missing Stripe price id for ${selected} (${billing}).`;
-        return;
-      }
-
+    
       const payload = {
-        price_id,
         plan: selected,
         billing,
-        customer: {
-          name: document.getElementById("name").value.trim(),
-          email: document.getElementById("email").value.trim(),
-          company: document.getElementById("company").value.trim()
-        },
-        success_url: window.location.origin + "/dnb/pricing/success.html",
-        cancel_url: window.location.origin + "/dnb/pricing/pricing.html"
+        email: document.getElementById("email").value.trim(),
+        name: document.getElementById("name").value.trim(),
+        company: document.getElementById("company").value.trim()
       };
-
+    
       msg.textContent = "Creating Stripe checkout session…";
-
+    
       try {
         const res = await fetch(CREATE_CHECKOUT_ENDPOINT, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          // NOTE: remove credentials unless you are truly using cookies cross-site
           body: JSON.stringify(payload)
         });
-
+    
         if (!res.ok) {
           const text = await res.text();
           msg.textContent = "Checkout error: " + text;
           return;
         }
-
+    
         const data = await res.json();
-
         if (data.url) {
           window.location.href = data.url;
           return;
         }
-
+    
         msg.textContent = "Checkout error: backend returned no url/sessionId.";
       } catch (err) {
         msg.textContent = "Checkout error: " + (err?.message || err);
