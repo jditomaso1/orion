@@ -469,7 +469,7 @@
     
       // 1) Send magic link + save user in Postgres (backend does both)
       msg.textContent = "Sending sign-in link…";
-      const r1 = await fetch("/auth/request-link", {
+      const r1 = await fetch("http://127.0.0.1:8000/auth/request-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email })
