@@ -461,68 +461,40 @@
     async function submitCheckout() {
       const msg = document.getElementById("msgBox");
       const email = document.getElementById("email").value.trim();
-  
-      if (!email) {
-        msg.textContent = "Email is required.";
-        return;
-      }
-  
-      msg.textContent = "Sending sign-in link…";
-  
-      try {
-        const res = await fetch("http://127.0.0.1:8000/auth/request-link", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
-        });
-  
-        const data = await res.json().catch(() => ({}));
-  
-        if (!res.ok) {
-          msg.textContent = data?.detail || "Error sending sign-in link.";
-          return;
-        }
-  
-        msg.textContent = "Check your email for a secure sign-in link.";
-      } catch (err) {
-        msg.textContent = "Network error.";
-      }
-    }
+      const name = document.getElementById("name").value.trim();
+      const company = document.getElementById("company").value.trim();
     
-      const payload = {
-        plan: selected,
-        billing,
-        email: document.getElementById("email").value.trim(),
-        name: document.getElementById("name").value.trim(),
-        company: document.getElementById("company").value.trim()
-      };
+      if (!email) { msg.textContent = "Email is required."; return; }
+      if (!document.getElementById("tos").checked) { msg.textContent = "Please accept Terms."; return; }
+    
+      // 1) Send magic link + save user in Postgres (backend does both)
+      msg.textContent = "Sending sign-in link…";
+      const r1 = await fetch("/auth/request-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+    
+      let j1 = {};
+      try { j1 = await r1.json(); } catch {}
+      if (!r1.ok) { msg.textContent = j1.detail || "Error sending sign-in link."; return; }
+    
+      // 2) Create Stripe checkout session (optional: keep or remove for now)
+      const payload = { plan: selected, billing, email, name, company };
     
       msg.textContent = "Creating Stripe checkout session…";
+      const r2 = await fetch(CREATE_CHECKOUT_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
     
-      try {
-        const res = await fetch(CREATE_CHECKOUT_ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          // NOTE: remove credentials unless you are truly using cookies cross-site
-          body: JSON.stringify(payload)
-        });
+      let j2 = {};
+      try { j2 = await r2.json(); } catch {}
+      if (!r2.ok) { msg.textContent = j2.detail || "Checkout error."; return; }
     
-        if (!res.ok) {
-          const text = await res.text();
-          msg.textContent = "Checkout error: " + text;
-          return;
-        }
-    
-        const data = await res.json();
-        if (data.url) {
-          window.location.href = data.url;
-          return;
-        }
-    
-        msg.textContent = "Checkout error: backend returned no url/sessionId.";
-      } catch (err) {
-        msg.textContent = "Checkout error: " + (err?.message || err);
-      }
+      if (j2.url) window.location.href = j2.url;
+      else msg.textContent = "Checkout error: backend returned no url.";
     }
 
     document.addEventListener("DOMContentLoaded", () => {
