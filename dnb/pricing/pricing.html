@@ -299,10 +299,6 @@
                   <label class="text-xs muted">Company</label>
                   <input id="company" class="inp mt-1" placeholder="Private-Credit.ai" />
                 </div>
-                <div>
-                  <label class="text-xs muted">Password</label>
-                  <input id="password" type="password" class="inp mt-1" placeholder="••••••••••" required />
-                </div>
               </div>
             </div>
 
@@ -454,7 +450,7 @@
     }
 
     function clearForm() {
-      ["name","email","company","password"].forEach(id => {
+      ["name","email","company"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = "";
       });
@@ -464,24 +460,32 @@
 
     async function submitCheckout() {
       const msg = document.getElementById("msgBox");
+      const email = document.getElementById("email").value.trim();
     
-      const required = ["name","email","password"];
-      for (const id of required) {
-        const el = document.getElementById(id);
-        if (!el || !el.value.trim()) {
-          msg.textContent = "Missing required fields: name, email, password.";
+      if (!email) {
+        msg.textContent = "Email is required.";
+        return;
+      }
+    
+      msg.textContent = "Sending magic link…";
+    
+      try {
+        const res = await fetch("http://127.0.0.1:8000/auth/request-link", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+    
+        if (!res.ok) {
+          msg.textContent = "Error sending magic link.";
           return;
         }
-      }
-      if (!document.getElementById("tos").checked) {
-        msg.textContent = "You must accept the Terms to continue.";
-        return;
-      }
     
-      if (selected === "Enterprise") {
-        msg.textContent = "Enterprise selected — route this to sales (calendar/email).";
-        return;
+        msg.textContent = "Check your email for a secure sign-in link.";
+      } catch (err) {
+        msg.textContent = "Network error.";
       }
+    }
     
       const payload = {
         plan: selected,
