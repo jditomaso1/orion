@@ -458,6 +458,7 @@
       document.getElementById("msgBox").textContent = "";
     }
 
+    <script>
     async function submitCheckout() {
       const msg = document.getElementById("msgBox");
       const email = document.getElementById("email").value.trim();
@@ -469,33 +470,66 @@
     
       // 1) Send magic link + save user in Postgres (backend does both)
       msg.textContent = "Sending sign-in link…";
-      const r1 = await fetch("http://127.0.0.1:8000/auth/request-link", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email })
-      });
+    
+      let r1, t1;
+      try {
+        r1 = await fetch("http://127.0.0.1:8000/auth/request-link", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, name, company })
+        });
+        t1 = await r1.text(); // always read raw text first
+      } catch (e) {
+        msg.textContent = "Network/CORS error calling /auth/request-link.";
+        console.error(e);
+        return;
+      }
     
       let j1 = {};
-      try { j1 = await r1.json(); } catch {}
-      if (!r1.ok) { msg.textContent = j1.detail || "Error sending sign-in link."; return; }
+      try { j1 = JSON.parse(t1); } catch {}
     
-      // 2) Create Stripe checkout session (optional: keep or remove for now)
+      if (!r1.ok) {
+        msg.textContent =
+          `Auth error (${r1.status}): ` +
+          (j1.detail || j1.message || t1 || "No response body");
+        console.error("Auth error raw:", t1);
+        return;
+      }
+    
+      // 2) Create Stripe checkout session
       const payload = { plan: selected, billing, email, name, company };
     
       msg.textContent = "Creating Stripe checkout session…";
-      const r2 = await fetch(CREATE_CHECKOUT_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+    
+      let r2, t2;
+      try {
+        r2 = await fetch(CREATE_CHECKOUT_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        t2 = await r2.text();
+      } catch (e) {
+        msg.textContent = "Network/CORS error calling create-checkout-session.";
+        console.error(e);
+        return;
+      }
     
       let j2 = {};
-      try { j2 = await r2.json(); } catch {}
-      if (!r2.ok) { msg.textContent = j2.detail || "Checkout error."; return; }
+      try { j2 = JSON.parse(t2); } catch {}
+    
+      if (!r2.ok) {
+        msg.textContent =
+          `Checkout error (${r2.status}): ` +
+          (j2.detail || j2.message || t2 || "No response body");
+        console.error("Checkout error raw:", t2);
+        return;
+      }
     
       if (j2.url) window.location.href = j2.url;
       else msg.textContent = "Checkout error: backend returned no url.";
     }
+    </script>
 
     document.addEventListener("DOMContentLoaded", () => {
       setBilling("monthly");
