@@ -9,7 +9,7 @@
   <p>Signing you in…</p>
 
   <script>
-    const API_BASE = "http://127.0.0.1:8000"; // CHANGE to your real API in prod
+    const API_BASE = "https://api.orion.private-credit.ai";
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     const next = params.get("next") || "/dnb/index.html";
