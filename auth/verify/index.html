@@ -12,7 +12,7 @@
     const API_BASE = "https://orion.private-credit.ai";
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
-    const next = params.get("next") || "/dnb/index.html";
+    const next = params.get("next") || "https://orion.private-credit.ai/dnb/detailed-financials/detailed-financials1.html";
 
     if (!token) {
       document.body.innerText = "Missing token.";
