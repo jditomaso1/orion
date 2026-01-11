@@ -15,9 +15,10 @@
     }
 
     if (!r.ok) {
-      console.error("Unexpected /me status:", r.status);
+      window.location.href = "/pricing.html";
     }
   } catch (e) {
-    console.error("Guard failed:", e);
+    // API down or blocked → lock the page
+    window.location.href = "/pricing.html";
   }
 })();
