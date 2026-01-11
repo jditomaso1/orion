@@ -1,8 +1,10 @@
 (async function () {
+  const PRICING = "/dnb/pricing/pricing.html";
+
+  // Hide page until authorized
   const unlock = () => document.documentElement.classList.remove("auth-pending");
 
   try {
-    // Fail fast if API is down/hanging
     const controller = new AbortController();
     const t = setTimeout(() => controller.abort(), 2500);
 
@@ -14,14 +16,15 @@
 
     clearTimeout(t);
 
-    if (r.status === 401) return (window.location.href = "/signin.html");
-    if (r.status === 402) return (window.location.href = "/pricing.html");
-    if (!r.ok) return (window.location.href = "/pricing.html");
+    // If not logged in OR not paid OR anything unexpected -> pricing
+    if (r.status === 401) return (window.location.href = PRICING);
+    if (r.status === 402) return (window.location.href = PRICING);
+    if (!r.ok) return (window.location.href = PRICING);
 
     // Authorized
     unlock();
   } catch (e) {
-    // API down / blocked / timeout → lock it
-    window.location.href = "/pricing.html";
+    // API down / blocked / timeout -> pricing
+    window.location.href = PRICING;
   }
 })();
