@@ -10,13 +10,16 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="/guard.js"></script>
+
+  <!-- LOCK PAGE IMMEDIATELY (prevents flash) -->
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f5f6f8;
-    }
+    html.auth-pending body { visibility: hidden; }
+    body { font-family: 'Poppins', sans-serif; background: #f5f6f8; }
   </style>
+  <script>document.documentElement.classList.add('auth-pending');</script>
+
+  <!-- GUARD (cache-busted + defer) -->
+  <script src="/guard.js?v=20260110-1" defer></script>
 </head>
 
 <body class="flex">
