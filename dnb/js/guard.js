@@ -9,7 +9,7 @@
     const controller = new AbortController();
     const t = setTimeout(() => controller.abort(), 2500);
 
-    const r = await fetch("https://api.orion.private-credit.ai/me", {
+    const r = await fetch("http://127.0.0.1:8000/me", {
       credentials: "include",
       cache: "no-store",
       signal: controller.signal
