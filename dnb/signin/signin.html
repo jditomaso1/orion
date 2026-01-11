@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in — Orion</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background:#f5f6f8; }
+  </style>
+</head>
+
+<body class="min-h-screen flex">
+
+  <!-- OPTIONAL: reuse your sidebar -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    (async function injectSidebar() {
+      try {
+        const res = await fetch("/dnb/sidebar.html");
+        if (!res.ok) return;
+        document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+      } catch(e) {}
+    })();
+  </script>
+
+  <main class="flex-1 p-8 flex items-center justify-center">
+    <div class="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+      <h1 class="text-2xl font-semibold text-gray-900">Sign in</h1>
+      <p class="text-sm text-gray-600 mt-2">
+        We’ll email you a secure link to sign in.
+      </p>
+
+      <div class="mt-6">
+        <label class="block text-sm font-medium text-gray-700">Email</label>
+        <input id="email"
+               type="email"
+               autocomplete="email"
+               placeholder="you@firm.com"
+               class="mt-2 w-full rounded-xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+
+      <button id="btn"
+              class="mt-4 w-full rounded-xl bg-blue-600 text-white py-2.5 font-semibold hover:bg-blue-700">
+        Email me a sign-in link
+      </button>
+
+      <div id="msg" class="mt-4 text-sm"></div>
+
+      <div class="mt-6 pt-4 border-t border-gray-100 text-sm text-gray-600">
+        Not a subscriber?
+        <a href="/dnb/pricing/pricing.html" class="text-blue-600 font-semibold hover:underline">View pricing</a>
+      </div>
+    </div>
+  </main>
+
+<script>
+/**
+ * IMPORTANT:
+ * This assumes you have (or will add) a backend endpoint that sends a magic link email.
+ *
+ * If your API endpoint differs, change MAGIC_ENDPOINT below.
+ */
+const API_BASE = "https://api.orion.private-credit.ai";
+const MAGIC_ENDPOINT = API_BASE + "/auth/magic-link"; // <-- change if needed
+const PRICING = "/dnb/pricing/pricing.html";
+
+function qs
