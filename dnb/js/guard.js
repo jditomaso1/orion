@@ -24,6 +24,6 @@
 
     unlock();
   } catch (e) {
-    window.location.href = `${SIGNIN}?next=${next}`);
+    window.location.href = `${SIGNIN}?next=${next}`;
   }
 })();
