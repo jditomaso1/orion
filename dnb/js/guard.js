@@ -2,6 +2,7 @@
   const PRICING = "/dnb/pricing/pricing.html";
   const SIGNIN  = "/dnb/signin/signin.html";
   const next = encodeURIComponent(window.location.pathname + window.location.search);
+  const API_BASE = "https://orion.private-credit.ai";
 
   const unlock = () => document.documentElement.classList.remove("auth-pending");
 
@@ -9,7 +10,7 @@
     const controller = new AbortController();
     const t = setTimeout(() => controller.abort(), 2500);
 
-    const r = await fetch("http://127.0.0.1:8000/me", {
+    const r = await fetch(`${API_BASE}/me`, {
       credentials: "include",
       cache: "no-store",
       signal: controller.signal
