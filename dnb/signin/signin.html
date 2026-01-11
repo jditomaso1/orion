@@ -66,7 +66,7 @@
  *
  * If your API endpoint differs, change MAGIC_ENDPOINT below.
  */
-const API_BASE = "";                 // same-origin
+const API_BASE = "http://127.0.0.1:8000";
 const MAGIC_ENDPOINT = "/auth/request-link";
 const PRICING = "/dnb/pricing/pricing.html";
 
@@ -77,7 +77,7 @@ function qs(name) {
 (async function precheck() {
   // If they’re already logged in and active, bounce them back to next or home.
   try {
-    const r = await fetch("/me", { credentials: "include", cache: "no-store" });
+    const r = await fetch(API_BASE + "/me", { credentials: "include", cache: "no-store" });
     if (r.ok) {
       const next = qs("next") || "/dnb/index.html";
       window.location.replace(next);
@@ -107,7 +107,7 @@ document.getElementById("btn").addEventListener("click", async () => {
     msg.textContent = "Sending link…";
     msg.classList.add("text-gray-600");
 
-    const r = await fetch(MAGIC_ENDPOINT, {
+    const r = await fetch(API_BASE + MAGIC_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
