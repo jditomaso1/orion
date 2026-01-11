@@ -20,10 +20,10 @@
 
     if (r.status === 401) return (window.location.href = `${SIGNIN}?next=${next}`);
     if (r.status === 402) return (window.location.href = PRICING);
-    if (!r.ok) return (window.location.href = PRICING);
+    if (!r.ok) return (window.location.href = `${SIGNIN}?next=${next}`);
 
     unlock();
   } catch (e) {
-    window.location.href = PRICING;
+    window.location.href = `${SIGNIN}?next=${next}`);
   }
 })();
