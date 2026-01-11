@@ -2,7 +2,7 @@
   const PRICING = "/dnb/pricing/pricing.html";
   const SIGNIN  = "/dnb/signin/signin.html";
   const next = encodeURIComponent(window.location.pathname + window.location.search);
-  const API_BASE = "https://orion.private-credit.ai";
+  const API_BASE = "https://api.orion.private-credit.ai";
 
   const unlock = () => document.documentElement.classList.remove("auth-pending");
 
