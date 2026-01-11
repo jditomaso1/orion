@@ -70,4 +70,77 @@ const API_BASE = "https://api.orion.private-credit.ai";
 const MAGIC_ENDPOINT = API_BASE + "/auth/magic-link"; // <-- change if needed
 const PRICING = "/dnb/pricing/pricing.html";
 
-function qs
+function qs(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+(async function precheck() {
+  // If they’re already logged in and active, bounce them back to next or home.
+  try {
+    const r = await fetch(API_BASE + "/me", { credentials: "include", cache: "no-store" });
+    if (r.ok) {
+      const next = qs("next") || "/dnb/index.html";
+      window.location.replace(next);
+    }
+    // if 401/402 just stay on signin
+  } catch (e) {
+    // API down: send them to pricing (or keep them here if you prefer)
+    // window.location.replace(PRICING);
+  }
+})();
+
+document.getElementById("btn").addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
+  const msg = document.getElementById("msg");
+  msg.textContent = "";
+  msg.className = "mt-4 text-sm";
+
+  if (!email || !email.includes("@")) {
+    msg.textContent = "Enter a valid email.";
+    msg.classList.add("text-red-600");
+    return;
+  }
+
+  const next = qs("next") || "/dnb/index.html";
+
+  try {
+    msg.textContent = "Sending link…";
+    msg.classList.add("text-gray-600");
+
+    const r = await fetch(MAGIC_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        email,
+        redirect_to: next
+      })
+    });
+
+    if (r.status === 402) {
+      window.location.replace(PRICING);
+      return;
+    }
+
+    if (!r.ok) {
+      const t = await r.text().catch(() => "");
+      msg.textContent = "Could not send link. " + (t ? t : "");
+      msg.classList.remove("text-gray-600");
+      msg.classList.add("text-red-600");
+      return;
+    }
+
+    msg.textContent = "Check your email for the sign-in link.";
+    msg.classList.remove("text-gray-600");
+    msg.classList.add("text-green-700");
+
+  } catch (e) {
+    msg.textContent = "API unreachable right now. Try again in a minute, or go to pricing.";
+    msg.classList.remove("text-gray-600");
+    msg.classList.add("text-red-600");
+  }
+});
+</script>
+
+</body>
+</html>
