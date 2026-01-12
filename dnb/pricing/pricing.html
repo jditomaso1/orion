@@ -472,7 +472,7 @@
     
       let r1, t1;
       try {
-        r1 = await fetch("http://127.0.0.1:8000/auth/request-link", {
+        r1 = await fetch("https://orion-api-v17h.onrender.com/auth/request-link", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, name, company })
