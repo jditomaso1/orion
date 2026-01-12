@@ -472,7 +472,7 @@
     
       let r1, t1;
       try {
-        r1 = await fetch("https://orion-api-v17h.onrender.com/auth/request-link", {
+        r1 = await fetch("https://orion-api-v17h.onrender.com/api/auth/request-link", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, name, company })
