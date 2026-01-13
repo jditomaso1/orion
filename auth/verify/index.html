@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Signing you in…</title>
+</head>
+<body>
+  <p>Signing you in…</p>
+
+  <script>
+    const API_BASE = "https://orion-api-v17h.onrender.com";
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    const next = params.get("next") || "/dnb/detailed-financials/detailed-financials1.html";
+
+    if (!token) {
+      document.body.innerText = "Missing token.";
+      throw new Error("Missing token");
+    }
+
+    (async () => {
+      const r = await fetch(API_BASE + "/auth/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ token })
+      });
+
+      if (!r.ok) {
+        const t = await r.text().catch(() => "");
+        document.body.innerText = "Verify failed. " + t;
+        return;
+      }
+
+      window.location.replace(next);
+    })();
+  </script>
+</body>
+</html>
