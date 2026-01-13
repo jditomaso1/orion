@@ -475,7 +475,13 @@
         r1 = await fetch("https://orion-api-v17h.onrender.com/auth/request-link", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, name, company })
+          body: JSON.stringify({
+            email,
+            name,
+            company,
+            plan: selected,     // "Starter" or "Pro"
+            billing: billing    // "monthly" or "annual"
+          })
         });
         t1 = await r1.text(); // always read raw text first
       } catch (e) {
