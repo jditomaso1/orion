@@ -3,8 +3,8 @@
   const SIGNIN  = "/dnb/signin/signin.html";
   const next = encodeURIComponent(window.location.pathname + window.location.search);
 
-  // ✅ same-origin (no localhost)
-  const ME_ENDPOINT = "/me";
+  const API_BASE = "https://api.private-credit.ai";
+  const ME_ENDPOINT = API_BASE + "/me";
 
   const unlock = () => document.documentElement.classList.remove("auth-pending");
 
