@@ -3,6 +3,7 @@
   const SIGNIN  = "/dnb/signin/signin.html";
   const next = encodeURIComponent(window.location.pathname + window.location.search);
 
+  // ✅ call the API (not same-origin)
   const API_BASE = "https://api.private-credit.ai";
   const ME_ENDPOINT = API_BASE + "/me";
 
