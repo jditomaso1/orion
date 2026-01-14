@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Welcome to Orion</title>
+
+  <meta name="robots" content="noindex,nofollow" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+  </style>
+</head>
+
+<body class="flex bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR (match Pricing page shell) -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      try {
+        const res = await fetch("/dnb/sidebar.html");
+        document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+        window.toggleSection = function(id) {
+          const section = document.getElementById(id);
+          const icon = document.getElementById("icon-" + id);
+          if (!section || !icon) return;
+
+          section.classList.toggle("hidden");
+          icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+          localStorage.setItem("sidebar-open-section", id);
+        };
+
+        const last = localStorage.getItem("sidebar-open-section");
+        if (last) {
+          const section = document.getElementById(last);
+          const icon = document.getElementById("icon-" + last);
+          if (section && icon) {
+            section.classList.remove("hidden");
+            icon.style.transform = "rotate(90deg)";
+          }
+        }
+      } catch (e) {
+        // If sidebar fails, page still works.
+        console.warn("Sidebar inject failed:", e);
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 space-y-6 max-w-[1200px]">
+
+    <!-- Title -->
+    <section>
+      <h1 class="text-3xl font-semibold tracking-tight">Welcome to Orion</h1>
+
+      <div class="mt-2 bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+        <div class="text-sm text-gray-700">
+          Your payment was successful. Your access link is delivered by email.
+        </div>
+        <span class="pill">Orion • Secure access</span>
+      </div>
+    </section>
+
+    <!-- Main Card -->
+    <section class="grid grid-cols-12 gap-6">
+      <div class="col-span-12 lg:col-span-8">
+        <div class="cardish p-6">
+          <div class="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Subscription active</div>
+              <div class="text-xs muted mt-1">
+                For security reasons, Orion does not allow direct access from this page.
+              </div>
+            </div>
+            <span class="pill"><span class="muted">✓</span> Payment confirmed</span>
+          </div>
+
+          <div class="mt-5 border rounded-2xl p-4 bg-white">
+            <div class="text-sm font-semibold">Next step</div>
+            <div class="text-sm text-gray-800 mt-1">
+              Check your email for your <span class="font-semibold">Orion sign-in link</span>.
+              Click it to enter Orion.
+            </div>
+
+            <ul class="mt-3 text-sm space-y-2">
+              <li class="flex gap-2"><span class="muted">•</span> If you don’t see it within a minute, check spam/junk.</li>
+              <li class="flex gap-2"><span class="muted">•</span> Search your inbox for <span class="font-semibold">“Orion sign-in”</span>.</li>
+              <li class="flex gap-2"><span class="muted">•</span> Work email filters can delay delivery slightly.</li>
+            </ul>
+          </div>
+
+          <div class="mt-5 flex flex-wrap gap-2">
+            <!-- Optional convenience button; safe, doesn't navigate your site -->
+            <a class="btn btn-ghost" href="mailto:" title="Open your email app">
+              Open email
+            </a>
+
+            <!-- Optional: this just closes the tab; no navigation -->
+            <button class="btn btn-primary" type="button" onclick="window.close()">
+              Close this page
+            </button>
+
+            <div class="text-xs muted self-center">
+              (If “Close” doesn’t work, just close the tab.)
+            </div>
+          </div>
+
+          <div class="mt-4 text-[11px] muted">
+            Session: <span id="sess">Not provided</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right rail -->
+      <div class="col-span-12 lg:col-span-4">
+        <div class="cardish p-6">
+          <div class="text-sm font-semibold">Why email access?</div>
+          <div class="text-xs muted mt-1">
+            It prevents shared links, supports time-limited access, and keeps sign-in clean without passwords.
+          </div>
+
+          <div class="mt-4 border rounded-2xl p-4 bg-white">
+            <div class="text-sm font-semibold">What you’ll see inside</div>
+            <ul class="mt-3 text-sm space-y-2">
+              <li class="flex gap-2"><span class="muted">✓</span> Cross-doc answers with citations</li>
+              <li class="flex gap-2"><span class="muted">✓</span> Structured field extraction</li>
+              <li class="flex gap-2"><span class="muted">✓</span> Monitoring & drift tracking</li>
+              <li class="flex gap-2"><span class="muted">✓</span> Export-ready outputs</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Display Stripe session_id if present (useful for debugging/support)
+    const params = new URLSearchParams(window.location.search);
+    const sid = params.get("session_id");
+    if (sid) document.getElementById("sess").textContent = sid;
+  </script>
+
+</body>
+</html>
