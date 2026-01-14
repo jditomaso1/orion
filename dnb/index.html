@@ -1,1 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • Welcome</title>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+    .btn-soft { background:#eff6ff; border:1px solid #bfdbfe; color:#1d4ed8; }
+    .btn-soft:hover { background:#dbeafe; }
+
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px; padding: 2px 6px; border-radius: 8px;
+      border: 1px solid #e5e7eb; background: #fff; color: #111827;
+      white-space: nowrap;
+    }
+
+    .checkdot{
+      width:18px;height:18px;border-radius:999px;
+      display:inline-grid; place-items:center;
+      background: rgba(16,185,129,.12);
+      border:1px solid rgba(16,185,129,.30);
+      color: #059669;
+      font-weight:800;
+      font-size:12px;
+      line-height:1;
+      flex: 0 0 auto;
+    }
+  </style>
+</head>
+
+<body class="flex bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/dnb/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 space-y-6 max-w-[1200px]">
+
+    <!-- HERO -->
+    <section class="space-y-3">
+      <h1 class="text-3xl font-semibold tracking-tight">Welcome to Orion</h1>
+
+      <div class="mt-2 bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+        <div class="text-sm text-gray-700">
+          Orion is a credit neural network that reads across filings and legal docs and returns analyst-grade answers with citations.
+        </div>
+        <span class="pill">Orion • Dave &amp; Buster’s demo credit</span>
+      </div>
+    </section>
+
+    <!-- WHAT IT DOES + QUICKSTART -->
+    <section class="grid grid-cols-12 gap-6">
+
+      <!-- LEFT -->
+      <div class="col-span-12 lg:col-span-8 space-y-6">
+
+        <div class="cardish p-6">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <div class="text-sm font-semibold">What Orion does</div>
+              <div class="text-xs muted mt-1">Not a chatbot. An operating system for debt.</div>
+            </div>
+            <span class="pill">Cross-doc • Grounded • Traceable</span>
+          </div>
+
+          <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border rounded-2xl p-4 bg-white">
+              <div class="text-sm font-semibold">Reads across documents</div>
+              <div class="text-xs muted mt-2">
+                Credit agreements, 10-Ks, 10-Qs, press, and more—treated as one connected graph.
+              </div>
+            </div>
+            <div class="border rounded-2xl p-4 bg-white">
+              <div class="text-sm font-semibold">Answers with citations</div>
+              <div class="text-xs muted mt-2">
+                Every answer is grounded in source material so you can verify quickly.
+              </div>
+            </div>
+            <div class="border rounded-2xl p-4 bg-white">
+              <div class="text-sm font-semibold">Structured credit outputs</div>
+              <div class="text-xs muted mt-2">
+                Tear sheet fields, covenants, risks, leverage and trends—formatted for real workflows.
+              </div>
+            </div>
+            <div class="border rounded-2xl p-4 bg-white">
+              <div class="text-sm font-semibold">Monitoring & drift</div>
+              <div class="text-xs muted mt-2">
+                Track performance + risk changes over time (ratings drift, what-if scenarios, and updates).
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cardish p-6">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <div class="text-sm font-semibold">Quickstart</div>
+              <div class="text-xs muted mt-1">Three clicks to understand the product.</div>
+            </div>
+            <span class="pill">Start here</span>
+          </div>
+
+          <div class="mt-5 space-y-3 text-sm text-gray-800">
+            <div class="flex items-start gap-3">
+              <span class="checkdot">1</span>
+              <div>
+                Open <span class="kbd">OrionGPT</span> and ask a question you’d ask as an investor.
+                <div class="text-xs muted mt-1">Example: “What are the key risks in this facility?”</div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <span class="checkdot">2</span>
+              <div>
+                Review the <span class="kbd">Tear Sheet</span> for structured fields and key terms.
+                <div class="text-xs muted mt-1">Fast scan: capital structure, pricing, covenants, leverage.</div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <span class="checkdot">3</span>
+              <div>
+                Use <span class="kbd">Source Documents</span> to verify — citations take you to the evidence.
+                <div class="text-xs muted mt-1">This is how you avoid hallucinations and stay audit-proof.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 flex flex-wrap gap-2">
+            <a class="btn btn-primary" href="/dnb/oriongpt/oriongpt.html">Go to OrionGPT</a>
+            <a class="btn btn-ghost" href="/dnb/tear-sheet/tear-sheet.html">Open Tear Sheet</a>
+            <a class="btn btn-ghost" href="/dnb/source-documents/source-documents.html">Source Documents</a>
+          </div>
+
+          <div class="mt-4 text-xs muted">
+            Tip: Use the left sidebar to explore modules (News, SEC Edgar, Shadow Ratings, Ratings Drift, Detailed Financials, Projections, Neural Network).
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT RAIL -->
+      <aside class="col-span-12 lg:col-span-4 space-y-6">
+
+        <div class="cardish p-6">
+          <div class="text-sm font-semibold">Suggested first clicks</div>
+          <div class="text-xs muted mt-1">If you’re new, do this in order.</div>
+
+          <div class="mt-4 space-y-3 text-sm">
+            <a href="/dnb/oriongpt/oriongpt.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+              <div class="font-semibold">OrionGPT</div>
+              <div class="text-xs muted mt-1">Ask cross-document questions with citations.</div>
+            </a>
+
+            <a href="/dnb/tear-sheet/tear-sheet.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+              <div class="font-semibold">Tear Sheet</div>
+              <div class="text-xs muted mt-1">The structured deal snapshot.</div>
+            </a>
+
+            <a href="/dnb/detailed-financials/detailed-financials.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+              <div class="font-semibold">Detailed Financials</div>
+              <div class="text-xs muted mt-1">Tables + trends for performance.</div>
+            </a>
+          </div>
+        </div>
+
+        <div class="cardish p-6">
+          <div class="text-sm font-semibold">How to use Orion (one sentence)</div>
+          <div class="text-xs muted mt-2">
+            Start with a question, verify with citations, then use the structured modules to go deeper.
+          </div>
+
+          <div class="mt-4 border rounded-2xl p-4 bg-white text-sm text-gray-800">
+            <div class="font-semibold text-sm">Example questions</div>
+            <ul class="mt-2 list-disc pl-5 space-y-1 text-xs muted">
+              <li>“What is EBITDA per the credit agreement?”</li>
+              <li>“What are the maintenance covenants and thresholds?”</li>
+              <li>“What changed in the last two 10-Qs?”</li>
+              <li>“What are the key risks in this facility?”</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="cardish p-6">
+          <div class="text-sm font-semibold">Account</div>
+          <div class="text-xs muted mt-1">Billing and access live here.</div>
+          <div class="mt-4 flex gap-2">
+            <a class="btn btn-ghost w-full text-center" href="/dnb/pricing/pricing.html">Pricing</a>
+            <a class="btn btn-ghost w-full text-center" href="/dnb/contact/contact.html">Contact</a>
+          </div>
+        </div>
+
+      </aside>
+    </section>
+
+    <!-- OPTIONAL: FOOTER CARD -->
+    <section class="cardish p-6">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <div class="text-sm font-semibold">This is a demo credit</div>
+          <div class="text-xs muted mt-1">
+            The D&amp;B instance shows how Orion works on a real, production-style credit stack.
+          </div>
+        </div>
+        <span class="pill">More credits soon</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Ask Orion Bot include -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
