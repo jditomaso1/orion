@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Welcome to Orion</title>
+  <meta name="robots" content="noindex,nofollow" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+
+    /* Orion-ish primitives (match your pricing page) */
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:13px; color:#111827; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+           font-size: 12px; padding: 2px 6px; border-radius: 8px; border: 1px solid #e5e7eb; background: #fff; color: #111827; }
+
+    /* Soft Orion background, not “Stripe default” */
+    .orion-bg{
+      background:
+        radial-gradient(900px 500px at 15% 10%, rgba(37,99,235,.10), transparent 55%),
+        radial-gradient(700px 450px at 85% 15%, rgba(16,185,129,.08), transparent 55%),
+        linear-gradient(180deg, #f9fafb, #f3f4f6);
+    }
+
+    .checkdot{
+      width:18px;height:18px;border-radius:999px;
+      display:inline-grid; place-items:center;
+      background: rgba(16,185,129,.12);
+      border:1px solid rgba(16,185,129,.30);
+      color: #059669;
+      font-weight:800;
+      font-size:12px;
+      line-height:1;
+    }
+
+    .mini h3{ margin:0; font-size:14px; font-weight:700; color:#111827; }
+    .mini p{ margin:6px 0 0; font-size:13px; color:#6b7280; line-height:1.5; }
+  </style>
+</head>
+
+<body class="min-h-screen orion-bg text-gray-900 flex items-center justify-center p-6">
+
+  <main class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT MAIN -->
+    <section class="cardish p-7 lg:col-span-8">
+      <!-- Brand -->
+      <div class="flex items-center gap-3 mb-6">
+        <!-- Replace with real logo if you have it -->
+        <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-600 to-emerald-500"></div>
+        <div class="text-xs tracking-[.18em] uppercase font-semibold muted">Orion</div>
+      </div>
+
+      <h1 class="text-3xl font-semibold tracking-tight">Welcome to Orion</h1>
+      <p class="muted mt-2">Your subscription is active.</p>
+
+      <div class="pill mt-5" role="status" aria-live="polite">
+        <span class="checkdot">✓</span>
+        <span class="text-sm">
+          We’ve sent your private sign-in link to your email.
+        </span>
+      </div>
+
+      <p class="muted mt-4">
+        For security reasons, Orion access is delivered by email only.
+        Open the message and click the link to enter.
+      </p>
+
+      <ul class="mt-4 space-y-2 text-sm text-gray-800">
+        <li class="flex gap-2"><span class="muted">•</span> Check your inbox for an email from <span class="kbd">Orion</span>.</li>
+        <li class="flex gap-2"><span class="muted">•</span> If you don’t see it within a minute, check spam or search <span class="kbd">Orion sign-in</span>.</li>
+        <li class="flex gap-2"><span class="muted">•</span> You can close this page once you’ve clicked the link.</li>
+      </ul>
+
+      <div class="mt-6 text-xs muted">
+        If you used a work email with aggressive filtering, it may take a moment to arrive.
+      </div>
+
+      <div class="mt-4 text-[11px] muted">
+        Session: <span id="sess">Not provided</span>
+      </div>
+    </section>
+
+    <!-- RIGHT RAIL -->
+    <aside class="lg:col-span-4 flex flex-col gap-6">
+      <div class="cardish p-6 mini">
+        <h3>What happens next</h3>
+        <p>You’ll enter Orion through a time-limited, secure link. No password required.</p>
+      </div>
+
+      <div class="cardish p-6 mini">
+        <h3>Why email access?</h3>
+        <p>It keeps sign-in secure and prevents shared links or public access.</p>
+      </div>
+    </aside>
+
+  </main>
+
+  <script>
+    // Helpful for debugging webhook/auth issues without changing UX.
+    const sid = new URLSearchParams(window.location.search).get("session_id");
+    if (sid) document.getElementById("sess").textContent = sid;
+  </script>
+</body>
+</html>
