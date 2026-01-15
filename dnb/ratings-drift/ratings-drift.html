@@ -21,6 +21,17 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- LOCK PAGE IMMEDIATELY (prevents flash of content) -->
+  <style>
+    html.auth-pending body { visibility: hidden; }
+  </style>
+  <script>
+    document.documentElement.classList.add('auth-pending');
+  </script>
+  
+  <!-- AUTH GUARD -->
+  <script src="/dnb/js/guard.js?v=20260115-1" defer></script>
+  
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
