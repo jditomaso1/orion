@@ -32,6 +32,17 @@
   <!-- Plotly -->
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 
+  <!-- LOCK PAGE IMMEDIATELY (prevents flash of content) -->
+  <style>
+    html.auth-pending body { visibility: hidden; }
+  </style>
+  <script>
+    document.documentElement.classList.add('auth-pending');
+  </script>
+
+  <!-- AUTH GUARD -->
+  <script src="/dnb/js/guard.js?v=20260115-1" defer></script>
+  
   <!-- Base Styles -->
   <style>
     body {
