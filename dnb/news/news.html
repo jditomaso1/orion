@@ -22,6 +22,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- LOCK PAGE IMMEDIATELY (prevents flash of content) -->
+  <style>
+    html.auth-pending body { visibility: hidden; }
+  </style>
+  <script>
+    document.documentElement.classList.add('auth-pending');
+  </script>
+  
+  <!-- AUTH GUARD -->
+  <script src="/dnb/js/guard.js?v=20260115-1" defer></script>
+
   <style>
     body { font-family: 'Poppins', sans-serif; background:#f5f6f8; }
     * { box-sizing:border-box; }
