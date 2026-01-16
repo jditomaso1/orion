@@ -47,10 +47,15 @@
       line-height:1;
       flex: 0 0 auto;
     }
+    @media (max-width: 767px) {
+      #sidebar-placeholder { display: none; }
+    }
+    html, body { overflow-x: hidden; }
+    main { min-width: 0; }
   </style>
 </head>
 
-<body class="flex bg-gray-50 text-gray-900">
+<body class="bg-gray-50 text-gray-900">
 
   <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
@@ -83,11 +88,12 @@
   </script>
 
   <!-- MAIN CONTENT -->
-  <main class="flex-1 ml-64 p-8 space-y-6 max-w-[1200px]">
+  <main class="w-full space-y-6 p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1200px] mx-auto">
 
     <!-- HERO -->
     <section class="space-y-3">
-      <h1 class="text-3xl font-semibold tracking-tight">Welcome to Orion</h1>
+      <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Welcome to Orion</h1>
 
       <div class="mt-2 bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
         <div class="text-sm text-gray-700">
@@ -175,7 +181,7 @@
             </div>
           </div>
 
-          <div class="mt-5 flex flex-wrap gap-2">
+          <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
             <a class="btn btn-primary" href="/dnb/oriongpt/oriongpt.html">Go to OrionGPT</a>
             <a class="btn btn-ghost" href="/dnb/tear-sheet/tear-sheet.html">Open Tear Sheet</a>
             <a class="btn btn-ghost" href="/dnb/source-documents/source-documents.html">Source Documents</a>
@@ -233,7 +239,7 @@
         <div class="cardish p-6">
           <div class="text-sm font-semibold">Account</div>
           <div class="text-xs muted mt-1">Billing and access live here.</div>
-          <div class="mt-4 flex gap-2">
+          <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
             <a class="btn btn-ghost w-full text-center" href="/dnb/pricing/pricing.html">Pricing</a>
             <a class="btn btn-ghost w-full text-center" href="/dnb/contact/contact.html">Contact</a>
           </div>
@@ -255,6 +261,7 @@
       </div>
     </section>
 
+    </div>
   </main>
 
   <!-- Ask Orion Bot include -->
