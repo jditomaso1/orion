@@ -56,10 +56,15 @@
 
     .badge-pop { background:#111827; color:#fff; border-radius:999px; padding:4px 10px; font-size:11px; font-weight:700; }
     .card-selected { border-color:#111827 !important; box-shadow:0 10px 26px rgba(17,24,39,.12); }
+    @media (max-width: 767px) {
+      #sidebar-placeholder { display: none; }
+    }
+    html, body { overflow-x: hidden; }
+    main { min-width: 0; }
   </style>
 </head>
 
-<body class="flex bg-gray-50 text-gray-900">
+<body class="bg-gray-50 text-gray-900">
 
   <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
@@ -92,7 +97,8 @@
   </script>
 
   <!-- MAIN CONTENT -->
-  <main class="flex-1 ml-64 p-8 space-y-6 max-w-[1200px]">
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1200px] mx-auto md:mx-0 space-y-6">
 
     <!-- PAGE TITLE -->
     <section>
@@ -371,7 +377,7 @@
         </div>
       </div>
     </section>
-
+    </div>
   </main>
 
   <!-- PRICING LOGIC -->
