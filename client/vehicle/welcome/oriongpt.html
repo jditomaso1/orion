@@ -52,7 +52,7 @@
 
   <script>
   async function injectSidebar() {
-    const res = await fetch("/vehicle/sidebar.html");
+    const res = await fetch("../sidebar.html");
     document.getElementById("sidebar-placeholder").innerHTML = await res.text();
   
     window.toggleSection = function (id) {
@@ -110,7 +110,7 @@
       // Inject your existing sidebar HTML
       async function injectSidebar() {
         try {
-          const res = await fetch("/vehicle/sidebar.html");
+          const res = await fetch("../sidebar.html");
           if (res.ok) {
             const html = await res.text();
             document.getElementById("sidebar-placeholder").innerHTML = html;
