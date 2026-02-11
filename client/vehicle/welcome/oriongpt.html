@@ -110,7 +110,7 @@
       // Inject your existing sidebar HTML
       async function injectSidebar() {
         try {
-          const res = await fetch("/private-credit/sidebar.html");
+          const res = await fetch("/vehicle/sidebar.html");
           if (res.ok) {
             const html = await res.text();
             document.getElementById("sidebar-placeholder").innerHTML = html;
