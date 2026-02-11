@@ -52,7 +52,7 @@
 
   <script>
   async function injectSidebar() {
-    const res = await fetch("/private-credit/sidebar.html");
+    const res = await fetch("/vehicle/sidebar.html");
     document.getElementById("sidebar-placeholder").innerHTML = await res.text();
   
     window.toggleSection = function (id) {
