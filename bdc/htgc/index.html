@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Orion • Welcome</title>
+  <title>Orion • BDC • HTGC</title>
 
   <!-- Favicon -->
   <link rel="icon" type="image/png"
@@ -61,9 +61,11 @@
   <div id="sidebar-placeholder"></div>
   <script>
     async function injectSidebar() {
+      // HTGC BDC sidebar
       const res = await fetch("/bdc/htgc/sidebar.html");
       document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
+      // allow sidebar.html to call toggleSection()
       window.toggleSection = function(id) {
         const section = document.getElementById(id);
         const icon = document.getElementById("icon-" + id);
@@ -74,6 +76,7 @@
         localStorage.setItem("sidebar-open-section", id);
       };
 
+      // restore last open section
       const last = localStorage.getItem("sidebar-open-section");
       if (last) {
         const section = document.getElementById(last);
@@ -90,16 +93,16 @@
   <!-- MAIN CONTENT -->
   <main class="w-full p-4 md:p-8 md:ml-64">
     <div class="max-w-[1200px] mx-auto md:mx-0 space-y-6">
-      
+
     <!-- HERO -->
     <section class="space-y-3">
-      <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Welcome to Orion</h1>
+      <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Welcome to Orion • BDC Intelligence</h1>
 
       <div class="mt-2 bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
         <div class="text-sm text-gray-700">
-          Orion is a credit neural network that reads across filings and legal docs and returns analyst-grade answers with citations.
+          Orion for BDCs turns public filings into a structured portfolio database — trends, non-accruals, exposures, and risk signals — with fast drilldowns.
         </div>
-        <span class="pill">Orion • Dave &amp; Buster’s demo credit</span>
+        <span class="pill">BDC • Hercules Capital (HTGC)</span>
       </div>
     </section>
 
@@ -112,35 +115,35 @@
         <div class="cardish p-6">
           <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <div class="text-sm font-semibold">What Orion does</div>
-              <div class="text-xs muted mt-1">Not a chatbot. An operating system for debt.</div>
+              <div class="text-sm font-semibold">What Orion does for BDCs</div>
+              <div class="text-xs muted mt-1">A portfolio intelligence layer — not a generic chatbot.</div>
             </div>
-            <span class="pill">Cross-doc • Grounded • Traceable</span>
+            <span class="pill">EDGAR • Schedule of Investments • Monitoring</span>
           </div>
 
           <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="border rounded-2xl p-4 bg-white">
-              <div class="text-sm font-semibold">Reads across documents</div>
+              <div class="text-sm font-semibold">Builds a clean portfolio database</div>
               <div class="text-xs muted mt-2">
-                Credit agreements, 10-Ks, 10-Qs, press, and more—treated as one connected graph.
+                Parses 10-Q / 10-K Schedules of Investments into a normalized position-level dataset.
               </div>
             </div>
             <div class="border rounded-2xl p-4 bg-white">
-              <div class="text-sm font-semibold">Answers with citations</div>
+              <div class="text-sm font-semibold">Tracks trends quarter-over-quarter</div>
               <div class="text-xs muted mt-2">
-                Every answer is grounded in source material so you can verify quickly.
+                Follow marks, spreads/yields, maturities, and position changes across reporting periods.
               </div>
             </div>
             <div class="border rounded-2xl p-4 bg-white">
-              <div class="text-sm font-semibold">Structured credit outputs</div>
+              <div class="text-sm font-semibold">Non-accrual + credit quality monitor</div>
               <div class="text-xs muted mt-2">
-                Tear sheet fields, covenants, risks, leverage and trends—formatted for real workflows.
+                Dedicated view of non-accruals, markdown history, and repeat stress names.
               </div>
             </div>
             <div class="border rounded-2xl p-4 bg-white">
-              <div class="text-sm font-semibold">Monitoring & drift</div>
+              <div class="text-sm font-semibold">Benchmarking & comparables</div>
               <div class="text-xs muted mt-2">
-                Track performance + risk changes over time (ratings drift, what-if scenarios, and updates).
+                Compare HTGC to peer BDCs on concentration, yield, credit quality, and origination terms.
               </div>
             </div>
           </div>
@@ -150,7 +153,7 @@
           <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
               <div class="text-sm font-semibold">Quickstart</div>
-              <div class="text-xs muted mt-1">Three clicks to understand the product.</div>
+              <div class="text-xs muted mt-1">Three clicks to understand the HTGC build.</div>
             </div>
             <span class="pill">Start here</span>
           </div>
@@ -159,36 +162,36 @@
             <div class="flex items-start gap-3">
               <span class="checkdot">1</span>
               <div>
-                Open <span class="kbd">OrionGPT</span> and ask a question you’d ask as an investor.
-                <div class="text-xs muted mt-1">Example: “What are the key risks in this facility?”</div>
+                Open <span class="kbd">Portfolio</span> to view HTGC’s position-level dataset.
+                <div class="text-xs muted mt-1">Start with: sector, instrument type, fair value vs. cost.</div>
               </div>
             </div>
 
             <div class="flex items-start gap-3">
               <span class="checkdot">2</span>
               <div>
-                Review the <span class="kbd">Tear Sheet</span> for structured fields and key terms.
-                <div class="text-xs muted mt-1">Fast scan: capital structure, pricing, covenants, leverage.</div>
+                Review <span class="kbd">Trends</span> to see quarter-over-quarter movement.
+                <div class="text-xs muted mt-1">Look for repeated markdowns and new/exit activity.</div>
               </div>
             </div>
 
             <div class="flex items-start gap-3">
               <span class="checkdot">3</span>
               <div>
-                Use <span class="kbd">Source Documents</span> to verify — citations take you to the evidence.
-                <div class="text-xs muted mt-1">This is how you avoid hallucinations and stay audit-proof.</div>
+                Check <span class="kbd">Non-Accruals</span> for stressed names and recovery path.
+                <div class="text-xs muted mt-1">This is the fastest “credit smell test” for a BDC.</div>
               </div>
             </div>
           </div>
 
           <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <a class="btn btn-primary" href="/dnb/oriongpt/oriongpt.html">Go to OrionGPT</a>
-            <a class="btn btn-ghost" href="/dnb/tear-sheet/tear-sheet.html">Open Tear Sheet</a>
-            <a class="btn btn-ghost" href="/dnb/source-documents/source-documents.html">Source Documents</a>
+            <a class="btn btn-primary" href="/bdc/htgc/portfolio/portfolio.html">Open Portfolio</a>
+            <a class="btn btn-ghost" href="/bdc/htgc/trends/trends.html">View Trends</a>
+            <a class="btn btn-ghost" href="/bdc/htgc/non-accruals/non-accruals.html">Non-Accruals</a>
           </div>
 
           <div class="mt-4 text-xs muted">
-            Tip: Use the left sidebar to explore modules (News, SEC Edgar, Shadow Ratings, Ratings Drift, Detailed Financials, Projections, Neural Network).
+            Tip: Use the left sidebar to explore modules (Overview, Construction, Origination & Exits, News, Comps, Neural Network, OrionGPT).
           </div>
         </div>
 
@@ -202,36 +205,36 @@
           <div class="text-xs muted mt-1">If you’re new, do this in order.</div>
 
           <div class="mt-4 space-y-3 text-sm">
-            <a href="/dnb/oriongpt/oriongpt.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
-              <div class="font-semibold">OrionGPT</div>
-              <div class="text-xs muted mt-1">Ask cross-document questions with citations.</div>
+            <a href="/bdc/htgc/overview/overview.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+              <div class="font-semibold">Overview</div>
+              <div class="text-xs muted mt-1">HTGC snapshot: portfolio mix, risk flags, key metrics.</div>
             </a>
 
-            <a href="/dnb/tear-sheet/tear-sheet.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
-              <div class="font-semibold">Tear Sheet</div>
-              <div class="text-xs muted mt-1">The structured deal snapshot.</div>
+            <a href="/bdc/htgc/portfolio/portfolio.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+              <div class="font-semibold">Portfolio</div>
+              <div class="text-xs muted mt-1">Every position, cleaned and structured.</div>
             </a>
 
-            <a href="/dnb/detailed-financials/detailed-financials.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
-              <div class="font-semibold">Detailed Financials</div>
-              <div class="text-xs muted mt-1">Tables + trends for performance.</div>
+            <a href="/bdc/htgc/trends/trends.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+              <div class="font-semibold">Trends</div>
+              <div class="text-xs muted mt-1">Quarter-over-quarter changes: marks, adds, exits, drift.</div>
             </a>
           </div>
         </div>
 
         <div class="cardish p-6">
-          <div class="text-sm font-semibold">How to use Orion (one sentence)</div>
+          <div class="text-sm font-semibold">How to use Orion for BDCs (one sentence)</div>
           <div class="text-xs muted mt-2">
-            Start with a question, verify with citations, then use the structured modules to go deeper.
+            Start with the portfolio, look for drift and stress, then benchmark against peers to understand relative risk-taking.
           </div>
 
           <div class="mt-4 border rounded-2xl p-4 bg-white text-sm text-gray-800">
             <div class="font-semibold text-sm">Example questions</div>
             <ul class="mt-2 list-disc pl-5 space-y-1 text-xs muted">
-              <li>“What is EBITDA per the credit agreement?”</li>
-              <li>“What are the maintenance covenants and thresholds?”</li>
-              <li>“What changed in the last two 10-Qs?”</li>
-              <li>“What are the key risks in this facility?”</li>
+              <li>“Which positions have been marked down for 2+ consecutive quarters?”</li>
+              <li>“What’s the maturity wall over the next 24 months?”</li>
+              <li>“Which sectors drive the most concentration risk?”</li>
+              <li>“How do HTGC yields compare to peers?”</li>
             </ul>
           </div>
         </div>
@@ -240,8 +243,8 @@
           <div class="text-sm font-semibold">Account</div>
           <div class="text-xs muted mt-1">Billing and access live here.</div>
           <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <a class="btn btn-ghost w-full text-center" href="/dnb/pricing/pricing.html">Pricing</a>
-            <a class="btn btn-ghost w-full text-center" href="/dnb/contact/contact.html">Contact</a>
+            <a class="btn btn-ghost w-full text-center" href="/bdc/htgc/pricing/pricing.html">Pricing</a>
+            <a class="btn btn-ghost w-full text-center" href="/bdc/htgc/contact/contact.html">Contact</a>
           </div>
         </div>
 
@@ -252,12 +255,12 @@
     <section class="cardish p-6">
       <div class="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <div class="text-sm font-semibold">This is a demo credit</div>
+          <div class="text-sm font-semibold">This is a BDC build</div>
           <div class="text-xs muted mt-1">
-            The D&amp;B instance shows how Orion works on a real, production-style credit stack.
+            The HTGC instance shows how Orion structures EDGAR data into a monitoring-grade portfolio intelligence layer.
           </div>
         </div>
-        <span class="pill">More credits soon</span>
+        <span class="pill">More BDCs soon</span>
       </div>
     </section>
 
@@ -268,7 +271,8 @@
   <div id="orion-chat-include"></div>
   <script>
     async function loadOrionChat() {
-      const res = await fetch("/dnb/includes/orion-chat.html");
+      // HTGC include path (update if you keep a shared include elsewhere)
+      const res = await fetch("/bdc/htgc/includes/orion-chat.html");
       const html = await res.text();
 
       const container = document.getElementById("orion-chat-include");
