@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Origination & Exit Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #0f1218;
+    --surface2: #141820;
+    --border: #1e2530;
+    --accent: #c8a96e;
+    --accent2: #4a9eff;
+    --green: #2ecc8a;
+    --red: #e05c5c;
+    --yellow: #f0b429;
+    --text: #d4d8e0;
+    --muted: #5a6275;
+    --label: #8892a4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    min-height: 100vh;
+    padding: 40px;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-left h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+
+  .header-left .subtitle {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    display: flex;
+    gap: 10px;
+  }
+
+  .quarter-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--label);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .quarter-btn:hover, .quarter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+  }
+
+  /* KPI ROW */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 32px;
+    border: 1px solid var(--border);
+  }
+
+  .kpi {
+    background: var(--surface);
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .kpi.gold::after { background: var(--accent); }
+  .kpi.blue::after { background: var(--accent2); }
+  .kpi.green::after { background: var(--green); }
+  .kpi.red::after { background: var(--red); }
+  .kpi.yellow::after { background: var(--yellow); }
+
+  .kpi-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .kpi-value {
+    font-size: 26px;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .kpi-delta {
+    font-size: 11px;
+  }
+
+  .kpi-delta.up { color: var(--green); }
+  .kpi-delta.down { color: var(--red); }
+  .kpi-delta.flat { color: var(--muted); }
+
+  /* MAIN GRID */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .panel-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--label);
+  }
+
+  .panel-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* DEAL TABLE */
+  .deal-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .deal-table th {
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+
+  .deal-table td {
+    padding: 11px 20px;
+    border-bottom: 1px solid rgba(30,37,48,0.6);
+    vertical-align: middle;
+  }
+
+  .deal-table tr:last-child td { border-bottom: none; }
+
+  .deal-table tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .company-name {
+    color: #fff;
+    font-weight: 500;
+    font-size: 12px;
+  }
+
+  .company-sector {
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 2px;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 7px;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  .tag-tl { background: rgba(74,158,255,0.12); color: var(--accent2); border: 1px solid rgba(74,158,255,0.2); }
+  .tag-ub { background: rgba(200,169,110,0.12); color: var(--accent); border: 1px solid rgba(200,169,110,0.2); }
+  .tag-mezz { background: rgba(240,180,41,0.1); color: var(--yellow); border: 1px solid rgba(240,180,41,0.2); }
+
+  .spread-val { color: var(--accent); font-weight: 500; }
+  .size-val { color: var(--text); }
+
+  .warrant { 
+    font-size: 10px;
+    color: var(--green);
+  }
+  .no-warrant {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* TREND CHART */
+  .trend-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .chart-area {
+    padding: 20px 24px 16px;
+    position: relative;
+  }
+
+  .chart-svg-wrap {
+    position: relative;
+  }
+
+  svg.trend-chart {
+    width: 100%;
+    height: 140px;
+    overflow: visible;
+  }
+
+  .chart-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 4px;
+    margin-top: 8px;
+  }
+
+  .chart-labels span {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .chart-legend {
+    display: flex;
+    gap: 20px;
+    padding: 12px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--label);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  /* EXIT TABLE */
+  .exit-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .moic-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .moic-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .moic-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--green);
+  }
+
+  .moic-bar-fill.mid { background: var(--yellow); }
+  .moic-bar-fill.low { background: var(--red); }
+
+  .moic-val {
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  .irr-val { color: var(--green); }
+  .irr-val.mid { color: var(--yellow); }
+
+  .exit-type-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+    letter-spacing: 0.04em;
+  }
+
+  .exit-refi { background: rgba(46,204,138,0.1); color: var(--green); border: 1px solid rgba(46,204,138,0.2); }
+  .exit-sale { background: rgba(74,158,255,0.1); color: var(--accent2); border: 1px solid rgba(74,158,255,0.2); }
+  .exit-repay { background: rgba(90,98,117,0.2); color: var(--label); border: 1px solid var(--border); }
+
+  /* BOTTOM ROW */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+
+  .mini-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 18px 20px;
+  }
+
+  .mini-panel-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .spread-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(30,37,48,0.6);
+  }
+
+  .spread-row:last-child { border-bottom: none; }
+
+  .spread-row-label { color: var(--label); font-size: 11px; }
+
+  .arrow-up::before { content: '▲ '; color: var(--red); font-size: 9px; }
+  .arrow-down::before { content: '▼ '; color: var(--green); font-size: 9px; }
+
+  .equity-item {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(30,37,48,0.6);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .equity-item:last-child { border-bottom: none; }
+
+  .pct-bar {
+    margin-top: 4px;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .pct-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+  .footnote {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>Origination &amp; Exit Tracker</h1>
+    <div class="subtitle">Quarterly deal flow · spreads · equity upside · portfolio velocity</div>
+  </div>
+  <div class="header-right">
+    <button class="quarter-btn">Q2 2023</button>
+    <button class="quarter-btn">Q3 2023</button>
+    <button class="quarter-btn">Q4 2023</button>
+    <button class="quarter-btn active">Q1 2024</button>
+  </div>
+</div>
+
+<!-- KPI ROW -->
+<div class="kpi-row">
+  <div class="kpi gold">
+    <div class="kpi-label">Deployed This Quarter</div>
+    <div class="kpi-value">$312M</div>
+    <div class="kpi-delta up">▲ +18% vs Q4 2023</div>
+  </div>
+  <div class="kpi blue">
+    <div class="kpi-label">Exits / Repayments</div>
+    <div class="kpi-value">$148M</div>
+    <div class="kpi-delta down">▼ –6% vs Q4 2023</div>
+  </div>
+  <div class="kpi green">
+    <div class="kpi-label">Net New Exposure</div>
+    <div class="kpi-value">$164M</div>
+    <div class="kpi-delta up">▲ Portfolio growing</div>
+  </div>
+  <div class="kpi yellow">
+    <div class="kpi-label">Avg All-In Spread</div>
+    <div class="kpi-value">S+612</div>
+    <div class="kpi-delta down">▼ –28bps vs Q4</div>
+  </div>
+  <div class="kpi red">
+    <div class="kpi-label">Deals w/ Warrants</div>
+    <div class="kpi-value">6 / 9</div>
+    <div class="kpi-delta up">▲ 67% attach rate</div>
+  </div>
+</div>
+
+<!-- MAIN GRID: New Originations + Exits -->
+<div class="main-grid">
+
+  <!-- ORIGINATIONS TABLE -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">New Originations — Q1 2024</span>
+      <span class="panel-badge">9 deals · $312M</span>
+    </div>
+    <table class="deal-table">
+      <thead>
+        <tr>
+          <th>Borrower</th>
+          <th>Type</th>
+          <th>Size</th>
+          <th>Spread</th>
+          <th>Equity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="company-name">Meridian Software</div>
+            <div class="company-sector">B2B SaaS · Sponsor-backed</div>
+          </td>
+          <td><span class="tag tag-tl">TL-B</span></td>
+          <td class="size-val">$52M</td>
+          <td class="spread-val">S+625</td>
+          <td><span class="warrant">2.5% warrants</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="company-name">Coastal Health Systems</div>
+            <div class="company-sector">Healthcare Services · PE-owned</div>
+          </td>
+          <td><span class="tag tag-ub">Unitranche</span></td>
+          <td class="size-val">$68M</td>
+          <td class="spread-val">S+700</td>
+          <td><span class="warrant">1% equity co-invest</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="company-name">Alpine Distribution</div>
+            <div class="company-sector">Industrials · Family-owned</div>
+          </td>
+          <td><span class="tag tag-tl">TL-B</span></td>
+          <td class="size-val">$35M</td>
+          <td class="spread-val">S+575</td>
+          <td><span class="no-warrant">None</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="company-name">NovaBridge Fintech</div>
+            <div class="company-sector">Fintech · VC-backed</div>
+          </td>
+          <td><span class="tag tag-mezz">Mezz</span></td>
+          <td class="size-val">$28M</td>
+          <td class="spread-val">S+850</td>
+          <td><span class="warrant">3% warrants</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="company-name">Redwood Packaging</div>
+            <div class="company-sector">Consumer / Packaging · Sponsor</div>
+          </td>
+          <td><span class="tag tag-ub">Unitranche</span></td>
+          <td class="size-val">$44M</td>
+          <td class="spread-val">S+600</td>
+          <td><span class="warrant">1.5% warrants</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="company-name">Stratford Logistics</div>
+            <div class="company-sector">Transportation · PE-backed</div>
+          </td>
+          <td><span class="tag tag-tl">TL-B</span></td>
+          <td class="size-val">$39M</td>
+          <td class="spread-val">S+550</td>
+          <td><span class="no-warrant">None</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- EXITS TABLE -->
+  <div class="panel exit-panel">
+    <div class="panel-header">
+      <span class="panel-title">Exits &amp; Repayments — Q1 2024</span>
+      <span class="panel-badge">5 exits · $148M</span>
+    </div>
+    <table class="deal-table">
+      <thead>
+        <tr>
+          <th>Borrower</th>
+          <th>Exit Type</th>
+          <th>Realized</th>
+          <th>MOIC</th>
+          <th>IRR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="company-name">Vantage Med Group</div>
+            <div class="company-sector">Hold: 2.1 yrs · Original: S+650</div>
+          </td>
+          <td><span class="exit-type-tag exit-sale">M&amp;A Sale</span></td>
+          <td class="size-val">$48M</td>
+          <td>
+            <div class="moic-bar-wrap">
+              <span class="moic-val" style="color:var(--green)">1.34x</span>
+              <div class="moic-bar-bg"><div class="moic-bar-fill" style="width:68%"></div></div>
+            </div>
+          </td>
+          <td class="irr-val">14.2%</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="company-name">Pinnacle Auto Parts</div>
+            <div class="company-sector">Hold: 3.4 yrs · Original: S+600</div>
+          </td>
+          <td><span class="exit-type-tag exit-refi">Refi</span></td>
+          <td class="size-val">$33M</td>
+          <td>
+            <div class="moic-bar-wrap">
+              <span class="moic-val" style="color:var(--green)">1.28x</span>
+              <div class="moic-bar-bg"><div class="moic-bar-fill" style="width:56%"></div></div>
+            </div>
+          </td>
+          <td class="irr-val">11.8%</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="company-name">Harbor Fitness</div>
+            <div class="company-sector">Hold: 1.5 yrs · Original: S+725</div>
+          </td>
+          <td><span class="exit-type-tag exit-repay">Repayment</span></td>
+          <td class="size-val">$22M</td>
+          <td>
+            <div class="moic-bar-wrap">
+              <span class="moic-val" style="color:var(--yellow)">1.18x</span>
+              <div class="moic-bar-bg"><div class="moic-bar-fill mid" style="width:36%"></div></div>
+            </div>
+          </td>
+          <td class="irr-val mid">9.4%</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="company-name">Dunes Energy Services</div>
+            <div class="company-sector">Hold: 2.8 yrs · Original: S+800</div>
+          </td>
+          <td><span class="exit-type-tag exit-sale">M&amp;A Sale</span></td>
+          <td class="size-val">$31M</td>
+          <td>
+            <div class="moic-bar-wrap">
+              <span class="moic-val" style="color:var(--green)">1.41x</span>
+              <div class="moic-bar-bg"><div class="moic-bar-fill" style="width:82%"></div></div>
+            </div>
+          </td>
+          <td class="irr-val">16.1%</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="company-name">Sterling Tech Holdings</div>
+            <div class="company-sector">Hold: 4.1 yrs · Original: S+575</div>
+          </td>
+          <td><span class="exit-type-tag exit-refi">Refi</span></td>
+          <td class="size-val">$14M</td>
+          <td>
+            <div class="moic-bar-wrap">
+              <span class="moic-val" style="color:var(--yellow)">1.22x</span>
+              <div class="moic-bar-bg"><div class="moic-bar-fill mid" style="width:44%"></div></div>
+            </div>
+          </td>
+          <td class="irr-val mid">8.7%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SPREAD TREND CHART -->
+<div class="trend-panel">
+  <div class="panel-header">
+    <span class="panel-title">Spread Trend — New Originations vs. Exits (All-in, bps over SOFR)</span>
+    <span class="panel-badge">6 quarters</span>
+  </div>
+  <div class="chart-area">
+    <div class="chart-svg-wrap">
+      <svg class="trend-chart" viewBox="0 0 900 140" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="orig-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c8a96e" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#c8a96e" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="exit-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4a9eff" stop-opacity="0.12"/>
+            <stop offset="100%" stop-color="#4a9eff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- Grid lines -->
+        <line x1="0" y1="25" x2="900" y2="25" stroke="#1e2530" stroke-width="1"/>
+        <line x1="0" y1="60" x2="900" y2="60" stroke="#1e2530" stroke-width="1"/>
+        <line x1="0" y1="95" x2="900" y2="95" stroke="#1e2530" stroke-width="1"/>
+        <line x1="0" y1="128" x2="900" y2="128" stroke="#1e2530" stroke-width="1"/>
+        <!-- Y labels -->
+        <text x="4" y="22" fill="#5a6275" font-size="10" font-family="DM Mono">750</text>
+        <text x="4" y="57" fill="#5a6275" font-size="10" font-family="DM Mono">700</text>
+        <text x="4" y="92" fill="#5a6275" font-size="10" font-family="DM Mono">650</text>
+        <text x="4" y="125" fill="#5a6275" font-size="10" font-family="DM Mono">600</text>
+        <!-- ORIGINATION area fill: Q3'22=680, Q4'22=700, Q1'23=720, Q2'23=710, Q3'23=668, Q4'23=640, Q1'24=612 -->
+        <!-- Mapping: 600→128, 750→18. Range=150, pixels=110. px = 128 - ((val-600)/150)*110 -->
+        <!-- Q3'22: x=100, 680→(80/150)*110=58.7, y=128-58.7=69.3 -->
+        <!-- Q4'22: x=220, 700→(100/150)*110=73.3, y=128-73.3=54.7 -->
+        <!-- Q1'23: x=340, 720→(120/150)*110=88, y=128-88=40 -->
+        <!-- Q2'23: x=460, 710→(110/150)*110=80.7, y=128-80.7=47.3 -->
+        <!-- Q3'23: x=580, 668→(68/150)*110=49.9, y=128-49.9=78.1 -->
+        <!-- Q4'23: x=700, 640→(40/150)*110=29.3, y=128-29.3=98.7 -->
+        <!-- Q1'24: x=820, 612→(12/150)*110=8.8, y=128-8.8=119.2 -->
+        <polygon points="100,69.3 220,54.7 340,40 460,47.3 580,78.1 700,98.7 820,119.2 820,128 100,128" fill="url(#orig-grad)"/>
+        <polyline points="100,69.3 220,54.7 340,40 460,47.3 580,78.1 700,98.7 820,119.2" fill="none" stroke="#c8a96e" stroke-width="2" stroke-linejoin="round"/>
+        <!-- exit spreads (exits tend to show the original spread they came in at): Q3'22=640, Q4'22=655, Q1'23=668, Q2'23=660, Q3'23=620, Q4'23=615, Q1'24=590 -->
+        <!-- 640→(40/150)*110=29.3→98.7  655→(55/150)*110=40.3→87.7  668→49.9→78.1  660→(60/150)*110=44→84  620→(20/150)*110=14.7→113.3  615→(15/150)*110=11→117  590→(-10/150)... clamp to 128 -->
+        <!-- 590→(-10/150)*110= let me recalc: 590-600=-10, negative, so below range. Set min at 600. Actually show 595 = (−5/150)*110 = −3.7 →131.7, clamp to 128 -->
+        <polygon points="100,98.7 220,87.7 340,78.1 460,84 580,113.3 700,117 820,128 820,128 100,128" fill="url(#exit-grad)"/>
+        <polyline points="100,98.7 220,87.7 340,78.1 460,84 580,113.3 700,117 820,128" fill="none" stroke="#4a9eff" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6,3"/>
+        <!-- Dots -->
+        <circle cx="820" cy="119.2" r="4" fill="#c8a96e"/>
+        <circle cx="820" cy="128" r="4" fill="#4a9eff"/>
+        <!-- Annotation -->
+        <rect x="670" y="30" width="130" height="34" rx="2" fill="#141820" stroke="#1e2530" stroke-width="1"/>
+        <text x="682" y="46" fill="#c8a96e" font-size="10" font-family="DM Mono">▼ Spreads tightening</text>
+        <text x="682" y="58" fill="#5a6275" font-size="9.5" font-family="DM Mono">−88bps over 6 qtrs</text>
+      </svg>
+    </div>
+    <div class="chart-labels">
+      <span>Q3 2022</span>
+      <span>Q4 2022</span>
+      <span>Q1 2023</span>
+      <span>Q2 2023</span>
+      <span>Q3 2023</span>
+      <span>Q4 2023</span>
+      <span>Q1 2024</span>
+    </div>
+  </div>
+  <div class="chart-legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--accent)"></div>
+      New Originations — avg all-in spread
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--accent2)"></div>
+      Exits — original entry spread
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM ROW -->
+<div class="bottom-grid">
+
+  <!-- SPREAD COMPRESSION BY TYPE -->
+  <div class="mini-panel">
+    <div class="mini-panel-title">Spread Δ by Instrument Type (QoQ)</div>
+    <div class="spread-row">
+      <span class="spread-row-label">Term Loan B</span>
+      <span class="arrow-down">S+575 <span style="color:var(--muted);font-size:10px">(was S+610)</span></span>
+    </div>
+    <div class="spread-row">
+      <span class="spread-row-label">Unitranche</span>
+      <span class="arrow-down">S+650 <span style="color:var(--muted);font-size:10px">(was S+668)</span></span>
+    </div>
+    <div class="spread-row">
+      <span class="spread-row-label">Mezzanine</span>
+      <span class="arrow-up">S+850 <span style="color:var(--muted);font-size:10px">(was S+825)</span></span>
+    </div>
+    <div class="spread-row">
+      <span class="spread-row-label">Avg Portfolio</span>
+      <span class="arrow-down">S+612 <span style="color:var(--muted);font-size:10px">(was S+640)</span></span>
+    </div>
+    <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border)">
+      <div style="font-size:10px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.08em">Signal</div>
+      <div style="font-size:11px; color:var(--label); line-height:1.6">TL-B and unitranche compressing as competition tightens. Mezz widening on selectivity — volume down but quality up.</div>
+    </div>
+  </div>
+
+  <!-- EQUITY UPSIDE ATTACH -->
+  <div class="mini-panel">
+    <div class="mini-panel-title">Equity Upside — Attach Rate by Quarter</div>
+    <div class="equity-item">
+      <div>
+        <div style="color:var(--label);font-size:11px">Q1 2024</div>
+        <div class="pct-bar"><div class="pct-bar-fill" style="width:67%"></div></div>
+      </div>
+      <span style="color:var(--accent);font-size:12px;font-weight:500">67%</span>
+    </div>
+    <div class="equity-item">
+      <div>
+        <div style="color:var(--label);font-size:11px">Q4 2023</div>
+        <div class="pct-bar"><div class="pct-bar-fill" style="width:58%"></div></div>
+      </div>
+      <span style="color:var(--accent);font-size:12px;font-weight:500">58%</span>
+    </div>
+    <div class="equity-item">
+      <div>
+        <div style="color:var(--label);font-size:11px">Q3 2023</div>
+        <div class="pct-bar"><div class="pct-bar-fill" style="width:45%"></div></div>
+      </div>
+      <span style="color:var(--accent);font-size:12px;font-weight:500">45%</span>
+    </div>
+    <div class="equity-item">
+      <div>
+        <div style="color:var(--label);font-size:11px">Q2 2023</div>
+        <div class="pct-bar"><div class="pct-bar-fill" style="width:40%"></div></div>
+      </div>
+      <span style="color:var(--accent);font-size:12px;font-weight:500">40%</span>
+    </div>
+    <div style="margin-top:10px;font-size:10px;color:var(--green)">▲ Attach rate rising even as spreads compress — manager extracting equity as cash yield trade-off</div>
+  </div>
+
+  <!-- PORTFOLIO VELOCITY -->
+  <div class="mini-panel">
+    <div class="mini-panel-title">Portfolio Velocity</div>
+    <div class="spread-row">
+      <span class="spread-row-label">Avg Hold Period</span>
+      <span style="color:var(--text)">2.6 yrs</span>
+    </div>
+    <div class="spread-row">
+      <span class="spread-row-label">Prepay Rate (annl.)</span>
+      <span style="color:var(--yellow)">22%</span>
+    </div>
+    <div class="spread-row">
+      <span class="spread-row-label">Refi vs M&A Exit</span>
+      <span style="color:var(--text)">40% / 60%</span>
+    </div>
+    <div class="spread-row">
+      <span class="spread-row-label">Weighted Avg MOIC</span>
+      <span style="color:var(--green)">1.31x</span>
+    </div>
+    <div class="spread-row">
+      <span class="spread-row-label">Weighted Avg IRR</span>
+      <span style="color:var(--green)">12.4%</span>
+    </div>
+    <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border)">
+      <div style="font-size:11px; color:var(--label); line-height:1.6">M&A-driven exits generating higher MOICs. Refi exits showing shorter holds but lower equity upside realization.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footnote">
+  <span>All figures illustrative. Spreads quoted over 30-day average SOFR. MOIC reflects total return including OID, fees, and realized equity proceeds.</span>
+  <span>Private Credit Intelligence · Orion Platform · Q1 2024</span>
+</div>
+
+</body>
+</html>
