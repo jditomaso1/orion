@@ -236,7 +236,7 @@
   <script>
     async function injectSidebar() {
       try {
-        const res = await fetch("/bdc/sidebar.html");
+        const res = await fetch("/bdc/htgc/sidebar.html");
         document.getElementById("sidebar-placeholder").innerHTML = await res.text();
         window.toggleSection = function(id) {
           const s=document.getElementById(id), ic=document.getElementById("icon-"+id);
