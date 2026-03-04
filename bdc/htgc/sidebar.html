@@ -1,0 +1,152 @@
+<!-- FIXED LEFT SIDEBAR -->
+<aside class="w-64 h-screen bg-white border-r shadow-sm fixed top-0 left-0 z-50 flex flex-col">
+
+  <!-- Logo / Title -->
+  <a href="/dnb/index.html"
+     class="flex items-center gap-3 px-6 py-6 border-b">
+  
+    <img src="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png"
+         alt="Orion Logo"
+         class="h-8 w-auto">
+  
+    <span class="text-[24px] font-semibold text-gray-900 tracking-tight leading-none">
+      ORION
+    </span>
+  
+  </a>
+  
+
+  <!--<a href="/credit-manager-portal/main.html"
+   class="flex items-center gap-2 text-lg font-semibold tracking-tight">
+
+  <img src="/assets/orion-logo.svg"
+       alt="Orion"
+       class="h-7 w-auto">
+
+  <span>Orion Credit Manager</span>
+
+  </a>-->
+
+
+  <!-- Navigation -->
+  <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+    
+    <!-- Dave & Buster's -->
+    <div class="mt-4">
+       <button onclick="toggleSection('dave-busters')"
+                class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+        <span>Dave &amp; Buster's</span>
+        <span id="icon-dave-busters" class="transition-transform">
+          ▶
+        </span>
+      </button>
+    
+    <p id="dave-busters" class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 hidden ml-2">
+      
+        <a href="/bdc/oriongpt/oriongpt.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+            Oriongpt
+        </a>
+
+        <a href="/bdc/overview/overview.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+            Overview
+        </a>
+
+        <a href="/bdc/portfolio/portfolio.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+            Portfolio
+        </a>      
+
+        <a href="/bdc/trends/trends.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+            Trends
+        </a> 
+      
+        <a href="/bdc/non-accruals/non-accruals.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+            Non-Accruals
+        </a>
+        
+        <a href="/bdc/construction/construction.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+            Construction
+        </a>
+
+        <a href="/bdc/origination-exits/origination-exits.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+            Origination & Exits
+        </a>
+        
+        <a href="/bdc/news/news.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+            News
+        </a>
+
+        
+        <a href="/bdc/comparables/comparables.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+            Comps
+        </a>
+
+        <a href="/bdc/neural-network/neural-network.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 hover:bg-gray-100">
+            Neural Network
+        </a>
+      
+      </p>
+    </div>
+  </nav>
+
+  <!-- Bottom Settings Button -->
+  <div class="p-4 border-t">
+    <a href="/dnb/pricing/pricing.html"
+       class="flex items-center gap-3 px-3 py-2 rounded text-[14px] text-gray-400 hover:bg-gray-100">
+  
+      <!-- Gear Icon -->
+      <svg xmlns="http://www.w3.org/2000/svg"
+           fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+           stroke="currentColor" class="w-5 h-5 text-gray-400">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M10.5 6h3m-3 0a1.5 1.5 0 00-1.41.99L6 12l3.09 5.01A1.5 1.5 0 0010.5 18h3a1.5 1.5 0 001.41-.99L18 12l-3.09-5.01A1.5 1.5 0 0013.5 6h-3z"/>
+      </svg>
+  
+      <span class="font-medium">Account</span>
+    </a>
+  </div>
+  
+</aside>
+
+<script>
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  const icon = document.getElementById("icon-" + id);
+
+  section.classList.toggle("hidden");
+
+  if (section.classList.contains("hidden")) {
+    icon.style.transform = "rotate(0deg)";
+  } else {
+    icon.style.transform = "rotate(90deg)";
+  }
+
+  // Save open section
+  localStorage.setItem("sidebar-open-section", id);
+}
+
+// Restore last open section
+document.addEventListener("DOMContentLoaded", () => {
+  const last = localStorage.getItem("sidebar-open-section");
+  if (last) {
+    const section = document.getElementById(last);
+    const icon = document.getElementById("icon-" + last);
+    if (section && icon) {
+      section.classList.remove("hidden");
+      icon.style.transform = "rotate(90deg)";
+    }
+  }
+});
+</script>
+
+<!-- WRAP PAGE CONTENT WITH THIS DIV -->
+<!--<div class="ml-64">-->
