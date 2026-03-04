@@ -1,0 +1,356 @@
+<!-- /bdc/htgc/portfolio/portfolio.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • HTGC Portfolio</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px; padding: 2px 6px; border-radius: 8px;
+      border: 1px solid #e5e7eb; background: #fff; color: #111827;
+      white-space: nowrap;
+    }
+
+    .th { font-size: 11px; letter-spacing:.06em; text-transform: uppercase; color:#6b7280; }
+    .td { font-size: 13px; color:#111827; }
+    .chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #e5e7eb; background:#f9fafb; color:#111827; }
+    .delta-up { color:#059669; background: rgba(16,185,129,.10); border-color: rgba(16,185,129,.25); }
+    .delta-dn { color:#b91c1c; background: rgba(239,68,68,.10); border-color: rgba(239,68,68,.25); }
+    .delta-flat { color:#6b7280; background: rgba(107,114,128,.10); border-color: rgba(107,114,128,.25); }
+
+    @media (max-width: 767px) { #sidebar-placeholder { display:none; } }
+    html, body { overflow-x: hidden; }
+    main { min-width: 0; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("../sidebar.html"); // portfolio.html lives in /bdc/htgc/portfolio/
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = window.toggleSection || function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN -->
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1200px] mx-auto md:mx-0 space-y-6">
+
+      <!-- HEADER -->
+      <section class="space-y-3">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">HTGC — Master Portfolio</h1>
+            <div class="text-sm muted mt-1">
+              Every position, structured cleanly (schedule of investments → normalized table).
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="pill">BDCs • HTGC</span>
+            <span class="pill">As of: <span class="font-semibold">Q4 2025</span></span>
+          </div>
+        </div>
+
+        <div class="bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+          <div class="text-sm text-gray-700">
+            Use filters + search to triage. Click a row later (phase 2) to open issuer detail + history.
+          </div>
+          <div class="flex items-center gap-2">
+            <a class="btn btn-ghost" href="../trends/trends.html">View Trends</a>
+            <a class="btn btn-primary" href="../oriongpt/oriongpt.html">Ask OrionGPT</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- FILTERS -->
+      <section class="cardish p-5">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">Filters</div>
+            <div class="text-xs muted mt-1">Client-ready controls. Wire to your dataset when ready.</div>
+          </div>
+          <div class="text-xs muted">Tip: start with Search + Sector + Instrument</div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-12 gap-3">
+          <!-- Search -->
+          <div class="col-span-12 lg:col-span-5">
+            <label class="th block mb-1">Search</label>
+            <input id="search" type="text"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200"
+              placeholder="Company, sector, instrument, ticker..." />
+          </div>
+
+          <!-- Sector -->
+          <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <label class="th block mb-1">Sector</label>
+            <select id="sectorFilter"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="">All</option>
+              <option>Software</option>
+              <option>Healthcare</option>
+              <option>FinTech</option>
+              <option>Life Sciences</option>
+              <option>Services</option>
+            </select>
+          </div>
+
+          <!-- Instrument -->
+          <div class="col-span-12 sm:col-span-6 lg:col-span-2">
+            <label class="th block mb-1">Instrument</label>
+            <select id="instrumentFilter"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="">All</option>
+              <option>First Lien</option>
+              <option>Unitranche</option>
+              <option>Second Lien</option>
+              <option>Equity / Warrant</option>
+            </select>
+          </div>
+
+          <!-- QoQ Change -->
+          <div class="col-span-12 lg:col-span-2">
+            <label class="th block mb-1">QoQ FV Change</label>
+            <select id="qoqFilter"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="">All</option>
+              <option value="up">Up</option>
+              <option value="down">Down</option>
+              <option value="flat">Flat</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABLE -->
+      <section class="cardish overflow-hidden">
+        <div class="p-5 border-b flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">Positions</div>
+            <div class="text-xs muted mt-1">Placeholder rows below — swap in your EDGAR-parsed dataset.</div>
+          </div>
+          <div class="flex items-center gap-2 text-xs muted">
+            <span id="rowCount">0</span> rows
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead class="bg-gray-50 border-b">
+              <tr>
+                <th class="th text-left px-5 py-3">Portfolio Company</th>
+                <th class="th text-left px-5 py-3">Sector</th>
+                <th class="th text-left px-5 py-3">Instrument</th>
+                <th class="th text-right px-5 py-3">Par</th>
+                <th class="th text-right px-5 py-3">Fair Value</th>
+                <th class="th text-left px-5 py-3">Rate / Spread</th>
+                <th class="th text-left px-5 py-3">Maturity</th>
+                <th class="th text-left px-5 py-3">Invested</th>
+                <th class="th text-right px-5 py-3">QoQ FV Δ</th>
+              </tr>
+            </thead>
+
+            <tbody id="tbody" class="bg-white divide-y">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-5 border-t flex items-center justify-between flex-wrap gap-3">
+          <div class="text-xs muted">
+            Next: add row click → issuer page + historical marks + non-accrual history.
+          </div>
+          <button id="resetBtn" class="btn btn-ghost">Reset filters</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // --- Placeholder data. Replace with your parsed schedule dataset later. ---
+    const DATA = [
+      {
+        company: "AlphaSense, Inc.",
+        sector: "Software",
+        instrument: "First Lien",
+        par: 45000000,
+        fv: 46200000,
+        rate: "SOFR + 6.50%",
+        maturity: "2028-06-30",
+        invested: "2023-09-15",
+        qoq: 0.026 // +2.6%
+      },
+      {
+        company: "Chainalysis, Inc.",
+        sector: "FinTech",
+        instrument: "Unitranche",
+        par: 30000000,
+        fv: 28200000,
+        rate: "SOFR + 7.25%",
+        maturity: "2027-12-31",
+        invested: "2022-05-10",
+        qoq: -0.041 // -4.1%
+      },
+      {
+        company: "Elation Health, Inc.",
+        sector: "Healthcare",
+        instrument: "Second Lien",
+        par: 15000000,
+        fv: 15000000,
+        rate: "SOFR + 9.00%",
+        maturity: "2029-03-31",
+        invested: "2024-02-20",
+        qoq: 0.000
+      },
+      {
+        company: "Brain Corporation",
+        sector: "Services",
+        instrument: "Equity / Warrant",
+        par: 0,
+        fv: 5200000,
+        rate: "N/A",
+        maturity: "—",
+        invested: "2021-11-05",
+        qoq: 0.012
+      }
+    ];
+
+    const fmtUSD = (n) => {
+      if (n === null || n === undefined) return "—";
+      if (n === 0) return "$0";
+      return new Intl.NumberFormat("en-US", { style:"currency", currency:"USD", maximumFractionDigits:0 }).format(n);
+    };
+
+    const fmtPct = (x) => {
+      const v = x * 100;
+      const sign = v > 0 ? "+" : "";
+      return `${sign}${v.toFixed(1)}%`;
+    };
+
+    function qoqClass(x) {
+      if (x > 0.001) return "chip delta-up";
+      if (x < -0.001) return "chip delta-dn";
+      return "chip delta-flat";
+    }
+
+    function qoqBucket(x) {
+      if (x > 0.001) return "up";
+      if (x < -0.001) return "down";
+      return "flat";
+    }
+
+    function render(rows) {
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+
+      rows.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-gray-50 cursor-default";
+
+        tr.innerHTML = `
+          <td class="td px-5 py-3">
+            <div class="font-semibold">${r.company}</div>
+            <div class="text-xs muted mt-1">HTGC position</div>
+          </td>
+          <td class="td px-5 py-3"><span class="chip">${r.sector}</span></td>
+          <td class="td px-5 py-3"><span class="chip">${r.instrument}</span></td>
+          <td class="td px-5 py-3 text-right tabular-nums">${fmtUSD(r.par)}</td>
+          <td class="td px-5 py-3 text-right tabular-nums">${fmtUSD(r.fv)}</td>
+          <td class="td px-5 py-3">${r.rate}</td>
+          <td class="td px-5 py-3">${r.maturity}</td>
+          <td class="td px-5 py-3">${r.invested}</td>
+          <td class="td px-5 py-3 text-right tabular-nums">
+            <span class="${qoqClass(r.qoq)}">${fmtPct(r.qoq)}</span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("rowCount").textContent = rows.length;
+    }
+
+    function applyFilters() {
+      const q = document.getElementById("search").value.trim().toLowerCase();
+      const sector = document.getElementById("sectorFilter").value;
+      const instrument = document.getElementById("instrumentFilter").value;
+      const qoq = document.getElementById("qoqFilter").value;
+
+      const out = DATA.filter(r => {
+        const matchesQ =
+          !q ||
+          r.company.toLowerCase().includes(q) ||
+          r.sector.toLowerCase().includes(q) ||
+          r.instrument.toLowerCase().includes(q) ||
+          (r.rate || "").toLowerCase().includes(q);
+
+        const matchesSector = !sector || r.sector === sector;
+        const matchesInstrument = !instrument || r.instrument === instrument;
+        const matchesQoq = !qoq || qoqBucket(r.qoq) === qoq;
+
+        return matchesQ && matchesSector && matchesInstrument && matchesQoq;
+      });
+
+      render(out);
+    }
+
+    // Hook up filters
+    ["search","sectorFilter","instrumentFilter","qoqFilter"].forEach(id => {
+      document.getElementById(id).addEventListener(id === "search" ? "input" : "change", applyFilters);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      document.getElementById("search").value = "";
+      document.getElementById("sectorFilter").value = "";
+      document.getElementById("instrumentFilter").value = "";
+      document.getElementById("qoqFilter").value = "";
+      applyFilters();
+    });
+
+    // Initial render
+    render(DATA);
+  </script>
+
+</body>
+</html>
