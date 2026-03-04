@@ -1,0 +1,423 @@
+<!-- /bdc/htgc/overview/overview.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • HTGC Overview</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px; padding: 2px 6px; border-radius: 8px;
+      border: 1px solid #e5e7eb; background: #fff; color: #111827;
+      white-space: nowrap;
+    }
+
+    .metric-label { font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#6b7280; }
+    .metric-value { font-size:22px; font-weight:700; letter-spacing:-.01em; color:#111827; }
+    .metric-sub { font-size:12px; color:#6b7280; margin-top:4px; }
+
+    .barwrap { height:10px; border-radius:999px; background:#f3f4f6; border:1px solid #e5e7eb; overflow:hidden; }
+    .bar { height:100%; background:#2563eb; border-radius:999px; }
+
+    @media (max-width: 767px) { #sidebar-placeholder { display: none; } }
+    html, body { overflow-x: hidden; }
+    main { min-width: 0; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      // overview.html is in /bdc/htgc/overview/, sidebar is /bdc/htgc/sidebar.html
+      const res = await fetch("../sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = window.toggleSection || function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN -->
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1200px] mx-auto md:mx-0 space-y-6">
+
+      <!-- HERO -->
+      <section class="space-y-3">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">HTGC — Overview</h1>
+            <div class="text-sm muted mt-1">
+              Fast portfolio snapshot from the most recent filing schedule.
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="pill">BDCs • HTGC</span>
+            <span class="pill">Source: Filing schedule</span>
+          </div>
+        </div>
+
+        <div class="mt-2 bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+          <div class="text-sm text-gray-700">
+            This page is auto-calculated from the schedule data. Next step is adding quarterly history + FV/par marks.
+          </div>
+          <div class="flex items-center gap-2">
+            <a class="btn btn-ghost" href="../portfolio/portfolio.html">Open Portfolio</a>
+            <a class="btn btn-primary" href="../oriongpt/oriongpt.html">Ask OrionGPT</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- KPI ROW -->
+      <section class="grid grid-cols-12 gap-6">
+        <div class="col-span-12 lg:col-span-3 cardish p-6">
+          <div class="metric-label">Total principal</div>
+          <div id="kpi-total" class="metric-value">—</div>
+          <div class="metric-sub">Sum of principal across positions</div>
+        </div>
+
+        <div class="col-span-12 lg:col-span-3 cardish p-6">
+          <div class="metric-label">Positions</div>
+          <div id="kpi-positions" class="metric-value">—</div>
+          <div class="metric-sub">Line items in the filing schedule</div>
+        </div>
+
+        <div class="col-span-12 lg:col-span-3 cardish p-6">
+          <div class="metric-label">Unique companies</div>
+          <div id="kpi-companies" class="metric-value">—</div>
+          <div class="metric-sub">Distinct portfolio companies</div>
+        </div>
+
+        <div class="col-span-12 lg:col-span-3 cardish p-6">
+          <div class="metric-label">Industries</div>
+          <div id="kpi-industries" class="metric-value">—</div>
+          <div class="metric-sub">Distinct industry tags</div>
+        </div>
+      </section>
+
+      <!-- MAIN GRID -->
+      <section class="grid grid-cols-12 gap-6">
+
+        <!-- LEFT: TOP INDUSTRIES -->
+        <div class="col-span-12 lg:col-span-7 space-y-6">
+
+          <div class="cardish p-6">
+            <div class="flex items-start justify-between flex-wrap gap-3">
+              <div>
+                <div class="text-sm font-semibold">Top industries by principal</div>
+                <div class="text-xs muted mt-1">Where the dollars are concentrated</div>
+              </div>
+              <span class="pill"><span class="kbd">auto</span> from filing schedule</span>
+            </div>
+
+            <div id="top-industries" class="mt-5 space-y-4">
+              <!-- injected -->
+            </div>
+
+            <div class="mt-4 text-xs muted">
+              Note: this is principal exposure (not fair value). Add FV/par to convert this into real mark exposure.
+            </div>
+          </div>
+
+          <div class="cardish p-6">
+            <div class="flex items-start justify-between flex-wrap gap-3">
+              <div>
+                <div class="text-sm font-semibold">Maturity wall (principal by year)</div>
+                <div class="text-xs muted mt-1">Helps you see refinancing / extension risk clusters</div>
+              </div>
+              <span class="pill">By year</span>
+            </div>
+
+            <div id="maturity-wall" class="mt-5 space-y-4">
+              <!-- injected -->
+            </div>
+
+            <div class="mt-4 text-xs muted">
+              Next: add “<span class="kbd">origination quarter</span>” + exit tracker to see churn and vintage behavior.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: RATE MIX + NOTES -->
+        <aside class="col-span-12 lg:col-span-5 space-y-6">
+
+          <div class="cardish p-6">
+            <div class="flex items-start justify-between flex-wrap gap-3">
+              <div>
+                <div class="text-sm font-semibold">Rate type mix</div>
+                <div class="text-xs muted mt-1">SOFR vs Prime vs Fixed</div>
+              </div>
+              <span class="pill">Mix</span>
+            </div>
+
+            <div id="rate-mix" class="mt-5 space-y-4">
+              <!-- injected -->
+            </div>
+
+            <div class="mt-4 text-xs muted">
+              This is a text parse of the “Interest Rate and Floor” field.
+            </div>
+          </div>
+
+          <div class="cardish p-6">
+            <div class="text-sm font-semibold">What this overview is (and isn’t)</div>
+
+            <div class="mt-4 border rounded-2xl p-4 bg-white text-sm text-gray-800">
+              <div class="font-semibold text-sm">Included</div>
+              <ul class="mt-2 list-disc pl-5 space-y-1 text-xs muted">
+                <li>Principal exposure</li>
+                <li>Industry concentration</li>
+                <li>Maturity wall by year</li>
+                <li>Rate type mix (rough)</li>
+              </ul>
+
+              <div class="font-semibold text-sm mt-4">Not included yet</div>
+              <ul class="mt-2 list-disc pl-5 space-y-1 text-xs muted">
+                <li>Fair value, par, QoQ marks</li>
+                <li>Non-accrual history</li>
+                <li>Vintage / origination cohort analytics</li>
+                <li>Comparable BDC benchmarking</li>
+              </ul>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <a class="btn btn-ghost" href="../non-accruals/non-accruals.html">Non-Accruals</a>
+              <a class="btn btn-ghost" href="../comparables/comparables.html">Comparables</a>
+            </div>
+          </div>
+
+        </aside>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // -------------------------------------------------------------------------
+    // Filing schedule as TSV. Keep adding more rows if you want.
+    // Principal is assumed to be $000s (typical BDC schedule) -> displayed as $MM.
+    // -------------------------------------------------------------------------
+    const FILING_TSV = `Instrument\tIndustry\tPortfolio Company\tType of Investment\tMaturity Date\tInterest Rate and Floor(1)\tPrincipal Amount
+Debt Investments\tApplication Software\tAlchemer LLC\tSenior Secured\tMay 2028\t1-month SOFR + 8.14%, Floor rate 9.14%\t$20,163
+Debt Investments\tApplication Software\tAlphaSense, Inc.\tSenior Secured\tJune 2029\t3-month SOFR + 6.25%, Floor rate 8.25%\t$20,000
+Debt Investments\tApplication Software\tAnnex Cloud\tSenior Secured\tJune 2028\tPIK Interest 3-month SOFR + 9.99%, Floor rate 10.99%\t$5,642
+Debt Investments\tApplication Software\tAnnex Cloud\tSenior Secured\tDecember 2025\tPIK Interest 3-month SOFR + 9.99%, Floor rate 10.99%\t$3,325
+Debt Investments\tApplication Software\tAnnex Cloud\tSenior Secured\tJune 2028\tPIK Interest 3-month SOFR + 5.73%, Floor rate 6.73%\t$1,716
+Debt Investments\tApplication Software\tBabel Street\tSenior Secured\tDecember 2027\t3-month SOFR + 8.01%, Floor rate 9.01%\t$65,937
+Debt Investments\tApplication Software\tBehavox Limited\tSenior Secured\tSeptember 2027\tPrime - 0.55%, Floor rate 7.45%, PIK Interest 3.00%, 4.95% Exit Fee\t$19,444
+Debt Investments\tApplication Software\tBrain Corporation\tSenior Secured\tSeptember 2028\tPrime + 1.35%, Floor rate 9.85%, PIK Interest 2.50%, 3.95% Exit Fee\t$32,830
+Debt Investments\tApplication Software\tCarbyne, Inc.\tSenior Secured\tFebruary 2029\tPrime + 3.50%, Floor rate 10.00%, 3.50% Exit Fee\t$7,450
+Debt Investments\tBiotechnology Tools\tAntheia, Inc.\tSenior Secured\tAugust 2029\tPrime + 2.85%, Floor rate 10.35%, 5.55% Exit Fee\t$21,250
+Debt Investments\tCommunications & Networking\tAryaka Networks, Inc.\tSenior Secured\tDecember 2028\tPrime + 1.80%, Floor rate 9.30%, PIK Interest 1.25%, 6.73% Exit Fee\t$28,271
+Debt Investments\tConsumer & Business Products\tWeee! Inc.\tSenior Secured\tApril 2028\tPrime + 2.25%, Floor rate 9.75%, 2.50% Exit Fee\t$7,500
+Debt Investments\tHealthcare Services, Other\tChenMed, LLC\tSenior Secured\tMay 2030\tPrime + 2.45%, Floor rate 9.45%, 3.75% Exit Fee\t$130,000
+Debt Investments\tHealthcare Services, Other\tMarathon Health, LLC\tSenior Secured\tFebruary 2029\tPrime + 0.75%, Floor rate 8.75%, PIK Interest 2.25%, 3.00% Exit Fee\t$178,230
+Debt Investments\tDefense Technologies\tShield AI, Inc.\tSenior Secured\tFebruary 2029\tPrime + 0.85%, Floor rate 6.85%, Cap rate 9.60%, PIK Interest 2.50%, 2.50% Exit Fee\t$116,675`;
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+    function parseMoneyToThousands(val) {
+      if (!val) return null;
+      const cleaned = String(val).replace(/\$/g, "").replace(/,/g, "").trim();
+      const num = Number(cleaned);
+      return Number.isFinite(num) ? num : null; // $000s
+    }
+
+    function fmtMMFromThousands(thousands) {
+      if (thousands === null || thousands === undefined) return "—";
+      const mm = thousands / 1000; // $000s -> $MM
+      return `$${mm.toFixed(mm >= 100 ? 0 : 1)}mm`;
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function parseTSV(tsv) {
+      const lines = tsv.split("\n").map(l => l.trim()).filter(Boolean);
+      if (lines.length < 2) return [];
+
+      const header = lines[0].split("\t").map(s => s.trim());
+      const idx = (name) => header.findIndex(h => h.toLowerCase() === name.toLowerCase());
+
+      const iInstrument = idx("Instrument");
+      const iIndustry = idx("Industry");
+      const iCompany = idx("Portfolio Company");
+      const iType = idx("Type of Investment");
+      const iMat = idx("Maturity Date");
+      const iRate = idx("Interest Rate and Floor(1)");
+      const iPrincipal = idx("Principal Amount");
+
+      return lines.slice(1).map(line => {
+        const cols = line.split("\t");
+        return {
+          instrument: cols[iInstrument] || "",
+          industry: cols[iIndustry] || "",
+          company: cols[iCompany] || "",
+          type: cols[iType] || "",
+          maturity: cols[iMat] || "",
+          rate: cols[iRate] || "",
+          principal_k: parseMoneyToThousands(cols[iPrincipal] || "")
+        };
+      }).filter(r => r.company);
+    }
+
+    function sum(arr) {
+      return arr.reduce((a,b) => a + (Number.isFinite(b) ? b : 0), 0);
+    }
+
+    function groupSum(rows, keyFn, valFn) {
+      const m = new Map();
+      rows.forEach(r => {
+        const k = keyFn(r);
+        const v = valFn(r);
+        m.set(k, (m.get(k) || 0) + (Number.isFinite(v) ? v : 0));
+      });
+      return m;
+    }
+
+    function topNFromMap(map, n) {
+      return Array.from(map.entries())
+        .sort((a,b) => b[1] - a[1])
+        .slice(0, n);
+    }
+
+    function detectRateType(rateText) {
+      const t = (rateText || "").toLowerCase();
+      if (t.includes("sofr")) return "SOFR";
+      if (t.includes("prime")) return "Prime";
+      if (t.includes("fixed")) return "Fixed";
+      return "Other";
+    }
+
+    function extractYearFromMaturity(maturityText) {
+      // expects things like "May 2028" / "December 2025" / "January 2030"
+      const m = String(maturityText || "").match(/(19|20)\d{2}/);
+      return m ? Number(m[0]) : null;
+    }
+
+    function renderBarRow(container, label, valueK, totalK) {
+      const pct = totalK > 0 ? (valueK / totalK) * 100 : 0;
+      const row = document.createElement("div");
+      row.className = "space-y-2";
+
+      row.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <div class="text-sm font-semibold text-gray-900">${escapeHtml(label)}</div>
+          <div class="text-sm font-semibold text-gray-900 tabular-nums">${fmtMMFromThousands(valueK)}</div>
+        </div>
+        <div class="barwrap">
+          <div class="bar" style="width:${Math.max(0, Math.min(100, pct)).toFixed(1)}%"></div>
+        </div>
+        <div class="flex items-center justify-between text-xs muted">
+          <span>${pct.toFixed(1)}% of principal</span>
+          <span class="tabular-nums">${(valueK/1000).toFixed(1)} MM</span>
+        </div>
+      `;
+      container.appendChild(row);
+    }
+
+    // -------------------------------------------------------------------------
+    // Compute overview stats
+    // -------------------------------------------------------------------------
+    const DATA = parseTSV(FILING_TSV);
+
+    const totalK = sum(DATA.map(d => d.principal_k));
+    const positions = DATA.length;
+    const uniqueCompanies = new Set(DATA.map(d => d.company)).size;
+    const uniqueIndustries = new Set(DATA.map(d => d.industry)).size;
+
+    document.getElementById("kpi-total").textContent = fmtMMFromThousands(totalK);
+    document.getElementById("kpi-positions").textContent = String(positions);
+    document.getElementById("kpi-companies").textContent = String(uniqueCompanies);
+    document.getElementById("kpi-industries").textContent = String(uniqueIndustries);
+
+    // Top industries
+    const industryMap = groupSum(DATA, r => r.industry || "Unspecified", r => r.principal_k);
+    const topIndustries = topNFromMap(industryMap, 8);
+
+    const topIndustriesEl = document.getElementById("top-industries");
+    if (topIndustries.length === 0) {
+      topIndustriesEl.innerHTML = `<div class="text-sm muted">No data loaded.</div>`;
+    } else {
+      topIndustries.forEach(([industry, k]) => renderBarRow(topIndustriesEl, industry, k, totalK));
+    }
+
+    // Maturity wall by year
+    const years = DATA.map(d => extractYearFromMaturity(d.maturity)).filter(Boolean);
+    const minYear = years.length ? Math.min(...years) : null;
+    const maxYear = years.length ? Math.max(...years) : null;
+
+    const yearMap = groupSum(
+      DATA.filter(d => extractYearFromMaturity(d.maturity)),
+      r => String(extractYearFromMaturity(r.maturity)),
+      r => r.principal_k
+    );
+
+    const maturityEl = document.getElementById("maturity-wall");
+    const yearEntries = Array.from(yearMap.entries()).sort((a,b) => Number(a[0]) - Number(b[0]));
+    if (yearEntries.length === 0) {
+      maturityEl.innerHTML = `<div class="text-sm muted">No maturity dates detected.</div>`;
+    } else {
+      yearEntries.forEach(([yr, k]) => renderBarRow(maturityEl, yr, k, totalK));
+    }
+
+    // Rate type mix
+    const rateMap = groupSum(DATA, r => detectRateType(r.rate), r => r.principal_k);
+    const rateEntries = Array.from(rateMap.entries()).sort((a,b) => b[1]-a[1]);
+
+    const rateEl = document.getElementById("rate-mix");
+    rateEntries.forEach(([rt, k]) => renderBarRow(rateEl, rt, k, totalK);
+  </script>
+
+</body>
+</html>
