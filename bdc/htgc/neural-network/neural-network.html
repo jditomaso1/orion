@@ -58,7 +58,7 @@
   <div id="sidebar-placeholder"></div>
   <script>
     async function injectSidebar() {
-      const res = await fetch("/dnb/sidebar.html");
+      const res = await fetch("/bdc/sidebar.html");
       document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
       window.toggleSection = function(id) {
@@ -110,7 +110,7 @@
 
       <div class="flex items-center justify-between gap-4">
         <div>
-          <h2 id="neural-title">Orion Neural Map — Dave &amp; Buster’s (PLAY)</h2>
+          <h2 id="neural-title">Orion Neural Map — Hercules Capital, Inc. (HTGC)</h2>
           <p>Live map from FastAPI (<span class="mono">GET /neural-map</span>) · hover points for metadata · optional nearest-neighbor fibers</p>
         </div>
 
