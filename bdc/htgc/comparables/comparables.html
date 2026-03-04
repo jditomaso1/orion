@@ -1,0 +1,856 @@
+<!-- /bdc/htgc/comp/comp-layer.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC • Comp Layer</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+    .th { font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#6b7280; }
+    .td { font-size:13px; color:#111827; }
+    .chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #e5e7eb; background:#f9fafb; color:#111827; }
+    .kpi { border:1px solid #e5e7eb; border-radius:16px; background:#fff; }
+    .kpi-label { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#6b7280; font-weight:600; }
+    .kpi-value { font-size:22px; font-weight:700; letter-spacing:-.02em; }
+    .kpi-sub { font-size:12px; color:#6b7280; }
+    @media (max-width:767px) { #sidebar-placeholder { display:none; } }
+    html, body { overflow-x:hidden; }
+    main { min-width:0; }
+    .chart-wrap { position:relative; flex:1 1 auto; min-height:300px; }
+    .chart-wrap.tall { min-height:360px; }
+    .chart-wrap canvas { width:100% !important; height:100% !important; display:block; }
+
+    /* BDC color tokens */
+    .htgc-bg  { background:#2563eb; }
+    .obdc-bg  { background:#7c3aed; }
+    .gbdc-bg  { background:#059669; }
+    .arcc-bg  { background:#d97706; }
+
+    .htgc-text  { color:#2563eb; }
+    .obdc-text  { color:#7c3aed; }
+    .gbdc-text  { color:#059669; }
+    .arcc-text  { color:#d97706; }
+
+    .bdc-tag {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:3px 10px; border-radius:999px; font-size:12px; font-weight:600;
+      border:1px solid transparent;
+    }
+    .bdc-tag.htgc { background:#eff6ff; border-color:#bfdbfe; color:#2563eb; }
+    .bdc-tag.obdc { background:#f5f3ff; border-color:#ddd6fe; color:#7c3aed; }
+    .bdc-tag.gbdc { background:#ecfdf5; border-color:#a7f3d0; color:#059669; }
+    .bdc-tag.arcc { background:#fffbeb; border-color:#fde68a; color:#d97706; }
+
+    .delta-up   { color:#059669; font-weight:600; }
+    .delta-down { color:#dc2626; font-weight:600; }
+    .delta-flat { color:#6b7280; }
+
+    .winner-badge {
+      display:inline-flex; align-items:center; gap:4px;
+      font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+      padding:2px 8px; border-radius:999px;
+      background:#dcfce7; color:#166534; border:1px solid #bbf7d0;
+    }
+    .loser-badge {
+      font-size:10px; font-weight:600; letter-spacing:.04em;
+      padding:2px 8px; border-radius:999px;
+      background:#fef2f2; color:#991b1b; border:1px solid #fecaca;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("../sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+      window.toggleSection = window.toggleSection || function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) { section.classList.remove("hidden"); icon.style.transform = "rotate(90deg)"; }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1400px] mx-auto md:mx-0 space-y-6">
+
+      <!-- HEADER -->
+      <section class="space-y-3">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Comp Layer — HTGC vs. Peers</h1>
+            <div class="text-sm muted mt-1">
+              Benchmark HTGC against Blue Owl (OBDC), Golub (GBDC), and Ares (ARCC) —
+              terms, concentration, yield, structure, and first-lien mix.
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="pill" id="asof-pill">As of Dec 31, 2025</span>
+            <a class="btn btn-ghost" href="../overview/overview.html">Back to Overview</a>
+            <a class="btn btn-primary" href="../construction/construction.html">HTGC Construction</a>
+          </div>
+        </div>
+
+        <div class="bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+          <div class="text-sm text-gray-700">
+            Placeholder dataset — representative of public filings (10-K / 10-Q). Replace with live EDGAR parses per BDC.
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="pill">Next: auto-pull from EDGAR on schedule</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- BDC SELECTOR -->
+      <section class="cardish p-5">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+          <div>
+            <div class="text-sm font-semibold">BDCs in view</div>
+            <div class="text-xs muted mt-1">Toggle peers on / off. HTGC is always anchored.</div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3" id="bdc-toggles">
+          <button data-bdc="HTGC" class="bdc-toggle-btn bdc-tag htgc active" onclick="toggleBDC('HTGC')">
+            <span class="w-2 h-2 rounded-full htgc-bg inline-block"></span> HTGC (Hercules)
+          </button>
+          <button data-bdc="OBDC" class="bdc-toggle-btn bdc-tag obdc active" onclick="toggleBDC('OBDC')">
+            <span class="w-2 h-2 rounded-full obdc-bg inline-block"></span> OBDC (Blue Owl)
+          </button>
+          <button data-bdc="GBDC" class="bdc-toggle-btn bdc-tag gbdc active" onclick="toggleBDC('GBDC')">
+            <span class="w-2 h-2 rounded-full gbdc-bg inline-block"></span> GBDC (Golub)
+          </button>
+          <button data-bdc="ARCC" class="bdc-toggle-btn bdc-tag arcc active" onclick="toggleBDC('ARCC')">
+            <span class="w-2 h-2 rounded-full arcc-bg inline-block"></span> ARCC (Ares)
+          </button>
+        </div>
+      </section>
+
+      <!-- KPI COMPARISON STRIP -->
+      <section>
+        <div class="text-sm font-semibold mb-3">Head-to-head snapshot</div>
+        <div class="grid grid-cols-12 gap-4" id="kpi-strip"></div>
+      </section>
+
+      <!-- SCORECARD TABLE -->
+      <section class="cardish overflow-hidden">
+        <div class="p-5 border-b flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">Full scorecard</div>
+            <div class="text-xs muted mt-1">Every metric side by side. Green = best in class, Red = lagging.</div>
+          </div>
+          <span class="pill">Higher spread ≠ better — context matters</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full" id="scorecard-table">
+            <thead class="bg-gray-50 border-b">
+              <tr id="scorecard-head"></tr>
+            </thead>
+            <tbody id="scorecard-body" class="bg-white divide-y"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- CHARTS ROW 1 -->
+      <section class="grid grid-cols-12 gap-6 items-stretch">
+
+        <!-- WAS Bar -->
+        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Weighted avg spread (bps over SOFR)</div>
+              <div class="text-xs muted mt-1">Who's getting paid more per unit of risk?</div>
+            </div>
+            <span class="pill" id="was-winner-pill">—</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="wasChart"></canvas>
+          </div>
+        </div>
+
+        <!-- WAY Bar -->
+        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Weighted avg yield (%)</div>
+              <div class="text-xs muted mt-1">All-in effective yield on debt portfolio</div>
+            </div>
+            <span class="pill" id="way-winner-pill">—</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="wayChart"></canvas>
+          </div>
+        </div>
+
+        <!-- First lien % -->
+        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">First lien % of portfolio</div>
+              <div class="text-xs muted mt-1">Safety anchor — higher = more defensive structure</div>
+            </div>
+            <span class="pill" id="fl-winner-pill">—</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="flChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Top sector concentration -->
+        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Top sector concentration (%)</div>
+              <div class="text-xs muted mt-1">Single-sector idiosyncratic risk — lower = more diversified</div>
+            </div>
+            <span class="pill" id="conc-winner-pill">—</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="concChart"></canvas>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- CHARTS ROW 2 -->
+      <section class="grid grid-cols-12 gap-6 items-stretch">
+
+        <!-- Radar -->
+        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col">
+          <div>
+            <div class="text-sm font-semibold">Multi-factor radar</div>
+            <div class="text-xs muted mt-1">Normalized 0–100. Yield, spread, first lien %, diversification, leverage.</div>
+          </div>
+          <div class="chart-wrap mt-4" style="min-height:340px">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Leverage + NAV premium -->
+        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col">
+          <div>
+            <div class="text-sm font-semibold">Leverage (D/E) vs. NAV premium / discount</div>
+            <div class="text-xs muted mt-1">Higher leverage + NAV discount = market skepticism worth watching</div>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="leverageChart"></canvas>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- SECTOR MIX SIDE BY SIDE -->
+      <section class="cardish overflow-hidden">
+        <div class="p-5 border-b">
+          <div class="text-sm font-semibold">Sector mix — side by side</div>
+          <div class="text-xs muted mt-1">Who is most concentrated? Is HTGC's tech/healthcare tilt a differentiator or a risk?</div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full" id="sector-mix-table">
+            <thead class="bg-gray-50 border-b" id="sector-mix-head"></thead>
+            <tbody class="bg-white divide-y" id="sector-mix-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ANALYST SIGNAL BOX -->
+      <section class="cardish p-6">
+        <div class="text-sm font-semibold mb-3">Orion signal — what the comp is telling you</div>
+        <div class="grid grid-cols-12 gap-4" id="signal-grid"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // =========================================================================
+    // COMP DATASET — representative placeholder
+    // Replace with live EDGAR parses per BDC
+    // =========================================================================
+    const BDCs = {
+      HTGC: {
+        name: "Hercules Capital",
+        ticker: "HTGC",
+        cls: "htgc",
+        color: "#2563eb",
+        asOf: "Dec 31, 2025",
+        totalDebtFV_B: 4.28,
+        positionCount: 110,
+        was: 638,         // bps over SOFR
+        way: 11.1,        // %
+        firstLienPct: 91, // %
+        topSectorPct: 28, // % — Healthcare / Tech
+        topSector: "Healthcare Services",
+        avgHoldMM: 38.9,
+        debtToEquity: 1.12,
+        navPremiumPct: 4.2,   // % premium over NAV
+        nonAccrualPct: 0.8,
+        intlPct: 12,
+        sectors: {
+          "Healthcare Services": 28,
+          "Application Software": 22,
+          "Defense Technologies": 12,
+          "Drug Discovery": 10,
+          "System Software": 9,
+          "Consumer & Business Svcs": 8,
+          "Diversified Financial": 6,
+          "Other": 5
+        }
+      },
+      OBDC: {
+        name: "Blue Owl Capital",
+        ticker: "OBDC",
+        cls: "obdc",
+        color: "#7c3aed",
+        asOf: "Dec 31, 2025",
+        totalDebtFV_B: 13.60,
+        positionCount: 225,
+        was: 595,
+        way: 10.4,
+        firstLienPct: 97,
+        topSectorPct: 20,
+        topSector: "Software & Technology",
+        avgHoldMM: 60.4,
+        debtToEquity: 1.27,
+        navPremiumPct: -2.1,
+        nonAccrualPct: 0.4,
+        intlPct: 6,
+        sectors: {
+          "Software & Technology": 20,
+          "Healthcare": 16,
+          "Financial Services": 14,
+          "Business Services": 13,
+          "Consumer": 11,
+          "Industrials": 10,
+          "Media & Telecom": 8,
+          "Other": 8
+        }
+      },
+      GBDC: {
+        name: "Golub Capital BDC",
+        ticker: "GBDC",
+        cls: "gbdc",
+        color: "#059669",
+        asOf: "Dec 31, 2025",
+        totalDebtFV_B: 7.40,
+        positionCount: 340,
+        was: 572,
+        way: 10.0,
+        firstLienPct: 99,
+        topSectorPct: 15,
+        topSector: "Software",
+        avgHoldMM: 21.8,
+        debtToEquity: 1.18,
+        navPremiumPct: -4.8,
+        nonAccrualPct: 0.2,
+        intlPct: 4,
+        sectors: {
+          "Software": 15,
+          "Healthcare": 14,
+          "Business Services": 13,
+          "Industrials": 12,
+          "Consumer Products": 11,
+          "Financial Services": 10,
+          "Media": 9,
+          "Other": 16
+        }
+      },
+      ARCC: {
+        name: "Ares Capital",
+        ticker: "ARCC",
+        cls: "arcc",
+        color: "#d97706",
+        asOf: "Dec 31, 2025",
+        totalDebtFV_B: 25.10,
+        positionCount: 515,
+        was: 580,
+        way: 10.6,
+        firstLienPct: 76,
+        topSectorPct: 18,
+        topSector: "Healthcare",
+        avgHoldMM: 48.7,
+        debtToEquity: 1.05,
+        navPremiumPct: 6.8,
+        nonAccrualPct: 1.2,
+        intlPct: 8,
+        sectors: {
+          "Healthcare": 18,
+          "Software & Tech": 15,
+          "Consumer & Retail": 14,
+          "Industrials": 13,
+          "Business Services": 12,
+          "Financial Services": 11,
+          "Energy": 7,
+          "Other": 10
+        }
+      }
+    };
+
+    const BDC_ORDER = ["HTGC","OBDC","GBDC","ARCC"];
+    let activeBDCs = new Set(["HTGC","OBDC","GBDC","ARCC"]);
+
+    // =========================================================================
+    // Toggle
+    // =========================================================================
+    function toggleBDC(ticker) {
+      if (ticker === "HTGC") return; // always on
+      if (activeBDCs.has(ticker)) {
+        if (activeBDCs.size <= 2) return; // keep at least HTGC + 1
+        activeBDCs.delete(ticker);
+        document.querySelector(`[data-bdc="${ticker}"]`).classList.remove("active");
+        document.querySelector(`[data-bdc="${ticker}"]`).style.opacity = "0.4";
+      } else {
+        activeBDCs.add(ticker);
+        document.querySelector(`[data-bdc="${ticker}"]`).classList.add("active");
+        document.querySelector(`[data-bdc="${ticker}"]`).style.opacity = "1";
+      }
+      render();
+    }
+
+    function activeBDCList() {
+      return BDC_ORDER.filter(t => activeBDCs.has(t));
+    }
+
+    // =========================================================================
+    // Helpers
+    // =========================================================================
+    function winner(arr, higherIsBetter = true) {
+      // arr = [{ticker, val}]
+      const sorted = [...arr].sort((a,b) => higherIsBetter ? b.val - a.val : a.val - b.val);
+      return sorted[0].ticker;
+    }
+
+    function normalize(val, min, max) {
+      return Math.round(((val - min) / (max - min)) * 100);
+    }
+
+    function winnerBadge(ticker) {
+      return `<span class="winner-badge">★ ${ticker}</span>`;
+    }
+
+    function deltaVsHTGC(metric, ticker, higherIsBetter) {
+      if (ticker === "HTGC") return `<span class="delta-flat">—</span>`;
+      const htgcVal = BDCs["HTGC"][metric];
+      const peerVal = BDCs[ticker][metric];
+      const diff = peerVal - htgcVal;
+      if (Math.abs(diff) < 0.1 && metric.includes("Pct") === false) return `<span class="delta-flat">~flat</span>`;
+      const isBetter = higherIsBetter ? diff > 0 : diff < 0;
+      const sign = diff > 0 ? "+" : "";
+      const cls = isBetter ? "delta-up" : "delta-down";
+      const suffix = typeof htgcVal === "number" && htgcVal > 20 ? " bps" : "%";
+      return `<span class="${cls}">${sign}${diff.toFixed(metric === "was" ? 0 : 1)}${suffix}</span>`;
+    }
+
+    // =========================================================================
+    // KPI STRIP
+    // =========================================================================
+    function renderKPIStrip() {
+      const bdcs = activeBDCList();
+      const strip = document.getElementById("kpi-strip");
+      strip.innerHTML = "";
+
+      const metrics = [
+        { key: "totalDebtFV_B", label: "Debt FV", fmt: v => `$${v.toFixed(1)}B`, higherIsBetter: null },
+        { key: "was", label: "Wtd Avg Spread", fmt: v => `${v} bps`, higherIsBetter: true },
+        { key: "way", label: "Wtd Avg Yield", fmt: v => `${v.toFixed(1)}%`, higherIsBetter: true },
+        { key: "firstLienPct", label: "First Lien %", fmt: v => `${v}%`, higherIsBetter: true },
+        { key: "topSectorPct", label: "Top Sector Conc.", fmt: v => `${v}%`, higherIsBetter: false },
+        { key: "debtToEquity", label: "Debt / Equity", fmt: v => `${v.toFixed(2)}x`, higherIsBetter: null },
+        { key: "navPremiumPct", label: "NAV Prem / Disc", fmt: v => (v >= 0 ? `+${v}%` : `${v}%`), higherIsBetter: true },
+        { key: "nonAccrualPct", label: "Non-Accrual %", fmt: v => `${v}%`, higherIsBetter: false },
+      ];
+
+      metrics.forEach(m => {
+        const colSpan = bdcs.length <= 2 ? "col-span-12 sm:col-span-6 md:col-span-3" : "col-span-12 sm:col-span-6 lg:col-span-3";
+        const div = document.createElement("div");
+        div.className = `${colSpan} kpi p-4`;
+
+        let best = null;
+        if (m.higherIsBetter !== null) {
+          const vals = bdcs.map(t => ({ ticker: t, val: BDCs[t][m.key] }));
+          best = winner(vals, m.higherIsBetter);
+        }
+
+        const rows = bdcs.map(t => {
+          const val = BDCs[t][m.key];
+          const isWinner = best === t;
+          return `
+            <div class="flex items-center justify-between mt-2">
+              <span class="bdc-tag ${BDCs[t].cls}" style="font-size:11px; padding:1px 8px;">${t}</span>
+              <span class="font-semibold text-sm tabular-nums ${isWinner && m.higherIsBetter !== null ? 'text-emerald-600' : ''}">${m.fmt(val)} ${isWinner && m.higherIsBetter !== null ? '★' : ''}</span>
+            </div>`;
+        }).join("");
+
+        div.innerHTML = `
+          <div class="kpi-label">${m.label}</div>
+          ${rows}
+        `;
+        strip.appendChild(div);
+      });
+    }
+
+    // =========================================================================
+    // SCORECARD TABLE
+    // =========================================================================
+    function renderScorecard() {
+      const bdcs = activeBDCList();
+
+      const head = document.getElementById("scorecard-head");
+      head.innerHTML = `<th class="th text-left px-5 py-3">Metric</th>` +
+        bdcs.map(t => `<th class="th text-right px-5 py-3"><span class="bdc-tag ${BDCs[t].cls}">${t}</span></th>`).join("") +
+        `<th class="th text-right px-5 py-3">Best in Class</th>`;
+
+      const rows = [
+        { label:"Total Debt FV", key:"totalDebtFV_B", fmt:v=>`$${v.toFixed(1)}B`, higherIsBetter:null },
+        { label:"# Positions", key:"positionCount", fmt:v=>`${v}`, higherIsBetter:null },
+        { label:"Avg Position Size", key:"avgHoldMM", fmt:v=>`$${v.toFixed(1)}MM`, higherIsBetter:null },
+        { label:"Wtd Avg Spread (bps)", key:"was", fmt:v=>`${v}`, higherIsBetter:true },
+        { label:"Wtd Avg Yield (%)", key:"way", fmt:v=>`${v.toFixed(1)}%`, higherIsBetter:true },
+        { label:"First Lien %", key:"firstLienPct", fmt:v=>`${v}%`, higherIsBetter:true },
+        { label:"Top Sector Concentration", key:"topSectorPct", fmt:v=>`${v}%`, higherIsBetter:false },
+        { label:"Top Sector", key:"topSector", fmt:v=>v, higherIsBetter:null },
+        { label:"Intl Exposure %", key:"intlPct", fmt:v=>`${v}%`, higherIsBetter:null },
+        { label:"Debt / Equity", key:"debtToEquity", fmt:v=>`${v.toFixed(2)}x`, higherIsBetter:false },
+        { label:"NAV Premium / Discount", key:"navPremiumPct", fmt:v=>(v>=0?`+${v}%`:`${v}%`), higherIsBetter:true },
+        { label:"Non-Accrual %", key:"nonAccrualPct", fmt:v=>`${v}%`, higherIsBetter:false },
+      ];
+
+      const tbody = document.getElementById("scorecard-body");
+      tbody.innerHTML = "";
+
+      rows.forEach(r => {
+        let best = null;
+        if (r.higherIsBetter !== null) {
+          const vals = bdcs.map(t => ({ ticker: t, val: typeof BDCs[t][r.key] === "number" ? BDCs[t][r.key] : null })).filter(x => x.val !== null);
+          if (vals.length) best = winner(vals, r.higherIsBetter);
+        }
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-gray-50";
+
+        const cells = bdcs.map(t => {
+          const val = BDCs[t][r.key];
+          const isWinner = best === t;
+          const bg = isWinner ? "bg-emerald-50" : "";
+          const txt = isWinner ? "font-semibold text-emerald-700" : "";
+          return `<td class="td px-5 py-3 text-right tabular-nums ${bg} ${txt}">${r.fmt(val)}</td>`;
+        }).join("");
+
+        const bestCell = best
+          ? `<td class="td px-5 py-3 text-right">${winnerBadge(best)}</td>`
+          : `<td class="td px-5 py-3 text-right muted text-xs">—</td>`;
+
+        tr.innerHTML = `<td class="td px-5 py-3 font-medium">${r.label}</td>${cells}${bestCell}`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // =========================================================================
+    // CHARTS
+    // =========================================================================
+    let wasChart, wayChart, flChart, concChart, radarChart, leverageChart;
+
+    function destroyCharts() {
+      [wasChart, wayChart, flChart, concChart, radarChart, leverageChart].forEach(c => { if(c) c.destroy(); });
+    }
+
+    function renderCharts() {
+      const bdcs = activeBDCList();
+      const labels = bdcs.map(t => `${t}\n${BDCs[t].name}`);
+      const colors = bdcs.map(t => BDCs[t].color);
+
+      // WAS
+      const wasVals = bdcs.map(t => BDCs[t].was);
+      const wasWinner = bdcs[wasVals.indexOf(Math.max(...wasVals))];
+      document.getElementById("was-winner-pill").innerHTML = `Highest spread: <strong>${wasWinner}</strong> (${Math.max(...wasVals)} bps)`;
+
+      wasChart = new Chart(document.getElementById("wasChart"), {
+        type: "bar",
+        data: {
+          labels: bdcs,
+          datasets: [{ label:"WAS (bps)", data: wasVals, backgroundColor: colors, borderRadius: 8, borderSkipped: false }]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{ display:false } },
+          scales:{
+            y:{ min: 500, ticks:{ callback: v=>`${v}` }, grid:{ color:"#f3f4f6" } },
+            x:{ grid:{ display:false } }
+          }
+        }
+      });
+
+      // WAY
+      const wayVals = bdcs.map(t => BDCs[t].way);
+      const wayWinner = bdcs[wayVals.indexOf(Math.max(...wayVals))];
+      document.getElementById("way-winner-pill").innerHTML = `Highest yield: <strong>${wayWinner}</strong> (${Math.max(...wayVals).toFixed(1)}%)`;
+
+      wayChart = new Chart(document.getElementById("wayChart"), {
+        type: "bar",
+        data: {
+          labels: bdcs,
+          datasets: [{ label:"WAY (%)", data: wayVals, backgroundColor: colors, borderRadius: 8, borderSkipped: false }]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{ display:false } },
+          scales:{
+            y:{ min: 8, ticks:{ callback: v=>`${v}%` }, grid:{ color:"#f3f4f6" } },
+            x:{ grid:{ display:false } }
+          }
+        }
+      });
+
+      // First lien %
+      const flVals = bdcs.map(t => BDCs[t].firstLienPct);
+      const flWinner = bdcs[flVals.indexOf(Math.max(...flVals))];
+      document.getElementById("fl-winner-pill").innerHTML = `Most defensive: <strong>${flWinner}</strong> (${Math.max(...flVals)}%)`;
+
+      flChart = new Chart(document.getElementById("flChart"), {
+        type: "bar",
+        data: {
+          labels: bdcs,
+          datasets: [{ label:"First Lien %", data: flVals, backgroundColor: colors, borderRadius: 8, borderSkipped: false }]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{ display:false } },
+          scales:{
+            y:{ min: 60, max:105, ticks:{ callback: v=>`${v}%` }, grid:{ color:"#f3f4f6" } },
+            x:{ grid:{ display:false } }
+          }
+        }
+      });
+
+      // Concentration
+      const concVals = bdcs.map(t => BDCs[t].topSectorPct);
+      const concWinner = bdcs[concVals.indexOf(Math.min(...concVals))];
+      document.getElementById("conc-winner-pill").innerHTML = `Most diversified: <strong>${concWinner}</strong> (${Math.min(...concVals)}% top sector)`;
+
+      concChart = new Chart(document.getElementById("concChart"), {
+        type: "bar",
+        data: {
+          labels: bdcs,
+          datasets: [{ label:"Top Sector %", data: concVals, backgroundColor: colors, borderRadius: 8, borderSkipped: false }]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{ display:false } },
+          scales:{
+            y:{ min: 0, max: 40, ticks:{ callback: v=>`${v}%` }, grid:{ color:"#f3f4f6" } },
+            x:{ grid:{ display:false } }
+          }
+        }
+      });
+
+      // Radar
+      const radarDims = ["Yield","Spread","First Lien","Diversification","Low Leverage","NAV Premium"];
+      const allWAS = BDC_ORDER.map(t=>BDCs[t].was);
+      const allWAY = BDC_ORDER.map(t=>BDCs[t].way);
+      const allFL  = BDC_ORDER.map(t=>BDCs[t].firstLienPct);
+      const allConc= BDC_ORDER.map(t=>BDCs[t].topSectorPct);
+      const allDE  = BDC_ORDER.map(t=>BDCs[t].debtToEquity);
+      const allNAV = BDC_ORDER.map(t=>BDCs[t].navPremiumPct);
+
+      const radarDatasets = bdcs.map(t => {
+        const scores = [
+          normalize(BDCs[t].way, Math.min(...allWAY), Math.max(...allWAY)),
+          normalize(BDCs[t].was, Math.min(...allWAS), Math.max(...allWAS)),
+          normalize(BDCs[t].firstLienPct, Math.min(...allFL), Math.max(...allFL)),
+          100 - normalize(BDCs[t].topSectorPct, Math.min(...allConc), Math.max(...allConc)),
+          100 - normalize(BDCs[t].debtToEquity, Math.min(...allDE), Math.max(...allDE)),
+          normalize(BDCs[t].navPremiumPct, Math.min(...allNAV), Math.max(...allNAV)),
+        ];
+        return {
+          label: t,
+          data: scores,
+          backgroundColor: BDCs[t].color + "22",
+          borderColor: BDCs[t].color,
+          borderWidth: 2,
+          pointBackgroundColor: BDCs[t].color,
+          pointRadius: 4
+        };
+      });
+
+      radarChart = new Chart(document.getElementById("radarChart"), {
+        type: "radar",
+        data: { labels: radarDims, datasets: radarDatasets },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          scales:{ r:{ min:0, max:100, ticks:{ display:false }, grid:{ color:"#e5e7eb" }, pointLabels:{ font:{ size:12 } } } },
+          plugins:{ legend:{ position:"bottom" } }
+        }
+      });
+
+      // Leverage scatter
+      const leverageDatasets = bdcs.map(t => ({
+        label: t,
+        data: [{ x: BDCs[t].debtToEquity, y: BDCs[t].navPremiumPct }],
+        backgroundColor: BDCs[t].color,
+        borderColor: "#fff",
+        borderWidth: 2,
+        pointRadius: 14,
+        pointHoverRadius: 16
+      }));
+
+      leverageChart = new Chart(document.getElementById("leverageChart"), {
+        type: "scatter",
+        data: { datasets: leverageDatasets },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{
+            legend:{ position:"bottom" },
+            tooltip:{
+              callbacks:{
+                label: ctx => `${ctx.dataset.label}: D/E ${ctx.parsed.x.toFixed(2)}x | NAV ${ctx.parsed.y >= 0 ? '+' : ''}${ctx.parsed.y}%`
+              }
+            }
+          },
+          scales:{
+            x:{ title:{ display:true, text:"Debt / Equity (x)" }, grid:{ color:"#f3f4f6" } },
+            y:{ title:{ display:true, text:"NAV Prem / Disc (%)" }, grid:{ color:"#f3f4f6" } }
+          }
+        }
+      });
+    }
+
+    // =========================================================================
+    // SECTOR MIX TABLE
+    // =========================================================================
+    function renderSectorMix() {
+      const bdcs = activeBDCList();
+
+      // collect all sectors
+      const allSectors = new Set();
+      bdcs.forEach(t => Object.keys(BDCs[t].sectors).forEach(s => allSectors.add(s)));
+      const sectors = Array.from(allSectors).sort((a,b) => {
+        // sort by HTGC's sector weight descending, then alpha
+        const ha = BDCs["HTGC"].sectors[a] || 0;
+        const hb = BDCs["HTGC"].sectors[b] || 0;
+        return hb - ha;
+      });
+
+      const head = document.getElementById("sector-mix-head");
+      head.innerHTML = `<tr>
+        <th class="th text-left px-5 py-3">Sector</th>
+        ${bdcs.map(t=>`<th class="th text-right px-5 py-3"><span class="bdc-tag ${BDCs[t].cls}">${t}</span></th>`).join("")}
+      </tr>`;
+
+      const tbody = document.getElementById("sector-mix-body");
+      tbody.innerHTML = "";
+
+      sectors.forEach(s => {
+        const vals = bdcs.map(t => BDCs[t].sectors[s] || 0);
+        const maxVal = Math.max(...vals);
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-gray-50";
+
+        const cells = bdcs.map((t, i) => {
+          const v = vals[i];
+          const isMax = v === maxVal && maxVal > 0;
+          return `<td class="td px-5 py-3 text-right tabular-nums">
+            <div class="flex items-center justify-end gap-2">
+              ${isMax ? `<span style="font-size:10px;color:#059669">▲</span>` : ""}
+              <span class="${isMax ? 'font-semibold text-emerald-700' : ''}">${v ? v + "%" : "—"}</span>
+              ${v ? `<div style="width:${v * 2}px;height:4px;background:${BDCs[t].color};border-radius:2px;opacity:0.7;display:inline-block"></div>` : ""}
+            </div>
+          </td>`;
+        }).join("");
+
+        tr.innerHTML = `<td class="td px-5 py-3 font-medium">${s}</td>${cells}`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // =========================================================================
+    // SIGNAL BOX
+    // =========================================================================
+    function renderSignals() {
+      const signals = [
+        {
+          title: "HTGC: Higher yield, lower scale",
+          body: `HTGC's ${BDCs.HTGC.was} bps spread and ${BDCs.HTGC.way.toFixed(1)}% yield lead the peer group — but at $${BDCs.HTGC.totalDebtFV_B.toFixed(1)}B AUM it lacks ARCC's ($${BDCs.ARCC.totalDebtFV_B.toFixed(1)}B) diversification engine. Concentrated tech/healthcare bet is paying off in yield terms.`,
+          icon: "📈", border: "border-blue-200", bg: "bg-blue-50"
+        },
+        {
+          title: "GBDC: Lowest spread, highest structural safety",
+          body: `Golub's ${BDCs.GBDC.firstLienPct}% first lien concentration and ${BDCs.GBDC.nonAccrualPct}% non-accrual signal best-in-class credit quality — but the market is pricing that in: NAV discount of ${BDCs.GBDC.navPremiumPct}% and compressed spreads of ${BDCs.GBDC.was} bps suggest less return potential.`,
+          icon: "🛡️", border: "border-emerald-200", bg: "bg-emerald-50"
+        },
+        {
+          title: "ARCC: Scale advantage, structural complexity",
+          body: `At $${BDCs.ARCC.totalDebtFV_B.toFixed(1)}B, ARCC dwarfs peers in scale. But ${BDCs.ARCC.firstLienPct}% first lien (vs. HTGC's ${BDCs.HTGC.firstLienPct}%) and a ${BDCs.ARCC.nonAccrualPct}% non-accrual rate suggest it has accepted more credit risk for deployment velocity.`,
+          icon: "⚖️", border: "border-amber-200", bg: "bg-amber-50"
+        },
+        {
+          title: "Spread compression signal",
+          body: `OBDC and GBDC spreads (${BDCs.OBDC.was} and ${BDCs.GBDC.was} bps) are materially below HTGC's ${BDCs.HTGC.was} bps. Either HTGC is extracting a genuine risk premium on its VC / growth equity borrower base, or peers are accepting tighter terms on lower-risk credits. Watch non-accrual trends to disambiguate.`,
+          icon: "🔍", border: "border-purple-200", bg: "bg-purple-50"
+        },
+      ];
+
+      const grid = document.getElementById("signal-grid");
+      grid.innerHTML = "";
+
+      signals.forEach(s => {
+        const div = document.createElement("div");
+        div.className = `col-span-12 md:col-span-6 rounded-xl border ${s.border} ${s.bg} p-4`;
+        div.innerHTML = `
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">${s.icon}</span>
+            <div>
+              <div class="text-sm font-semibold mb-1">${s.title}</div>
+              <div class="text-xs text-gray-600 leading-relaxed">${s.body}</div>
+            </div>
+          </div>`;
+        grid.appendChild(div);
+      });
+    }
+
+    // =========================================================================
+    // MASTER RENDER
+    // =========================================================================
+    function render() {
+      destroyCharts();
+      renderKPIStrip();
+      renderScorecard();
+      renderCharts();
+      renderSectorMix();
+      renderSignals();
+    }
+
+    render();
+  </script>
+
+</body>
+</html>
