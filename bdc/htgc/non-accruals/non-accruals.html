@@ -1,0 +1,478 @@
+<!-- /bdc/htgc/nonaccrual/nonaccrual.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC • Non-Accrual Monitor</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+
+    .th { font-size: 11px; letter-spacing:.06em; text-transform: uppercase; color:#6b7280; }
+    .td { font-size: 13px; color:#111827; }
+    .chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #e5e7eb; background:#f9fafb; color:#111827; }
+
+    .kpi { border:1px solid #e5e7eb; border-radius:16px; background:#fff; }
+    .kpi-label { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#6b7280; font-weight:600; }
+    .kpi-value { font-size:22px; font-weight:700; letter-spacing:-.02em; }
+    .kpi-sub { font-size:12px; color:#6b7280; }
+
+    @media (max-width: 767px) { #sidebar-placeholder { display:none; } }
+    html, body { overflow-x:hidden; }
+    main { min-width:0; }
+
+    /* Charts fill their cards */
+    .chart-wrap { position:relative; flex:1 1 auto; min-height:320px; }
+    .chart-wrap canvas { width:100% !important; height:100% !important; display:block; }
+
+    .badge { display:inline-flex; align-items:center; padding:2px 10px; border-radius:999px; font-size:12px; border:1px solid; }
+    .b-open { background:#fff7ed; border-color:#fed7aa; color:#9a3412; }      /* amber */
+    .b-resolved { background:#ecfeff; border-color:#a5f3fc; color:#155e75; }  /* cyan */
+    .b-writeoff { background:#fef2f2; border-color:#fecaca; color:#991b1b; }  /* red */
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      // nonaccrual.html is in /bdc/htgc/nonaccrual/, sidebar is /bdc/htgc/sidebar.html
+      const res = await fetch("../sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = window.toggleSection || function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN -->
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1400px] mx-auto md:mx-0 space-y-6">
+
+      <!-- HEADER -->
+      <section class="space-y-3">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">HTGC — Non-Accrual Monitor</h1>
+            <div class="text-sm muted mt-1">
+              Dedicated view of every loan that’s ever gone on non-accrual — when it happened, markdown magnitude,
+              and whether it resolved or was written off. This is a core credit-quality signal.
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="pill" id="coverage-pill">Coverage: —</span>
+            <a class="btn btn-ghost" href="../overview/overview.html">Back to Overview</a>
+            <a class="btn btn-primary" href="../portfolio/portfolio.html">View Portfolio</a>
+          </div>
+        </div>
+
+        <div class="bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+          <div class="text-sm text-gray-700">
+            Placeholder sample data for now. Once you parse filings, this becomes “always-on non-accrual history.”
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="pill">Next: attach source filing links per event</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- FILTERS -->
+      <section class="cardish p-5">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">Filters</div>
+            <div class="text-xs muted mt-1">Search by company, industry, sponsor, instrument, notes.</div>
+          </div>
+          <div class="text-xs muted">Tip: Status + “max markdown” finds the ugly stuff fast</div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-12 gap-3">
+          <!-- Search -->
+          <div class="col-span-12 lg:col-span-6">
+            <label class="th block mb-1">Search</label>
+            <input id="search" type="text"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200"
+              placeholder="Company, industry, notes..." />
+          </div>
+
+          <!-- Status -->
+          <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <label class="th block mb-1">Status</label>
+            <select id="statusFilter"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="">All</option>
+              <option value="Open">Open (still on NA)</option>
+              <option value="Resolved">Resolved (back to accrual)</option>
+              <option value="Written Off">Written off / exited</option>
+            </select>
+          </div>
+
+          <!-- Sort -->
+          <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <label class="th block mb-1">Sort</label>
+            <select id="sortSelect"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="date_desc" selected>Most recent NA</option>
+              <option value="md_desc">Max markdown (high → low)</option>
+              <option value="tenure_desc">Time on NA (high → low)</option>
+              <option value="company_asc">Company (A → Z)</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- KPI STRIP -->
+      <section class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">NA names</div>
+          <div class="kpi-value mt-1" id="kpi-names">—</div>
+          <div class="kpi-sub mt-1">unique companies ever NA</div>
+        </div>
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">Open</div>
+          <div class="kpi-value mt-1" id="kpi-open">—</div>
+          <div class="kpi-sub mt-1">currently on non-accrual</div>
+        </div>
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">Worst markdown</div>
+          <div class="kpi-value mt-1" id="kpi-worst">—</div>
+          <div class="kpi-sub mt-1" id="kpi-worst-name">—</div>
+        </div>
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">Resolved rate</div>
+          <div class="kpi-value mt-1" id="kpi-resolved">—</div>
+          <div class="kpi-sub mt-1">resolved / total</div>
+        </div>
+      </section>
+
+      <!-- CHARTS -->
+      <section class="grid grid-cols-12 gap-6 items-stretch">
+        <!-- NA over time -->
+        <div class="col-span-12 lg:col-span-7 cardish p-6 flex flex-col h-full">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Non-accrual incidence over time</div>
+              <div class="text-xs muted mt-1">Count of new non-accrual events by quarter (placeholder).</div>
+            </div>
+            <span class="pill">Events</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="naEventsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Markdown severity -->
+        <div class="col-span-12 lg:col-span-5 cardish p-6 flex flex-col h-full">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Markdown severity distribution</div>
+              <div class="text-xs muted mt-1">Max markdown (% of principal or par) — placeholder.</div>
+            </div>
+            <span class="pill">Max MD%</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="mdDistChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABLE -->
+      <section class="cardish overflow-hidden">
+        <div class="p-5 border-b flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">Non-accrual history</div>
+            <div class="text-xs muted mt-1">Each row = one NA episode. Track start/end, markdown, and outcome.</div>
+          </div>
+          <div class="flex items-center gap-2 text-xs muted">
+            <span id="rowCount">0</span> rows
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead class="bg-gray-50 border-b">
+              <tr>
+                <th class="th text-left px-5 py-3">Company</th>
+                <th class="th text-left px-5 py-3">Industry</th>
+                <th class="th text-left px-5 py-3">NA start</th>
+                <th class="th text-left px-5 py-3">NA end</th>
+                <th class="th text-right px-5 py-3">Time on NA</th>
+                <th class="th text-right px-5 py-3">Max markdown</th>
+                <th class="th text-left px-5 py-3">Outcome</th>
+                <th class="th text-left px-5 py-3">Notes</th>
+              </tr>
+            </thead>
+
+            <tbody id="tbody" class="bg-white divide-y"></tbody>
+          </table>
+        </div>
+
+        <div class="p-5 border-t flex items-center justify-between flex-wrap gap-3">
+          <div class="text-xs muted">
+            Next: include “restructured / amended” flags, sponsor, rating drift, and recovery realized vs expected.
+          </div>
+          <button id="resetBtn" class="btn btn-ghost">Reset filters</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // =========================================================================
+    // Placeholder Non-Accrual Event Dataset
+    // Replace with your database pull later.
+    //
+    // Suggested real schema:
+    // { company, industry, startQuarter, endQuarter|null, maxMarkdownPct, outcome, notes, sources:[{quarter,url}] }
+    // =========================================================================
+    const NA_DB = {
+      coverage: { start: "2019Q1", end: "2025Q4" },
+      events: [
+        { company:"Phathom Pharmaceuticals, Inc.", industry:"Drug Discovery & Dev.", start:"2024Q2", end:null, maxMdPct:22.5, outcome:"Open", notes:"NA after liquidity squeeze; restructuring discussions." },
+        { company:"Corium, Inc.", industry:"Drug Discovery & Dev.", start:"2023Q4", end:"2024Q3", maxMdPct:48.0, outcome:"Resolved", notes:"Back to accrual after recapitalization." },
+        { company:"SeatGeek, Inc.", industry:"Consumer & Business Svcs", start:"2022Q1", end:"2022Q4", maxMdPct:15.0, outcome:"Resolved", notes:"Covenant reset; regained accrual status." },
+        { company:"Gibraltar Acquisition LLC", industry:"Diversified Financial Services", start:"2021Q2", end:"2023Q1", maxMdPct:65.0, outcome:"Written Off", notes:"Exited at loss; partial recovery." },
+        { company:"Sisense Ltd.", industry:"Application / BI Software", start:"2020Q3", end:"2021Q1", maxMdPct:28.0, outcome:"Resolved", notes:"Sponsor support + amendment; recovered marks over time." }
+      ]
+    };
+
+    // =========================================================================
+    // Helpers
+    // =========================================================================
+    const $ = (id) => document.getElementById(id);
+
+    function fmtQuarter(q) {
+      if (!q) return "—";
+      const yr = q.slice(2,4);
+      const qt = q.slice(4);
+      return `${qt} '${yr}`;
+    }
+
+    function qToIndex(q) {
+      // 2019Q1 -> number
+      const y = Number(q.slice(0,4));
+      const qt = Number(q.slice(5));
+      return y * 4 + (qt - 1);
+    }
+
+    function quarterDiff(qStart, qEnd) {
+      if (!qStart) return null;
+      const a = qToIndex(qStart);
+      const b = qToIndex(qEnd);
+      return b - a + 1; // inclusive
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function outcomeBadge(outcome) {
+      if (outcome === "Open") return `<span class="badge b-open">Open</span>`;
+      if (outcome === "Resolved") return `<span class="badge b-resolved">Resolved</span>`;
+      if (outcome === "Written Off") return `<span class="badge b-writeoff">Written off</span>`;
+      return `<span class="badge" style="background:#f9fafb;border-color:#e5e7eb;color:#111827">${escapeHtml(outcome || "—")}</span>`;
+    }
+
+    // =========================================================================
+    // KPI render
+    // =========================================================================
+    $("coverage-pill").textContent = `Coverage: ${fmtQuarter(NA_DB.coverage.start)} → ${fmtQuarter(NA_DB.coverage.end)}`;
+
+    const uniqueNames = new Set(NA_DB.events.map(e => e.company)).size;
+    const openCount = NA_DB.events.filter(e => e.outcome === "Open").length;
+    const resolvedCount = NA_DB.events.filter(e => e.outcome === "Resolved").length;
+
+    const worst = [...NA_DB.events].sort((a,b)=>b.maxMdPct-a.maxMdPct)[0];
+
+    $("kpi-names").textContent = uniqueNames.toString();
+    $("kpi-open").textContent = openCount.toString();
+    $("kpi-worst").textContent = worst ? `${worst.maxMdPct.toFixed(1)}%` : "—";
+    $("kpi-worst-name").textContent = worst ? worst.company : "—";
+
+    const resolvedRate = NA_DB.events.length ? (resolvedCount / NA_DB.events.length) * 100 : 0;
+    $("kpi-resolved").textContent = `${resolvedRate.toFixed(0)}%`;
+
+    // =========================================================================
+    // Charts
+    // =========================================================================
+    // Events by quarter (placeholder: count start quarter)
+    const allQuarters = [];
+    for (let qi = qToIndex(NA_DB.coverage.start); qi <= qToIndex(NA_DB.coverage.end); qi++) {
+      const y = Math.floor(qi / 4);
+      const q = (qi % 4) + 1;
+      allQuarters.push(`${y}Q${q}`);
+    }
+
+    const eventCounts = allQuarters.map(q => NA_DB.events.filter(e => e.start === q).length);
+
+    new Chart(document.getElementById("naEventsChart"), {
+      type: "bar",
+      data: {
+        labels: allQuarters.map(fmtQuarter),
+        datasets: [{ label: "New NA events", data: eventCounts }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } },
+          y: { ticks: { precision: 0 } }
+        }
+      }
+    });
+
+    // Markdown distribution buckets
+    const buckets = [
+      { label: "<10%", min: 0, max: 10 },
+      { label: "10–25%", min: 10, max: 25 },
+      { label: "25–50%", min: 25, max: 50 },
+      { label: "50%+", min: 50, max: 1000 }
+    ];
+    const bucketCounts = buckets.map(b =>
+      NA_DB.events.filter(e => e.maxMdPct >= b.min && e.maxMdPct < b.max).length
+    );
+
+    new Chart(document.getElementById("mdDistChart"), {
+      type: "doughnut",
+      data: {
+        labels: buckets.map(b => b.label),
+        datasets: [{ data: bucketCounts, borderWidth: 0 }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } },
+        cutout: "62%"
+      }
+    });
+
+    // =========================================================================
+    // Table render + filters
+    // =========================================================================
+    function applyFilters() {
+      const q = $("search").value.trim().toLowerCase();
+      const status = $("statusFilter").value;
+      const sort = $("sortSelect").value;
+
+      let rows = NA_DB.events.filter(e => {
+        const matchesQ =
+          !q ||
+          (e.company || "").toLowerCase().includes(q) ||
+          (e.industry || "").toLowerCase().includes(q) ||
+          (e.notes || "").toLowerCase().includes(q);
+
+        const matchesStatus = !status || e.outcome === status;
+        return matchesQ && matchesStatus;
+      });
+
+      // Sort
+      rows.sort((a,b) => {
+        if (sort === "date_desc") return qToIndex(b.start) - qToIndex(a.start);
+        if (sort === "md_desc") return b.maxMdPct - a.maxMdPct;
+        if (sort === "tenure_desc") {
+          const aEnd = a.end || NA_DB.coverage.end;
+          const bEnd = b.end || NA_DB.coverage.end;
+          return quarterDiff(b.start, bEnd) - quarterDiff(a.start, aEnd);
+        }
+        if (sort === "company_asc") return a.company.localeCompare(b.company);
+        return 0;
+      });
+
+      render(rows);
+    }
+
+    function render(rows) {
+      const tbody = $("tbody");
+      tbody.innerHTML = "";
+
+      rows.forEach(e => {
+        const end = e.end || null;
+        const endForTenure = end || NA_DB.coverage.end;
+        const tenureQ = quarterDiff(e.start, endForTenure);
+        const tenureTxt = tenureQ ? `${tenureQ} qtrs` : "—";
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-gray-50";
+        tr.innerHTML = `
+          <td class="td px-5 py-3">
+            <div class="font-semibold">${escapeHtml(e.company)}</div>
+          </td>
+          <td class="td px-5 py-3"><span class="chip">${escapeHtml(e.industry || "—")}</span></td>
+          <td class="td px-5 py-3">${fmtQuarter(e.start)}</td>
+          <td class="td px-5 py-3">${end ? fmtQuarter(end) : "<span class='muted'>—</span>"}</td>
+          <td class="td px-5 py-3 text-right tabular-nums">${tenureTxt}</td>
+          <td class="td px-5 py-3 text-right tabular-nums font-semibold">${Number(e.maxMdPct).toFixed(1)}%</td>
+          <td class="td px-5 py-3">${outcomeBadge(e.outcome)}</td>
+          <td class="td px-5 py-3 text-gray-700">${escapeHtml(e.notes || "—")}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      $("rowCount").textContent = rows.length;
+    }
+
+    $("search").addEventListener("input", applyFilters);
+    $("statusFilter").addEventListener("change", applyFilters);
+    $("sortSelect").addEventListener("change", applyFilters);
+
+    $("resetBtn").addEventListener("click", () => {
+      $("search").value = "";
+      $("statusFilter").value = "";
+      $("sortSelect").value = "date_desc";
+      applyFilters();
+    });
+
+    // Initial
+    applyFilters();
+  </script>
+
+</body>
+</html>
