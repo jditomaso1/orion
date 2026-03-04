@@ -1,10 +1,10 @@
-<!-- /bdc/htgc/construction/construction.html -->
+<!-- /bdc/htgc/origination/origination.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Orion • BDC • HTGC • Portfolio Construction</title>
+  <title>Orion • BDC • HTGC • Origination & Exit Tracker</title>
 
   <!-- Favicon -->
   <link rel="icon" type="image/png"
@@ -30,20 +30,20 @@
     .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
     .btn-ghost:hover { background:#f9fafb; }
 
-    .th { font-size: 11px; letter-spacing:.06em; text-transform: uppercase; color:#6b7280; }
-    .td { font-size: 13px; color:#111827; }
-    .chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #e5e7eb; background:#f9fafb; color:#111827; }
-
     .kpi { border:1px solid #e5e7eb; border-radius:16px; background:#fff; }
     .kpi-label { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#6b7280; font-weight:600; }
     .kpi-value { font-size:22px; font-weight:700; letter-spacing:-.02em; }
     .kpi-sub { font-size:12px; color:#6b7280; }
 
+    .th { font-size: 11px; letter-spacing:.06em; text-transform: uppercase; color:#6b7280; }
+    .td { font-size: 13px; color:#111827; }
+    .chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #e5e7eb; background:#f9fafb; color:#111827; }
+
     @media (max-width: 767px) { #sidebar-placeholder { display:none; } }
     html, body { overflow-x:hidden; }
     main { min-width:0; }
 
-    /* Charts fill their cards (kills the “white space” problem) */
+    /* Charts fill their cards (no dead white space) */
     .chart-wrap { position:relative; flex:1 1 auto; min-height:320px; }
     .chart-wrap.tall { min-height:380px; }
     .chart-wrap canvas { width:100% !important; height:100% !important; display:block; }
@@ -56,7 +56,7 @@
   <div id="sidebar-placeholder"></div>
   <script>
     async function injectSidebar() {
-      // construction.html is in /bdc/htgc/construction/, sidebar is /bdc/htgc/sidebar.html
+      // origination.html is in /bdc/htgc/origination/, sidebar is /bdc/htgc/sidebar.html
       const res = await fetch("../sidebar.html");
       document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
@@ -90,14 +90,13 @@
       <section class="space-y-3">
         <div class="flex items-start justify-between flex-wrap gap-3">
           <div>
-            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">HTGC — Portfolio Construction Analytics</h1>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">HTGC — Origination & Exit Tracker</h1>
             <div class="text-sm muted mt-1">
-              Sector concentration, instrument mix, maturity wall, weighted average spread/yield, and geography.
-              Built to show “what’s in the box” fast.
+              Quarter-by-quarter: what went on, what came off, at what terms — spreads tightening/widening, and equity upside trend.
             </div>
           </div>
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="pill" id="asof-pill">As of —</span>
+            <span class="pill" id="asof-pill">Coverage —</span>
             <a class="btn btn-ghost" href="../overview/overview.html">Back to Overview</a>
             <a class="btn btn-primary" href="../portfolio/portfolio.html">View Portfolio</a>
           </div>
@@ -105,10 +104,10 @@
 
         <div class="bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
           <div class="text-sm text-gray-700">
-            Placeholder dataset for now. Later: load the schedule + fair value + spread + geography from EDGAR parses.
+            Placeholder sample dataset. Replace with EDGAR-derived quarter snapshots and Orion will compute adds/exits automatically.
           </div>
           <div class="flex items-center gap-2">
-            <span class="pill">Next: make everything drill-down clickable</span>
+            <span class="pill">Next: drill-down per quarter → new deals + repayments + amendments</span>
           </div>
         </div>
       </section>
@@ -116,27 +115,27 @@
       <!-- KPI STRIP -->
       <section class="grid grid-cols-12 gap-4">
         <div class="col-span-12 md:col-span-3 kpi p-4">
-          <div class="kpi-label">Debt FV</div>
-          <div class="kpi-value mt-1" id="kpi-fv">—</div>
-          <div class="kpi-sub mt-1" id="kpi-count">— positions</div>
+          <div class="kpi-label">Net adds</div>
+          <div class="kpi-value mt-1" id="kpi-net-adds">—</div>
+          <div class="kpi-sub mt-1" id="kpi-net-adds-sub">adds minus exits</div>
         </div>
 
         <div class="col-span-12 md:col-span-3 kpi p-4">
-          <div class="kpi-label">Weighted avg spread</div>
-          <div class="kpi-value mt-1" id="kpi-was">—</div>
-          <div class="kpi-sub mt-1">SOFR + spread (approx)</div>
+          <div class="kpi-label">Avg spread on new originations</div>
+          <div class="kpi-value mt-1" id="kpi-avg-new-spread">—</div>
+          <div class="kpi-sub mt-1" id="kpi-spread-trend">—</div>
         </div>
 
         <div class="col-span-12 md:col-span-3 kpi p-4">
-          <div class="kpi-label">Weighted avg yield</div>
-          <div class="kpi-value mt-1" id="kpi-way">—</div>
-          <div class="kpi-sub mt-1">coupon / yield (approx)</div>
+          <div class="kpi-label">Equity upside mix</div>
+          <div class="kpi-value mt-1" id="kpi-equity-mix">—</div>
+          <div class="kpi-sub mt-1">% of new deals w/ warrants/convert</div>
         </div>
 
         <div class="col-span-12 md:col-span-3 kpi p-4">
-          <div class="kpi-label">Top sector</div>
-          <div class="kpi-value mt-1" id="kpi-top-sector">—</div>
-          <div class="kpi-sub mt-1" id="kpi-top-sector-pct">—</div>
+          <div class="kpi-label">Gross originations</div>
+          <div class="kpi-value mt-1" id="kpi-gross">—</div>
+          <div class="kpi-sub mt-1">FV $MM added (sample)</div>
         </div>
       </section>
 
@@ -145,9 +144,9 @@
         <div class="flex items-center justify-between flex-wrap gap-3">
           <div>
             <div class="text-sm font-semibold">Filters</div>
-            <div class="text-xs muted mt-1">Filter the analytics + tables (placeholder wiring).</div>
+            <div class="text-xs muted mt-1">Filter the quarter list + deal table.</div>
           </div>
-          <div class="text-xs muted">Tip: Sector + Instrument Type gives you instant risk mix</div>
+          <div class="text-xs muted">Tip: Quarter + Action is enough for fast reads</div>
         </div>
 
         <div class="mt-4 grid grid-cols-12 gap-3">
@@ -155,122 +154,82 @@
             <label class="th block mb-1">Search</label>
             <input id="search" type="text"
               class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200"
-              placeholder="Company, sector, structure, geography..." />
+              placeholder="Company, sector, sponsor, structure..." />
           </div>
 
           <div class="col-span-12 sm:col-span-6 lg:col-span-3">
-            <label class="th block mb-1">Sector</label>
-            <select id="sectorFilter"
+            <label class="th block mb-1">Quarter</label>
+            <select id="qFilter"
               class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
               <option value="">All</option>
             </select>
           </div>
 
           <div class="col-span-12 sm:col-span-6 lg:col-span-3">
-            <label class="th block mb-1">Instrument type</label>
-            <select id="typeFilter"
+            <label class="th block mb-1">Action</label>
+            <select id="actionFilter"
               class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
               <option value="">All</option>
+              <option value="Add">Add (origination)</option>
+              <option value="Exit">Exit (repayment/sale)</option>
+              <option value="Amend">Amend (reprice/extend)</option>
             </select>
           </div>
         </div>
       </section>
 
-      <!-- CHARTS GRID -->
+      <!-- CHARTS ROW -->
       <section class="grid grid-cols-12 gap-6 items-stretch">
 
-        <!-- Sector concentration -->
-        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col h-full">
+        <!-- Adds vs Exits -->
+        <div class="col-span-12 lg:col-span-7 cardish p-6 flex flex-col h-full">
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <div class="text-sm font-semibold">Sector concentration</div>
-              <div class="text-xs muted mt-1">% of debt FV by sector</div>
+              <div class="text-sm font-semibold">Adds vs exits — by quarter</div>
+              <div class="text-xs muted mt-1">Counts + FV impact (sample)</div>
             </div>
-            <span class="pill" id="sector-count">— sectors</span>
+            <span class="pill">Counts</span>
           </div>
           <div class="chart-wrap mt-4">
-            <canvas id="sectorChart"></canvas>
+            <canvas id="addsExitsChart"></canvas>
           </div>
         </div>
 
-        <!-- Instrument mix -->
-        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col h-full">
+        <!-- Spread trend -->
+        <div class="col-span-12 lg:col-span-5 cardish p-6 flex flex-col h-full">
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <div class="text-sm font-semibold">Instrument type mix</div>
-              <div class="text-xs muted mt-1">First lien vs. riskier structures (by FV)</div>
+              <div class="text-sm font-semibold">New origination spread — trend</div>
+              <div class="text-xs muted mt-1">Weighted by FV (sample)</div>
             </div>
-            <span class="pill" id="type-count">— types</span>
+            <span class="pill">bps</span>
           </div>
           <div class="chart-wrap mt-4">
-            <canvas id="typeChart"></canvas>
+            <canvas id="spreadChart"></canvas>
           </div>
         </div>
 
-        <!-- Maturity wall -->
+        <!-- Equity upside trend -->
         <div class="col-span-12 cardish p-6 flex flex-col h-full">
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <div class="text-sm font-semibold">Maturity wall</div>
-              <div class="text-xs muted mt-1">Debt FV by maturity year (where does the wall hit?)</div>
+              <div class="text-sm font-semibold">Equity upside on new deals</div>
+              <div class="text-xs muted mt-1">% of new deals with warrants/convertibles (sample)</div>
             </div>
-            <span class="pill" id="maturity-years">— years</span>
+            <span class="pill">%</span>
           </div>
           <div class="chart-wrap tall mt-4">
-            <canvas id="maturityChart"></canvas>
-          </div>
-        </div>
-
-        <!-- Geography -->
-        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col h-full">
-          <div class="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <div class="text-sm font-semibold">Geographic concentration</div>
-              <div class="text-xs muted mt-1">% of debt FV by region</div>
-            </div>
-            <span class="pill" id="geo-count">— regions</span>
-          </div>
-          <div class="chart-wrap mt-4">
-            <canvas id="geoChart"></canvas>
-          </div>
-        </div>
-
-        <!-- WA spread / yield table -->
-        <div class="col-span-12 lg:col-span-6 cardish p-6">
-          <div class="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <div class="text-sm font-semibold">Weighted average spread / yield</div>
-              <div class="text-xs muted mt-1">By sector (placeholder calc)</div>
-            </div>
-            <span class="pill">WAS / WAY</span>
-          </div>
-
-          <div class="mt-4 overflow-x-auto">
-            <table class="min-w-full">
-              <thead class="bg-gray-50 border-b">
-                <tr>
-                  <th class="th text-left px-4 py-3">Sector</th>
-                  <th class="th text-right px-4 py-3">FV ($B)</th>
-                  <th class="th text-right px-4 py-3">WAS (bps)</th>
-                  <th class="th text-right px-4 py-3">WAY (%)</th>
-                </tr>
-              </thead>
-              <tbody id="was-table" class="bg-white divide-y"></tbody>
-            </table>
-          </div>
-
-          <div class="mt-4 text-xs muted">
-            Next: compute WAS from contractual spread + floors, compute WAY from effective yield.
+            <canvas id="equityChart"></canvas>
           </div>
         </div>
       </section>
 
-      <!-- POSITIONS SNAPSHOT -->
+      <!-- DEALS TABLE -->
       <section class="cardish overflow-hidden">
         <div class="p-5 border-b flex items-center justify-between flex-wrap gap-3">
           <div>
-            <div class="text-sm font-semibold">Positions snapshot (sample)</div>
-            <div class="text-xs muted mt-1">Use this as the drill-down landing table later.</div>
+            <div class="text-sm font-semibold">Quarter activity (sample)</div>
+            <div class="text-xs muted mt-1">Later: auto-built by diffing 10+ quarters of schedule snapshots.</div>
           </div>
           <div class="flex items-center gap-2 text-xs muted">
             <span id="rowCount">0</span> rows
@@ -282,14 +241,15 @@
           <table class="min-w-full">
             <thead class="bg-gray-50 border-b">
               <tr>
+                <th class="th text-left px-5 py-3">Quarter</th>
+                <th class="th text-left px-5 py-3">Action</th>
                 <th class="th text-left px-5 py-3">Company</th>
                 <th class="th text-left px-5 py-3">Sector</th>
-                <th class="th text-left px-5 py-3">Instrument</th>
-                <th class="th text-left px-5 py-3">Maturity</th>
-                <th class="th text-left px-5 py-3">Region</th>
-                <th class="th text-right px-5 py-3">FV ($MM)</th>
+                <th class="th text-left px-5 py-3">Structure</th>
+                <th class="th text-right px-5 py-3">FV Δ ($MM)</th>
                 <th class="th text-right px-5 py-3">Spread (bps)</th>
-                <th class="th text-right px-5 py-3">Yield (%)</th>
+                <th class="th text-right px-5 py-3">Equity upside</th>
+                <th class="th text-left px-5 py-3">Notes</th>
               </tr>
             </thead>
             <tbody id="tbody" class="bg-white divide-y"></tbody>
@@ -302,23 +262,26 @@
 
   <script>
     // =========================================================================
-    // Placeholder construction dataset
-    // Replace with EDGAR-derived schedule + FV + coupon/spread + geography.
+    // Placeholder activity feed
+    // Later you will generate this by diffing per-quarter snapshots:
+    //  - Add: appears this quarter, not prior
+    //  - Exit: disappears this quarter, existed prior
+    //  - Amend: same issuer remains but pricing/maturity/structure changes materially
     // =========================================================================
-    const CONSTRUCTION = {
-      asOf: "Dec 31, 2025",
-      totalDebtFV_B: 4.28,
-      positions: [
-        { company:"Marathon Health, LLC", sector:"Healthcare Services", instrument:"First Lien", maturity:"Feb 2029", region:"US", fvMM:420, spreadBps:675, yieldPct:11.2 },
-        { company:"ChenMed, LLC", sector:"Healthcare Services", instrument:"First Lien", maturity:"May 2030", region:"US", fvMM:380, spreadBps:625, yieldPct:10.6 },
-        { company:"Shield AI, Inc.", sector:"Defense Technologies", instrument:"First Lien", maturity:"Feb 2029", region:"US", fvMM:290, spreadBps:700, yieldPct:11.4 },
-        { company:"Phathom Pharmaceuticals, Inc.", sector:"Drug Discovery & Dev.", instrument:"First Lien", maturity:"Dec 2027", region:"US", fvMM:260, spreadBps:725, yieldPct:12.0 },
-        { company:"Tipalti Solutions Ltd.", sector:"Application Software", instrument:"First Lien", maturity:"Apr 2029", region:"International", fvMM:230, spreadBps:650, yieldPct:11.0 },
-        { company:"Armis, Inc.", sector:"System Software", instrument:"First Lien", maturity:"Mar 2028", region:"International", fvMM:215, spreadBps:600, yieldPct:10.4 },
-        { company:"Houzz, Inc.", sector:"Consumer & Business Svcs", instrument:"Convertible", maturity:"May 2028", region:"US", fvMM:110, spreadBps:0, yieldPct:12.0 },
-        { company:"Gibraltar Acquisition LLC", sector:"Diversified Financial Services", instrument:"Unsecured", maturity:"Jul 2029", region:"US", fvMM:90, spreadBps:0, yieldPct:11.9 },
-        { company:"SeatGeek, Inc.", sector:"Consumer & Business Svcs", instrument:"Second Lien", maturity:"Jul 2026", region:"US", fvMM:85, spreadBps:900, yieldPct:13.5 },
-        { company:"DocPlanner", sector:"Application Software", instrument:"First Lien", maturity:"Jan 2030", region:"International", fvMM:140, spreadBps:610, yieldPct:10.8 }
+    const ORIG = {
+      coverage: "Q1 '24 → Q4 '25 (sample)",
+      activity: [
+        { q:"Q1 '24", action:"Add",  company:"DocPlanner", sector:"Application Software", structure:"First Lien", fvDeltaMM:85,  spreadBps:610, equity:"None", notes:"New platform investment" },
+        { q:"Q1 '24", action:"Add",  company:"Shield AI, Inc.", sector:"Defense Technologies", structure:"First Lien", fvDeltaMM:120, spreadBps:700, equity:"Warrants", notes:"Equity kicker included" },
+        { q:"Q2 '24", action:"Add",  company:"ChenMed, LLC", sector:"Healthcare Services", structure:"First Lien", fvDeltaMM:140, spreadBps:625, equity:"None", notes:"Scale-up add-on" },
+        { q:"Q2 '24", action:"Exit", company:"LegacyCo A", sector:"System Software", structure:"First Lien", fvDeltaMM:-60, spreadBps:560, equity:"None", notes:"Repayment" },
+        { q:"Q3 '24", action:"Amend",company:"SeatGeek, Inc.", sector:"Consumer & Business Svcs", structure:"Second Lien", fvDeltaMM:0,   spreadBps:900, equity:"None", notes:"Reprice / extend (sample)" },
+        { q:"Q3 '24", action:"Add",  company:"Phathom Pharmaceuticals, Inc.", sector:"Drug Discovery & Dev.", structure:"First Lien", fvDeltaMM:160, spreadBps:725, equity:"Warrants", notes:"Growth capex + runway" },
+        { q:"Q4 '24", action:"Exit", company:"LegacyCo B", sector:"Healthcare Services", structure:"First Lien", fvDeltaMM:-45, spreadBps:590, equity:"None", notes:"Sold / exited" },
+        { q:"Q1 '25", action:"Add",  company:"Tipalti Solutions Ltd.", sector:"Application Software", structure:"First Lien", fvDeltaMM:130, spreadBps:650, equity:"None", notes:"International exposure" },
+        { q:"Q2 '25", action:"Add",  company:"Marathon Health, LLC", sector:"Healthcare Services", structure:"First Lien", fvDeltaMM:210, spreadBps:675, equity:"None", notes:"Large add" },
+        { q:"Q3 '25", action:"Add",  company:"Armis, Inc.", sector:"System Software", structure:"First Lien", fvDeltaMM:190, spreadBps:600, equity:"Warrants", notes:"Equity upside present" },
+        { q:"Q4 '25", action:"Exit", company:"LegacyCo C", sector:"Diversified Financial Services", structure:"Unsecured", fvDeltaMM:-30, spreadBps:0, equity:"None", notes:"Run-off" }
       ]
     };
 
@@ -340,14 +303,15 @@
       return Array.from(new Set(arr.filter(Boolean))).sort((a,b)=>a.localeCompare(b));
     }
 
-    function groupSum(rows, keyFn, valFn) {
+    function groupAgg(rows, keyFn, init, addFn) {
       const m = new Map();
       rows.forEach(r => {
         const k = keyFn(r);
-        const v = valFn(r);
-        m.set(k, (m.get(k) || 0) + v);
+        const cur = m.get(k) || structuredClone(init);
+        addFn(cur, r);
+        m.set(k, cur);
       });
-      return Array.from(m.entries()).map(([k,v]) => ({ key:k, val:v }));
+      return Array.from(m.entries()).map(([k,v]) => ({ key:k, ...v }));
     }
 
     function weightedAvg(rows, weightFn, valueFn) {
@@ -362,167 +326,205 @@
       return wsum ? (xsum / wsum) : 0;
     }
 
-    function maturityYear(maturity) {
-      // "Feb 2029" or "May 2030" -> 2029
-      const m = String(maturity || "").match(/(19|20)\d{2}/);
-      return m ? Number(m[0]) : null;
+    function signFmt(mm) {
+      const v = Number(mm||0);
+      const abs = Math.abs(v).toFixed(0);
+      return (v >= 0 ? `+${abs}` : `-${abs}`);
     }
 
-    function fmtB(v) { return `$${v.toFixed(2)}B`; }
-    function fmtMM(v) { return `$${v.toFixed(0)}MM`; }
-
     // =========================================================================
-    // Initial render scaffolding
+    // Populate quarter filter
     // =========================================================================
-    $("asof-pill").textContent = `As of ${CONSTRUCTION.asOf}`;
-    $("kpi-fv").textContent = fmtB(CONSTRUCTION.totalDebtFV_B);
-    $("kpi-count").textContent = `${CONSTRUCTION.positions.length} positions`;
-
-    // Overall WAS / WAY from positions (placeholder)
-    const overallWAS = weightedAvg(CONSTRUCTION.positions, r=>r.fvMM, r=>r.spreadBps);
-    const overallWAY = weightedAvg(CONSTRUCTION.positions, r=>r.fvMM, r=>r.yieldPct);
-
-    $("kpi-was").textContent = `${Math.round(overallWAS)} bps`;
-    $("kpi-way").textContent = `${overallWAY.toFixed(1)}%`;
-
-    // Top sector
-    const sectorAggAll = groupSum(CONSTRUCTION.positions, r=>r.sector, r=>r.fvMM);
-    sectorAggAll.sort((a,b)=>b.val-a.val);
-    const topSector = sectorAggAll[0];
-    $("kpi-top-sector").textContent = topSector ? topSector.key : "—";
-    const totalFV = sectorAggAll.reduce((s,x)=>s+x.val,0) || 1;
-    $("kpi-top-sector-pct").textContent = topSector ? `${((topSector.val/totalFV)*100).toFixed(1)}% of FV` : "—";
-
-    // Populate filters
-    const sectorSelect = $("sectorFilter");
-    uniqSorted(CONSTRUCTION.positions.map(p=>p.sector)).forEach(v => {
+    $("asof-pill").textContent = `Coverage ${ORIG.coverage}`;
+    const qSelect = $("qFilter");
+    uniqSorted(ORIG.activity.map(a=>a.q)).forEach(q => {
       const o = document.createElement("option");
-      o.value = v; o.textContent = v;
-      sectorSelect.appendChild(o);
-    });
-
-    const typeSelect = $("typeFilter");
-    uniqSorted(CONSTRUCTION.positions.map(p=>p.instrument)).forEach(v => {
-      const o = document.createElement("option");
-      o.value = v; o.textContent = v;
-      typeSelect.appendChild(o);
+      o.value = q; o.textContent = q;
+      qSelect.appendChild(o);
     });
 
     // =========================================================================
-    // Charts (kept as variables so we can update on filters)
+    // Charts (stored so we can update on filters)
     // =========================================================================
-    let sectorChart, typeChart, maturityChart, geoChart;
+    let addsExitsChart, spreadChart, equityChart;
 
     function buildCharts(rows) {
-      // Sector
-      const sectorAgg = groupSum(rows, r=>r.sector, r=>r.fvMM).sort((a,b)=>b.val-a.val);
-      const sectorLabels = sectorAgg.map(x=>x.key);
-      const sectorVals = sectorAgg.map(x=>x.val);
+      // Build per-quarter aggregates
+      const perQ = groupAgg(
+        rows,
+        r=>r.q,
+        { adds:0, exits:0, addFV:0, exitFV:0, newSpreads:[], newWeights:[], equityAdds:0, totalAdds:0 },
+        (acc, r) => {
+          if (r.action === "Add") {
+            acc.adds += 1;
+            acc.addFV += Math.max(0, Number(r.fvDeltaMM||0));
+            acc.totalAdds += 1;
+            if (Number.isFinite(Number(r.spreadBps))) {
+              acc.newSpreads.push(Number(r.spreadBps));
+              acc.newWeights.push(Math.max(0, Number(r.fvDeltaMM||0)));
+            }
+            if ((r.equity||"").toLowerCase() !== "none") acc.equityAdds += 1;
+          }
+          if (r.action === "Exit") {
+            acc.exits += 1;
+            acc.exitFV += Math.abs(Math.min(0, Number(r.fvDeltaMM||0)));
+          }
+        }
+      ).sort((a,b)=>a.key.localeCompare(b.key));
 
-      $("sector-count").textContent = `${sectorLabels.length} sectors`;
+      const labels = perQ.map(x=>x.key);
 
-      if (sectorChart) sectorChart.destroy();
-      sectorChart = new Chart(document.getElementById("sectorChart"), {
-        type: "doughnut",
-        data: { labels: sectorLabels, datasets: [{ data: sectorVals, borderWidth: 0 }] },
-        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:"bottom" } }, cutout:"62%" }
+      const addCounts = perQ.map(x=>x.adds);
+      const exitCounts = perQ.map(x=>x.exits);
+
+      const wNewSpread = perQ.map(x=>{
+        // FV-weighted; fallback to simple average if weights are zero
+        const weights = x.newWeights || [];
+        const spreads = x.newSpreads || [];
+        const wsum = weights.reduce((s,v)=>s+v,0);
+        if (wsum > 0) {
+          let xsum = 0;
+          for (let i=0;i<spreads.length;i++) xsum += spreads[i] * (weights[i] || 0);
+          return xsum / wsum;
+        }
+        if (spreads.length) return spreads.reduce((s,v)=>s+v,0) / spreads.length;
+        return null;
       });
 
-      // Instrument type mix
-      const typeAgg = groupSum(rows, r=>r.instrument, r=>r.fvMM).sort((a,b)=>b.val-a.val);
-      const typeLabels = typeAgg.map(x=>x.key);
-      const typeVals = typeAgg.map(x=>x.val);
+      const equityPct = perQ.map(x => x.totalAdds ? (x.equityAdds / x.totalAdds) * 100 : 0);
 
-      $("type-count").textContent = `${typeLabels.length} types`;
-
-      if (typeChart) typeChart.destroy();
-      typeChart = new Chart(document.getElementById("typeChart"), {
-        type: "doughnut",
-        data: { labels: typeLabels, datasets: [{ data: typeVals, borderWidth: 0 }] },
-        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:"bottom" } }, cutout:"62%" }
-      });
-
-      // Maturity wall by year
-      const yearAgg = groupSum(
-        rows.filter(r=>maturityYear(r.maturity)),
-        r=>String(maturityYear(r.maturity)),
-        r=>r.fvMM
-      ).sort((a,b)=>Number(a.key)-Number(b.key));
-
-      const years = yearAgg.map(x=>x.key);
-      const yearVals = yearAgg.map(x=>x.val);
-
-      $("maturity-years").textContent = `${years.length} years`;
-
-      if (maturityChart) maturityChart.destroy();
-      maturityChart = new Chart(document.getElementById("maturityChart"), {
+      // Adds vs Exits chart
+      if (addsExitsChart) addsExitsChart.destroy();
+      addsExitsChart = new Chart(document.getElementById("addsExitsChart"), {
         type: "bar",
-        data: { labels: years, datasets: [{ label:"FV ($MM)", data: yearVals }] },
+        data: {
+          labels,
+          datasets: [
+            { label: "Adds", data: addCounts },
+            { label: "Exits", data: exitCounts }
+          ]
+        },
+        options: {
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{ legend:{ position:"bottom" } },
+          scales:{
+            x:{ grid:{ display:false } },
+            y:{ beginAtZero:true, ticks:{ precision:0 } }
+          }
+        }
+      });
+
+      // Spread trend
+      if (spreadChart) spreadChart.destroy();
+      spreadChart = new Chart(document.getElementById("spreadChart"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "New origination spread (bps)",
+            data: wNewSpread,
+            tension: 0.35,
+            fill: true
+          }]
+        },
         options: {
           responsive:true,
           maintainAspectRatio:false,
           plugins:{ legend:{ display:false } },
           scales:{
             x:{ grid:{ display:false } },
-            y:{ ticks:{ callback:(v)=>`$${v}MM` } }
+            y:{ ticks:{ callback:(v)=>`${v} bps` } }
           }
         }
       });
 
-      // Geography
-      const geoAgg = groupSum(rows, r=>r.region, r=>r.fvMM).sort((a,b)=>b.val-a.val);
-      const geoLabels = geoAgg.map(x=>x.key);
-      const geoVals = geoAgg.map(x=>x.val);
-
-      $("geo-count").textContent = `${geoLabels.length} regions`;
-
-      if (geoChart) geoChart.destroy();
-      geoChart = new Chart(document.getElementById("geoChart"), {
-        type: "doughnut",
-        data: { labels: geoLabels, datasets: [{ data: geoVals, borderWidth: 0 }] },
-        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:"bottom" } }, cutout:"62%" }
+      // Equity upside trend
+      if (equityChart) equityChart.destroy();
+      equityChart = new Chart(document.getElementById("equityChart"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "% of new deals with equity upside",
+            data: equityPct,
+            tension: 0.35,
+            fill: true
+          }]
+        },
+        options: {
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{ legend:{ display:false } },
+          scales:{
+            x:{ grid:{ display:false } },
+            y:{ beginAtZero:true, max:100, ticks:{ callback:(v)=>`${v}%` } }
+          }
+        }
       });
+
+      // KPI rollups (on filtered rows)
+      const adds = rows.filter(r=>r.action==="Add");
+      const exits = rows.filter(r=>r.action==="Exit");
+
+      const netAdds = adds.length - exits.length;
+      $("kpi-net-adds").textContent = netAdds >= 0 ? `+${netAdds}` : `${netAdds}`;
+      $("kpi-net-adds-sub").textContent = `${adds.length} adds • ${exits.length} exits`;
+
+      const grossFV = adds.reduce((s,r)=>s+Math.max(0,Number(r.fvDeltaMM||0)),0);
+      $("kpi-gross").textContent = `${grossFV.toFixed(0)}MM`;
+
+      const avgNewSpread = weightedAvg(adds, r=>Math.max(0,Number(r.fvDeltaMM||0)), r=>Number(r.spreadBps||0));
+      $("kpi-avg-new-spread").textContent = `${Math.round(avgNewSpread)} bps`;
+
+      // Simple "trend" callout: compare last quarter vs first quarter in the filtered set
+      if (perQ.length >= 2) {
+        const first = wNewSpread.find(v=>v!==null);
+        const last = [...wNewSpread].reverse().find(v=>v!==null);
+        if (Number.isFinite(first) && Number.isFinite(last)) {
+          const diff = last - first;
+          $("kpi-spread-trend").textContent = `${diff >= 0 ? "Widening" : "Tightening"} (${diff >= 0 ? "+" : ""}${Math.round(diff)} bps over period)`;
+        } else {
+          $("kpi-spread-trend").textContent = "—";
+        }
+      } else {
+        $("kpi-spread-trend").textContent = "—";
+      }
+
+      const equityAdds = adds.filter(r => (r.equity||"").toLowerCase() !== "none").length;
+      const equityMix = adds.length ? (equityAdds / adds.length) * 100 : 0;
+      $("kpi-equity-mix").textContent = `${equityMix.toFixed(0)}%`;
     }
 
-    function buildWASTable(rows) {
-      const bySector = groupSum(rows, r=>r.sector, r=>r.fvMM).sort((a,b)=>b.val-a.val);
-
-      const tbody = $("was-table");
-      tbody.innerHTML = "";
-
-      bySector.forEach(s => {
-        const sectorRows = rows.filter(r => r.sector === s.key);
-        const was = weightedAvg(sectorRows, r=>r.fvMM, r=>r.spreadBps);
-        const way = weightedAvg(sectorRows, r=>r.fvMM, r=>r.yieldPct);
-
-        const tr = document.createElement("tr");
-        tr.className = "hover:bg-gray-50";
-        tr.innerHTML = `
-          <td class="td px-4 py-3"><span class="chip">${escapeHtml(s.key)}</span></td>
-          <td class="td px-4 py-3 text-right tabular-nums">${(s.val/1000).toFixed(2)}B</td>
-          <td class="td px-4 py-3 text-right tabular-nums font-semibold">${Math.round(was)}</td>
-          <td class="td px-4 py-3 text-right tabular-nums font-semibold">${way.toFixed(1)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderPositions(rows) {
+    // =========================================================================
+    // Table render
+    // =========================================================================
+    function renderTable(rows) {
       const tbody = $("tbody");
       tbody.innerHTML = "";
 
       rows.forEach(r => {
+        const fv = Number(r.fvDeltaMM||0);
+        const fvTxt = `${signFmt(fv)}MM`;
+        const isAdd = r.action === "Add";
+        const isExit = r.action === "Exit";
+        const badge =
+          isAdd ? "bg-blue-50 border-blue-200 text-blue-700" :
+          isExit ? "bg-amber-50 border-amber-200 text-amber-700" :
+          "bg-gray-50 border-gray-200 text-gray-700";
+
         const tr = document.createElement("tr");
         tr.className = "hover:bg-gray-50";
         tr.innerHTML = `
+          <td class="td px-5 py-3">${escapeHtml(r.q)}</td>
+          <td class="td px-5 py-3"><span class="chip ${badge}">${escapeHtml(r.action)}</span></td>
           <td class="td px-5 py-3 font-semibold">${escapeHtml(r.company)}</td>
           <td class="td px-5 py-3"><span class="chip">${escapeHtml(r.sector)}</span></td>
-          <td class="td px-5 py-3"><span class="chip">${escapeHtml(r.instrument)}</span></td>
-          <td class="td px-5 py-3">${escapeHtml(r.maturity || "—")}</td>
-          <td class="td px-5 py-3"><span class="chip">${escapeHtml(r.region || "—")}</span></td>
-          <td class="td px-5 py-3 text-right tabular-nums font-semibold">${fmtMM(r.fvMM)}</td>
+          <td class="td px-5 py-3"><span class="chip">${escapeHtml(r.structure)}</span></td>
+          <td class="td px-5 py-3 text-right tabular-nums font-semibold">${fvTxt}</td>
           <td class="td px-5 py-3 text-right tabular-nums">${Number(r.spreadBps||0).toFixed(0)}</td>
-          <td class="td px-5 py-3 text-right tabular-nums">${Number(r.yieldPct||0).toFixed(1)}</td>
+          <td class="td px-5 py-3 text-right">${escapeHtml(r.equity || "None")}</td>
+          <td class="td px-5 py-3 text-gray-700">${escapeHtml(r.notes || "—")}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -532,38 +534,37 @@
 
     function applyFilters() {
       const q = $("search").value.trim().toLowerCase();
-      const sector = $("sectorFilter").value;
-      const type = $("typeFilter").value;
+      const qtr = $("qFilter").value;
+      const action = $("actionFilter").value;
 
-      const rows = CONSTRUCTION.positions.filter(r => {
+      const rows = ORIG.activity.filter(r => {
         const matchesQ =
           !q ||
           (r.company||"").toLowerCase().includes(q) ||
           (r.sector||"").toLowerCase().includes(q) ||
-          (r.instrument||"").toLowerCase().includes(q) ||
-          (r.region||"").toLowerCase().includes(q) ||
-          (r.maturity||"").toLowerCase().includes(q);
+          (r.structure||"").toLowerCase().includes(q) ||
+          (r.notes||"").toLowerCase().includes(q) ||
+          (r.equity||"").toLowerCase().includes(q);
 
-        const matchesSector = !sector || r.sector === sector;
-        const matchesType = !type || r.instrument === type;
+        const matchesQuarter = !qtr || r.q === qtr;
+        const matchesAction = !action || r.action === action;
 
-        return matchesQ && matchesSector && matchesType;
+        return matchesQ && matchesQuarter && matchesAction;
       });
 
       buildCharts(rows);
-      buildWASTable(rows);
-      renderPositions(rows);
+      renderTable(rows);
     }
 
     // Hook up filters
     $("search").addEventListener("input", applyFilters);
-    $("sectorFilter").addEventListener("change", applyFilters);
-    $("typeFilter").addEventListener("change", applyFilters);
+    $("qFilter").addEventListener("change", applyFilters);
+    $("actionFilter").addEventListener("change", applyFilters);
 
     $("resetBtn").addEventListener("click", () => {
       $("search").value = "";
-      $("sectorFilter").value = "";
-      $("typeFilter").value = "";
+      $("qFilter").value = "";
+      $("actionFilter").value = "";
       applyFilters();
     });
 
