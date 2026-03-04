@@ -1,1 +1,614 @@
+<!-- /bdc/htgc/origination/origination.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC • Origination & Exit Tracker</title>
 
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --blue:      #187ABA;
+      --blue-80:   #4695C8;
+      --blue-40:   #A3CAE3;
+      --blue-20:   #D1E4F1;
+      --navy:      #002B51;
+      --navy-80:   #335574;
+      --navy-40:   #99AAB9;
+      --navy-20:   #CCD5DC;
+      --jade:      #3EB661;
+      --jade-80:   #65C581;
+      --jade-40:   #B2E2C0;
+      --ocean:     #0A6F7A;
+      --ocean-40:  #9DC5CA;
+      --ocean-20:  #CEE2E4;
+      --aqua:      #4CCACD;
+      --aqua-40:   #B7EBEA;
+      --berry:     #D3086F;
+      --berry-40:  #ED9CC5;
+      --berry-20:  #F6CEE2;
+      --bg:        #F4F7FA;
+      --surface:   #FFFFFF;
+      --border:    #E2EAF0;
+      --text:      #002B51;
+      --muted:     #335574;
+      --light:     #99AAB9;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: Poppins, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh; width: 100vw;
+      overflow: hidden;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 256px 1fr;
+      height: 100vh; width: 100vw;
+      overflow: hidden;
+    }
+
+    #sidebar-placeholder { height: 100vh; overflow-y: auto; }
+
+    /* Canvas: header → controls → content */
+    .canvas {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      height: 100vh;
+      overflow: hidden;
+      padding: 18px 22px 14px;
+      gap: 10px;
+      background: var(--bg);
+    }
+
+    /* ── Header ── */
+    .header-row {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-title { font-size: 17px; font-weight: 700; letter-spacing: -.02em; color: var(--navy); }
+    .page-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border: 1px solid var(--border);
+      background: var(--surface); border-radius: 999px;
+      font-size: 11px; color: var(--muted);
+    }
+    .btn { border-radius: 8px; padding: 6px 13px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; cursor: pointer; border: none; }
+    .btn-ghost   { background: var(--surface); border: 1px solid var(--border); color: var(--navy); }
+    .btn-ghost:hover { background: var(--blue-20); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--navy-80); }
+
+    /* ── Controls: KPIs + filters merged ── */
+    .controls-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr) 1px 1fr 1fr 1fr auto;
+      gap: 8px;
+      align-items: stretch;
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: 0 1px 4px rgba(0,43,81,.05);
+    }
+
+    .divider { background: var(--border); width: 1px; margin: 4px 4px; align-self: stretch; }
+
+    .kpi-mini { display: flex; flex-direction: column; justify-content: center; padding: 2px 6px; }
+    .kpi-mini-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--light); margin-bottom: 2px; }
+    .kpi-mini-value { font-size: 18px; font-weight: 700; color: var(--navy); line-height: 1; }
+    .kpi-mini-sub   { font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+    .filter-group { display: flex; flex-direction: column; justify-content: center; padding: 0 4px; }
+    .filter-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--light); margin-bottom: 3px; }
+    .filter-input {
+      border: 1px solid var(--border); border-radius: 7px;
+      padding: 5px 8px; background: var(--bg);
+      font-size: 11px; color: var(--navy);
+      font-family: Poppins, system-ui, sans-serif;
+      outline: none; width: 100%;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .filter-input:focus { border-color: var(--blue-80); box-shadow: 0 0 0 2px var(--blue-20); }
+
+    /* ── Content: charts top, table bottom ── */
+    .content-area {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 10px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .charts-row {
+      display: grid;
+      grid-template-columns: 7fr 5fr 5fr;
+      gap: 10px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,43,81,.06);
+      display: flex; flex-direction: column;
+      overflow: hidden; min-height: 0;
+    }
+
+    .card-header {
+      padding: 9px 14px 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to right, var(--blue-20), var(--surface));
+      flex-shrink: 0;
+    }
+    .card-title { font-size: 11px; font-weight: 700; color: var(--navy); }
+    .card-sub   { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .card-body  { padding: 10px 14px; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+
+    .chart-box { position: relative; flex: 1; min-height: 0; }
+    .chart-box canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+    /* ── Table card ── */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,43,81,.06);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      max-height: 230px;
+    }
+
+    .table-scroll { flex: 1; overflow-y: auto; overflow-x: auto; min-height: 0; }
+    .table-scroll::-webkit-scrollbar { width: 3px; }
+    .table-scroll::-webkit-scrollbar-thumb { background: var(--blue-40); border-radius: 2px; }
+
+    .data-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    .data-table thead th {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--light); font-weight: 700; padding: 6px 12px;
+      border-bottom: 2px solid var(--blue-20);
+      background: var(--surface); position: sticky; top: 0; z-index: 2;
+      white-space: nowrap; text-align: left;
+    }
+    .data-table thead th.r { text-align: right; }
+    .data-table tbody td {
+      padding: 5px 12px; font-size: 11px; color: var(--muted);
+      border-bottom: 1px solid var(--blue-20); vertical-align: middle;
+    }
+    .data-table tbody td.strong { font-weight: 600; color: var(--navy); }
+    .data-table tbody td.r { text-align: right; font-weight: 600; color: var(--navy); font-variant-numeric: tabular-nums; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: var(--blue-20); }
+
+    /* action badges */
+    .badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 999px; font-size: 10px; border: 1px solid; white-space: nowrap; font-weight: 600; }
+    .b-add   { background: var(--blue-20);  border-color: var(--blue-40);  color: var(--blue); }
+    .b-exit  { background: var(--berry-20); border-color: var(--berry-40); color: var(--berry); }
+    .b-amend { background: var(--navy-20);  border-color: var(--navy-40);  color: var(--navy-80); }
+
+    .chip {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px; font-size: 10px;
+      border: 1px solid var(--border); background: var(--bg); color: var(--muted);
+      white-space: nowrap;
+    }
+    .chip-equity { background: var(--jade-40); border-color: var(--jade-80); color: #1a6b3a; }
+
+    .table-footer {
+      padding: 6px 14px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0; background: var(--bg);
+    }
+    .table-footer-text { font-size: 10px; color: var(--light); }
+
+    @media (max-width: 767px) {
+      .shell { grid-template-columns: 1fr; }
+      #sidebar-placeholder { display: none; }
+      .controls-row { grid-template-columns: 1fr 1fr; }
+      .charts-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      try {
+        const res = await fetch("../sidebar.html");
+        document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+        window.toggleSection = window.toggleSection || function(id) {
+          const s=document.getElementById(id), ic=document.getElementById("icon-"+id);
+          if(!s||!ic) return;
+          s.classList.toggle("hidden");
+          ic.style.transform=s.classList.contains("hidden")?"rotate(0deg)":"rotate(90deg)";
+          localStorage.setItem("sidebar-open-section",id);
+        };
+        const last=localStorage.getItem("sidebar-open-section");
+        if(last){const s=document.getElementById(last),ic=document.getElementById("icon-"+last);if(s&&ic){s.classList.remove("hidden");ic.style.transform="rotate(90deg)";}}
+      } catch(e){}
+    }
+    injectSidebar();
+  </script>
+
+  <main class="canvas">
+
+    <!-- HEADER -->
+    <div class="header-row">
+      <div>
+        <div class="page-title">HTGC — Origination & Exit Tracker</div>
+        <div class="page-sub">Quarter-by-quarter · what went on · what came off · spreads tightening / widening · equity upside trend</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="pill" id="asof-pill">Coverage —</span>
+
+      </div>
+    </div>
+
+    <!-- CONTROLS: KPIs + filters -->
+    <div class="controls-row">
+      <div class="kpi-mini" style="border-left:3px solid var(--blue);padding-left:10px;">
+        <div class="kpi-mini-label">Net adds</div>
+        <div class="kpi-mini-value" id="kpi-net-adds">—</div>
+        <div class="kpi-mini-sub" id="kpi-net-adds-sub">adds minus exits</div>
+      </div>
+      <div class="kpi-mini" style="border-left:3px solid var(--ocean);padding-left:10px;">
+        <div class="kpi-mini-label">Avg new spread</div>
+        <div class="kpi-mini-value" id="kpi-avg-new-spread">—</div>
+        <div class="kpi-mini-sub" id="kpi-spread-trend">—</div>
+      </div>
+      <div class="kpi-mini" style="border-left:3px solid var(--jade);padding-left:10px;">
+        <div class="kpi-mini-label">Equity upside mix</div>
+        <div class="kpi-mini-value" id="kpi-equity-mix">—</div>
+        <div class="kpi-mini-sub">% new deals w/ warrants/convert</div>
+      </div>
+      <div class="kpi-mini" style="border-left:3px solid var(--aqua);padding-left:10px;">
+        <div class="kpi-mini-label">Gross originations</div>
+        <div class="kpi-mini-value" id="kpi-gross">—</div>
+        <div class="kpi-mini-sub">FV $MM added (sample)</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="filter-group">
+        <div class="filter-label">Search</div>
+        <input id="search" class="filter-input" type="text" placeholder="Company, sector, structure…" />
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Quarter</div>
+        <select id="qFilter" class="filter-input"><option value="">All</option></select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Action</div>
+        <select id="actionFilter" class="filter-input">
+          <option value="">All</option>
+          <option value="Add">Add (origination)</option>
+          <option value="Exit">Exit (repayment/sale)</option>
+          <option value="Amend">Amend (reprice/extend)</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end;padding:0 4px;">
+        <button id="resetBtn" class="btn btn-ghost" style="white-space:nowrap;">Reset</button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content-area">
+
+      <!-- CHARTS ROW -->
+      <div class="charts-row">
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Adds vs exits — by quarter</div>
+              <div class="card-sub">Counts + FV impact (sample)</div>
+            </div>
+            <span class="pill">Counts</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-box"><canvas id="addsExitsChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">New origination spread</div>
+              <div class="card-sub">FV-weighted trend (sample)</div>
+            </div>
+            <span class="pill">bps</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-box"><canvas id="spreadChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Equity upside on new deals</div>
+              <div class="card-sub">% with warrants / convertibles</div>
+            </div>
+            <span class="pill">%</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-box"><canvas id="equityChart"></canvas></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Quarter activity</div>
+            <div class="card-sub">Auto-built by diffing quarterly schedule snapshots · sample data</div>
+          </div>
+          <span class="pill" id="row-count-pill">— rows</span>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Quarter</th>
+                <th>Action</th>
+                <th>Company</th>
+                <th>Sector</th>
+                <th>Structure</th>
+                <th class="r">FV Δ ($MM)</th>
+                <th class="r">Spread (bps)</th>
+                <th>Equity upside</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <span class="table-footer-text">Next: drill-down per quarter → new deals + repayments + amendments</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+const ORIG = {
+  coverage: "Q1 '24 → Q4 '25 (sample)",
+  activity: [
+    { q:"Q1 '24", action:"Add",   company:"DocPlanner",                    sector:"Application Software",       structure:"First Lien",  fvDeltaMM:85,   spreadBps:610, equity:"None",    notes:"New platform investment" },
+    { q:"Q1 '24", action:"Add",   company:"Shield AI, Inc.",               sector:"Defense Technologies",       structure:"First Lien",  fvDeltaMM:120,  spreadBps:700, equity:"Warrants",notes:"Equity kicker included" },
+    { q:"Q2 '24", action:"Add",   company:"ChenMed, LLC",                  sector:"Healthcare Services",        structure:"First Lien",  fvDeltaMM:140,  spreadBps:625, equity:"None",    notes:"Scale-up add-on" },
+    { q:"Q2 '24", action:"Exit",  company:"LegacyCo A",                    sector:"System Software",            structure:"First Lien",  fvDeltaMM:-60,  spreadBps:560, equity:"None",    notes:"Repayment" },
+    { q:"Q3 '24", action:"Amend", company:"SeatGeek, Inc.",                sector:"Consumer & Business Svcs",   structure:"Second Lien", fvDeltaMM:0,    spreadBps:900, equity:"None",    notes:"Reprice / extend (sample)" },
+    { q:"Q3 '24", action:"Add",   company:"Phathom Pharmaceuticals, Inc.", sector:"Drug Discovery & Dev.",      structure:"First Lien",  fvDeltaMM:160,  spreadBps:725, equity:"Warrants",notes:"Growth capex + runway" },
+    { q:"Q4 '24", action:"Exit",  company:"LegacyCo B",                    sector:"Healthcare Services",        structure:"First Lien",  fvDeltaMM:-45,  spreadBps:590, equity:"None",    notes:"Sold / exited" },
+    { q:"Q1 '25", action:"Add",   company:"Tipalti Solutions Ltd.",        sector:"Application Software",       structure:"First Lien",  fvDeltaMM:130,  spreadBps:650, equity:"None",    notes:"International exposure" },
+    { q:"Q2 '25", action:"Add",   company:"Marathon Health, LLC",          sector:"Healthcare Services",        structure:"First Lien",  fvDeltaMM:210,  spreadBps:675, equity:"None",    notes:"Large add" },
+    { q:"Q3 '25", action:"Add",   company:"Armis, Inc.",                   sector:"System Software",            structure:"First Lien",  fvDeltaMM:190,  spreadBps:600, equity:"Warrants",notes:"Equity upside present" },
+    { q:"Q4 '25", action:"Exit",  company:"LegacyCo C",                    sector:"Diversified Financial Svcs", structure:"Unsecured",   fvDeltaMM:-30,  spreadBps:0,   equity:"None",    notes:"Run-off" }
+  ]
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const esc = s => String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function uniq(arr) { return Array.from(new Set(arr.filter(Boolean))).sort((a,b)=>a.localeCompare(b)); }
+function signFmt(v) { const a=Math.abs(Number(v||0)).toFixed(0); return Number(v)>=0?`+${a}`:`-${a}`; }
+function weightedAvg(rows,wFn,vFn) {
+  let ws=0,xs=0;
+  rows.forEach(r=>{const w=wFn(r),x=vFn(r);if(!isFinite(w)||!isFinite(x))return;ws+=w;xs+=w*x;});
+  return ws?xs/ws:0;
+}
+function groupAgg(rows,kFn,init,addFn) {
+  const m=new Map();
+  rows.forEach(r=>{const k=kFn(r),cur=m.get(k)||structuredClone(init);addFn(cur,r);m.set(k,cur);});
+  return Array.from(m.entries()).map(([k,v])=>({key:k,...v}));
+}
+
+// ── QUARTER FILTER DROPDOWN ───────────────────────────────────────
+$("asof-pill").textContent = `Coverage ${ORIG.coverage}`;
+uniq(ORIG.activity.map(a=>a.q)).forEach(q=>{
+  const o=document.createElement("option"); o.value=q; o.textContent=q;
+  $("qFilter").appendChild(o);
+});
+
+// ── CHARTS ────────────────────────────────────────────────────────
+let charts = {};
+
+function destroyCharts() { Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}}); charts={}; }
+
+function buildCharts(rows) {
+  destroyCharts();
+
+  const perQ = groupAgg(
+    rows, r=>r.q,
+    {adds:0,exits:0,newSpreads:[],newWeights:[],equityAdds:0,totalAdds:0},
+    (acc,r)=>{
+      if(r.action==="Add"){
+        acc.adds++;acc.totalAdds++;
+        acc.addFV=(acc.addFV||0)+Math.max(0,Number(r.fvDeltaMM||0));
+        if(isFinite(Number(r.spreadBps))){acc.newSpreads.push(Number(r.spreadBps));acc.newWeights.push(Math.max(0,Number(r.fvDeltaMM||0)));}
+        if((r.equity||"").toLowerCase()!=="none") acc.equityAdds++;
+      }
+      if(r.action==="Exit") acc.exits++;
+    }
+  ).sort((a,b)=>a.key.localeCompare(b.key));
+
+  const labels     = perQ.map(x=>x.key);
+  const addCounts  = perQ.map(x=>x.adds);
+  const exitCounts = perQ.map(x=>x.exits);
+
+  const wSpread = perQ.map(x=>{
+    const ws=x.newWeights.reduce((s,v)=>s+v,0);
+    if(ws>0){let xs=0;x.newSpreads.forEach((sp,i)=>xs+=sp*(x.newWeights[i]||0));return xs/ws;}
+    return x.newSpreads.length?x.newSpreads.reduce((s,v)=>s+v,0)/x.newSpreads.length:null;
+  });
+
+  const equityPct = perQ.map(x=>x.totalAdds?(x.equityAdds/x.totalAdds)*100:0);
+
+  // Adds vs Exits
+  charts.addsExits = new Chart($("addsExitsChart"), {
+    type:"bar",
+    data:{
+      labels,
+      datasets:[
+        {label:"Adds",  data:addCounts,  backgroundColor:"#187ABA", borderRadius:4, borderSkipped:false},
+        {label:"Exits", data:exitCounts, backgroundColor:"#D3086F", borderRadius:4, borderSkipped:false}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:"bottom",labels:{font:{size:10},color:"#002B51",usePointStyle:true,boxWidth:8}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10},color:"#335574"}},
+        y:{beginAtZero:true,grid:{color:"#D1E4F1"},ticks:{precision:0,font:{size:10},color:"#335574"}}
+      },animation:{duration:350}
+    }
+  });
+
+  // Spread trend
+  charts.spread = new Chart($("spreadChart"), {
+    type:"line",
+    data:{
+      labels,
+      datasets:[{
+        label:"Spread (bps)",data:wSpread,tension:0.38,fill:true,
+        borderColor:"#0A6F7A",borderWidth:2.5,
+        backgroundColor:ctx=>{const{ctx:c,chartArea}=ctx.chart;if(!chartArea)return"transparent";const g=c.createLinearGradient(0,chartArea.top,0,chartArea.bottom);g.addColorStop(0,"#9DC5CA88");g.addColorStop(1,"#CEE2E400");return g;},
+        pointBackgroundColor:"#0A6F7A",pointBorderColor:"#fff",pointBorderWidth:2,pointRadius:4,pointHoverRadius:6
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10},color:"#335574"}},
+        y:{grid:{color:"#D1E4F1"},ticks:{callback:v=>`${v} bps`,font:{size:10},color:"#335574"}}
+      },animation:{duration:350}
+    }
+  });
+
+  // Equity upside
+  charts.equity = new Chart($("equityChart"), {
+    type:"line",
+    data:{
+      labels,
+      datasets:[{
+        label:"% equity upside",data:equityPct,tension:0.38,fill:true,
+        borderColor:"#3EB661",borderWidth:2.5,
+        backgroundColor:ctx=>{const{ctx:c,chartArea}=ctx.chart;if(!chartArea)return"transparent";const g=c.createLinearGradient(0,chartArea.top,0,chartArea.bottom);g.addColorStop(0,"#B2E2C088");g.addColorStop(1,"#B2E2C000");return g;},
+        pointBackgroundColor:"#3EB661",pointBorderColor:"#fff",pointBorderWidth:2,pointRadius:4,pointHoverRadius:6
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10},color:"#335574"}},
+        y:{beginAtZero:true,max:100,grid:{color:"#D1E4F1"},ticks:{callback:v=>`${v}%`,font:{size:10},color:"#335574"}}
+      },animation:{duration:350}
+    }
+  });
+
+  // KPIs
+  const adds  = rows.filter(r=>r.action==="Add");
+  const exits = rows.filter(r=>r.action==="Exit");
+  const net   = adds.length-exits.length;
+
+  $("kpi-net-adds").textContent     = net>=0?`+${net}`:String(net);
+  $("kpi-net-adds-sub").textContent = `${adds.length} adds · ${exits.length} exits`;
+
+  const grossFV = adds.reduce((s,r)=>s+Math.max(0,Number(r.fvDeltaMM||0)),0);
+  $("kpi-gross").textContent = `${grossFV.toFixed(0)}MM`;
+
+  const avgSpread = weightedAvg(adds,r=>Math.max(0,Number(r.fvDeltaMM||0)),r=>Number(r.spreadBps||0));
+  $("kpi-avg-new-spread").textContent = `${Math.round(avgSpread)} bps`;
+
+  if(perQ.length>=2){
+    const first=[...wSpread].find(v=>v!==null), last=[...wSpread].reverse().find(v=>v!==null);
+    if(isFinite(first)&&isFinite(last)){
+      const diff=last-first;
+      $("kpi-spread-trend").textContent=`${diff>=0?"Widening":"Tightening"} (${diff>=0?"+":""}${Math.round(diff)} bps)`;
+    } else $("kpi-spread-trend").textContent="—";
+  } else $("kpi-spread-trend").textContent="—";
+
+  const eqAdds = adds.filter(r=>(r.equity||"").toLowerCase()!=="none").length;
+  $("kpi-equity-mix").textContent = adds.length?`${Math.round(eqAdds/adds.length*100)}%`:"—";
+}
+
+// ── TABLE ─────────────────────────────────────────────────────────
+function renderTable(rows) {
+  const hasEquity = r => (r.equity||"").toLowerCase()!=="none";
+  $("tbody").innerHTML = rows.map(r=>{
+    const fv=Number(r.fvDeltaMM||0);
+    const badgeCls = r.action==="Add"?"b-add":r.action==="Exit"?"b-exit":"b-amend";
+    const fvColor  = fv>=0?"color:var(--jade)":"color:var(--berry)";
+    return `<tr>
+      <td style="font-size:11px;color:var(--muted);padding:5px 12px;">${esc(r.q)}</td>
+      <td style="padding:5px 12px;"><span class="badge ${badgeCls}">${esc(r.action)}</span></td>
+      <td class="strong" style="padding:5px 12px;">${esc(r.company)}</td>
+      <td style="padding:5px 12px;"><span class="chip">${esc(r.sector)}</span></td>
+      <td style="padding:5px 12px;"><span class="chip">${esc(r.structure)}</span></td>
+      <td class="r" style="${fvColor};padding:5px 12px;">${signFmt(fv)}MM</td>
+      <td class="r" style="padding:5px 12px;">${Number(r.spreadBps||0).toFixed(0)}</td>
+      <td style="padding:5px 12px;">${hasEquity(r)?`<span class="chip chip-equity">${esc(r.equity)}</span>`:`<span style="font-size:10px;color:var(--light);">None</span>`}</td>
+      <td style="font-size:10px;color:var(--muted);padding:5px 12px;max-width:200px;">${esc(r.notes||"—")}</td>
+    </tr>`;
+  }).join("");
+  $("row-count-pill").textContent = `${rows.length} rows`;
+}
+
+// ── APPLY ─────────────────────────────────────────────────────────
+function apply() {
+  const q      = $("search").value.trim().toLowerCase();
+  const qtr    = $("qFilter").value;
+  const action = $("actionFilter").value;
+
+  const rows = ORIG.activity.filter(r=>{
+    const mq = !q||[r.company,r.sector,r.structure,r.notes,r.equity].some(f=>(f||"").toLowerCase().includes(q));
+    return mq && (!qtr||r.q===qtr) && (!action||r.action===action);
+  });
+
+  buildCharts(rows);
+  renderTable(rows);
+}
+
+$("search").addEventListener("input", apply);
+$("qFilter").addEventListener("change", apply);
+$("actionFilter").addEventListener("change", apply);
+$("resetBtn").addEventListener("click",()=>{ $("search").value="";$("qFilter").value="";$("actionFilter").value=""; apply(); });
+
+apply();
+</script>
+
+</body>
+</html>
