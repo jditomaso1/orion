@@ -1,0 +1,809 @@
+<!-- /bdc/htgc/comp/comp-layer.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC • Comp Layer</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: Poppins, system-ui, sans-serif;
+      background: #f8fafc;
+      color: #111827;
+      /* HARD no-scroll */
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* ── Layout shell ── */
+    .shell {
+      display: grid;
+      grid-template-columns: 256px 1fr;
+      grid-template-rows: 100vh;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar-placeholder {
+      grid-column: 1;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    /* ── Main canvas ── */
+    .canvas {
+      grid-column: 2;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      height: 100vh;
+      overflow: hidden;
+      padding: 20px 24px 16px;
+      gap: 12px;
+    }
+
+    /* ── Header row ── */
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      color: #111827;
+    }
+
+    .page-sub {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 1px;
+    }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border: 1px solid #e5e7eb;
+      background: #f9fafb; border-radius: 999px;
+      font-size: 11px; color: #374151;
+    }
+
+    .btn {
+      border-radius: 10px; padding: 7px 13px;
+      font-weight: 600; font-size: 12px;
+      display: inline-flex; align-items: center; cursor: pointer; border: none;
+    }
+    .btn-ghost { background: #fff; border: 1px solid #e5e7eb; color: #111827; }
+    .btn-ghost:hover { background: #f9fafb; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-primary:hover { background: #1d4ed8; }
+
+    /* ── BDC toggles + tab row ── */
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 12px;
+    }
+
+    .bdc-toggles { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .bdc-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 11px; border-radius: 999px; font-size: 11px; font-weight: 600;
+      border: 1px solid transparent; cursor: pointer; transition: opacity .15s;
+    }
+    .bdc-btn.htgc { background: #eff6ff; border-color: #bfdbfe; color: #2563eb; }
+    .bdc-btn.obdc { background: #f5f3ff; border-color: #ddd6fe; color: #7c3aed; }
+    .bdc-btn.gbdc { background: #ecfdf5; border-color: #a7f3d0; color: #059669; }
+    .bdc-btn.arcc { background: #fffbeb; border-color: #fde68a; color: #d97706; }
+    .bdc-btn.off  { opacity: .35; }
+
+    .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .dot-htgc { background: #2563eb; }
+    .dot-obdc { background: #7c3aed; }
+    .dot-gbdc { background: #059669; }
+    .dot-arcc { background: #d97706; }
+
+    /* tab strip */
+    .tab-strip { display: flex; gap: 2px; background: #f1f5f9; border-radius: 10px; padding: 3px; }
+    .tab {
+      padding: 5px 14px; border-radius: 8px; font-size: 11px; font-weight: 600;
+      color: #6b7280; cursor: pointer; transition: all .15s; white-space: nowrap;
+      border: none; background: transparent;
+    }
+    .tab.active { background: #fff; color: #111827; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+
+    /* ── Content area (fills remaining height) ── */
+    .content-area {
+      display: grid;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* each view panel */
+    .view { display: none; height: 100%; overflow: hidden; }
+    .view.active { display: grid; }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 10px 14px 8px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .card-title { font-size: 11px; font-weight: 600; color: #374151; }
+    .card-sub   { font-size: 10px; color: #9ca3af; margin-top: 1px; }
+
+    .card-body { padding: 10px 14px; height: calc(100% - 52px); display: flex; flex-direction: column; }
+
+    /* chart containers */
+    .chart-box { position: relative; flex: 1; min-height: 0; }
+    .chart-box canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+    /* ── KPI chips ── */
+    .kpi-chip {
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 12px; padding: 10px 14px;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .kpi-lbl  { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: #9ca3af; }
+    .kpi-val  { font-size: 20px; font-weight: 700; letter-spacing: -.02em; color: #111827; line-height: 1; }
+    .kpi-rows { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+    .kpi-row-item { display: flex; justify-content: space-between; align-items: center; }
+    .kpi-row-item .ticker {
+      font-size: 10px; font-weight: 700; padding: 1px 7px;
+      border-radius: 999px; border: 1px solid transparent;
+    }
+    .kpi-row-item .ticker.htgc { background: #eff6ff; border-color: #bfdbfe; color: #2563eb; }
+    .kpi-row-item .ticker.obdc { background: #f5f3ff; border-color: #ddd6fe; color: #7c3aed; }
+    .kpi-row-item .ticker.gbdc { background: #ecfdf5; border-color: #a7f3d0; color: #059669; }
+    .kpi-row-item .ticker.arcc { background: #fffbeb; border-color: #fde68a; color: #d97706; }
+    .kpi-row-item .val { font-size: 11px; font-weight: 600; color: #111827; tabular-nums: true; }
+    .kpi-row-item .val.best { color: #059669; }
+    .star { font-size: 9px; }
+
+    /* ── Scorecard table ── */
+    .sc-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .sc-table th {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+      color: #9ca3af; font-weight: 600; text-align: right;
+      padding: 6px 10px; border-bottom: 1px solid #f1f5f9;
+      white-space: nowrap;
+    }
+    .sc-table th:first-child { text-align: left; }
+    .sc-table td {
+      padding: 5px 10px; text-align: right; color: #374151;
+      border-bottom: 1px solid #f9fafb; font-size: 11px;
+      white-space: nowrap;
+    }
+    .sc-table td:first-child { text-align: left; font-weight: 500; color: #111827; }
+    .sc-table tr:last-child td { border-bottom: none; }
+    .sc-table tr:hover td { background: #fafafa; }
+    .best-cell { background: #f0fdf4 !important; color: #166534 !important; font-weight: 700 !important; }
+
+    /* ── Signals ── */
+    .signal-card {
+      border-radius: 12px; padding: 12px 14px;
+      border: 1px solid transparent;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .signal-icon { font-size: 18px; flex-shrink: 0; line-height: 1; margin-top: 1px; }
+    .signal-title { font-size: 11px; font-weight: 700; color: #111827; margin-bottom: 3px; }
+    .signal-body  { font-size: 10.5px; color: #4b5563; line-height: 1.55; }
+
+    /* ── Sector mix inline bars ── */
+    .mix-bar { height: 4px; border-radius: 2px; display: inline-block; vertical-align: middle; }
+
+    /* ── Winner badge ── */
+    .w-badge {
+      font-size: 9px; font-weight: 700; letter-spacing: .05em;
+      padding: 1px 6px; border-radius: 999px;
+      background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;
+    }
+
+    /* ── VIEW LAYOUTS ── */
+
+    /* View 1: Scorecard — left KPIs + right table */
+    #view-scorecard {
+      grid-template-columns: 220px 1fr;
+      grid-template-rows: 1fr;
+      gap: 12px;
+    }
+
+    .kpi-stack {
+      display: flex; flex-direction: column; gap: 8px; overflow: hidden;
+    }
+
+    .sc-wrap { overflow-y: auto; }
+    .sc-wrap::-webkit-scrollbar { width: 4px; }
+    .sc-wrap::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 2px; }
+
+    /* View 2: Charts — 2x2 grid */
+    #view-charts {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* View 3: Radar + Leverage side by side */
+    #view-radar {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr;
+      gap: 12px;
+    }
+
+    /* View 4: Sector mix + Signals */
+    #view-sector {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr;
+      gap: 12px;
+    }
+
+    .sector-wrap { overflow-y: auto; }
+    .sector-wrap::-webkit-scrollbar { width: 4px; }
+    .sector-wrap::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 2px; }
+
+    .signals-stack { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+    .signals-stack::-webkit-scrollbar { width: 4px; }
+    .signals-stack::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 2px; }
+
+    @media (max-width: 767px) {
+      .shell { grid-template-columns: 1fr; }
+      #sidebar-placeholder { display: none; }
+      .canvas { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      try {
+        const res = await fetch("../sidebar.html");
+        document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+        window.toggleSection = window.toggleSection || function(id) {
+          const s = document.getElementById(id), ic = document.getElementById("icon-"+id);
+          if (!s||!ic) return;
+          s.classList.toggle("hidden");
+          ic.style.transform = s.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+          localStorage.setItem("sidebar-open-section", id);
+        };
+        const last = localStorage.getItem("sidebar-open-section");
+        if (last) {
+          const s = document.getElementById(last), ic = document.getElementById("icon-"+last);
+          if (s&&ic) { s.classList.remove("hidden"); ic.style.transform="rotate(90deg)"; }
+        }
+      } catch(e) {}
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CANVAS -->
+  <main class="canvas">
+
+    <!-- HEADER ROW -->
+    <div class="header-row">
+      <div>
+        <div class="page-title">Comp Layer — HTGC vs. Peers</div>
+        <div class="page-sub">HTGC · OBDC · GBDC · ARCC &nbsp;·&nbsp; Spreads, yield, structure, concentration &nbsp;·&nbsp; Dec 31 2025</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="pill">Placeholder data — wire to EDGAR parses</span>
+        <button class="btn btn-ghost" onclick="location.href='../construction/construction.html'">Construction</button>
+        <button class="btn btn-primary" onclick="location.href='../overview/overview.html'">Overview</button>
+      </div>
+    </div>
+
+    <!-- CONTROLS ROW -->
+    <div class="controls-row">
+      <!-- BDC toggles -->
+      <div class="bdc-toggles" id="bdc-toggles">
+        <button class="bdc-btn htgc" data-bdc="HTGC" onclick="toggleBDC('HTGC')">
+          <span class="dot dot-htgc"></span>HTGC
+        </button>
+        <button class="bdc-btn obdc" data-bdc="OBDC" onclick="toggleBDC('OBDC')">
+          <span class="dot dot-obdc"></span>OBDC
+        </button>
+        <button class="bdc-btn gbdc" data-bdc="GBDC" onclick="toggleBDC('GBDC')">
+          <span class="dot dot-gbdc"></span>GBDC
+        </button>
+        <button class="bdc-btn arcc" data-bdc="ARCC" onclick="toggleBDC('ARCC')">
+          <span class="dot dot-arcc"></span>ARCC
+        </button>
+      </div>
+      <!-- Tab strip -->
+      <div class="tab-strip">
+        <button class="tab active" onclick="switchTab('scorecard',this)">Scorecard</button>
+        <button class="tab" onclick="switchTab('charts',this)">Charts</button>
+        <button class="tab" onclick="switchTab('radar',this)">Radar / Leverage</button>
+        <button class="tab" onclick="switchTab('sector',this)">Sector Mix</button>
+      </div>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div class="content-area">
+
+      <!-- ═══════════════════════════════════
+           VIEW 1 — SCORECARD
+      ════════════════════════════════════ -->
+      <div class="view active" id="view-scorecard">
+
+        <!-- Left: KPI chips -->
+        <div class="kpi-stack" id="kpi-stack"></div>
+
+        <!-- Right: full scorecard table -->
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Full scorecard</div>
+              <div class="card-sub">Green = best in class across active BDCs</div>
+            </div>
+            <span class="pill" id="sc-count">4 BDCs</span>
+          </div>
+          <div style="flex:1;overflow:hidden;padding:0;">
+            <div class="sc-wrap" style="height:100%;overflow-y:auto;padding:0 4px;">
+              <table class="sc-table" id="scorecard-table" style="width:100%"></table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ═══════════════════════════════════
+           VIEW 2 — CHARTS (2×2)
+      ════════════════════════════════════ -->
+      <div class="view" id="view-charts">
+
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="card-header">
+            <div><div class="card-title">Wtd Avg Spread (bps)</div><div class="card-sub">Who extracts the most per unit of risk?</div></div>
+            <span class="pill" id="was-pill">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="wasChart"></canvas></div></div>
+        </div>
+
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="card-header">
+            <div><div class="card-title">Wtd Avg Yield (%)</div><div class="card-sub">All-in effective yield on debt portfolio</div></div>
+            <span class="pill" id="way-pill">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="wayChart"></canvas></div></div>
+        </div>
+
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="card-header">
+            <div><div class="card-title">First Lien % of Portfolio</div><div class="card-sub">Higher = more defensive structure</div></div>
+            <span class="pill" id="fl-pill">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="flChart"></canvas></div></div>
+        </div>
+
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="card-header">
+            <div><div class="card-title">Top Sector Concentration (%)</div><div class="card-sub">Lower = more diversified</div></div>
+            <span class="pill" id="conc-pill">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="concChart"></canvas></div></div>
+        </div>
+
+      </div>
+
+      <!-- ═══════════════════════════════════
+           VIEW 3 — RADAR + LEVERAGE
+      ════════════════════════════════════ -->
+      <div class="view" id="view-radar">
+
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="card-header">
+            <div><div class="card-title">Multi-factor radar</div><div class="card-sub">Normalized 0–100 · yield, spread, first lien, diversification, leverage, NAV</div></div>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="radarChart"></canvas></div></div>
+        </div>
+
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="card-header">
+            <div><div class="card-title">Leverage (D/E) vs. NAV Premium</div><div class="card-sub">High leverage + NAV discount = market skepticism</div></div>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="leverageChart"></canvas></div></div>
+        </div>
+
+      </div>
+
+      <!-- ═══════════════════════════════════
+           VIEW 4 — SECTOR MIX + SIGNALS
+      ════════════════════════════════════ -->
+      <div class="view" id="view-sector">
+
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="card-header">
+            <div><div class="card-title">Sector mix — side by side</div><div class="card-sub">▲ = highest allocator in peer group</div></div>
+          </div>
+          <div style="flex:1;overflow:hidden;">
+            <div class="sector-wrap" style="height:100%;">
+              <table class="sc-table" id="sector-table" style="width:100%;padding:0 4px;"></table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;padding:12px 14px;">
+          <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:10px;">Orion signal</div>
+          <div class="signals-stack" id="signals-stack" style="flex:1;"></div>
+        </div>
+
+      </div>
+
+    </div><!-- /content-area -->
+  </main>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
+const BDCs = {
+  HTGC: {
+    name:"Hercules Capital", cls:"htgc", color:"#2563eb",
+    totalDebtFV_B:4.28, positionCount:110, was:638, way:11.1,
+    firstLienPct:91, topSectorPct:28, topSector:"Healthcare Svcs",
+    avgHoldMM:38.9, debtToEquity:1.12, navPremiumPct:4.2,
+    nonAccrualPct:0.8, intlPct:12,
+    sectors:{"Healthcare Services":28,"Application Software":22,"Defense Tech":12,"Drug Discovery":10,"System Software":9,"Consumer Svcs":8,"Div. Financial":6,"Other":5}
+  },
+  OBDC: {
+    name:"Blue Owl", cls:"obdc", color:"#7c3aed",
+    totalDebtFV_B:13.60, positionCount:225, was:595, way:10.4,
+    firstLienPct:97, topSectorPct:20, topSector:"Software & Tech",
+    avgHoldMM:60.4, debtToEquity:1.27, navPremiumPct:-2.1,
+    nonAccrualPct:0.4, intlPct:6,
+    sectors:{"Software & Tech":20,"Healthcare":16,"Financial Svcs":14,"Business Svcs":13,"Consumer":11,"Industrials":10,"Media & Telecom":8,"Other":8}
+  },
+  GBDC: {
+    name:"Golub Capital", cls:"gbdc", color:"#059669",
+    totalDebtFV_B:7.40, positionCount:340, was:572, way:10.0,
+    firstLienPct:99, topSectorPct:15, topSector:"Software",
+    avgHoldMM:21.8, debtToEquity:1.18, navPremiumPct:-4.8,
+    nonAccrualPct:0.2, intlPct:4,
+    sectors:{"Software":15,"Healthcare":14,"Business Svcs":13,"Industrials":12,"Consumer Products":11,"Financial Svcs":10,"Media":9,"Other":16}
+  },
+  ARCC: {
+    name:"Ares Capital", cls:"arcc", color:"#d97706",
+    totalDebtFV_B:25.10, positionCount:515, was:580, way:10.6,
+    firstLienPct:76, topSectorPct:18, topSector:"Healthcare",
+    avgHoldMM:48.7, debtToEquity:1.05, navPremiumPct:6.8,
+    nonAccrualPct:1.2, intlPct:8,
+    sectors:{"Healthcare":18,"Software & Tech":15,"Consumer & Retail":14,"Industrials":13,"Business Svcs":12,"Financial Svcs":11,"Energy":7,"Other":10}
+  }
+};
+
+const ORDER = ["HTGC","OBDC","GBDC","ARCC"];
+let active = new Set(["HTGC","OBDC","GBDC","ARCC"]);
+let activeTab = "scorecard";
+
+// chart instances
+let charts = {};
+
+// ─────────────────────────────────────────────
+// TAB SWITCH
+// ─────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+name).classList.add("active");
+  activeTab = name;
+  // destroy + rebuild charts for new view
+  rebuildCharts();
+}
+
+// ─────────────────────────────────────────────
+// BDC TOGGLE
+// ─────────────────────────────────────────────
+function toggleBDC(t) {
+  if (t === "HTGC") return;
+  if (active.has(t)) {
+    if (active.size <= 2) return;
+    active.delete(t);
+  } else {
+    active.add(t);
+  }
+  document.querySelector(`[data-bdc="${t}"]`).classList.toggle("off");
+  render();
+}
+
+function activeBDCs() { return ORDER.filter(t=>active.has(t)); }
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+function winner(bdcs, key, higher) {
+  return bdcs.reduce((best,t) => {
+    const bv = BDCs[best][key], tv = BDCs[t][key];
+    return higher ? (tv > bv ? t : best) : (tv < bv ? t : best);
+  });
+}
+
+function norm(val, vals) {
+  const mn=Math.min(...vals), mx=Math.max(...vals);
+  return mx===mn ? 50 : Math.round(((val-mn)/(mx-mn))*100);
+}
+
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+// ─────────────────────────────────────────────
+// VIEW 1: KPI CHIPS + SCORECARD
+// ─────────────────────────────────────────────
+function renderScorecard() {
+  const bdcs = activeBDCs();
+
+  // KPI chips
+  const metrics = [
+    { key:"was",           label:"WA Spread",     fmt:v=>`${v} bps`,            higher:true  },
+    { key:"way",           label:"WA Yield",       fmt:v=>`${v.toFixed(1)}%`,    higher:true  },
+    { key:"firstLienPct",  label:"First Lien",     fmt:v=>`${v}%`,               higher:true  },
+    { key:"topSectorPct",  label:"Top Conc.",       fmt:v=>`${v}%`,               higher:false },
+    { key:"nonAccrualPct", label:"Non-Accrual",    fmt:v=>`${v}%`,               higher:false },
+  ];
+
+  const stack = document.getElementById("kpi-stack");
+  stack.innerHTML = "";
+  metrics.forEach(m => {
+    const w = winner(bdcs, m.key, m.higher);
+    const chip = document.createElement("div");
+    chip.className = "kpi-chip";
+    chip.innerHTML = `<div class="kpi-lbl">${m.label}</div>
+      <div class="kpi-rows">
+        ${bdcs.map(t=>`
+          <div class="kpi-row-item">
+            <span class="ticker ${BDCs[t].cls}">${t}</span>
+            <span class="val ${t===w?'best':''}">${m.fmt(BDCs[t][m.key])} ${t===w?'★':''}</span>
+          </div>`).join("")}
+      </div>`;
+    stack.appendChild(chip);
+  });
+
+  document.getElementById("sc-count").textContent = `${bdcs.length} BDCs`;
+
+  // Scorecard table
+  const rows = [
+    { label:"Debt FV",          key:"totalDebtFV_B",   fmt:v=>`$${v.toFixed(1)}B`,               higher:null  },
+    { label:"# Positions",      key:"positionCount",   fmt:v=>`${v}`,                             higher:null  },
+    { label:"Avg Position",     key:"avgHoldMM",       fmt:v=>`$${v.toFixed(1)}MM`,               higher:null  },
+    { label:"WA Spread (bps)",  key:"was",             fmt:v=>`${v}`,                             higher:true  },
+    { label:"WA Yield (%)",     key:"way",             fmt:v=>`${v.toFixed(1)}%`,                 higher:true  },
+    { label:"First Lien %",     key:"firstLienPct",    fmt:v=>`${v}%`,                            higher:true  },
+    { label:"Top Sector Conc.", key:"topSectorPct",    fmt:v=>`${v}%`,                            higher:false },
+    { label:"Top Sector",       key:"topSector",       fmt:v=>v,                                  higher:null  },
+    { label:"Intl Exposure",    key:"intlPct",         fmt:v=>`${v}%`,                            higher:null  },
+    { label:"Debt / Equity",    key:"debtToEquity",    fmt:v=>`${v.toFixed(2)}x`,                 higher:false },
+    { label:"NAV Prem/Disc",    key:"navPremiumPct",   fmt:v=>(v>=0?`+${v}%`:`${v}%`),           higher:true  },
+    { label:"Non-Accrual %",    key:"nonAccrualPct",   fmt:v=>`${v}%`,                            higher:false },
+  ];
+
+  const tbl = document.getElementById("scorecard-table");
+  tbl.innerHTML = `<thead><tr>
+    <th style="text-align:left;padding:7px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;font-weight:600;border-bottom:1px solid #f1f5f9;">Metric</th>
+    ${bdcs.map(t=>`<th style="text-align:right;padding:7px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;font-weight:600;border-bottom:1px solid #f1f5f9;">
+      <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:${BDCs[t].cls==='htgc'?'#eff6ff':BDCs[t].cls==='obdc'?'#f5f3ff':BDCs[t].cls==='gbdc'?'#ecfdf5':'#fffbeb'};color:${BDCs[t].color};">${t}</span>
+    </th>`).join("")}
+    <th style="text-align:right;padding:7px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;font-weight:600;border-bottom:1px solid #f1f5f9;">Best</th>
+  </tr></thead><tbody>` +
+  rows.map(r => {
+    const w = r.higher !== null ? winner(bdcs, r.key, r.higher) : null;
+    return `<tr>
+      <td style="text-align:left;padding:5px 10px;font-size:11px;font-weight:500;color:#111827;border-bottom:1px solid #f9fafb;">${r.label}</td>
+      ${bdcs.map(t=>`<td style="text-align:right;padding:5px 10px;font-size:11px;border-bottom:1px solid #f9fafb;${t===w?'background:#f0fdf4;color:#166534;font-weight:700;':''}">${esc(r.fmt(BDCs[t][r.key]))}</td>`).join("")}
+      <td style="text-align:right;padding:5px 10px;border-bottom:1px solid #f9fafb;">
+        ${w ? `<span style="font-size:9px;font-weight:700;letter-spacing:.05em;padding:1px 6px;border-radius:999px;background:#dcfce7;color:#166534;border:1px solid #bbf7d0;">★ ${w}</span>` : `<span style="font-size:10px;color:#d1d5db;">—</span>`}
+      </td>
+    </tr>`;
+  }).join("") + "</tbody>";
+}
+
+// ─────────────────────────────────────────────
+// VIEW 2: CHARTS
+// ─────────────────────────────────────────────
+function renderCharts() {
+  const bdcs = activeBDCs();
+  const colors = bdcs.map(t=>BDCs[t].color);
+  const opts = (min, fmtY) => ({
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false } },
+    scales:{
+      y:{ min, grid:{ color:"#f8fafc" }, ticks:{ callback: fmtY, font:{ size:10 } } },
+      x:{ grid:{ display:false }, ticks:{ font:{ size:11 } } }
+    },
+    animation:{ duration:400 }
+  });
+
+  const barCfg = (key, min, fmtY, pillId, pillFmt, higher) => {
+    const vals = bdcs.map(t=>BDCs[t][key]);
+    const w = winner(bdcs, key, higher);
+    document.getElementById(pillId).textContent = pillFmt(BDCs[w][key], w);
+    return {
+      type:"bar",
+      data:{ labels:bdcs, datasets:[{ data:vals, backgroundColor:colors, borderRadius:8, borderSkipped:false }] },
+      options: opts(min, fmtY)
+    };
+  };
+
+  ["wasChart","wayChart","flChart","concChart"].forEach(id=>{ if(charts[id]){ charts[id].destroy(); delete charts[id]; }});
+
+  charts.wasChart = new Chart(document.getElementById("wasChart"), barCfg("was", 520, v=>`${v}`, "was-pill", (v,t)=>`Best: ${t} · ${v}bps`, true));
+  charts.wayChart = new Chart(document.getElementById("wayChart"), barCfg("way", 8.5, v=>`${v}%`, "way-pill", (v,t)=>`Best: ${t} · ${v.toFixed(1)}%`, true));
+  charts.flChart  = new Chart(document.getElementById("flChart"),  barCfg("firstLienPct", 60, v=>`${v}%`, "fl-pill", (v,t)=>`Most defensive: ${t} · ${v}%`, true));
+  charts.concChart= new Chart(document.getElementById("concChart"),barCfg("topSectorPct", 0, v=>`${v}%`, "conc-pill", (v,t)=>`Most diversified: ${t} · ${v}%`, false));
+}
+
+// ─────────────────────────────────────────────
+// VIEW 3: RADAR + LEVERAGE
+// ─────────────────────────────────────────────
+function renderRadar() {
+  const bdcs = activeBDCs();
+  ["radarChart","leverageChart"].forEach(id=>{ if(charts[id]){ charts[id].destroy(); delete charts[id]; }});
+
+  const dims = ["Yield","Spread","First Lien","Diversification","Low Leverage","NAV Premium"];
+  const allVals = (key) => ORDER.map(t=>BDCs[t][key]);
+
+  charts.radarChart = new Chart(document.getElementById("radarChart"), {
+    type:"radar",
+    data:{
+      labels:dims,
+      datasets: bdcs.map(t=>({
+        label:t,
+        data:[
+          norm(BDCs[t].way, allVals("way")),
+          norm(BDCs[t].was, allVals("was")),
+          norm(BDCs[t].firstLienPct, allVals("firstLienPct")),
+          100-norm(BDCs[t].topSectorPct, allVals("topSectorPct")),
+          100-norm(BDCs[t].debtToEquity, allVals("debtToEquity")),
+          norm(BDCs[t].navPremiumPct, allVals("navPremiumPct")),
+        ],
+        backgroundColor: BDCs[t].color+"22",
+        borderColor: BDCs[t].color,
+        borderWidth:2, pointBackgroundColor:BDCs[t].color, pointRadius:4
+      }))
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      scales:{ r:{ min:0, max:100, ticks:{display:false}, grid:{color:"#e5e7eb"}, pointLabels:{font:{size:11}} } },
+      plugins:{ legend:{ position:"bottom", labels:{ font:{size:11} } } },
+      animation:{duration:400}
+    }
+  });
+
+  charts.leverageChart = new Chart(document.getElementById("leverageChart"), {
+    type:"scatter",
+    data:{
+      datasets: bdcs.map(t=>({
+        label:t,
+        data:[{ x:BDCs[t].debtToEquity, y:BDCs[t].navPremiumPct }],
+        backgroundColor: BDCs[t].color,
+        borderColor:"#fff", borderWidth:2,
+        pointRadius:16, pointHoverRadius:18
+      }))
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ position:"bottom", labels:{font:{size:11}} },
+        tooltip:{ callbacks:{ label:ctx=>`${ctx.dataset.label}: D/E ${ctx.parsed.x.toFixed(2)}x · NAV ${ctx.parsed.y>=0?"+":""}${ctx.parsed.y}%` } }
+      },
+      scales:{
+        x:{ title:{display:true,text:"Debt / Equity (x)",font:{size:11}}, grid:{color:"#f8fafc"} },
+        y:{ title:{display:true,text:"NAV Prem/Disc (%)",font:{size:11}}, grid:{color:"#f8fafc"} }
+      },
+      animation:{duration:400}
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+// VIEW 4: SECTOR MIX + SIGNALS
+// ─────────────────────────────────────────────
+function renderSector() {
+  const bdcs = activeBDCs();
+
+  const allSectors = new Set();
+  bdcs.forEach(t=>Object.keys(BDCs[t].sectors).forEach(s=>allSectors.add(s)));
+  const sectors = Array.from(allSectors).sort((a,b)=>(BDCs["HTGC"].sectors[b]||0)-(BDCs["HTGC"].sectors[a]||0));
+
+  const tbl = document.getElementById("sector-table");
+  tbl.innerHTML = `<thead><tr>
+    <th style="text-align:left;padding:6px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;font-weight:600;border-bottom:1px solid #f1f5f9;position:sticky;top:0;background:#fff;">Sector</th>
+    ${bdcs.map(t=>`<th style="text-align:right;padding:6px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:${BDCs[t].color};font-weight:700;border-bottom:1px solid #f1f5f9;position:sticky;top:0;background:#fff;">${t}</th>`).join("")}
+  </tr></thead><tbody>` +
+  sectors.map(s => {
+    const vals = bdcs.map(t=>BDCs[t].sectors[s]||0);
+    const maxV = Math.max(...vals);
+    return `<tr>
+      <td style="text-align:left;padding:5px 10px;font-size:11px;font-weight:500;color:#111827;border-bottom:1px solid #f9fafb;">${s}</td>
+      ${bdcs.map((t,i)=>{
+        const v=vals[i]; const isMax=v===maxV&&v>0;
+        return `<td style="text-align:right;padding:5px 10px;border-bottom:1px solid #f9fafb;">
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;">
+            ${v?`<div style="width:${Math.round(v*1.8)}px;height:4px;border-radius:2px;background:${BDCs[t].color};opacity:${isMax?'1':'0.4'};"></div>`:''}
+            <span style="font-size:11px;${isMax?`color:${BDCs[t].color};font-weight:700`:'color:#6b7280'};">${v?v+"%":"—"}</span>
+            ${isMax?`<span style="font-size:9px;color:${BDCs[t].color};">▲</span>`:''}
+          </div>
+        </td>`;
+      }).join("")}
+    </tr>`;
+  }).join("") + "</tbody>";
+
+  // Signals
+  const signals = [
+    { icon:"📈", bg:"#eff6ff", border:"#bfdbfe",
+      title:"HTGC: Highest yield, most concentrated",
+      body:`${BDCs.HTGC.was}bps spread and ${BDCs.HTGC.way.toFixed(1)}% yield lead peers — but ${BDCs.HTGC.topSectorPct}% top-sector concentration means HTGC is running a deliberate tech/healthcare thesis. It's paying off in yield terms but introduces idiosyncratic risk absent from GBDC or OBDC.`},
+    { icon:"🛡️", bg:"#ecfdf5", border:"#a7f3d0",
+      title:"GBDC: Safest structure, lowest return",
+      body:`${BDCs.GBDC.firstLienPct}% first lien and ${BDCs.GBDC.nonAccrualPct}% non-accrual are best in class — but the market prices this in with a ${BDCs.GBDC.navPremiumPct}% NAV discount and ${BDCs.GBDC.was}bps spread. Golub is the low-risk / low-return anchor of this peer set.`},
+    { icon:"⚖️", bg:"#fffbeb", border:"#fde68a",
+      title:"ARCC: Scale + complexity trade-off",
+      body:`At $${BDCs.ARCC.totalDebtFV_B.toFixed(0)}B ARCC dwarfs peers — but ${BDCs.ARCC.firstLienPct}% first lien (vs. HTGC's ${BDCs.HTGC.firstLienPct}%) and ${BDCs.ARCC.nonAccrualPct}% non-accrual show the cost of deployment velocity at scale.`},
+    { icon:"🔍", bg:"#f5f3ff", border:"#ddd6fe",
+      title:"Spread compression vs. credit quality",
+      body:`OBDC and GBDC run ${BDCs.HTGC.was - BDCs.OBDC.was}–${BDCs.HTGC.was - BDCs.GBDC.was}bps below HTGC. Either HTGC extracts a genuine risk premium on VC-backed credits, or peers accept tighter terms on safer names. Watch non-accrual divergence over the next 2 quarters to resolve this.`},
+  ];
+
+  const stack = document.getElementById("signals-stack");
+  stack.innerHTML = signals.map(s=>`
+    <div style="border-radius:10px;padding:10px 12px;border:1px solid ${s.border};background:${s.bg};display:flex;gap:8px;align-items:flex-start;flex-shrink:0;">
+      <span style="font-size:16px;flex-shrink:0;margin-top:1px;">${s.icon}</span>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:#111827;margin-bottom:3px;">${s.title}</div>
+        <div style="font-size:10.5px;color:#4b5563;line-height:1.5;">${s.body}</div>
+      </div>
+    </div>`).join("");
+}
+
+// ─────────────────────────────────────────────
+// MASTER REBUILD
+// ─────────────────────────────────────────────
+function rebuildCharts() {
+  if (activeTab === "charts")   renderCharts();
+  if (activeTab === "radar")    renderRadar();
+}
+
+function render() {
+  renderScorecard();
+  renderSector();
+  if (activeTab === "charts") renderCharts();
+  if (activeTab === "radar")  renderRadar();
+}
+
+// initial
+render();
+// charts tab needs a tiny delay for canvas to be visible on first switch
+document.querySelector('[onclick="switchTab(\'charts\',this)"]').addEventListener("click", ()=>{ setTimeout(renderCharts, 50); });
+document.querySelector('[onclick="switchTab(\'radar\',this)"]').addEventListener("click",  ()=>{ setTimeout(renderRadar,  50); });
+</script>
+
+</body>
+</html>
