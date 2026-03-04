@@ -1,0 +1,476 @@
+<!-- /bdc/htgc/portfolio/portfolio.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • HTGC Portfolio</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px; padding: 2px 6px; border-radius: 8px;
+      border: 1px solid #e5e7eb; background: #fff; color: #111827;
+      white-space: nowrap;
+    }
+
+    .th { font-size: 11px; letter-spacing:.06em; text-transform: uppercase; color:#6b7280; }
+    .td { font-size: 13px; color:#111827; }
+    .chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #e5e7eb; background:#f9fafb; color:#111827; }
+
+    @media (max-width: 767px) { #sidebar-placeholder { display:none; } }
+    html, body { overflow-x: hidden; }
+    main { min-width: 0; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      // portfolio.html is in /bdc/htgc/portfolio/, sidebar is /bdc/htgc/sidebar.html
+      const res = await fetch("../sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = window.toggleSection || function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN -->
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1200px] mx-auto md:mx-0 space-y-6">
+
+      <!-- HEADER -->
+      <section class="space-y-3">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">HTGC — Master Portfolio</h1>
+            <div class="text-sm muted mt-1">
+              Filing-derived schedule (company, industry, instrument, maturity, rate/floor, principal).
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="pill">BDCs • HTGC</span>
+            <span class="pill">Source: <span class="font-semibold">Most recent filing</span></span>
+          </div>
+        </div>
+
+        <div class="bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+          <div class="text-sm text-gray-700">
+            Search + filter the schedule. Next we’ll add FV, par, and QoQ marks when you have those fields.
+          </div>
+          <div class="flex items-center gap-2">
+            <a class="btn btn-ghost" href="../trends/trends.html">View Trends</a>
+            <a class="btn btn-primary" href="../oriongpt/oriongpt.html">Ask OrionGPT</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- FILTERS -->
+      <section class="cardish p-5">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">Filters</div>
+            <div class="text-xs muted mt-1">Wired to the filing schedule below.</div>
+          </div>
+          <div class="text-xs muted">Tip: Search + Industry is usually enough</div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-12 gap-3">
+          <!-- Search -->
+          <div class="col-span-12 lg:col-span-6">
+            <label class="th block mb-1">Search</label>
+            <input id="search" type="text"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200"
+              placeholder="Company, industry, instrument, rate..." />
+          </div>
+
+          <!-- Industry -->
+          <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <label class="th block mb-1">Industry</label>
+            <select id="industryFilter"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="">All</option>
+            </select>
+          </div>
+
+          <!-- Type -->
+          <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <label class="th block mb-1">Type of Investment</label>
+            <select id="typeFilter"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="">All</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABLE -->
+      <section class="cardish overflow-hidden">
+        <div class="p-5 border-b flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">Positions</div>
+            <div class="text-xs muted mt-1">Principal displayed as $MM (assumes filing table is in $000s).</div>
+          </div>
+          <div class="flex items-center gap-2 text-xs muted">
+            <span id="rowCount">0</span> rows
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead class="bg-gray-50 border-b">
+              <tr>
+                <th class="th text-left px-5 py-3">Portfolio Company</th>
+                <th class="th text-left px-5 py-3">Industry</th>
+                <th class="th text-left px-5 py-3">Type</th>
+                <th class="th text-left px-5 py-3">Maturity</th>
+                <th class="th text-left px-5 py-3">Interest Rate / Floor</th>
+                <th class="th text-right px-5 py-3">Principal</th>
+              </tr>
+            </thead>
+
+            <tbody id="tbody" class="bg-white divide-y">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-5 border-t flex items-center justify-between flex-wrap gap-3">
+          <div class="text-xs muted">
+            Next: hook this to EDGAR ingestion + add FV/Par/QoQ marks + row click → issuer history.
+          </div>
+          <button id="resetBtn" class="btn btn-ghost">Reset filters</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // -------------------------------------------------------------------------
+    // 1) Paste the filing table as TAB-SEPARATED (TSV) text into this string.
+    //    Your pasted block already is effectively TSV. Keep it as-is.
+    // -------------------------------------------------------------------------
+    const FILING_TSV = `Instrument\tIndustry\tPortfolio Company\tType of Investment\tMaturity Date\tInterest Rate and Floor(1)\tPrincipal Amount
+Debt Investments\tApplication Software\tAlchemer LLC\tSenior Secured\tMay 2028\t1-month SOFR + 8.14%, Floor rate 9.14%\t$20,163
+Debt Investments\tApplication Software\tAlphaSense, Inc.\tSenior Secured\tJune 2029\t3-month SOFR + 6.25%, Floor rate 8.25%\t$20,000
+Debt Investments\tApplication Software\tAnnex Cloud\tSenior Secured\tJune 2028\tPIK Interest 3-month SOFR + 9.99%, Floor rate 10.99%\t$5,642
+Debt Investments\tApplication Software\tAnnex Cloud\tSenior Secured\tDecember 2025\tPIK Interest 3-month SOFR + 9.99%, Floor rate 10.99%\t$3,325
+Debt Investments\tApplication Software\tAnnex Cloud\tSenior Secured\tJune 2028\tPIK Interest 3-month SOFR + 5.73%, Floor rate 6.73%\t$1,716
+Debt Investments\tApplication Software\tBabel Street\tSenior Secured\tDecember 2027\t3-month SOFR + 8.01%, Floor rate 9.01%\t$65,937
+Debt Investments\tApplication Software\tBehavox Limited\tSenior Secured\tSeptember 2027\tPrime - 0.55%, Floor rate 7.45%, PIK Interest 3.00%, 4.95% Exit Fee\t$19,444
+Debt Investments\tApplication Software\tBrain Corporation\tSenior Secured\tSeptember 2028\tPrime + 1.35%, Floor rate 9.85%, PIK Interest 2.50%, 3.95% Exit Fee\t$32,830
+Debt Investments\tApplication Software\tCarbyne, Inc.\tSenior Secured\tFebruary 2029\tPrime + 3.50%, Floor rate 10.00%, 3.50% Exit Fee\t$7,450
+Debt Investments\tApplication Software\tCeros, Inc.\tSenior Secured\tJune 2027\t3-month SOFR + 8.99%, Floor rate 9.89%\t$22,656
+Debt Investments\tApplication Software\tChainalysis, Inc.\tSenior Secured\tJune 2029\tPrime + 2.95%, Floor rate 10.45%\t$36,412
+Debt Investments\tApplication Software\tDashlane, Inc.\tSenior Secured\tDecember 2027\tPrime + 3.05%, Floor rate 11.55%, PIK Interest 1.10%, 6.28% Exit Fee\t$45,986
+Debt Investments\tApplication Software\tDispatch Technologies, Inc.\tSenior Secured\tApril 2028\t3-month SOFR + 7.86%, Floor rate 8.61%\t$8,751
+Debt Investments\tApplication Software\tDistributed Creation Inc.\tSenior Secured\tApril 2029\tPrime + 3.00%, Floor rate 10.25%, 4.50% Exit Fee\t$25,000
+Debt Investments\tApplication Software\tDocPlanner\tSenior Secured\tJanuary 2030\tPrime + 2.75%, Floor rate 9.75%, 4.25% Exit Fee\t$68,200
+Debt Investments\tApplication Software\tEarnix, Inc.\tSenior Secured\tJune 2029\tPrime - 1.15%, Floor rate 5.35%, PIK Interest 4.45%\t$20,049
+Debt Investments\tApplication Software\tElation Health, Inc.\tSenior Secured\tApril 2029\tPrime + 1.75%, Floor rate 9.25%, PIK Interest 1.30%, 3.95% Exit Fee\t$13,575
+Debt Investments\tApplication Software\tFunnel Holding AB (publ)\tSenior Secured\tOctober 2029\tPrime + 0.60%, Floor rate 7.10%, Cap rate 8.60%, PIK Interest 3.00%, 2.25% Exit Fee\t$18,433
+Debt Investments\tApplication Software\tImagen Technologies, Inc.\tSenior Secured\tNovember 2028\tPrime + 1.55%, Floor rate 9.05%, PIK Interest 1.00%, 3.95% Exit Fee\t$7,501
+Debt Investments\tApplication Software\tiSpot.tv, Inc.\tSenior Secured\tJanuary 2029\tPrime + 2.25%, Floor rate 8.75%, PIK Interest 1.00%, 5.70% Exit Fee\t$3,282
+Debt Investments\tApplication Software\tiSpot.tv, Inc.\tSenior Secured\tJanuary 2029\tPrime + 1.40%, Floor rate 7.90%, PIK Interest 0.75%, 4.50% Exit Fee\t$39,139
+Debt Investments\tApplication Software\tKhoros, LLC\tSenior Secured\tMay 2030\tFIXED 10.00%\t$11,704
+Debt Investments\tApplication Software\tLinenMaster, LLC\tSenior Secured\tAugust 2029\t1-month SOFR + 8.28%, Floor rate 9.28%\t$11,500
+Debt Investments\tApplication Software\tLoftware, Inc.\tSenior Secured\tMarch 2028\t3-month SOFR + 7.88%, Floor rate 8.88%\t$29,660
+Debt Investments\tApplication Software\tLogicSource\tSenior Secured\tJuly 2027\t3-month SOFR + 8.93%, Floor rate 9.93%\t$11,113
+Debt Investments\tApplication Software\tMango Technologies, Inc.\tSenior Secured\tAugust 2030\tPrime + 2.25%, Floor rate 8.25%, 2.00% Exit Fee\t$16,750
+Debt Investments\tApplication Software\tMarigold Group, Inc.\tSenior Secured\tApril 2028\t6-month SOFR + 4.75%, Floor rate 5.75%, PIK Interest 5.25%\t$44,555
+Debt Investments\tApplication Software\tOmeda Holdings, LLC\tSenior Secured\tJuly 2027\t3-month SOFR + 8.05%, Floor rate 9.05%\t$7,303
+Debt Investments\tApplication Software\tPindrop Security, Inc.\tSenior Secured\tJune 2029\tPrime + 3.50%, Floor rate 10.00%, 2.00% Exit Fee\t$31,000
+Debt Investments\tApplication Software\tProven Optics, LLC\tSenior Secured\tDecember 2030\t3-month SOFR + 7.30%, Floor rate 8.30%\t$15,000
+Debt Investments\tApplication Software\tRemodel Health Holdco, LLC\tSenior Secured\tDecember 2028\tPrime + 2.35%, Floor rate 10.35%, 6.50% Exit Fee\t$25,000
+Debt Investments\tApplication Software\tReveleer\tSenior Secured\tFebruary 2027\tPrime + 0.65%, Floor rate 9.15%, PIK Interest 2.00%, 5.05% Exit Fee\t$50,052
+Debt Investments\tApplication Software\tShadowDragon, LLC\tSenior Secured\tDecember 2026\t3-month SOFR + 8.79%, Floor rate 9.69%\t$6,000
+Debt Investments\tApplication Software\tSimon Data, Inc.\tSenior Secured\tMarch 2027\tPrime + 1.00%, Floor rate 8.75%, PIK Interest 1.95%, 3.58% Exit Fee\t$11,350
+Debt Investments\tApplication Software\tSisense Ltd.\tSenior Secured\tJuly 2027\tPrime + 1.50%, Floor rate 9.50%, PIK Interest 1.95%, 5.95% Exit Fee\t$30,613
+Debt Investments\tApplication Software\tSmartsheet Inc.\tSenior Secured\tJanuary 2031\t3-month SOFR + 6.50%, Floor rate 7.25%\t$46,785
+Debt Investments\tApplication Software\tSnappt, Inc.\tSenior Secured\tApril 2029\tPrime + 2.35%, Floor rate 8.85%, PIK Interest 1.00%, 4.25% Exit Fee\t$20,139
+Debt Investments\tApplication Software\tStreamline Healthcare Solutions\tSenior Secured\tJune 2030\t3-month SOFR + 7.30%, Floor rate 8.30%\t$21,000
+Debt Investments\tApplication Software\tSuzy, Inc.\tSenior Secured\tAugust 2027\tPrime + 1.75%, Floor rate 10.00%, PIK Interest 1.95%, 3.45% Exit Fee\t$24,827
+Debt Investments\tApplication Software\tTaxCalc\tSenior Secured\tNovember 2029\tDaily SONIA + 8.17%, Floor rate 8.67%\t$8,250
+Debt Investments\tApplication Software\tTipalti Solutions Ltd.\tSenior Secured\tApril 2029\tPrime + 0.45%, Floor rate 6.45%, PIK Interest 2.30%\t$72,488
+Debt Investments\tApplication Software\tTipalti Solutions Ltd.\tSenior Secured\tApril 2029\tPrime + 0.45%, Floor rate 6.45%, PIK Interest 2.30%, 3.75% Exit Fee\t$42,673
+Debt Investments\tApplication Software\tUshur, Inc.\tSenior Secured\tJune 2028\tPrime + 2.20%, Floor rate 9.20%, 3.95% Exit Fee\t$14,400
+Debt Investments\tApplication Software\tZappi, Inc.\tSenior Secured\tDecember 2027\t3-month SOFR + 8.03%, Floor rate 9.03%\t$12,600
+Debt Investments\tApplication Software\tZeroEyes, Inc.\tSenior Secured\tMay 2030\tPrime + 2.00%, Floor rate 9.50%, PIK Interest 2.00%, 1.50% Exit Fee\t$16,414
+Debt Investments\tBiotechnology Tools\tAntheia, Inc.\tSenior Secured\tAugust 2029\tPrime + 2.85%, Floor rate 10.35%, 5.55% Exit Fee\t$21,250
+Debt Investments\tCommunications & Networking\tAryaka Networks, Inc.\tSenior Secured\tDecember 2028\tPrime + 1.80%, Floor rate 9.30%, PIK Interest 1.25%, 6.73% Exit Fee\t$28,271
+Debt Investments\tConsumer & Business Products\tWeee! Inc.\tSenior Secured\tApril 2028\tPrime + 2.25%, Floor rate 9.75%, 2.50% Exit Fee\t$7,500
+Debt Investments\tConsumer & Business Services\tAppDirect, Inc.\tSenior Secured\tSeptember 2029\tPrime + 2.05%, Floor rate 8.55%, PIK Interest 1.00%, 4.70% Exit Fee\t$55,357
+Debt Investments\tConsumer & Business Services\tCarwow LTD\tSenior Secured\tDecember 2027\tPrime + 4.70%, Floor rate 11.45%, PIK Interest 1.45%, 4.95% Exit Fee\t$20,662
+Debt Investments\tConsumer & Business Services\tFinix Payments, Inc.\tSenior Secured\tDecember 2029\tPrime + 2.50%, Floor rate 9.25%, 4.95% Exit Fee\t$7,000
+Debt Investments\tConsumer & Business Services\tGoEuro Travel GmbH\tSenior Secured\tNovember 2029\tPrime + 3.45%, Floor rate 10.45%, 4.50% Exit Fee\t$48,750
+Debt Investments\tConsumer & Business Services\tHouzz, Inc.\tConvertible Debt\tMay 2028\tPIK Interest 12.00%\t$28,901
+Debt Investments\tConsumer & Business Services\tJobandtalent USA, Inc.\tSenior Secured\tOctober 2028\t1-month SOFR + 3.50%, Floor rate 4.50%, PIK Interest 3.25%, 6.42% Exit Fee\t$14,270
+Debt Investments\tConsumer & Business Services\tNerdy Inc.\tSenior Secured\tNovember 2029\tPrime + 3.50%, Floor rate 10.75%, 7.50% Exit Fee\t$14,000
+Debt Investments\tConsumer & Business Services\tPeek Travel, Inc.\tSenior Secured\tOctober 2028\tPrime + 1.75%, Floor rate 9.25%, PIK Interest 1.00%, 4.95% Exit Fee\t$16,515
+Debt Investments\tConsumer & Business Services\tPlentific Ltd\tSenior Secured\tOctober 2026\tPrime + 2.55%, Floor rate 11.05%, 2.95% Exit Fee\t$3,035
+Debt Investments\tConsumer & Business Services\tProvi\tSenior Secured\tDecember 2027\tPrime + 4.40%, Floor rate 10.65%, 1.00% Exit Fee\t$15,443
+Debt Investments\tConsumer & Business Services\tRiviera Partners LLC\tSenior Secured\tMarch 2028\t1-month SOFR + 8.28%, Floor rate 9.28%\t$36,126
+Debt Investments\tConsumer & Business Services\tRVShare, LLC\tSenior Secured\tDecember 2026\t3-month SOFR + 9.50%, Floor rate 10.50%\t$25,809
+Debt Investments\tConsumer & Business Services\tSeatGeek, Inc.\tSenior Secured\tMay 2026\tPrime + 7.00%, Floor rate 10.50%, PIK Interest 0.50%, 4.50% Exit Fee\t$25,456
+Debt Investments\tConsumer & Business Services\tSeatGeek, Inc.\tSenior Secured\tJuly 2026\tPrime + 2.50%, Floor rate 10.75%, PIK Interest 0.50%, 3.50% Exit Fee\t$78,434
+Debt Investments\tConsumer & Business Services\tSkyword, Inc.\tSenior Secured\tNovember 2027\tPrime + 2.75%, Floor rate 9.25%, PIK Interest 1.75%, 5.50% Exit Fee\t$6,705
+Debt Investments\tConsumer & Business Services\tTectura Corporation\tSenior Secured\tJanuary 2027\tFIXED 8.25%\t$8,250
+Debt Investments\tConsumer & Business Services\tThumbtack, Inc.\tSenior Secured\tMarch 2028\tPrime + 2.45%, Floor rate 10.95%, PIK Interest 1.50%\t$21,238
+Debt Investments\tDefense Technologies\tSaronic Technologies, Inc.\tSenior Secured\tJune 2030\tPrime + 2.50%, Floor rate 9.00%, 2.00% Exit Fee\t$21,250
+Debt Investments\tDefense Technologies\tShield AI, Inc.\tSenior Secured\tFebruary 2029\tPrime + 0.85%, Floor rate 6.85%, Cap rate 9.60%, PIK Interest 2.50%, 2.50% Exit Fee\t$116,675
+Debt Investments\tDiversified Financial Services\tGibraltar Acquisition LLC\tUnsecured\tJuly 2029\tFIXED 3.45%, PIK Interest 8.05%\t$28,805
+Debt Investments\tDiversified Financial Services\tGibraltar Acquisition LLC\tUnsecured\tJuly 2029\tFIXED 11.95%\t$10,000
+Debt Investments\tDrug Discovery & Development\tAldeyra Therapeutics, Inc.\tSenior Secured\tApril 2026\tPrime + 3.10%, Floor rate 11.10%, 8.90% Exit Fee\t$15,000
+Debt Investments\tDrug Discovery & Development\tAlector, Inc.\tSenior Secured\tDecember 2028\tPrime + 1.05%, Floor rate 8.05%, 4.75% Exit Fee\t$7,000
+Debt Investments\tDrug Discovery & Development\tAltimmune, Inc.\tSenior Secured\tJune 2029\tPrime + 2.45%, Floor rate 9.70%, 6.25% Exit Fee\t$17,500
+Debt Investments\tDrug Discovery & Development\tArcus Biosciences, Inc.\tSenior Secured\tSeptember 2030\tPrime - 0.05%, Floor rate 8.45%, PIK Interest 2.20%, 9.00% Exit Fee\t$75,704
+Debt Investments\tDrug Discovery & Development\tBeren Therapeutics P.B.C.\tSenior Secured\tOctober 2029\tPrime + 2.45%, Floor rate 9.95%, 5.25% Exit Fee\t$8,625
+Debt Investments\tDrug Discovery & Development\tBraeburn, Inc.\tSenior Secured\tOctober 2028\tPrime + 3.00%, Floor rate 10.50%, PIK Interest 0.25%, 5.45% Exit Fee\t$53,633
+Debt Investments\tDrug Discovery & Development\tCOMPASS Pathways plc\tSenior Secured\tJuly 2027\tPrime + 1.50%, Floor rate 9.75%, PIK Interest 1.40%, 4.75% Exit Fee\t$24,840
+Debt Investments\tDrug Discovery & Development\tCorium, Inc.\tSenior Secured\tSeptember 2026\tPrime + 5.70%, Floor rate 8.95%, 7.75% Exit Fee\t$86,925
+Debt Investments\tDrug Discovery & Development\tDisc Medicine, Inc.\tSenior Secured\tDecember 2029\tPrime + 1.75%, Floor rate 8.25%, 6.75% Exit Fee\t$22,500
+Debt Investments\tDrug Discovery & Development\tDyne Therapeutics, Inc.\tSenior Secured\tJuly 2030\tPrime + 2.45%, Floor rate 9.95%, 5.50% Exit Fee\t$100,000
+Debt Investments\tDrug Discovery & Development\tenGene, Inc.\tSenior Secured\tJanuary 2028\tPrime + 0.75%, Floor rate 9.25%, Cap rate 9.75%, PIK Interest 1.15%, 5.50% Exit Fee\t$16,111
+Debt Investments\tDrug Discovery & Development\tGenetix Biotherapeutics Inc. (p.k.a. bluebird bio, Inc.)\tSenior Secured\tApril 2029\tPrime + 2.45%, Floor rate 9.45%, 6.45% Exit Fee\t$67,116
+Debt Investments\tDrug Discovery & Development\tHeron Therapeutics, Inc.\tSenior Secured\tSeptember 2030\tPrime + 1.95%, Floor rate 9.45%, PIK Interest 1.00%, 6.25% Exit Fee\t$80,368
+Debt Investments\tDrug Discovery & Development\tKura Oncology, Inc.\tSenior Secured\tNovember 2027\tPrime + 2.40%, Floor rate 8.65%, 6.05% Exit Fee\t$5,500
+Debt Investments\tDrug Discovery & Development\tMoonLake Immunotherapeutics\tSenior Secured\tApril 2030\tPrime + 1.45%, Floor rate 8.45%, 6.95% Exit Fee\t$34,500
+Debt Investments\tDrug Discovery & Development\tNorthSea Therapeutics\tConvertible Debt\tDecember 2026\tFIXED 6.00%\t$373
+Debt Investments\tDrug Discovery & Development\tPhathom Pharmaceuticals, Inc.\tSenior Secured\tDecember 2027\tPrime + 1.35%, Floor rate 9.85%, Cap rate 10.35%, PIK Interest 2.15%, 7.06% Exit Fee\t$140,460
+Debt Investments\tDrug Discovery & Development\tPhathom Pharmaceuticals, Inc.\tSenior Secured\tDecember 2027\tPrime + 1.35%, Floor rate 9.85%, Cap rate 10.35%, PIK Interest 2.15%, 3.00% Exit Fee\t$31,904
+Debt Investments\tDrug Discovery & Development\tReplimune Group, Inc.\tSenior Secured\tOctober 2027\tPrime + 1.75%, Floor rate 7.25%, Cap rate 9.00%, PIK Interest 1.50%, 4.95% Exit Fee\t$32,378
+Debt Investments\tDrug Discovery & Development\tSavara, Inc.\tSenior Secured\tApril 2030\tPrime + 1.45%, Floor rate 7.45%, 6.95% Exit Fee\t$21,450
+Debt Investments\tDrug Discovery & Development\tSynOx Therapeutics Limited\tSenior Secured\tMay 2027\tPrime + 1.40%, Floor rate 9.90%, 7.25% Exit Fee\t$4,500
+Debt Investments\tDrug Discovery & Development\tuniQure B.V.\tSenior Secured\tOctober 2030\tPrime + 2.45%, Floor rate 9.45%, 5.50% Exit Fee\t$27,500
+Debt Investments\tDrug Discovery & Development\tViridian Therapeutics, Inc.\tSenior Secured\tOctober 2030\tPrime + 1.45%, Floor rate 8.95%, Cap rate 9.45%, 6.00% Exit Fee\t$24,500
+Debt Investments\tDrug Discovery & Development\tX4 Pharmaceuticals, Inc.\tSenior Secured\tJuly 2027\tPrime + 3.15%, Floor rate 10.15%, 3.72% Exit Fee\t$75,000
+Debt Investments\tElectronics & Computer Hardware\tLocus Robotics Corp.\tSenior Secured\tDecember 2028\tPrime + 3.00%, Floor rate 9.50%, 4.00% Exit Fee\t$65,000
+Debt Investments\tHealthcare Services, Other\tBelong Health, Inc.\tSenior Secured\tNovember 2029\tPrime + 2.25%, Floor rate 9.75%, 5.45% Exit Fee\t$11,250
+Debt Investments\tHealthcare Services, Other\tBlue Sprig Pediatrics, Inc.\tSenior Secured\tNovember 2026\t1-month SOFR + 5.11%, Floor rate 6.00%, PIK Interest 4.45%\t$75,547
+Debt Investments\tHealthcare Services, Other\tChenMed, LLC\tSenior Secured\tMay 2030\tPrime + 2.45%, Floor rate 9.45%, 3.75% Exit Fee\t$130,000
+Debt Investments\tHealthcare Services, Other\tCurana Health Holdings, LLC\tSenior Secured\tJanuary 2028\tPrime + 1.45%, Floor rate 9.20%, 4.95% Exit Fee\t$27,500
+Debt Investments\tHealthcare Services, Other\tEnnoble Care LLC\tSenior Secured\tFebruary 2030\tPrime + 2.60%, Floor rate 10.35%, 7.95% Exit Fee\t$13,500
+Debt Investments\tHealthcare Services, Other\tEquality Health, LLC\tSenior Secured\tFebruary 2028\tPrime + 5.85%, Floor rate 9.50%, PIK Interest 1.95%, 1.27% Exit Fee\t$71,943
+Debt Investments\tHealthcare Services, Other\tMain Street Rural, Inc.\tSenior Secured\tJuly 2027\tPrime + 1.95%, Floor rate 9.95%, 6.85% Exit Fee\t$73,500
+Debt Investments\tHealthcare Services, Other\tMarathon Health, LLC\tSenior Secured\tFebruary 2029\tPrime + 0.75%, Floor rate 8.75%, PIK Interest 2.25%, 3.00% Exit Fee\t$178,230
+Debt Investments\tHealthcare Services, Other\tMarathon Health, LLC\tSenior Secured\tFebruary 2029\tPrime + 3.00%, Floor rate 11.00%\t$5,000
+Debt Investments\tHealthcare Services, Other\tModern Life, Inc.\tSenior Secured\tFebruary 2029\tPrime + 2.75%, Floor rate 10.25%, 5.00% Exit Fee\t$20,238
+Debt Investments\tHealthcare Services, Other\tNeueHealth, Inc.\tSenior Secured\tJune 2028\tPrime + 1.15%, Floor rate 9.65%, PIK Interest 2.50%, 2.50% Exit Fee\t$46,393
+Debt Investments\tHealthcare Services, Other\tOctave Health Group, Inc.\tSenior Secured\tOctober 2029\tPrime + 2.70%, Floor rate 9.95%, 5.35% Exit Fee\t$10,000
+Debt Investments\tHealthcare Services, Other\tRecover Together, Inc.\tSenior Secured\tJuly 2027\tPrime + 1.90%, Floor rate 9.90%, 7.50% Exit Fee\t$46,500
+Debt Investments\tHealthcare Services, Other\tStrive Health Holdings, LLC\tSenior Secured\tAugust 2029\tPrime + 1.05%, Floor rate 9.55%, 5.95% Exit Fee\t$36,000
+Debt Investments\tHealthcare Services, Other\tTungsten Health Holdings, LLC\tSenior Secured\tDecember 2029\tPrime + 1.00%, Floor rate 8.50%, Cap rate 9.00%, PIK Interest 1.25%, 8.35% Exit Fee\t$10,125
+Debt Investments\tHealthcare Services, Other\tVida Health, Inc.\tSenior Secured\tJanuary 2028\tPrime - 2.75%, Floor rate 5.75%, PIK Interest 5.35%, 4.95% Exit Fee\t$38,798
+Debt Investments\tHealthcare Services, Other\tWellBe Senior Medical, LLC\tSenior Secured\tMay 2029\tPrime + 0.75%, Floor rate 7.75%, PIK Interest 2.65%, 6.75% Exit Fee\t$33,050
+Debt Investments\tInformation Services\tSaama Technologies, LLC\tSenior Secured\tJuly 2027\tPrime + 0.70%, Floor rate 8.95%, PIK Interest 2.00%, 3.45% Exit Fee\t$22,123
+Debt Investments\tManufacturing Technology\tVulcanForms Inc.\tSenior Secured\tJanuary 2028\tPrime + 4.25%, Floor rate 11.25%, 4.25% Exit Fee\t$20,000
+Debt Investments\tMedical Devices & Equipment\tOrchestra BioMed Holdings, Inc.\tSenior Secured\tNovember 2028\tPrime + 2.00%, Floor rate 9.50%, 6.35% Exit Fee\t$15,000
+Debt Investments\tMedical Devices & Equipment\tSenseonics Holdings, Inc.\tSenior Secured\tAugust 2029\tPrime + 2.40%, Floor rate 9.90%, 13.40% Exit Fee\t$30,625
+Debt Investments\tMedical Devices & Equipment\tSight Sciences, Inc.\tSenior Secured\tJuly 2028\tPrime + 2.35%, Floor rate 10.35%, 5.95% Exit Fee\t$28,000
+Debt Investments\tSpace Technologies\tHawkEye 360, Inc.\tSenior Secured\tDecember 2028\tPrime + 2.10%, Floor rate 9.35%, PIK Interest 1.50%, 1.95% Exit Fee\t$8,013
+Debt Investments\tSpace Technologies\tLoft Orbital Solutions Inc.\tSenior Secured\tDecember 2029\tPrime + 1.75%, Floor rate 8.75%, PIK Interest 1.00%, 3.45% Exit Fee\t$8,820
+Debt Investments\tSpace Technologies\tStoke Space Technologies, Inc.\tSenior Secured\tMay 2029\tPrime + 1.00%, Floor rate 7.50%, PIK Interest 2.00%, 5.25% Exit Fee\t$28,294
+Debt Investments\tSustainable and Renewable Technology\tElectric Hydrogen Co.\tSenior Secured\tMay 2028\tPrime + 2.25%, Floor rate 10.75%, PIK Interest 1.25%, 4.25% Exit Fee\t$12,769
+Debt Investments\tSustainable and Renewable Technology\tElectric Hydrogen Co.\tSenior Secured\tMay 2028\tPrime + 2.25%, Floor rate 10.75%, PIK Interest 1.25%, 5.95% Exit Fee\t$17,615
+Debt Investments\tSustainable and Renewable Technology\tTidal Vision Products, Inc.\tSenior Secured\tOctober 2028\tPrime + 2.45%, Floor rate 9.70%, 3.45% Exit Fee\t$5,000
+Debt Investments\tSystem Software\tAkeyless Security Ltd.\tSenior Secured\tAugust 2028\tPrime + 4.00%, Floor rate 11.00%, 2.95% Exit Fee\t$10,000
+Debt Investments\tSystem Software\tArmis, Inc.\tSenior Secured\tMarch 2028\tPrime + 0.00%, Floor rate 7.50%, PIK Interest 2.00%, 2.25% Exit Fee\t$51,771
+Debt Investments\tSystem Software\tArmis, Inc.\tSenior Secured\tMarch 2028\tPrime + 1.25%, Floor rate 8.75%, PIK Interest 2.00%, 2.25% Exit Fee\t$101,183
+Debt Investments\tSystem Software\tCoreView USA, Inc.\tSenior Secured\tJanuary 2029\tPrime + 2.75%, Floor rate 9.25%, 4.95% Exit Fee\t$25,000
+Debt Investments\tSystem Software\tCoronet Cyber Security Ltd.\tSenior Secured\tOctober 2028\tPrime - 2.95%, Floor rate 3.55%, PIK Interest 5.85%\t$9,115
+Debt Investments\tSystem Software\tDNSFilter, Inc.\tSenior Secured\tOctober 2028\tPrime + 2.15%, Floor rate 8.65%, PIK Interest 0.75%, 4.95% Exit Fee\t$5,009
+Debt Investments\tSystem Software\tHarness, Inc.\tSenior Secured\tMarch 2029\tPrime - 2.25%, Floor rate 5.25%, Cap rate 6.50%, PIK Interest 6.25%, 1.00% Exit Fee\t$57,906
+Debt Investments\tSystem Software\tLogRhythm, Inc.\tSenior Secured\tJuly 2029\t3-month SOFR + 7.50%, Floor rate 8.50%\t$25,000
+Debt Investments\tSystem Software\tMorphisec Information Security 2014 Ltd.\tSenior Secured\tOctober 2027\tPrime + 3.45%, Floor rate 11.70%, 5.95% Exit Fee\t$11,435
+Debt Investments\tSystem Software\tNew Relic, Inc.\tSenior Secured\tNovember 2030\t3-month SOFR + 6.75%, Floor rate 7.75%\t$21,890
+Debt Investments\tSystem Software\tPayIt, LLC\tSenior Secured\tDecember 2028\tPrime + 1.45%, Floor rate 7.95%, PIK Interest 1.50%, 5.00% Exit Fee\t$26,271
+Debt Investments\tSystem Software\tScylla DB Ltd.\tSenior Secured\tJuly 2029\tPrime + 3.00%, Floor rate 10.50%, 0.75% Exit Fee\t$15,000
+Debt Investments\tSystem Software\tSystem Software\tSenior Secured\tApril 2028\tPrime - 1.75%, Floor rate 6.75%, PIK Interest 3.25%\t$23,511
+Debt Investments\tSystem Software\tSystem Software\tSenior Secured\tApril 2028\tPrime - 0.50%, Floor rate 8.00%, PIK Interest 3.85%\t$33,815
+Debt Investments\tSystem Software\tSumo Logic, Inc.\tSenior Secured\tMay 2030\t3-month SOFR + 6.50%, Floor rate 7.50%\t$23,000
+Debt Investments\tSystem Software\tZimperium, Inc.\tSenior Secured\tMay 2027\t6-month SOFR + 8.31%, Floor rate 9.31%\t$17,771`;
+
+    // -------------------------------------------------------------------------
+    // 2) Parser -> normalized rows
+    // -------------------------------------------------------------------------
+    function parseMoneyToThousands(val) {
+      // "$20,163" -> 20163 (assume $000s)
+      if (!val) return null;
+      const cleaned = String(val).replace(/\$/g, "").replace(/,/g, "").trim();
+      const num = Number(cleaned);
+      return Number.isFinite(num) ? num : null;
+    }
+
+    function fmtMMFromThousands(thousands) {
+      if (thousands === null || thousands === undefined) return "—";
+      const mm = thousands / 1000; // $000s -> $MM
+      return `$${mm.toFixed(mm >= 100 ? 0 : 1)}mm`;
+    }
+
+    function uniqSorted(arr) {
+      return Array.from(new Set(arr.filter(Boolean))).sort((a,b) => a.localeCompare(b));
+    }
+
+    function parseTSV(tsv) {
+      const lines = tsv.split("\n").map(l => l.trim()).filter(Boolean);
+      if (lines.length < 2) return [];
+
+      const header = lines[0].split("\t").map(s => s.trim());
+      const idx = (name) => header.findIndex(h => h.toLowerCase() === name.toLowerCase());
+
+      const iInstrument = idx("Instrument");
+      const iIndustry = idx("Industry");
+      const iCompany = idx("Portfolio Company");
+      const iType = idx("Type of Investment");
+      const iMat = idx("Maturity Date");
+      const iRate = idx("Interest Rate and Floor(1)");
+      const iPrincipal = idx("Principal Amount");
+
+      return lines.slice(1).map(line => {
+        const cols = line.split("\t");
+        return {
+          instrument: cols[iInstrument] || "",
+          industry: cols[iIndustry] || "",
+          company: cols[iCompany] || "",
+          type: cols[iType] || "",
+          maturity: cols[iMat] || "",
+          rate: cols[iRate] || "",
+          principal_k: parseMoneyToThousands(cols[iPrincipal] || "")
+        };
+      }).filter(r => r.company);
+    }
+
+    const DATA = parseTSV(FILING_TSV);
+
+    // Populate dropdowns
+    const industryOptions = uniqSorted(DATA.map(d => d.industry));
+    const typeOptions = uniqSorted(DATA.map(d => d.type));
+
+    const industrySelect = document.getElementById("industryFilter");
+    industryOptions.forEach(v => {
+      const o = document.createElement("option");
+      o.value = v; o.textContent = v;
+      industrySelect.appendChild(o);
+    });
+
+    const typeSelect = document.getElementById("typeFilter");
+    typeOptions.forEach(v => {
+      const o = document.createElement("option");
+      o.value = v; o.textContent = v;
+      typeSelect.appendChild(o);
+    });
+
+    // Render
+    function render(rows) {
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+
+      rows.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-gray-50";
+
+        tr.innerHTML = `
+          <td class="td px-5 py-3">
+            <div class="font-semibold">${escapeHtml(r.company)}</div>
+            <div class="text-xs muted mt-1">${escapeHtml(r.instrument || "—")}</div>
+          </td>
+          <td class="td px-5 py-3"><span class="chip">${escapeHtml(r.industry || "—")}</span></td>
+          <td class="td px-5 py-3"><span class="chip">${escapeHtml(r.type || "—")}</span></td>
+          <td class="td px-5 py-3">${escapeHtml(r.maturity || "—")}</td>
+          <td class="td px-5 py-3">${escapeHtml(r.rate || "—")}</td>
+          <td class="td px-5 py-3 text-right tabular-nums">${fmtMMFromThousands(r.principal_k)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("rowCount").textContent = rows.length;
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function applyFilters() {
+      const q = document.getElementById("search").value.trim().toLowerCase();
+      const industry = document.getElementById("industryFilter").value;
+      const type = document.getElementById("typeFilter").value;
+
+      const out = DATA.filter(r => {
+        const matchesQ =
+          !q ||
+          r.company.toLowerCase().includes(q) ||
+          r.industry.toLowerCase().includes(q) ||
+          r.type.toLowerCase().includes(q) ||
+          r.maturity.toLowerCase().includes(q) ||
+          r.rate.toLowerCase().includes(q) ||
+          (r.instrument || "").toLowerCase().includes(q);
+
+        const matchesIndustry = !industry || r.industry === industry;
+        const matchesType = !type || r.type === type;
+
+        return matchesQ && matchesIndustry && matchesType;
+      });
+
+      render(out);
+    }
+
+    // Hook up filters
+    document.getElementById("search").addEventListener("input", applyFilters);
+    document.getElementById("industryFilter").addEventListener("change", applyFilters);
+    document.getElementById("typeFilter").addEventListener("change", applyFilters);
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      document.getElementById("search").value = "";
+      document.getElementById("industryFilter").value = "";
+      document.getElementById("typeFilter").value = "";
+      applyFilters();
+    });
+
+    // Initial
+    render(DATA);
+  </script>
+
+</body>
+</html>
