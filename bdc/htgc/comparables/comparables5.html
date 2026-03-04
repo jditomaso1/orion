@@ -1,0 +1,522 @@
+<!-- /bdc/htgc/comps/comps.html  (NO-SCROLL LAYOUT) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC • Comps</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+
+    .kpi { border:1px solid #e5e7eb; border-radius:16px; background:#fff; }
+    .kpi-label { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#6b7280; font-weight:600; }
+    .kpi-value { font-size:22px; font-weight:700; letter-spacing:-.02em; }
+    .kpi-sub { font-size:12px; color:#6b7280; }
+
+    .th { font-size: 11px; letter-spacing:.06em; text-transform: uppercase; color:#6b7280; }
+    .td { font-size: 13px; color:#111827; }
+    .chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #e5e7eb; background:#f9fafb; color:#111827; }
+    .sticky-head thead th { position: sticky; top: 0; background: #f9fafb; z-index: 1; }
+
+    @media (max-width: 767px) { #sidebar-placeholder { display:none; } }
+    html, body { overflow-x:hidden; }
+    main { min-width:0; }
+
+    /* -----------------------------
+       NO-SCROLL PAGE SHELL
+       ----------------------------- */
+    body { height: 100vh; overflow: hidden; }
+    main { height: 100vh; }
+
+    /* The inner layout uses a 3-row grid:
+       header (auto) / content (1fr) / footer hint (auto)
+       The only scroll is inside the table panel if needed. */
+    .page-grid {
+      height: calc(100vh - 2rem); /* padding compensation (p-4) */
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 1rem;
+    }
+    @media (min-width: 768px) {
+      .page-grid { height: calc(100vh - 4rem); } /* md:p-8 */
+    }
+
+    /* Content area: left charts + right table */
+    .content-grid {
+      min-height: 0; /* critical for nested grid shrink */
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    @media (min-width: 1024px) {
+      .content-grid { grid-template-columns: 520px 1fr; }
+    }
+
+    /* Panels fill available height */
+    .panel { display: flex; flex-direction: column; min-height: 0; }
+    .panel-body { flex: 1 1 auto; min-height: 0; }
+
+    /* Charts: full height in their panel body */
+    .chart-wrap { position: relative; width: 100%; height: 100%; min-height: 0; }
+    .chart-wrap canvas { width: 100% !important; height: 100% !important; display:block; }
+
+    /* Table area scrolls internally (not the whole page) */
+    .table-scroll {
+      height: 100%;
+      overflow: auto;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* Slightly tighter spacing for “single screen” */
+    .tight { padding: 14px; }
+    .tight-top { padding: 14px 14px 10px; }
+    .tight-bottom { padding: 10px 14px 14px; }
+
+    /* Keep KPI strip compact */
+    .kpi-value { font-size: 20px; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("../sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = window.toggleSection || function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN -->
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1600px] mx-auto md:mx-0 page-grid">
+
+      <!-- TOP: Header + Filters + KPIs (all above the fold) -->
+      <section class="space-y-3">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">HTGC — BDC Comps</h1>
+            <div class="text-sm muted mt-1">Single-screen view: filters, KPIs, charts, and table. Table scrolls internally only.</div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="pill" id="asof-pill">As of —</span>
+            <a class="btn btn-ghost" href="../overview/overview.html">Back to Overview</a>
+            <button class="btn btn-ghost" id="resetBtn">Reset</button>
+          </div>
+        </div>
+
+        <!-- Filters row (compact) -->
+        <div class="cardish tight">
+          <div class="grid grid-cols-12 gap-3 items-end">
+            <div class="col-span-12 lg:col-span-6">
+              <label class="th block mb-1">Search</label>
+              <input id="search" type="text"
+                class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200"
+                placeholder="Ticker or name..." />
+            </div>
+
+            <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+              <label class="th block mb-1">Strategy bucket</label>
+              <select id="bucketFilter"
+                class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+                <option value="">All</option>
+              </select>
+            </div>
+
+            <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+              <label class="th block mb-1">Universe</label>
+              <select id="universeFilter"
+                class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+                <option value="all">All comps</option>
+                <option value="highlight">Highlights only</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPIs row (compact) -->
+        <div class="grid grid-cols-12 gap-3">
+          <div class="col-span-12 md:col-span-3 kpi tight">
+            <div class="kpi-label">Universe size</div>
+            <div class="kpi-value mt-1" id="kpi-n">—</div>
+            <div class="kpi-sub mt-1">filtered rows</div>
+          </div>
+          <div class="col-span-12 md:col-span-3 kpi tight">
+            <div class="kpi-label">Median P/NAV</div>
+            <div class="kpi-value mt-1" id="kpi-med-pnav">—</div>
+            <div class="kpi-sub mt-1">valuation snapshot</div>
+          </div>
+          <div class="col-span-12 md:col-span-3 kpi tight">
+            <div class="kpi-label">Median non-accrual</div>
+            <div class="kpi-value mt-1" id="kpi-med-na">—</div>
+            <div class="kpi-sub mt-1">% of portfolio FV</div>
+          </div>
+          <div class="col-span-12 md:col-span-3 kpi tight">
+            <div class="kpi-label">Median dividend yield</div>
+            <div class="kpi-value mt-1" id="kpi-med-yield">—</div>
+            <div class="kpi-sub mt-1">based on price</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MIDDLE: Charts + Table (fills the rest of the screen) -->
+      <section class="content-grid min-h-0">
+        <!-- LEFT: charts stacked -->
+        <div class="panel cardish min-h-0">
+          <div class="tight-top border-b">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <div>
+                <div class="text-sm font-semibold">Valuation vs credit quality</div>
+                <div class="text-xs muted mt-1">P/NAV (x) vs Non-accrual (%)</div>
+              </div>
+              <span class="pill">Scatter</span>
+            </div>
+          </div>
+          <div class="panel-body p-3 min-h-0">
+            <div class="chart-wrap" style="height:55%;">
+              <canvas id="scatterChart"></canvas>
+            </div>
+            <div class="mt-3 border-t pt-3" style="height:45%;">
+              <div class="flex items-center justify-between gap-2 flex-wrap px-1">
+                <div>
+                  <div class="text-sm font-semibold">Dividend yield</div>
+                  <div class="text-xs muted mt-1">Quick check vs valuation + NA</div>
+                </div>
+                <span class="pill">%</span>
+              </div>
+              <div class="chart-wrap mt-2" style="height:calc(100% - 38px);">
+                <canvas id="yieldChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: table (internal scroll only) -->
+        <div class="panel cardish min-h-0">
+          <div class="tight-top border-b flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <div class="text-sm font-semibold">Comparable BDCs</div>
+              <div class="text-xs muted mt-1">Click headers to sort.</div>
+            </div>
+            <div class="text-xs muted">
+              <span id="rowCount">0</span> rows
+              <span class="pill ml-2" id="sort-pill">Sort: P/NAV ↑</span>
+            </div>
+          </div>
+
+          <div class="panel-body table-scroll">
+            <table class="min-w-full sticky-head">
+              <thead class="border-b">
+                <tr>
+                  <th class="th text-left px-4 py-3 cursor-pointer" data-sort="ticker">Ticker</th>
+                  <th class="th text-left px-4 py-3 cursor-pointer" data-sort="name">Name</th>
+                  <th class="th text-left px-4 py-3 cursor-pointer" data-sort="bucket">Bucket</th>
+
+                  <th class="th text-right px-4 py-3 cursor-pointer" data-sort="price">Price</th>
+                  <th class="th text-right px-4 py-3 cursor-pointer" data-sort="nav">NAV</th>
+                  <th class="th text-right px-4 py-3 cursor-pointer" data-sort="pnav">P/NAV</th>
+
+                  <th class="th text-right px-4 py-3 cursor-pointer" data-sort="divYield">Yield</th>
+                  <th class="th text-right px-4 py-3 cursor-pointer" data-sort="leverage">Lev</th>
+                  <th class="th text-right px-4 py-3 cursor-pointer" data-sort="nonAccrual">NA</th>
+
+                  <th class="th text-left px-4 py-3">Notes</th>
+                </tr>
+              </thead>
+              <tbody id="tbody" class="bg-white divide-y"></tbody>
+            </table>
+          </div>
+
+          <div class="tight-bottom border-t text-xs muted">
+            Next: “relative value score” (cheap + clean + covered) + percentile ranks.
+          </div>
+        </div>
+      </section>
+
+      <!-- BOTTOM: tiny status line (optional) -->
+      <section class="text-xs muted flex items-center justify-between">
+        <span>Orion comps — single screen layout</span>
+        <span class="pill">No page scroll • table scroll only</span>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // =========================================================================
+    // SAMPLE DATA (replace with real pulls)
+    // =========================================================================
+    const COMPS = {
+      asOf: "Mar 31, 2026 (sample)",
+      rows: [
+        { ticker:"HTGC", name:"Hercules Capital", bucket:"Venture Growth Lending", price:22.19, nav:11.76, pnav:1.89, divYield:9.6, leverage:1.15, nonAccrual:0.14, highlight:true, notes:"Venture mix; higher multiple" },
+        { ticker:"ARCC", name:"Ares Capital", bucket:"Core Middle Market", price:20.10, nav:19.30, pnav:1.04, divYield:8.7, leverage:1.10, nonAccrual:1.20, highlight:true, notes:"Large scale / diversified" },
+        { ticker:"OBDC", name:"Blue Owl Capital Corp", bucket:"Core Middle Market", price:15.40, nav:15.10, pnav:1.02, divYield:10.2, leverage:1.20, nonAccrual:0.90, highlight:true, notes:"Sponsored lending" },
+        { ticker:"MAIN", name:"Main Street Capital", bucket:"Lower MM / Equity Tilt", price:48.20, nav:29.70, pnav:1.62, divYield:6.4, leverage:0.85, nonAccrual:0.50, highlight:true, notes:"Premium multiple / equity upside" },
+        { ticker:"TCPC", name:"BlackRock TCP Capital", bucket:"Core Middle Market", price:8.70, nav:9.90, pnav:0.88, divYield:13.1, leverage:1.25, nonAccrual:2.30, highlight:false, notes:"Higher yield; watch NA" },
+        { ticker:"SLRC", name:"SLR Investment", bucket:"Core + Asset-Based", price:14.10, nav:15.60, pnav:0.90, divYield:11.4, leverage:1.05, nonAccrual:1.80, highlight:false, notes:"Asset-based exposure" },
+        { ticker:"FDUS", name:"Fidus Investment", bucket:"Lower MM / Equity Tilt", price:20.40, nav:18.00, pnav:1.13, divYield:10.8, leverage:0.95, nonAccrual:1.10, highlight:false, notes:"Equity co-invests" },
+        { ticker:"TSLX", name:"Sixth Street Specialty Lending", bucket:"Core Middle Market", price:21.00, nav:20.20, pnav:1.04, divYield:9.1, leverage:1.05, nonAccrual:0.70, highlight:false, notes:"Disciplined underwriting" }
+      ]
+    };
+
+    // =========================================================================
+    // Helpers
+    // =========================================================================
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function uniqSorted(arr) {
+      return Array.from(new Set(arr.filter(Boolean))).sort((a,b)=>a.localeCompare(b));
+    }
+
+    function median(nums) {
+      const a = nums.filter(n => Number.isFinite(n)).slice().sort((x,y)=>x-y);
+      if (!a.length) return null;
+      const m = Math.floor(a.length/2);
+      return a.length % 2 ? a[m] : (a[m-1] + a[m]) / 2;
+    }
+
+    // =========================================================================
+    // Populate filters
+    // =========================================================================
+    $("asof-pill").textContent = `As of ${COMPS.asOf}`;
+
+    const bucketSelect = $("bucketFilter");
+    uniqSorted(COMPS.rows.map(r=>r.bucket)).forEach(b => {
+      const o = document.createElement("option");
+      o.value = b; o.textContent = b;
+      bucketSelect.appendChild(o);
+    });
+
+    // =========================================================================
+    // Sorting state
+    // =========================================================================
+    let sortKey = "pnav";
+    let sortDir = "asc"; // asc|desc
+
+    function sortRows(rows) {
+      const dir = sortDir === "asc" ? 1 : -1;
+      return rows.slice().sort((a,b) => {
+        const va = a[sortKey];
+        const vb = b[sortKey];
+        const aNum = Number.isFinite(va);
+        const bNum = Number.isFinite(vb);
+        if (aNum && bNum) return (va - vb) * dir;
+        return String(va ?? "").localeCompare(String(vb ?? "")) * dir;
+      });
+    }
+
+    function sortPill() {
+      const label = ({
+        ticker:"Ticker", name:"Name", bucket:"Bucket",
+        price:"Price", nav:"NAV", pnav:"P/NAV",
+        divYield:"Yield", leverage:"Lev", nonAccrual:"NA"
+      })[sortKey] || sortKey;
+      $("sort-pill").textContent = `Sort: ${label} ${sortDir === "asc" ? "↑" : "↓"}`;
+    }
+
+    // =========================================================================
+    // Charts
+    // =========================================================================
+    let scatterChart, yieldChart;
+
+    function buildCharts(rows) {
+      const points = rows.map(r => ({ x: r.pnav, y: r.nonAccrual, _label: r.ticker }));
+
+      if (scatterChart) scatterChart.destroy();
+      scatterChart = new Chart(document.getElementById("scatterChart"), {
+        type: "scatter",
+        data: { datasets: [{ label:"BDCs", data: points }] },
+        options: {
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{
+            legend:{ display:false },
+            tooltip:{
+              callbacks:{
+                label: (ctx) => {
+                  const d = ctx.raw || {};
+                  return `${d._label || ""}: P/NAV ${ctx.parsed.x?.toFixed?.(2)}x, NA ${ctx.parsed.y?.toFixed?.(2)}%`;
+                }
+              }
+            }
+          },
+          scales:{
+            x:{ title:{ display:true, text:"P/NAV (x)" }, grid:{ display:false } },
+            y:{ title:{ display:true, text:"Non-accrual (%)" }, ticks:{ callback:(v)=>`${v}%` } }
+          }
+        }
+      });
+
+      const labels = rows.map(r=>r.ticker);
+      const yields = rows.map(r=>r.divYield);
+
+      if (yieldChart) yieldChart.destroy();
+      yieldChart = new Chart(document.getElementById("yieldChart"), {
+        type: "bar",
+        data: { labels, datasets: [{ label:"Dividend yield (%)", data: yields }] },
+        options: {
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{ legend:{ display:false } },
+          scales:{
+            x:{ grid:{ display:false } },
+            y:{ beginAtZero:true, ticks:{ callback:(v)=>`${v}%` } }
+          }
+        }
+      });
+    }
+
+    // =========================================================================
+    // Table render
+    // =========================================================================
+    function renderTable(rows) {
+      const tbody = $("tbody");
+      tbody.innerHTML = "";
+
+      rows.forEach(r => {
+        const badge = r.highlight ? "bg-blue-50 border-blue-200 text-blue-700" : "";
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-gray-50";
+        tr.innerHTML = `
+          <td class="td px-4 py-3 font-semibold">${escapeHtml(r.ticker)}</td>
+          <td class="td px-4 py-3">${escapeHtml(r.name)}</td>
+          <td class="td px-4 py-3"><span class="chip ${badge}">${escapeHtml(r.bucket)}</span></td>
+
+          <td class="td px-4 py-3 text-right tabular-nums">$${r.price.toFixed(2)}</td>
+          <td class="td px-4 py-3 text-right tabular-nums">$${r.nav.toFixed(2)}</td>
+          <td class="td px-4 py-3 text-right tabular-nums font-semibold">${r.pnav.toFixed(2)}x</td>
+
+          <td class="td px-4 py-3 text-right tabular-nums">${r.divYield.toFixed(1)}%</td>
+          <td class="td px-4 py-3 text-right tabular-nums">${r.leverage.toFixed(2)}x</td>
+          <td class="td px-4 py-3 text-right tabular-nums">${r.nonAccrual.toFixed(2)}%</td>
+
+          <td class="td px-4 py-3 text-gray-700">${escapeHtml(r.notes || "—")}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      $("rowCount").textContent = rows.length;
+    }
+
+    function renderKpis(rows) {
+      $("kpi-n").textContent = rows.length.toLocaleString();
+
+      const medPNAV = median(rows.map(r=>r.pnav));
+      const medNA = median(rows.map(r=>r.nonAccrual));
+      const medY = median(rows.map(r=>r.divYield));
+
+      $("kpi-med-pnav").textContent = medPNAV === null ? "—" : `${medPNAV.toFixed(2)}x`;
+      $("kpi-med-na").textContent = medNA === null ? "—" : `${medNA.toFixed(2)}%`;
+      $("kpi-med-yield").textContent = medY === null ? "—" : `${medY.toFixed(1)}%`;
+
+      sortPill();
+    }
+
+    // =========================================================================
+    // Apply filters + render
+    // =========================================================================
+    function applyFilters() {
+      const q = $("search").value.trim().toLowerCase();
+      const bucket = $("bucketFilter").value;
+      const uni = $("universeFilter").value;
+
+      let rows = COMPS.rows.filter(r => {
+        const matchesQ =
+          !q ||
+          (r.ticker||"").toLowerCase().includes(q) ||
+          (r.name||"").toLowerCase().includes(q);
+
+        const matchesBucket = !bucket || r.bucket === bucket;
+        const matchesUniverse = (uni === "all") || (uni === "highlight" && r.highlight);
+
+        return matchesQ && matchesBucket && matchesUniverse;
+      });
+
+      rows = sortRows(rows);
+
+      renderKpis(rows);
+      buildCharts(rows);
+      renderTable(rows);
+    }
+
+    // Events
+    $("search").addEventListener("input", applyFilters);
+    $("bucketFilter").addEventListener("change", applyFilters);
+    $("universeFilter").addEventListener("change", applyFilters);
+
+    $("resetBtn").addEventListener("click", () => {
+      $("search").value = "";
+      $("bucketFilter").value = "";
+      $("universeFilter").value = "all";
+      sortKey = "pnav";
+      sortDir = "asc";
+      applyFilters();
+    });
+
+    document.querySelectorAll("[data-sort]").forEach(th => {
+      th.addEventListener("click", () => {
+        const key = th.getAttribute("data-sort");
+        if (sortKey === key) {
+          sortDir = (sortDir === "asc") ? "desc" : "asc";
+        } else {
+          sortKey = key;
+          sortDir = "asc";
+        }
+        applyFilters();
+      });
+    });
+
+    // Initial
+    applyFilters();
+  </script>
+
+</body>
+</html>
