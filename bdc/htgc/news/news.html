@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion — PLAY News Dashboard</title>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6GY4CQ6ZFH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6GY4CQ6ZFH');
+  </script>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    html.auth-pending body { visibility: hidden; }
+  </style>
+  <script>document.documentElement.classList.add('auth-pending');</script>
+  <script src="/dnb/js/guard.js?v=20260115-1" defer></script>
+
+  <style>
+    :root {
+      --blue:     #187ABA;
+      --blue-80:  #4695C8;
+      --blue-40:  #A3CAE3;
+      --blue-20:  #D1E4F1;
+      --navy:     #002B51;
+      --navy-80:  #335574;
+      --navy-40:  #99AAB9;
+      --navy-20:  #CCD5DC;
+      --jade:     #3EB661;
+      --jade-40:  #B2E2C0;
+      --jade-80:  #65C581;
+      --ocean:    #0A6F7A;
+      --ocean-40: #9DC5CA;
+      --ocean-20: #CEE2E4;
+      --aqua:     #4CCACD;
+      --aqua-40:  #B7EBEA;
+      --berry:    #D3086F;
+      --berry-20: #F6CEE2;
+      --berry-40: #ED9CC5;
+      --bg:       #F4F7FA;
+      --surface:  #FFFFFF;
+      --border:   #E2EAF0;
+      --text:     #002B51;
+      --muted:    #335574;
+      --light:    #99AAB9;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh; width: 100vw;
+      overflow: hidden;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 256px 1fr;
+      height: 100vh; width: 100vw;
+      overflow: hidden;
+    }
+
+    #sidebar-placeholder { height: 100vh; overflow-y: auto; }
+
+    .canvas {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      height: 100vh;
+      overflow: hidden;
+      padding: 18px 22px 14px;
+      gap: 10px;
+      background: var(--bg);
+    }
+
+    .header-row {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-title { font-size: 17px; font-weight: 700; letter-spacing: -.02em; color: var(--navy); }
+    .page-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border: 1px solid var(--border);
+      background: var(--surface); border-radius: 999px;
+      font-size: 11px; color: var(--muted); cursor: pointer;
+      transition: all .15s;
+    }
+    .pill:hover     { background: var(--blue-20); border-color: var(--blue-40); }
+    .pill--active   { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+    .filter-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 14px;
+      box-shadow: 0 1px 4px rgba(0,43,81,.05);
+    }
+
+    .filter-tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .filter-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+
+    .toggle-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--muted); cursor: pointer; white-space: nowrap;
+    }
+    .toggle-label input { accent-color: var(--blue); }
+
+    #last-updated { font-size: 10px; color: var(--light); white-space: nowrap; }
+
+    .content-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,43,81,.06);
+      display: flex; flex-direction: column;
+      overflow: hidden; min-height: 0;
+    }
+
+    .panel-header {
+      padding: 9px 14px 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to right, var(--blue-20), var(--surface));
+      flex-shrink: 0;
+    }
+    .panel-title { font-size: 11px; font-weight: 700; color: var(--navy); }
+    .panel-count { font-size: 10px; color: var(--light); }
+
+    .panel-scroll {
+      flex: 1; overflow-y: auto; padding: 8px;
+      min-height: 0;
+    }
+    .panel-scroll::-webkit-scrollbar { width: 3px; }
+    .panel-scroll::-webkit-scrollbar-thumb { background: var(--blue-40); border-radius: 2px; }
+
+    .news-card {
+      display: block; padding: 10px 12px; margin-bottom: 7px;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: var(--surface); color: var(--text);
+      text-decoration: none;
+      transition: box-shadow .15s, transform .12s, background .12s;
+    }
+    .news-card:hover {
+      box-shadow: 0 4px 16px rgba(0,43,81,.10);
+      transform: translateY(-1px);
+      background: var(--blue-20);
+      border-color: var(--blue-40);
+    }
+    .news-card-num {
+      font-size: 9px; font-weight: 700; color: var(--light);
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px;
+    }
+    .news-card-title {
+      font-size: 12px; font-weight: 600; color: var(--navy);
+      line-height: 1.35; margin-bottom: 5px;
+    }
+    .news-card-meta { font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+    .feed-item {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 10px; padding: 7px 8px; border-radius: 8px;
+      text-decoration: none; color: var(--text);
+      border-bottom: 1px solid var(--blue-20);
+      transition: background .12s;
+    }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-item:hover { background: var(--blue-20); }
+    .feed-item-title { font-size: 11px; color: var(--navy); line-height: 1.35; flex: 1; }
+    .feed-item-right { font-size: 10px; color: var(--light); white-space: nowrap; flex-shrink: 0; text-align: right; }
+
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 1px 7px; border-radius: 999px; font-size: 10px;
+      border: 1px solid var(--border); background: var(--bg);
+      color: var(--muted); margin-right: 4px; white-space: nowrap;
+    }
+    .badge .lock { margin-left: 3px; opacity: .7; font-size: 9px; }
+
+    .tag-chip {
+      display: inline-flex; align-items: center;
+      padding: 1px 6px; border-radius: 999px; font-size: 9px;
+      border: 1px solid var(--blue-40); background: var(--blue-20);
+      color: var(--blue); margin-right: 3px;
+    }
+
+    .loader {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--muted); font-size: 12px; margin-bottom: 8px;
+    }
+    .spinner {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid var(--border); border-top-color: var(--blue);
+      animation: spin .8s linear infinite; flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state { font-size: 12px; color: var(--light); padding: 16px 8px; }
+
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+      #sidebar-placeholder { display: none; }
+      .content-area { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      try {
+        const res = await fetch("/dnb/sidebar.html");
+        document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+        window.toggleSection = function(id) {
+          const s=document.getElementById(id), ic=document.getElementById("icon-"+id);
+          if(!s||!ic) return;
+          s.classList.toggle("hidden");
+          ic.style.transform=s.classList.contains("hidden")?"rotate(0deg)":"rotate(90deg)";
+          localStorage.setItem("sidebar-open-section",id);
+        };
+        const last=localStorage.getItem("sidebar-open-section");
+        if(last){const s=document.getElementById(last),ic=document.getElementById("icon-"+last);if(s&&ic){s.classList.remove("hidden");ic.style.transform="rotate(90deg)";}}
+      } catch(e){}
+    }
+    injectSidebar();
+  </script>
+
+  <main class="canvas">
+
+    <div class="header-row">
+      <div>
+        <div class="page-title">Media Hub — Dave & Buster's (PLAY)</div>
+        <div class="page-sub">Top headlines · Eatertainment / FEC / Arcade dining · updated hourly</div>
+      </div>
+      <div id="last-updated"></div>
+    </div>
+
+    <div class="filter-bar">
+      <nav id="filters" class="filter-tags">
+        <button data-tag="All"               class="pill pill--active">All</button>
+        <button data-tag="PLAY"              class="pill">PLAY</button>
+        <button data-tag="Competitors"       class="pill">Competitors</button>
+        <button data-tag="Industry"          class="pill">Industry</button>
+        <button data-tag="Earnings"          class="pill">Earnings</button>
+        <button data-tag="Guidance"          class="pill">Guidance</button>
+        <button data-tag="Ratings"           class="pill">Ratings</button>
+        <button data-tag="SEC"               class="pill">SEC</button>
+        <button data-tag="M&A"              class="pill">M&A</button>
+        <button data-tag="Macro/Consumer"    class="pill">Macro/Consumer</button>
+        <button data-tag="Openings/Closures" class="pill">Openings/Closures</button>
+      </nav>
+      <div class="filter-right">
+        <label class="toggle-label">
+          <input type="checkbox" id="toggle-sec" checked />
+          SEC filings
+        </label>
+      </div>
+    </div>
+
+    <div class="content-area">
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Top 10 Today</div>
+          <span class="panel-count" id="top10-count">—</span>
+        </div>
+        <div class="panel-scroll">
+          <div id="loader" class="loader">
+            <div class="spinner"></div>
+            <span>Loading latest headlines…</span>
+          </div>
+          <div id="top10"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">All Stories</div>
+          <span class="panel-count" id="feed-count">—</span>
+        </div>
+        <div class="panel-scroll">
+          <div id="feed"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="site-footer"></div>
+<script src="/includes/include.js"></script>
+
+<script>
+  const API = '/api/media-feed?universe=play';
+  let _items = [];
+  const _loader = document.getElementById('loader');
+
+  function timeAgo(iso) {
+    const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (m < 60) return `${m}m`;
+    const h = Math.round(m / 60);
+    if (h < 24) return `${h}h`;
+    return `${Math.round(h / 24)}d`;
+  }
+  function formatDate(iso) {
+    try { return new Date(iso).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}); }
+    catch { return ''; }
+  }
+  function prettyHost(h='') { return String(h||'').replace(/^www\./,''); }
+
+  const SOURCE_BADGES = {
+    'reuters.com':{label:'Reuters'},'bloomberg.com':{label:'Bloomberg'},
+    'ft.com':{label:'FT'},'wsj.com':{label:'WSJ'},'barrons.com':{label:"Barron's"},
+    'spglobal.com':{label:'S&P Global'},'ratings.spglobal.com':{label:'S&P Ratings'},
+    'moodys.com':{label:"Moody's"},'sec.gov':{label:'SEC EDGAR'},
+    'prnewswire.com':{label:'PR Newswire'},'businesswire.com':{label:'BusinessWire'},
+    'globenewswire.com':{label:'GlobeNewswire'},'finance.yahoo.com':{label:'Yahoo Finance'},
+    'nasdaq.com':{label:'Nasdaq'},'marketwatch.com':{label:'MarketWatch'}
+  };
+  const PAYWALLED = new Set(['ft.com','wsj.com','barrons.com','bloomberg.com']);
+
+  function badgeHTML(host='') {
+    const key = prettyHost(host);
+    const label = SOURCE_BADGES[key]?.label || key || 'Source';
+    const lock = PAYWALLED.has(key) ? '<span class="lock">🔒</span>' : '';
+    return `<span class="badge">${label}${lock}</span>`;
+  }
+
+  function rewriteGoogleNewsUrl(u='') {
+    try {
+      const url = new URL(u);
+      if (url.hostname.endsWith('news.google.com')) {
+        const orig = url.searchParams.get('url') || url.searchParams.get('q');
+        if (orig) { try { return decodeURIComponent(orig); } catch { return orig; } }
+      }
+    } catch {}
+    return u;
+  }
+  function cleanTitle(t='') {
+    const parts = String(t).split(/\s[-–—]\s/);
+    return parts.length >= 2 ? parts.slice(0,-1).join(' - ').trim() : String(t).trim();
+  }
+  function extractPublisherFromTitle(t='') {
+    const parts = String(t).split(/\s[-–—]\s/);
+    if (parts.length >= 2) {
+      const tail = parts[parts.length-1].trim();
+      if (tail && tail.length <= 50 && !/google/i.test(tail)) return tail;
+    }
+    return '';
+  }
+  function publisherHost(i) {
+    const source = prettyHost(i?.source || '');
+    if (source && source !== 'news.google.com') return source;
+    let host = '';
+    try { host = new URL(rewriteGoogleNewsUrl(i?.url||'')).hostname; } catch {}
+    host = prettyHost(host);
+    if (host && host !== 'news.google.com') return host;
+    return extractPublisherFromTitle(i?.title||'') || source || host || 'Source';
+  }
+
+  const TAG_ALIASES = {
+    "sec":"SEC","m&a":"M&A","macro":"Macro/Consumer","macro/consumer":"Macro/Consumer",
+    "openings":"Openings/Closures","closures":"Openings/Closures",
+    "competitor":"Competitors","competitors":"Competitors"
+  };
+  function normalizeTag(s="") { const k=String(s).trim().toLowerCase(); return TAG_ALIASES[k]||s; }
+  function toTagArray(t) {
+    if (Array.isArray(t)) return t;
+    if (typeof t==='string') return t.split(',').map(x=>x.trim()).filter(Boolean);
+    return [];
+  }
+
+  function inferTagsFromText(text="") {
+    const t = text.toLowerCase();
+    const out = new Set();
+    if (/(dave\s*&\s*buster|dave and buster|d&b\b|\bplay\b)/.test(t)) out.add("PLAY");
+    if (/(topgolf|bowlero|round1|round\s?one|main\s+event|cec\s+entertainment|chuck\s*e\.?\s*cheese|pinstripes|andretti|family\s+entertainment\s+center|\bfec\b|arcade\s+bar)/.test(t)) out.add("Competitors");
+    if (/(eatertainment|arcade|amusement|family entertainment|location-based entertainment|casual dining|restaurants|experiential dining)/.test(t)) out.add("Industry");
+    if (/(earnings|eps|revenue|same-store|comp(s)?|comparable sales|quarter|q[1-4]\b|results|guidance|outlook)/.test(t)) out.add("Earnings");
+    if (/(guidance|outlook|forecast|expects|reiterat)/i.test(text)) out.add("Guidance");
+    if (/(moody|s&p|spglobal|ratings|rating action|downgrade|upgrade|outlook revised|credit rating)/.test(t)) out.add("Ratings");
+    if (/(sec\.gov|8-k|10-q|10-k|registration statement|prospectus|def 14a|proxy statement)/.test(t)) out.add("SEC");
+    if (/(acquire|acquisition|merger|m&a|divest|sale-leaseback|strategic alternatives|buyback|tender offer)/.test(t)) out.add("M&A");
+    if (/(consumer|discretionary|traffic|inflation|tariff|wage|labor|recession|spending|credit card|holiday season)/.test(t)) out.add("Macro/Consumer");
+    if (/(new store|open(s|ed|ing)|grand opening|unit growth|store closure|close(s|d)|relocation)/.test(t)) out.add("Openings/Closures");
+    return Array.from(out);
+  }
+
+  function tagChips(tags=[]) {
+    if (!tags?.length) return '';
+    return tags.slice(0,3).map(t=>`<span class="tag-chip">${t}</span>`).join('');
+  }
+
+  function renderTop10(items) {
+    const el = document.getElementById('top10');
+    const top = (items||[]).slice(0,10);
+    document.getElementById('top10-count').textContent = `${top.length} stories`;
+    if (!top.length) { el.innerHTML = '<div class="empty-state">No matching stories.</div>'; return; }
+    el.innerHTML = top.map((i,idx)=>{
+      const host = publisherHost(i);
+      const when = timeAgo(i.published_at || i.pubDate || Date.now());
+      return `<a class="news-card" href="${i.url||'#'}" target="_blank" rel="noopener">
+        <div class="news-card-num">#${idx+1}</div>
+        <div class="news-card-title">${cleanTitle(i.title||'')}</div>
+        <div class="news-card-meta">
+          ${badgeHTML(host)}
+          <span>${host}</span>
+          <span style="color:var(--light)">·</span>
+          <span>${when}</span>
+          <span style="color:var(--light)">·</span>
+          <span>${formatDate(i.published_at)}</span>
+          ${tagChips(i.tags)}
+        </div>
+      </a>`;
+    }).join('');
+  }
+
+  function renderFeed(items) {
+    const el = document.getElementById('feed');
+    const rest = (items||[]).slice(10, 280);
+    document.getElementById('feed-count').textContent = `${rest.length} more stories`;
+    if (!rest.length) { el.innerHTML = '<div class="empty-state">No additional stories.</div>'; return; }
+    el.innerHTML = rest.map(i=>{
+      const host = publisherHost(i);
+      const when = timeAgo(i.published_at || i.pubDate || Date.now());
+      return `<a class="feed-item" href="${i.url||'#'}" target="_blank" rel="noopener">
+        <span class="feed-item-title">${badgeHTML(host)}${cleanTitle(i.title||'')}</span>
+        <span class="feed-item-right">${host}<br>${when} · ${formatDate(i.published_at)}</span>
+      </a>`;
+    }).join('');
+  }
+
+  function getSelectedTag() {
+    const active = document.querySelector('#filters .pill.pill--active');
+    return active ? active.dataset.tag : 'All';
+  }
+
+  function applyFilter(tag = getSelectedTag()) {
+    const includeSEC = document.getElementById('toggle-sec')?.checked !== false;
+    const selected = normalizeTag(tag);
+    let filtered = _items;
+    if (selected !== 'All') {
+      filtered = filtered.filter(i =>
+        toTagArray(i.tags).map(t=>normalizeTag(t)).includes(selected)
+      );
+    }
+    const nonSec = filtered.filter(i=>prettyHost(i.source||'')!=='sec.gov');
+    const sec    = filtered.filter(i=>prettyHost(i.source||'')==='sec.gov');
+    const ordered = includeSEC ? [...nonSec, ...sec] : nonSec;
+    renderTop10(ordered);
+    renderFeed(ordered);
+  }
+
+  function massageItem(raw={}) {
+    const url = rewriteGoogleNewsUrl(raw.url||'');
+    let published_at = null;
+    const published = raw.published_at || raw.pubDate || raw.date || null;
+    if (published) { const d=new Date(published); if(!isNaN(d.getTime())) published_at=d.toISOString(); }
+    return { ...raw, url, published_at, tags: toTagArray(raw.tags||[]) };
+  }
+
+  function normalizeFeedData(data) {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data.items) && data.items.length) return data.items;
+    if (Array.isArray(data.top10) && data.top10.length) return data.top10;
+    if (data.title && data.url) return [data];
+    return [];
+  }
+
+  async function loadFeed() {
+    if (_loader) _loader.style.display = 'flex';
+    try {
+      const res = await fetch(`${API}&ts=${Date.now()}`, {cache:'no-store'});
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const rawItems = normalizeFeedData(data);
+      if (!rawItems.length) {
+        document.getElementById('top10').innerHTML = '<div class="empty-state">No stories available right now.</div>';
+        document.getElementById('feed').innerHTML = '';
+        if (_loader) _loader.style.display = 'none';
+        return;
+      }
+      _items = rawItems.map(i => {
+        const base = toTagArray(i.tags);
+        const inferred = inferTagsFromText([i.title,i.summary,i.description].filter(Boolean).join(' '));
+        return massageItem({...i, tags: Array.from(new Set([...base,...inferred]))});
+      }).sort((a,b)=>new Date(b.published_at||b.pubDate||0)-new Date(a.published_at||a.pubDate||0));
+      applyFilter('All');
+      if (_loader) _loader.style.display = 'none';
+    } catch(e) {
+      console.error('Feed error', e);
+      document.getElementById('top10').innerHTML = `<div style="color:var(--berry);font-size:12px;">⚠️ Failed to load: ${e.message}</div>`;
+      if (_loader) _loader.style.display = 'none';
+    }
+  }
+
+  function updateLastUpdated() {
+    const el = document.getElementById('last-updated');
+    if (el) el.textContent = `Updated: ${new Date().toLocaleString('en-US',{hour:'numeric',minute:'2-digit',hour12:true,month:'short',day:'numeric'})}`;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('#filters .pill').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        document.querySelectorAll('#filters .pill').forEach(b=>b.classList.remove('pill--active'));
+        btn.classList.add('pill--active');
+        applyFilter(btn.dataset.tag);
+      });
+    });
+    const secToggle = document.getElementById('toggle-sec');
+    if (secToggle) secToggle.addEventListener('change', ()=>applyFilter(getSelectedTag()));
+    loadFeed().then(updateLastUpdated);
+  });
+</script>
+
+<div id="orion-chat-include"></div>
+<script>
+  async function loadOrionChat() {
+    try {
+      const res = await fetch("/dnb/includes/orion-chat.html");
+      const html = await res.text();
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+      container.querySelectorAll("script").forEach(old=>{
+        const s=document.createElement("script");
+        if(old.src) s.src=old.src; else s.textContent=old.textContent;
+        document.body.appendChild(s); old.remove();
+      });
+    } catch(e){}
+  }
+  loadOrionChat();
+</script>
+
+</body>
+</html>
