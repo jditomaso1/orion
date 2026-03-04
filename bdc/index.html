@@ -61,7 +61,7 @@
   <div id="sidebar-placeholder"></div>
   <script>
     async function injectSidebar() {
-      const res = await fetch("/dnb/sidebar.html");
+      const res = await fetch("/bdc/sidebar.html");
       document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
       window.toggleSection = function(id) {
