@@ -1,0 +1,469 @@
+<!-- /bdc/htgc/trends/trends.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC • Trends</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+    .th { font-size: 11px; letter-spacing:.06em; text-transform: uppercase; color:#6b7280; }
+    .td { font-size: 13px; color:#111827; }
+    .chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #e5e7eb; background:#f9fafb; color:#111827; }
+
+    @media (max-width: 767px) { #sidebar-placeholder { display:none; } }
+    html, body { overflow-x:hidden; }
+    main { min-width:0; }
+
+    /* Charts fill their cards */
+    .chart-wrap { position:relative; flex:1 1 auto; min-height:320px; }
+    .chart-wrap canvas { width:100% !important; height:100% !important; display:block; }
+
+    /* Small KPI cards */
+    .kpi { border:1px solid #e5e7eb; border-radius:16px; background:#fff; }
+    .kpi-label { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#6b7280; font-weight:600; }
+    .kpi-value { font-size:22px; font-weight:700; letter-spacing:-.02em; }
+    .kpi-sub { font-size:12px; color:#6b7280; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      // trends.html is in /bdc/htgc/trends/, sidebar is /bdc/htgc/sidebar.html
+      const res = await fetch("../sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      // Keep compatible with your other pages
+      window.toggleSection = window.toggleSection || function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN -->
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1400px] mx-auto md:mx-0 space-y-6">
+
+      <!-- HEADER -->
+      <section class="space-y-3">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">HTGC — Trends</h1>
+            <div class="text-sm muted mt-1">
+              <span class="font-semibold text-gray-900">Historical Trend Database:</span>
+              pull 10+ quarters of Schedule of Investments and track each credit over time.
+              Spot tenure, new adds, and repeated markdowns—signals you don’t see in a single snapshot.
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="pill" id="asof-pill">Coverage: —</span>
+            <a class="btn btn-ghost" href="../overview/overview.html">Back to Overview</a>
+            <a class="btn btn-primary" href="../portfolio/portfolio.html">View Portfolio</a>
+          </div>
+        </div>
+
+        <div class="bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+          <div class="text-sm text-gray-700">
+            This page is designed for a database pull (quarterly snapshots). Right now it runs on placeholder sample data.
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="pill">Next: EDGAR ingest → normalized issuer IDs → quarterly deltas</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTROLS -->
+      <section class="cardish p-5">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">Trend controls</div>
+            <div class="text-xs muted mt-1">Pick a company and view tenure + FV trend + markdown frequency.</div>
+          </div>
+          <div class="text-xs muted">Tip: start with “Repeated markdowns”</div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-12 gap-3">
+          <!-- Company -->
+          <div class="col-span-12 lg:col-span-6">
+            <label class="th block mb-1">Portfolio company</label>
+            <select id="companySelect"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+            </select>
+          </div>
+
+          <!-- Lookback -->
+          <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <label class="th block mb-1">Lookback (quarters)</label>
+            <select id="lookbackSelect"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="6">6</option>
+              <option value="10" selected>10</option>
+              <option value="12">12</option>
+              <option value="16">16</option>
+            </select>
+          </div>
+
+          <!-- View -->
+          <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <label class="th block mb-1">Highlight</label>
+            <select id="highlightSelect"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="none" selected>None</option>
+              <option value="markdowns">Repeated markdowns</option>
+              <option value="newAdds">New adds</option>
+              <option value="tenure">Tenure (oldest → newest)</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- KPI STRIP -->
+      <section class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">Coverage</div>
+          <div class="kpi-value mt-1" id="kpi-quarters">—</div>
+          <div class="kpi-sub mt-1">quarters in database</div>
+        </div>
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">Companies tracked</div>
+          <div class="kpi-value mt-1" id="kpi-companies">—</div>
+          <div class="kpi-sub mt-1">unique issuers</div>
+        </div>
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">New adds</div>
+          <div class="kpi-value mt-1" id="kpi-newadds">—</div>
+          <div class="kpi-sub mt-1">latest quarter vs prior</div>
+        </div>
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">Repeated markdowns</div>
+          <div class="kpi-value mt-1" id="kpi-markdowns">—</div>
+          <div class="kpi-sub mt-1">≥2 negative QoQ moves</div>
+        </div>
+      </section>
+
+      <!-- CHARTS -->
+      <section class="grid grid-cols-12 gap-6 items-stretch">
+        <!-- Company trend -->
+        <div class="col-span-12 lg:col-span-7 cardish p-6 flex flex-col h-full">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Selected company — FV / principal trend</div>
+              <div class="text-xs muted mt-1">Placeholder now. Swap in FV/Par once you parse schedule values.</div>
+            </div>
+            <span class="pill" id="company-pill">—</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="companyTrendChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Portfolio rollforward -->
+        <div class="col-span-12 lg:col-span-5 cardish p-6 flex flex-col h-full">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Portfolio rollforward</div>
+              <div class="text-xs muted mt-1">New adds vs exits (counts) — placeholder.</div>
+            </div>
+            <span class="pill">Counts</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="rollforwardChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABLE -->
+      <section class="cardish overflow-hidden">
+        <div class="p-5 border-b flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">Credit quality signals (sample table)</div>
+            <div class="text-xs muted mt-1">Tenure + number of markdown events within lookback window.</div>
+          </div>
+          <div class="flex items-center gap-2 text-xs muted">
+            <span id="rowCount">0</span> rows
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead class="bg-gray-50 border-b">
+              <tr>
+                <th class="th text-left px-5 py-3">Company</th>
+                <th class="th text-left px-5 py-3">First seen</th>
+                <th class="th text-left px-5 py-3">Last seen</th>
+                <th class="th text-right px-5 py-3">Tenure (qtrs)</th>
+                <th class="th text-right px-5 py-3">Markdown events</th>
+                <th class="th text-left px-5 py-3">Signal</th>
+              </tr>
+            </thead>
+            <tbody id="tbody" class="bg-white divide-y"></tbody>
+          </table>
+        </div>
+
+        <div class="p-5 border-t flex items-center justify-between flex-wrap gap-3">
+          <div class="text-xs muted">
+            Next: normalize issuer IDs (subsidiaries/rename), add FV vs Par deltas, attach doc/source links per quarter.
+          </div>
+          <button id="resetBtn" class="btn btn-ghost">Reset view</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // =========================================================================
+    // Placeholder dataset
+    // Replace with real DB output:
+    // rows: [{ quarter:"2025Q4", company:"X", fv: 123, principal: 140, ... }, ...]
+    // =========================================================================
+    const TREND_DB = {
+      quarters: ["2023Q3","2023Q4","2024Q1","2024Q2","2024Q3","2024Q4","2025Q1","2025Q2","2025Q3","2025Q4"],
+      // sample company-level time series (fv in $MM)
+      series: [
+        { company: "Marathon Health, LLC", fv: [120,125,132,138,145,150,160,168,172,178] },
+        { company: "Phathom Pharmaceuticals, Inc.", fv: [210,208,200,198,190,185,182,175,168,160] },
+        { company: "ChenMed, LLC", fv: [90,92,95,96,98,100,110,118,125,130] },
+        { company: "Shield AI, Inc.", fv: [70,72,75,78,80,86,92,104,112,117] },
+        { company: "Armis, Inc.", fv: [95,98,101,103,100,97,96,94,93,92] }
+      ]
+    };
+
+    // =========================================================================
+    // Helpers
+    // =========================================================================
+    const $ = (id) => document.getElementById(id);
+
+    function uniqSorted(arr) {
+      return Array.from(new Set(arr.filter(Boolean))).sort((a,b)=>a.localeCompare(b));
+    }
+
+    function calcMarkdownEvents(values) {
+      // count negative QoQ moves
+      let n = 0;
+      for (let i=1;i<values.length;i++) if (values[i] < values[i-1]) n++;
+      return n;
+    }
+
+    function badgeFromMarkdowns(n) {
+      if (n >= 2) return { text: "Repeated markdowns", cls: "bg-red-50 border-red-200 text-red-700" };
+      if (n === 1) return { text: "One markdown", cls: "bg-amber-50 border-amber-200 text-amber-700" };
+      return { text: "Stable / up", cls: "bg-emerald-50 border-emerald-200 text-emerald-700" };
+    }
+
+    function fmtQuarter(q) {
+      // "2025Q4" -> "Q4 '25"
+      const yr = q.slice(2,4);
+      const qt = q.slice(4);
+      return `${qt} '${yr}`;
+    }
+
+    // =========================================================================
+    // Populate controls + KPIs
+    // =========================================================================
+    const companies = uniqSorted(TREND_DB.series.map(s => s.company));
+    $("companySelect").innerHTML = companies.map(c => `<option value="${c}">${c}</option>`).join("");
+
+    $("kpi-quarters").textContent = TREND_DB.quarters.length.toString();
+    $("kpi-companies").textContent = companies.length.toString();
+    $("asof-pill").textContent = `Coverage: ${fmtQuarter(TREND_DB.quarters[0])} → ${fmtQuarter(TREND_DB.quarters.at(-1))}`;
+
+    // new adds / markdowns (placeholder logic)
+    // New adds: companies that appear in last quarter but not in prior quarter (here always 0 for sample)
+    $("kpi-newadds").textContent = "0";
+    // Repeated markdowns
+    const repeated = TREND_DB.series.filter(s => calcMarkdownEvents(s.fv) >= 2).length;
+    $("kpi-markdowns").textContent = repeated.toString();
+
+    // =========================================================================
+    // Charts (created once, updated on selection)
+    // =========================================================================
+    const companyCtx = document.getElementById("companyTrendChart");
+    const rollCtx = document.getElementById("rollforwardChart");
+
+    const companyTrendChart = new Chart(companyCtx, {
+      type: "line",
+      data: {
+        labels: TREND_DB.quarters.map(fmtQuarter),
+        datasets: [{
+          label: "FV ($MM)",
+          data: [],
+          tension: 0.35,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { ticks: { callback: (v)=>`$${v}` } }
+        }
+      }
+    });
+
+    // rollforward placeholder counts
+    const rollforwardChart = new Chart(rollCtx, {
+      type: "bar",
+      data: {
+        labels: TREND_DB.quarters.slice(1).map(fmtQuarter),
+        datasets: [
+          { label: "New adds", data: TREND_DB.quarters.slice(1).map(()=>0) },
+          { label: "Exits", data: TREND_DB.quarters.slice(1).map(()=>0) }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } },
+        scales: {
+          x: { stacked: true, grid: { display: false } },
+          y: { stacked: true, ticks: { precision: 0 } }
+        }
+      }
+    });
+
+    // =========================================================================
+    // Table render
+    // =========================================================================
+    function renderTable(lookbackN, highlightMode) {
+      const tbody = $("tbody");
+      tbody.innerHTML = "";
+
+      const quarters = TREND_DB.quarters.slice(-lookbackN);
+      const q0 = quarters[0];
+      const qN = quarters.at(-1);
+
+      const rows = TREND_DB.series.map(s => {
+        const full = s.fv;
+        const values = full.slice(-lookbackN);
+        const markdowns = calcMarkdownEvents(values);
+
+        // first/last seen (placeholder: assume present all quarters in sample)
+        const firstSeen = q0;
+        const lastSeen = qN;
+        const tenure = lookbackN;
+
+        return { company: s.company, firstSeen, lastSeen, tenure, markdowns, values };
+      });
+
+      // sort/highlight logic
+      let sorted = [...rows];
+      if (highlightMode === "markdowns") sorted.sort((a,b)=>b.markdowns-a.markdowns);
+      if (highlightMode === "tenure") sorted.sort((a,b)=>b.tenure-a.tenure);
+      if (highlightMode === "newAdds") sorted.sort((a,b)=>a.tenure-b.tenure);
+
+      sorted.forEach(r => {
+        const b = badgeFromMarkdowns(r.markdowns);
+        const signal = `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs border ${b.cls}">${b.text}</span>`;
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-gray-50";
+        tr.innerHTML = `
+          <td class="td px-5 py-3">
+            <div class="font-semibold">${escapeHtml(r.company)}</div>
+            <div class="text-xs muted mt-1">Lookback FV: $${r.values[0]} → $${r.values.at(-1)}</div>
+          </td>
+          <td class="td px-5 py-3">${fmtQuarter(r.firstSeen)}</td>
+          <td class="td px-5 py-3">${fmtQuarter(r.lastSeen)}</td>
+          <td class="td px-5 py-3 text-right tabular-nums">${r.tenure}</td>
+          <td class="td px-5 py-3 text-right tabular-nums">${r.markdowns}</td>
+          <td class="td px-5 py-3">${signal}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      $("rowCount").textContent = sorted.length;
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    // =========================================================================
+    // Selection -> update chart + table
+    // =========================================================================
+    function updateSelectedCompany() {
+      const company = $("companySelect").value;
+      const lookbackN = Number($("lookbackSelect").value);
+      const highlightMode = $("highlightSelect").value;
+
+      const quarters = TREND_DB.quarters.slice(-lookbackN).map(fmtQuarter);
+      const s = TREND_DB.series.find(x => x.company === company);
+      const values = (s ? s.fv.slice(-lookbackN) : []);
+
+      $("company-pill").textContent = company;
+
+      companyTrendChart.data.labels = quarters;
+      companyTrendChart.data.datasets[0].data = values;
+      companyTrendChart.update();
+
+      renderTable(lookbackN, highlightMode);
+    }
+
+    // Controls
+    $("companySelect").addEventListener("change", updateSelectedCompany);
+    $("lookbackSelect").addEventListener("change", updateSelectedCompany);
+    $("highlightSelect").addEventListener("change", updateSelectedCompany);
+
+    $("resetBtn").addEventListener("click", () => {
+      $("lookbackSelect").value = "10";
+      $("highlightSelect").value = "none";
+      $("companySelect").selectedIndex = 0;
+      updateSelectedCompany();
+    });
+
+    // Initial render
+    updateSelectedCompany();
+  </script>
+
+</body>
+</html>
