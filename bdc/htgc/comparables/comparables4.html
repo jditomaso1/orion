@@ -1,0 +1,783 @@
+<!-- /bdc/htgc/comp/comp-layer.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC • Comp Layer</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ── Morgan Stanley palette ──────────────────────────────
+       Blue:    #187ABA  (80%: #4695C8  40%: #A3CAE3  20%: #D1E4F1)
+       Navy:    #002B51  (80%: #335574  40%: #99AAB9  20%: #CCD5DC)
+       Jade:    #3EB661  (80%: #65C581  40%: #B2E2C0)
+       Ocean:   #0A6F7A  (80%: #3B8C95  40%: #9DC5CA  20%: #CEE2E4)
+       Aqua:    #4CCACD  (80%: #70D5D7  60%: #94DFE1  40%: #B7EBEA)
+       Berry:   #D3086F  (80%: #DC398C  40%: #ED9CC5  20%: #F6CEE2)
+    ──────────────────────────────────────────────────────── */
+
+    :root {
+      --blue:        #187ABA;
+      --blue-80:     #4695C8;
+      --blue-40:     #A3CAE3;
+      --blue-20:     #D1E4F1;
+
+      --navy:        #002B51;
+      --navy-80:     #335574;
+      --navy-40:     #99AAB9;
+      --navy-20:     #CCD5DC;
+
+      --jade:        #3EB661;
+      --jade-80:     #65C581;
+      --jade-40:     #B2E2C0;
+
+      --ocean:       #0A6F7A;
+      --ocean-80:    #3B8C95;
+      --ocean-40:    #9DC5CA;
+      --ocean-20:    #CEE2E4;
+
+      --aqua:        #4CCACD;
+      --aqua-80:     #70D5D7;
+      --aqua-40:     #B7EBEA;
+
+      --berry:       #D3086F;
+      --berry-80:    #DC398C;
+      --berry-40:    #ED9CC5;
+      --berry-20:    #F6CEE2;
+
+      --bg:          #F4F7FA;
+      --surface:     #FFFFFF;
+      --border:      #E2EAF0;
+      --text:        #002B51;
+      --text-muted:  #335574;
+      --text-light:  #99AAB9;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: Poppins, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* ── Layout shell ── */
+    .shell {
+      display: grid;
+      grid-template-columns: 256px 1fr;
+      grid-template-rows: 100vh;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    #sidebar-placeholder {
+      grid-column: 1;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .canvas {
+      grid-column: 2;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      height: 100vh;
+      overflow: hidden;
+      padding: 18px 22px 14px;
+      gap: 10px;
+      background: var(--bg);
+    }
+
+    /* ── Header ── */
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      color: var(--navy);
+    }
+
+    .page-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 999px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .btn {
+      border-radius: 8px; padding: 6px 13px;
+      font-weight: 600; font-size: 12px;
+      display: inline-flex; align-items: center; cursor: pointer; border: none;
+    }
+    .btn-ghost   { background: var(--surface); border: 1px solid var(--border); color: var(--navy); }
+    .btn-ghost:hover { background: var(--blue-20); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--navy-80); }
+
+    /* ── Controls row ── */
+    .controls-row {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0; gap: 12px;
+    }
+
+    .bdc-toggles { display: flex; gap: 6px; }
+
+    /* BDC buttons use MS colors */
+    .bdc-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 600;
+      border: 1px solid transparent; cursor: pointer; transition: opacity .15s, filter .15s;
+    }
+    .bdc-btn.htgc { background: var(--blue-20); border-color: var(--blue-40); color: var(--blue); }
+    .bdc-btn.obdc { background: var(--ocean-20); border-color: var(--ocean-40); color: var(--ocean); }
+    .bdc-btn.gbdc { background: var(--jade-40); border-color: var(--jade-80); color: #1a6b3a; }
+    .bdc-btn.arcc { background: var(--aqua-40); border-color: var(--aqua-80); color: var(--ocean); }
+    .bdc-btn.off  { opacity: .3; filter: grayscale(.8); }
+
+    .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+    /* Tab strip */
+    .tab-strip {
+      display: flex; gap: 2px;
+      background: var(--blue-20);
+      border-radius: 10px; padding: 3px;
+      border: 1px solid var(--blue-40);
+    }
+    .tab {
+      padding: 5px 15px; border-radius: 8px; font-size: 11px; font-weight: 600;
+      color: var(--text-muted); cursor: pointer; transition: all .15s; white-space: nowrap;
+      border: none; background: transparent;
+    }
+    .tab.active {
+      background: var(--navy);
+      color: #fff;
+      box-shadow: 0 1px 4px rgba(0,43,81,.18);
+    }
+
+    /* ── Content area ── */
+    .content-area { display: grid; overflow: hidden; min-height: 0; }
+
+    .view { display: none; height: 100%; overflow: hidden; }
+    .view.active { display: grid; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,43,81,.06);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 9px 14px 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to right, var(--blue-20), var(--surface));
+    }
+
+    .card-title { font-size: 11px; font-weight: 700; color: var(--navy); }
+    .card-sub   { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+    .card-body  { padding: 10px 14px; height: calc(100% - 50px); display: flex; flex-direction: column; }
+
+    .chart-box { position: relative; flex: 1; min-height: 0; }
+    .chart-box canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+    /* ── KPI chips ── */
+    .kpi-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 12px;
+      border-left: 3px solid var(--blue);
+    }
+    .kpi-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: 5px; }
+    .kpi-row-item { display: flex; justify-content: space-between; align-items: center; margin-top: 3px; }
+    .ticker-badge {
+      font-size: 10px; font-weight: 700; padding: 1px 7px;
+      border-radius: 999px; border: 1px solid transparent;
+    }
+    .ticker-badge.htgc { background: var(--blue-20); border-color: var(--blue-40); color: var(--blue); }
+    .ticker-badge.obdc { background: var(--ocean-20); border-color: var(--ocean-40); color: var(--ocean); }
+    .ticker-badge.gbdc { background: var(--jade-40); border-color: var(--jade-80); color: #1a6b3a; }
+    .ticker-badge.arcc { background: var(--aqua-40); border-color: var(--aqua-80); color: var(--ocean); }
+
+    .kpi-val-text { font-size: 11px; font-weight: 600; color: var(--navy); }
+    .kpi-val-text.best { color: var(--jade); }
+
+    /* ── Scrollable sub-areas ── */
+    .inner-scroll { overflow-y: auto; height: 100%; }
+    .inner-scroll::-webkit-scrollbar { width: 3px; }
+    .inner-scroll::-webkit-scrollbar-thumb { background: var(--blue-40); border-radius: 2px; }
+
+    /* ── Scorecard table ── */
+    .sc-table { width: 100%; border-collapse: collapse; }
+    .sc-table th {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-light); font-weight: 700; text-align: right;
+      padding: 6px 10px; border-bottom: 2px solid var(--blue-20);
+      white-space: nowrap; background: var(--surface);
+      position: sticky; top: 0; z-index: 1;
+    }
+    .sc-table th:first-child { text-align: left; }
+    .sc-table td {
+      padding: 5px 10px; text-align: right; color: var(--text-muted);
+      border-bottom: 1px solid var(--blue-20); font-size: 11px; white-space: nowrap;
+    }
+    .sc-table td:first-child { text-align: left; font-weight: 500; color: var(--navy); }
+    .sc-table tr:hover td { background: var(--blue-20); }
+    .sc-table tr:last-child td { border-bottom: none; }
+    .best-cell { background: var(--jade-40) !important; color: #1a6b3a !important; font-weight: 700 !important; }
+
+    /* ── Winner badge ── */
+    .w-badge {
+      font-size: 9px; font-weight: 700; letter-spacing: .05em;
+      padding: 1px 6px; border-radius: 999px;
+      background: var(--jade-40); color: #1a6b3a;
+      border: 1px solid var(--jade-80);
+    }
+
+    /* ── Signal cards ── */
+    .signal-card {
+      border-radius: 10px; padding: 10px 12px;
+      display: flex; gap: 9px; align-items: flex-start;
+      flex-shrink: 0;
+    }
+    .signal-title { font-size: 11px; font-weight: 700; margin-bottom: 3px; }
+    .signal-body  { font-size: 10.5px; line-height: 1.55; }
+
+    /* ── VIEW LAYOUTS ── */
+    #view-scorecard {
+      grid-template-columns: 200px 1fr;
+      gap: 10px;
+    }
+    .kpi-stack { display: flex; flex-direction: column; gap: 7px; overflow: hidden; }
+
+    #view-charts {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 10px;
+    }
+
+    #view-radar {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    #view-sector {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .signals-stack { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; flex: 1; }
+    .signals-stack::-webkit-scrollbar { width: 3px; }
+    .signals-stack::-webkit-scrollbar-thumb { background: var(--blue-40); border-radius: 2px; }
+
+    @media (max-width: 767px) {
+      .shell { grid-template-columns: 1fr; }
+      #sidebar-placeholder { display: none; }
+      .canvas { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      try {
+        const res = await fetch("../sidebar.html");
+        document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+        window.toggleSection = window.toggleSection || function(id) {
+          const s=document.getElementById(id), ic=document.getElementById("icon-"+id);
+          if(!s||!ic) return;
+          s.classList.toggle("hidden");
+          ic.style.transform=s.classList.contains("hidden")?"rotate(0deg)":"rotate(90deg)";
+          localStorage.setItem("sidebar-open-section",id);
+        };
+        const last=localStorage.getItem("sidebar-open-section");
+        if(last){const s=document.getElementById(last),ic=document.getElementById("icon-"+last);if(s&&ic){s.classList.remove("hidden");ic.style.transform="rotate(90deg)";}}
+      } catch(e){}
+    }
+    injectSidebar();
+  </script>
+
+  <main class="canvas">
+
+    <!-- HEADER -->
+    <div class="header-row">
+      <div>
+        <div class="page-title">Comp Layer — HTGC vs. Peers</div>
+        <div class="page-sub">HTGC · OBDC · GBDC · ARCC &nbsp;·&nbsp; Spreads, yield, structure, concentration &nbsp;·&nbsp; Dec 31 2025</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="pill">Placeholder — wire to EDGAR parses</span>
+        <button class="btn btn-ghost" onclick="location.href='../construction/construction.html'">Construction</button>
+        <button class="btn btn-primary" onclick="location.href='../overview/overview.html'">Overview</button>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls-row">
+      <div class="bdc-toggles" id="bdc-toggles">
+        <button class="bdc-btn htgc" data-bdc="HTGC" onclick="toggleBDC('HTGC')">
+          <span class="dot" style="background:var(--blue)"></span>HTGC
+        </button>
+        <button class="bdc-btn obdc" data-bdc="OBDC" onclick="toggleBDC('OBDC')">
+          <span class="dot" style="background:var(--ocean)"></span>OBDC
+        </button>
+        <button class="bdc-btn gbdc" data-bdc="GBDC" onclick="toggleBDC('GBDC')">
+          <span class="dot" style="background:var(--jade)"></span>GBDC
+        </button>
+        <button class="bdc-btn arcc" data-bdc="ARCC" onclick="toggleBDC('ARCC')">
+          <span class="dot" style="background:var(--aqua)"></span>ARCC
+        </button>
+      </div>
+      <div class="tab-strip">
+        <button class="tab active" onclick="switchTab('scorecard',this)">Scorecard</button>
+        <button class="tab" onclick="switchTab('charts',this)">Charts</button>
+        <button class="tab" onclick="switchTab('radar',this)">Radar / Leverage</button>
+        <button class="tab" onclick="switchTab('sector',this)">Sector Mix</button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content-area">
+
+      <!-- VIEW 1: SCORECARD -->
+      <div class="view active" id="view-scorecard">
+        <div class="kpi-stack" id="kpi-stack"></div>
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Full scorecard</div>
+              <div class="card-sub">Green cell = best in class across active BDCs</div>
+            </div>
+            <span class="pill" id="sc-count">4 BDCs</span>
+          </div>
+          <div style="flex:1;overflow:hidden;">
+            <div class="inner-scroll" style="height:100%;padding:0 2px;">
+              <table class="sc-table" id="scorecard-table"></table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 2: CHARTS -->
+      <div class="view" id="view-charts">
+        <div class="card" style="display:flex;flex-direction:column;">
+          <div class="card-header">
+            <div><div class="card-title">Wtd Avg Spread (bps over SOFR)</div><div class="card-sub">Who extracts the most per unit of risk?</div></div>
+            <span class="pill" id="was-pill">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="wasChart"></canvas></div></div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;">
+          <div class="card-header">
+            <div><div class="card-title">Wtd Avg Yield (%)</div><div class="card-sub">All-in effective yield on debt portfolio</div></div>
+            <span class="pill" id="way-pill">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="wayChart"></canvas></div></div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;">
+          <div class="card-header">
+            <div><div class="card-title">First Lien % of Portfolio</div><div class="card-sub">Higher = more defensive structure</div></div>
+            <span class="pill" id="fl-pill">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="flChart"></canvas></div></div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;">
+          <div class="card-header">
+            <div><div class="card-title">Top Sector Concentration (%)</div><div class="card-sub">Lower = more diversified</div></div>
+            <span class="pill" id="conc-pill">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="concChart"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- VIEW 3: RADAR + LEVERAGE -->
+      <div class="view" id="view-radar">
+        <div class="card" style="display:flex;flex-direction:column;">
+          <div class="card-header">
+            <div><div class="card-title">Multi-factor radar</div><div class="card-sub">Normalized 0–100 · yield, spread, first lien, diversification, leverage, NAV</div></div>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="radarChart"></canvas></div></div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;">
+          <div class="card-header">
+            <div><div class="card-title">Leverage (D/E) vs. NAV Premium / Discount</div><div class="card-sub">High leverage + NAV discount = market skepticism</div></div>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="leverageChart"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- VIEW 4: SECTOR MIX + SIGNALS -->
+      <div class="view" id="view-sector">
+        <div class="card" style="display:flex;flex-direction:column;">
+          <div class="card-header">
+            <div><div class="card-title">Sector mix — side by side</div><div class="card-sub">▲ = highest allocator in peer group</div></div>
+          </div>
+          <div style="flex:1;overflow:hidden;">
+            <div class="inner-scroll" style="height:100%;">
+              <table class="sc-table" id="sector-table" style="width:100%;"></table>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;padding:12px 14px;gap:8px;">
+          <div style="font-size:11px;font-weight:700;color:var(--navy);flex-shrink:0;">Orion signal</div>
+          <div class="signals-stack" id="signals-stack"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+const BDCs = {
+  HTGC: {
+    name:"Hercules Capital", cls:"htgc", color:"#187ABA", colorLight:"#D1E4F1", colorMid:"#A3CAE3",
+    totalDebtFV_B:4.28, positionCount:110, was:638, way:11.1,
+    firstLienPct:91, topSectorPct:28, topSector:"Healthcare Svcs",
+    avgHoldMM:38.9, debtToEquity:1.12, navPremiumPct:4.2, nonAccrualPct:0.8, intlPct:12,
+    sectors:{"Healthcare Services":28,"Application Software":22,"Defense Tech":12,"Drug Discovery":10,"System Software":9,"Consumer Svcs":8,"Div. Financial":6,"Other":5}
+  },
+  OBDC: {
+    name:"Blue Owl", cls:"obdc", color:"#0A6F7A", colorLight:"#CEE2E4", colorMid:"#9DC5CA",
+    totalDebtFV_B:13.60, positionCount:225, was:595, way:10.4,
+    firstLienPct:97, topSectorPct:20, topSector:"Software & Tech",
+    avgHoldMM:60.4, debtToEquity:1.27, navPremiumPct:-2.1, nonAccrualPct:0.4, intlPct:6,
+    sectors:{"Software & Tech":20,"Healthcare":16,"Financial Svcs":14,"Business Svcs":13,"Consumer":11,"Industrials":10,"Media & Telecom":8,"Other":8}
+  },
+  GBDC: {
+    name:"Golub Capital", cls:"gbdc", color:"#3EB661", colorLight:"#B2E2C0", colorMid:"#65C581",
+    totalDebtFV_B:7.40, positionCount:340, was:572, way:10.0,
+    firstLienPct:99, topSectorPct:15, topSector:"Software",
+    avgHoldMM:21.8, debtToEquity:1.18, navPremiumPct:-4.8, nonAccrualPct:0.2, intlPct:4,
+    sectors:{"Software":15,"Healthcare":14,"Business Svcs":13,"Industrials":12,"Consumer Products":11,"Financial Svcs":10,"Media":9,"Other":16}
+  },
+  ARCC: {
+    name:"Ares Capital", cls:"arcc", color:"#4CCACD", colorLight:"#B7EBEA", colorMid:"#70D5D7",
+    totalDebtFV_B:25.10, positionCount:515, was:580, way:10.6,
+    firstLienPct:76, topSectorPct:18, topSector:"Healthcare",
+    avgHoldMM:48.7, debtToEquity:1.05, navPremiumPct:6.8, nonAccrualPct:1.2, intlPct:8,
+    sectors:{"Healthcare":18,"Software & Tech":15,"Consumer & Retail":14,"Industrials":13,"Business Svcs":12,"Financial Svcs":11,"Energy":7,"Other":10}
+  }
+};
+
+const ORDER = ["HTGC","OBDC","GBDC","ARCC"];
+let active = new Set(["HTGC","OBDC","GBDC","ARCC"]);
+let activeTab = "scorecard";
+let charts = {};
+
+// ── TAB SWITCH ────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+name).classList.add("active");
+  activeTab = name;
+  setTimeout(rebuildCharts, 40);
+}
+
+// ── BDC TOGGLE ───────────────────────────────────────────────────
+function toggleBDC(t) {
+  if (t==="HTGC") return;
+  if (active.has(t)) { if (active.size<=2) return; active.delete(t); }
+  else active.add(t);
+  document.querySelector(`[data-bdc="${t}"]`).classList.toggle("off");
+  render();
+}
+
+function activeBDCs() { return ORDER.filter(t=>active.has(t)); }
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function winner(bdcs, key, higher) {
+  return bdcs.reduce((best,t)=>{
+    const bv=BDCs[best][key], tv=BDCs[t][key];
+    return higher?(tv>bv?t:best):(tv<bv?t:best);
+  });
+}
+function norm(val,vals){const mn=Math.min(...vals),mx=Math.max(...vals);return mx===mn?50:Math.round(((val-mn)/(mx-mn))*100);}
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+// ── VIEW 1: SCORECARD ─────────────────────────────────────────────
+function renderScorecard() {
+  const bdcs = activeBDCs();
+
+  const kpiMets = [
+    {key:"was",          label:"WA Spread",   fmt:v=>`${v} bps`,         higher:true,  accent:"#187ABA"},
+    {key:"way",          label:"WA Yield",    fmt:v=>`${v.toFixed(1)}%`, higher:true,  accent:"#0A6F7A"},
+    {key:"firstLienPct", label:"First Lien",  fmt:v=>`${v}%`,            higher:true,  accent:"#3EB661"},
+    {key:"topSectorPct", label:"Top Conc.",   fmt:v=>`${v}%`,            higher:false, accent:"#4CCACD"},
+    {key:"nonAccrualPct",label:"Non-Accrual", fmt:v=>`${v}%`,            higher:false, accent:"#335574"},
+  ];
+
+  const stack = document.getElementById("kpi-stack");
+  stack.innerHTML = "";
+  kpiMets.forEach(m => {
+    const w = winner(bdcs, m.key, m.higher);
+    const div = document.createElement("div");
+    div.className = "kpi-chip";
+    div.style.borderLeftColor = m.accent;
+    div.innerHTML = `<div class="kpi-lbl">${m.label}</div>` +
+      bdcs.map(t=>`
+        <div class="kpi-row-item">
+          <span class="ticker-badge ${BDCs[t].cls}">${t}</span>
+          <span class="kpi-val-text ${t===w?'best':''}">${m.fmt(BDCs[t][m.key])} ${t===w?'★':''}</span>
+        </div>`).join("");
+    stack.appendChild(div);
+  });
+
+  document.getElementById("sc-count").textContent = `${bdcs.length} BDCs`;
+
+  const scRows = [
+    {label:"Debt FV",         key:"totalDebtFV_B",  fmt:v=>`$${v.toFixed(1)}B`,           higher:null},
+    {label:"# Positions",     key:"positionCount",  fmt:v=>`${v}`,                         higher:null},
+    {label:"Avg Position",    key:"avgHoldMM",      fmt:v=>`$${v.toFixed(1)}MM`,           higher:null},
+    {label:"WA Spread (bps)", key:"was",            fmt:v=>`${v}`,                         higher:true},
+    {label:"WA Yield (%)",    key:"way",            fmt:v=>`${v.toFixed(1)}%`,             higher:true},
+    {label:"First Lien %",    key:"firstLienPct",   fmt:v=>`${v}%`,                        higher:true},
+    {label:"Top Sector %",    key:"topSectorPct",   fmt:v=>`${v}%`,                        higher:false},
+    {label:"Top Sector",      key:"topSector",      fmt:v=>v,                              higher:null},
+    {label:"Intl Exposure",   key:"intlPct",        fmt:v=>`${v}%`,                        higher:null},
+    {label:"Debt / Equity",   key:"debtToEquity",   fmt:v=>`${v.toFixed(2)}x`,            higher:false},
+    {label:"NAV Prem/Disc",   key:"navPremiumPct",  fmt:v=>(v>=0?`+${v}%`:`${v}%`),      higher:true},
+    {label:"Non-Accrual %",   key:"nonAccrualPct",  fmt:v=>`${v}%`,                        higher:false},
+  ];
+
+  const thStyle = `font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#99AAB9;font-weight:700;padding:7px 10px;border-bottom:2px solid #D1E4F1;white-space:nowrap;position:sticky;top:0;background:#fff;`;
+  document.getElementById("scorecard-table").innerHTML =
+    `<thead><tr>
+      <th style="${thStyle}text-align:left;">Metric</th>
+      ${bdcs.map(t=>`<th style="${thStyle}text-align:right;">
+        <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:${BDCs[t].colorLight};color:${BDCs[t].color};">${t}</span>
+      </th>`).join("")}
+      <th style="${thStyle}text-align:right;">Best</th>
+    </tr></thead><tbody>` +
+    scRows.map(r=>{
+      const w = r.higher!==null ? winner(bdcs, r.key, r.higher) : null;
+      return `<tr>
+        <td style="text-align:left;padding:5px 10px;font-size:11px;font-weight:600;color:#002B51;border-bottom:1px solid #D1E4F1;">${r.label}</td>
+        ${bdcs.map(t=>`<td style="text-align:right;padding:5px 10px;font-size:11px;border-bottom:1px solid #D1E4F1;${t===w?'background:#B2E2C0;color:#1a6b3a;font-weight:700;':''}">${esc(r.fmt(BDCs[t][r.key]))}</td>`).join("")}
+        <td style="text-align:right;padding:5px 10px;border-bottom:1px solid #D1E4F1;">
+          ${w?`<span style="font-size:9px;font-weight:700;letter-spacing:.05em;padding:1px 6px;border-radius:999px;background:#B2E2C0;color:#1a6b3a;border:1px solid #65C581;">★ ${w}</span>`:`<span style="color:#CCD5DC;font-size:10px;">—</span>`}
+        </td>
+      </tr>`;
+    }).join("") + "</tbody>";
+}
+
+// ── VIEW 2: CHARTS ────────────────────────────────────────────────
+function renderCharts() {
+  const bdcs = activeBDCs();
+  const colors = bdcs.map(t=>BDCs[t].color);
+  const lightColors = bdcs.map(t=>BDCs[t].colorLight);
+
+  const chartOpts = (min, cbY) => ({
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false } },
+    scales:{
+      y:{ min, grid:{color:"#D1E4F1"}, ticks:{callback:cbY, font:{size:10}, color:"#335574"} },
+      x:{ grid:{display:false}, ticks:{font:{size:11}, color:"#002B51"} }
+    },
+    animation:{duration:350}
+  });
+
+  ["wasChart","wayChart","flChart","concChart"].forEach(id=>{if(charts[id]){charts[id].destroy();delete charts[id];}});
+
+  const mkBar = (canvasId, key, min, cbY, pillId, pillFmt, higher) => {
+    const vals = bdcs.map(t=>BDCs[t][key]);
+    const w = winner(bdcs, key, higher);
+    document.getElementById(pillId).textContent = pillFmt(BDCs[w][key], w);
+    return new Chart(document.getElementById(canvasId), {
+      type:"bar",
+      data:{ labels:bdcs, datasets:[{
+        data:vals,
+        backgroundColor: colors.map((c,i) => bdcs[i]===w ? c : BDCs[bdcs[i]].colorMid),
+        borderRadius:8, borderSkipped:false,
+        borderWidth: colors.map((_,i) => bdcs[i]===w ? 2 : 0),
+        borderColor: colors
+      }]},
+      options: chartOpts(min, cbY)
+    });
+  };
+
+  charts.wasChart  = mkBar("wasChart",  "was",         520, v=>`${v}`,   "was-pill",  (v,t)=>`Best: ${t} · ${v}bps`,       true);
+  charts.wayChart  = mkBar("wayChart",  "way",         8.5, v=>`${v}%`,  "way-pill",  (v,t)=>`Best: ${t} · ${v.toFixed(1)}%`, true);
+  charts.flChart   = mkBar("flChart",   "firstLienPct", 60, v=>`${v}%`,  "fl-pill",   (v,t)=>`Most defensive: ${t} · ${v}%`,  true);
+  charts.concChart = mkBar("concChart", "topSectorPct",  0, v=>`${v}%`,  "conc-pill", (v,t)=>`Most diversified: ${t} · ${v}%`, false);
+}
+
+// ── VIEW 3: RADAR + LEVERAGE ──────────────────────────────────────
+function renderRadar() {
+  const bdcs = activeBDCs();
+  ["radarChart","leverageChart"].forEach(id=>{if(charts[id]){charts[id].destroy();delete charts[id];}});
+
+  const allV = k => ORDER.map(t=>BDCs[t][k]);
+  const dims = ["Yield","Spread","First Lien","Diversification","Low Leverage","NAV Premium"];
+
+  charts.radarChart = new Chart(document.getElementById("radarChart"), {
+    type:"radar",
+    data:{
+      labels:dims,
+      datasets:bdcs.map(t=>({
+        label:t,
+        data:[
+          norm(BDCs[t].way, allV("way")),
+          norm(BDCs[t].was, allV("was")),
+          norm(BDCs[t].firstLienPct, allV("firstLienPct")),
+          100-norm(BDCs[t].topSectorPct, allV("topSectorPct")),
+          100-norm(BDCs[t].debtToEquity, allV("debtToEquity")),
+          norm(BDCs[t].navPremiumPct, allV("navPremiumPct")),
+        ],
+        backgroundColor: BDCs[t].color+"28",
+        borderColor: BDCs[t].color,
+        borderWidth:2.5,
+        pointBackgroundColor: BDCs[t].color,
+        pointBorderColor: "#fff",
+        pointRadius:5
+      }))
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      scales:{r:{
+        min:0, max:100,
+        ticks:{display:false},
+        grid:{color:"#D1E4F1"},
+        angleLines:{color:"#D1E4F1"},
+        pointLabels:{font:{size:11}, color:"#002B51"}
+      }},
+      plugins:{legend:{position:"bottom", labels:{font:{size:11}, color:"#002B51", usePointStyle:true}}},
+      animation:{duration:350}
+    }
+  });
+
+  charts.leverageChart = new Chart(document.getElementById("leverageChart"), {
+    type:"scatter",
+    data:{
+      datasets:bdcs.map(t=>({
+        label:`${t} — ${BDCs[t].name}`,
+        data:[{x:BDCs[t].debtToEquity, y:BDCs[t].navPremiumPct}],
+        backgroundColor: BDCs[t].color,
+        borderColor:"#fff", borderWidth:2.5,
+        pointRadius:18, pointHoverRadius:20
+      }))
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:"bottom", labels:{font:{size:11}, color:"#002B51", usePointStyle:true}},
+        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: D/E ${ctx.parsed.x.toFixed(2)}x · NAV ${ctx.parsed.y>=0?"+":""}${ctx.parsed.y}%`}}
+      },
+      scales:{
+        x:{title:{display:true,text:"Debt / Equity (x)",font:{size:11},color:"#335574"}, grid:{color:"#D1E4F1"}, ticks:{color:"#335574"}},
+        y:{title:{display:true,text:"NAV Prem/Disc (%)",font:{size:11},color:"#335574"}, grid:{color:"#D1E4F1"}, ticks:{color:"#335574"}}
+      },
+      animation:{duration:350}
+    }
+  });
+}
+
+// ── VIEW 4: SECTOR MIX + SIGNALS ─────────────────────────────────
+function renderSector() {
+  const bdcs = activeBDCs();
+  const allSectors = new Set();
+  bdcs.forEach(t=>Object.keys(BDCs[t].sectors).forEach(s=>allSectors.add(s)));
+  const sectors = Array.from(allSectors).sort((a,b)=>(BDCs["HTGC"].sectors[b]||0)-(BDCs["HTGC"].sectors[a]||0));
+
+  const thS = `font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;padding:6px 10px;border-bottom:2px solid #D1E4F1;white-space:nowrap;position:sticky;top:0;background:#fff;`;
+  document.getElementById("sector-table").innerHTML =
+    `<thead><tr>
+      <th style="${thS}text-align:left;color:#99AAB9;">Sector</th>
+      ${bdcs.map(t=>`<th style="${thS}text-align:right;color:${BDCs[t].color};">${t}</th>`).join("")}
+    </tr></thead><tbody>` +
+    sectors.map(s=>{
+      const vals = bdcs.map(t=>BDCs[t].sectors[s]||0);
+      const maxV = Math.max(...vals);
+      return `<tr>${
+        [`<td style="text-align:left;padding:5px 10px;font-size:11px;font-weight:500;color:#002B51;border-bottom:1px solid #D1E4F1;">${s}</td>`].concat(
+          bdcs.map((t,i)=>{
+            const v=vals[i], isMax=v===maxV&&v>0;
+            return `<td style="text-align:right;padding:5px 10px;border-bottom:1px solid #D1E4F1;">
+              <div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;">
+                ${v?`<div style="width:${Math.round(v*2)}px;height:4px;border-radius:2px;background:${BDCs[t].color};opacity:${isMax?'1':'0.35'};"></div>`:''}
+                <span style="font-size:11px;${isMax?`color:${BDCs[t].color};font-weight:700;`:'color:#99AAB9;'}">${v?v+"%":"—"}</span>
+                ${isMax?`<span style="font-size:9px;color:${BDCs[t].color};">▲</span>`:''}
+              </div>
+            </td>`;
+          })
+        ).join("")
+      }</tr>`;
+    }).join("") + "</tbody>";
+
+  const signals = [
+    {bg:"#D1E4F1", border:"#A3CAE3", titleColor:"#002B51", bodyColor:"#335574",
+     icon:"📈", title:"HTGC: Highest yield, most concentrated",
+     body:`${BDCs.HTGC.was}bps spread and ${BDCs.HTGC.way.toFixed(1)}% yield lead the group — but ${BDCs.HTGC.topSectorPct}% top-sector concentration means HTGC is running a deliberate tech/healthcare thesis. Paying off in yield terms; introduces idiosyncratic risk absent from GBDC or OBDC.`},
+    {bg:"#B2E2C0", border:"#65C581", titleColor:"#1a6b3a", bodyColor:"#335574",
+     icon:"🛡️", title:"GBDC: Safest structure, lowest return",
+     body:`${BDCs.GBDC.firstLienPct}% first lien and ${BDCs.GBDC.nonAccrualPct}% non-accrual are best in class — but the market prices this in with a ${BDCs.GBDC.navPremiumPct}% NAV discount and ${BDCs.GBDC.was}bps spread. Golub is the low-risk / low-return anchor of this peer set.`},
+    {bg:"#CEE2E4", border:"#9DC5CA", titleColor:"#002B51", bodyColor:"#335574",
+     icon:"⚖️", title:"ARCC: Scale advantage, structural complexity",
+     body:`At $${BDCs.ARCC.totalDebtFV_B.toFixed(0)}B ARCC dwarfs peers — but ${BDCs.ARCC.firstLienPct}% first lien vs. HTGC's ${BDCs.HTGC.firstLienPct}% and ${BDCs.ARCC.nonAccrualPct}% non-accrual show the cost of deployment velocity at scale.`},
+    {bg:"#CCD5DC", border:"#99AAB9", titleColor:"#002B51", bodyColor:"#335574",
+     icon:"🔍", title:"Spread compression signal",
+     body:`OBDC and GBDC run ${BDCs.HTGC.was-BDCs.OBDC.was}–${BDCs.HTGC.was-BDCs.GBDC.was}bps below HTGC. Either HTGC extracts a genuine risk premium on VC-backed credits or peers accept tighter terms on safer names. Watch non-accrual divergence over the next 2 quarters to resolve.`},
+  ];
+
+  document.getElementById("signals-stack").innerHTML = signals.map(s=>`
+    <div style="border-radius:10px;padding:10px 12px;border:1px solid ${s.border};background:${s.bg};display:flex;gap:9px;align-items:flex-start;flex-shrink:0;">
+      <span style="font-size:16px;flex-shrink:0;margin-top:1px;">${s.icon}</span>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:${s.titleColor};margin-bottom:3px;">${s.title}</div>
+        <div style="font-size:10.5px;color:${s.bodyColor};line-height:1.55;">${s.body}</div>
+      </div>
+    </div>`).join("");
+}
+
+// ── MASTER RENDER ─────────────────────────────────────────────────
+function rebuildCharts() {
+  if (activeTab==="charts") renderCharts();
+  if (activeTab==="radar")  renderRadar();
+}
+
+function render() {
+  renderScorecard();
+  renderSector();
+  rebuildCharts();
+}
+
+render();
+</script>
+
+</body>
+</html>
