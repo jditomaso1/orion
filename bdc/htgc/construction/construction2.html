@@ -1,0 +1,718 @@
+<!-- /bdc/htgc/construction/construction.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC • Portfolio Construction</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --blue:      #187ABA;
+      --blue-80:   #4695C8;
+      --blue-40:   #A3CAE3;
+      --blue-20:   #D1E4F1;
+      --navy:      #002B51;
+      --navy-80:   #335574;
+      --navy-40:   #99AAB9;
+      --navy-20:   #CCD5DC;
+      --jade:      #3EB661;
+      --jade-80:   #65C581;
+      --jade-40:   #B2E2C0;
+      --ocean:     #0A6F7A;
+      --ocean-80:  #3B8C95;
+      --ocean-40:  #9DC5CA;
+      --ocean-20:  #CEE2E4;
+      --aqua:      #4CCACD;
+      --aqua-40:   #B7EBEA;
+      --berry:     #D3086F;
+      --berry-40:  #ED9CC5;
+      --berry-20:  #F6CEE2;
+      --bg:        #F4F7FA;
+      --surface:   #FFFFFF;
+      --border:    #E2EAF0;
+      --text:      #002B51;
+      --muted:     #335574;
+      --light:     #99AAB9;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: Poppins, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh; width: 100vw;
+      overflow: hidden;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 256px 1fr;
+      height: 100vh; width: 100vw;
+      overflow: hidden;
+    }
+
+    #sidebar-placeholder { height: 100vh; overflow-y: auto; }
+
+    /* Canvas: header → controls → tab strip → content */
+    .canvas {
+      display: grid;
+      grid-template-rows: auto auto auto 1fr;
+      height: 100vh;
+      overflow: hidden;
+      padding: 18px 22px 14px;
+      gap: 10px;
+      background: var(--bg);
+    }
+
+    /* ── Header ── */
+    .header-row {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-title { font-size: 17px; font-weight: 700; letter-spacing: -.02em; color: var(--navy); }
+    .page-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border: 1px solid var(--border);
+      background: var(--surface); border-radius: 999px;
+      font-size: 11px; color: var(--muted);
+    }
+    .btn { border-radius: 8px; padding: 6px 13px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; cursor: pointer; border: none; }
+    .btn-ghost   { background: var(--surface); border: 1px solid var(--border); color: var(--navy); }
+    .btn-ghost:hover { background: var(--blue-20); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--navy-80); }
+
+    /* ── Controls: KPIs + filters ── */
+    .controls-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr) 1px 1fr 1fr 1fr auto;
+      gap: 8px;
+      align-items: stretch;
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: 0 1px 4px rgba(0,43,81,.05);
+    }
+
+    .divider { background: var(--border); width: 1px; margin: 4px 4px; align-self: stretch; }
+
+    .kpi-mini { display: flex; flex-direction: column; justify-content: center; padding: 2px 6px; }
+    .kpi-mini-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--light); margin-bottom: 2px; }
+    .kpi-mini-value { font-size: 18px; font-weight: 700; color: var(--navy); line-height: 1; }
+    .kpi-mini-sub   { font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+    .filter-group { display: flex; flex-direction: column; justify-content: center; padding: 0 4px; }
+    .filter-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--light); margin-bottom: 3px; }
+    .filter-input {
+      border: 1px solid var(--border); border-radius: 7px;
+      padding: 5px 8px; background: var(--bg);
+      font-size: 11px; color: var(--navy);
+      font-family: Poppins, system-ui, sans-serif;
+      outline: none; width: 100%;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .filter-input:focus { border-color: var(--blue-80); box-shadow: 0 0 0 2px var(--blue-20); }
+
+    /* ── Tab strip ── */
+    .tab-strip {
+      display: flex; gap: 2px; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .tabs { display: flex; gap: 2px; background: var(--blue-20); border-radius: 10px; padding: 3px; border: 1px solid var(--blue-40); }
+    .tab {
+      padding: 5px 15px; border-radius: 8px; font-size: 11px; font-weight: 600;
+      color: var(--muted); cursor: pointer; transition: all .15s; white-space: nowrap;
+      border: none; background: transparent;
+    }
+    .tab.active { background: var(--navy); color: #fff; box-shadow: 0 1px 4px rgba(0,43,81,.18); }
+
+    /* ── Content area ── */
+    .content-area { display: grid; overflow: hidden; min-height: 0; }
+
+    .view { display: none; height: 100%; overflow: hidden; }
+    .view.active { display: grid; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,43,81,.06);
+      display: flex; flex-direction: column;
+      overflow: hidden; min-height: 0;
+    }
+
+    .card-header {
+      padding: 9px 14px 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to right, var(--blue-20), var(--surface));
+      flex-shrink: 0;
+    }
+    .card-title { font-size: 11px; font-weight: 700; color: var(--navy); }
+    .card-sub   { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .card-body  { padding: 10px 14px; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+
+    .chart-box { position: relative; flex: 1; min-height: 0; }
+    .chart-box canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+    /* ── VIEW LAYOUTS ── */
+    #view-concentration { grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    #view-maturity      { grid-template-columns: 1fr 1fr; gap: 10px; }
+    #view-waswas        { grid-template-columns: 1fr 1fr; gap: 10px; }
+    #view-positions     { grid-template-columns: 1fr; gap: 10px; }
+
+    /* ── Table styles ── */
+    .table-scroll { flex: 1; overflow-y: auto; overflow-x: auto; min-height: 0; }
+    .table-scroll::-webkit-scrollbar { width: 3px; }
+    .table-scroll::-webkit-scrollbar-thumb { background: var(--blue-40); border-radius: 2px; }
+
+    .data-table { width: 100%; border-collapse: collapse; min-width: 700px; }
+    .data-table thead th {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--light); font-weight: 700; padding: 6px 12px;
+      border-bottom: 2px solid var(--blue-20);
+      background: var(--surface); position: sticky; top: 0; z-index: 2;
+      white-space: nowrap; text-align: left;
+    }
+    .data-table thead th.r { text-align: right; }
+    .data-table tbody td {
+      padding: 5px 12px; font-size: 11px; color: var(--muted);
+      border-bottom: 1px solid var(--blue-20); vertical-align: middle;
+    }
+    .data-table tbody td.strong { font-weight: 600; color: var(--navy); }
+    .data-table tbody td.r { text-align: right; font-weight: 600; color: var(--navy); font-variant-numeric: tabular-nums; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: var(--blue-20); }
+
+    .chip {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px; font-size: 10px;
+      border: 1px solid var(--border); background: var(--bg); color: var(--muted);
+      white-space: nowrap;
+    }
+    .chip.first  { background: var(--blue-20);  border-color: var(--blue-40);  color: var(--blue); }
+    .chip.second { background: var(--berry-20); border-color: var(--berry-40); color: var(--berry); }
+    .chip.convert{ background: var(--ocean-20); border-color: var(--ocean-40); color: var(--ocean); }
+    .chip.unsec  { background: var(--navy-20);  border-color: var(--navy-40);  color: var(--navy-80); }
+    .chip.us     { background: var(--jade-40);  border-color: var(--jade-80);  color: #1a6b3a; }
+    .chip.intl   { background: var(--aqua-40);  border-color: var(--aqua);     color: var(--ocean); }
+
+    /* footer */
+    .card-footer {
+      padding: 6px 14px; border-top: 1px solid var(--border);
+      font-size: 10px; color: var(--light);
+      flex-shrink: 0; background: var(--bg);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    @media (max-width: 767px) {
+      .shell { grid-template-columns: 1fr; }
+      #sidebar-placeholder { display: none; }
+      .controls-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      try {
+        const res = await fetch("../sidebar.html");
+        document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+        window.toggleSection = window.toggleSection || function(id) {
+          const s=document.getElementById(id), ic=document.getElementById("icon-"+id);
+          if(!s||!ic) return;
+          s.classList.toggle("hidden");
+          ic.style.transform=s.classList.contains("hidden")?"rotate(0deg)":"rotate(90deg)";
+          localStorage.setItem("sidebar-open-section",id);
+        };
+        const last=localStorage.getItem("sidebar-open-section");
+        if(last){const s=document.getElementById(last),ic=document.getElementById("icon-"+last);if(s&&ic){s.classList.remove("hidden");ic.style.transform="rotate(90deg)";}}
+      } catch(e){}
+    }
+    injectSidebar();
+  </script>
+
+  <main class="canvas">
+
+    <!-- HEADER -->
+    <div class="header-row">
+      <div>
+        <div class="page-title">HTGC — Portfolio Construction</div>
+        <div class="page-sub">Sector concentration · instrument mix · maturity wall · WA spread / yield · geography</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="pill" id="asof-pill">As of —</span>
+        <button class="btn btn-ghost" onclick="location.href='../overview/overview.html'">Overview</button>
+        <button class="btn btn-primary" onclick="location.href='../portfolio/portfolio.html'">Portfolio</button>
+      </div>
+    </div>
+
+    <!-- CONTROLS: KPIs + filters -->
+    <div class="controls-row">
+      <div class="kpi-mini" style="border-left:3px solid var(--blue);padding-left:10px;">
+        <div class="kpi-mini-label">Debt FV</div>
+        <div class="kpi-mini-value" id="kpi-fv">—</div>
+        <div class="kpi-mini-sub" id="kpi-count">— positions</div>
+      </div>
+      <div class="kpi-mini" style="border-left:3px solid var(--ocean);padding-left:10px;">
+        <div class="kpi-mini-label">WA Spread</div>
+        <div class="kpi-mini-value" id="kpi-was">—</div>
+        <div class="kpi-mini-sub">bps over SOFR</div>
+      </div>
+      <div class="kpi-mini" style="border-left:3px solid var(--jade);padding-left:10px;">
+        <div class="kpi-mini-label">WA Yield</div>
+        <div class="kpi-mini-value" id="kpi-way">—</div>
+        <div class="kpi-mini-sub">all-in (approx)</div>
+      </div>
+      <div class="kpi-mini" style="border-left:3px solid var(--aqua);padding-left:10px;">
+        <div class="kpi-mini-label">Top sector</div>
+        <div class="kpi-mini-value" style="font-size:12px;line-height:1.2;margin-top:2px;" id="kpi-top-sector">—</div>
+        <div class="kpi-mini-sub" id="kpi-top-pct">—</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="filter-group">
+        <div class="filter-label">Search</div>
+        <input id="search" class="filter-input" type="text" placeholder="Company, sector, region…" />
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Sector</div>
+        <select id="sectorFilter" class="filter-input"><option value="">All</option></select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Instrument</div>
+        <select id="typeFilter" class="filter-input"><option value="">All</option></select>
+      </div>
+      <div style="display:flex;align-items:flex-end;padding:0 4px;">
+        <button id="resetBtn" class="btn btn-ghost" style="white-space:nowrap;">Reset</button>
+      </div>
+    </div>
+
+    <!-- TAB STRIP -->
+    <div class="tab-strip">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('concentration',this)">Concentration</button>
+        <button class="tab" onclick="switchTab('maturity',this)">Maturity Wall</button>
+        <button class="tab" onclick="switchTab('waswas',this)">WAS / WAY</button>
+        <button class="tab" onclick="switchTab('positions',this)">Positions</button>
+      </div>
+      <span class="pill" id="row-count-pill" style="font-size:10px;">—</span>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content-area">
+
+      <!-- VIEW 1: CONCENTRATION — sector + instrument + geography -->
+      <div class="view active" id="view-concentration">
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Sector concentration</div><div class="card-sub">% of debt FV by sector</div></div>
+            <span class="pill" id="sector-count">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="sectorChart"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Instrument type mix</div><div class="card-sub">First lien vs. riskier structures</div></div>
+            <span class="pill" id="type-count">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="typeChart"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Geographic concentration</div><div class="card-sub">% of debt FV by region</div></div>
+            <span class="pill" id="geo-count">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="geoChart"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- VIEW 2: MATURITY WALL -->
+      <div class="view" id="view-maturity">
+        <div class="card" style="grid-column:1/3;">
+          <div class="card-header">
+            <div><div class="card-title">Maturity wall — debt FV by year</div><div class="card-sub">Where does the wall hit?</div></div>
+            <span class="pill" id="maturity-years">—</span>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="maturityChart"></canvas></div></div>
+        </div>
+        <div class="card" style="grid-column:1;">
+          <div class="card-header">
+            <div><div class="card-title">Maturity by sector</div><div class="card-sub">Stacked by sector contribution per year</div></div>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="maturitySectorChart"></canvas></div></div>
+        </div>
+        <div class="card" style="grid-column:2;">
+          <div class="card-header">
+            <div><div class="card-title">Maturity by instrument</div><div class="card-sub">Structure mix per maturity year</div></div>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="maturityInstrChart"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- VIEW 3: WAS / WAY TABLE -->
+      <div class="view" id="view-waswas">
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">WA spread / yield by sector</div><div class="card-sub">Weighted by FV — placeholder calc</div></div>
+            <span class="pill">WAS / WAY</span>
+          </div>
+          <div class="table-scroll" style="flex:1;">
+            <table class="data-table" id="was-table-full">
+              <thead><tr>
+                <th>Sector</th>
+                <th class="r">FV ($MM)</th>
+                <th class="r">% of portfolio</th>
+                <th class="r">WAS (bps)</th>
+                <th class="r">WAY (%)</th>
+              </tr></thead>
+              <tbody id="was-tbody"></tbody>
+            </table>
+          </div>
+          <div class="card-footer">Next: compute WAS from contractual spread + floors · WAY from effective yield</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Spread vs yield scatter</div><div class="card-sub">Each position — size = FV</div></div>
+          </div>
+          <div class="card-body"><div class="chart-box"><canvas id="scatterChart"></canvas></div></div>
+        </div>
+      </div>
+
+      <!-- VIEW 4: POSITIONS TABLE -->
+      <div class="view" id="view-positions">
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Positions snapshot</div><div class="card-sub">Drill-down landing table — placeholder FV, spread, yield</div></div>
+            <span class="pill" id="pos-count-pill">—</span>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table" style="min-width:900px;">
+              <thead><tr>
+                <th>Company</th>
+                <th>Sector</th>
+                <th>Instrument</th>
+                <th>Maturity</th>
+                <th>Region</th>
+                <th class="r">FV ($MM)</th>
+                <th class="r">Spread (bps)</th>
+                <th class="r">Yield (%)</th>
+              </tr></thead>
+              <tbody id="pos-tbody"></tbody>
+            </table>
+          </div>
+          <div class="card-footer">Next: make rows drill-down clickable → issuer history</div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </main>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+const CONSTRUCTION = {
+  asOf: "Dec 31, 2025",
+  totalDebtFV_B: 4.28,
+  positions: [
+    { company:"Marathon Health, LLC",          sector:"Healthcare Services",         instrument:"First Lien",  maturity:"Feb 2029", region:"US",            fvMM:420, spreadBps:675, yieldPct:11.2 },
+    { company:"ChenMed, LLC",                  sector:"Healthcare Services",         instrument:"First Lien",  maturity:"May 2030", region:"US",            fvMM:380, spreadBps:625, yieldPct:10.6 },
+    { company:"Shield AI, Inc.",               sector:"Defense Technologies",        instrument:"First Lien",  maturity:"Feb 2029", region:"US",            fvMM:290, spreadBps:700, yieldPct:11.4 },
+    { company:"Phathom Pharmaceuticals, Inc.", sector:"Drug Discovery & Dev.",       instrument:"First Lien",  maturity:"Dec 2027", region:"US",            fvMM:260, spreadBps:725, yieldPct:12.0 },
+    { company:"Tipalti Solutions Ltd.",        sector:"Application Software",        instrument:"First Lien",  maturity:"Apr 2029", region:"International", fvMM:230, spreadBps:650, yieldPct:11.0 },
+    { company:"Armis, Inc.",                   sector:"System Software",             instrument:"First Lien",  maturity:"Mar 2028", region:"International", fvMM:215, spreadBps:600, yieldPct:10.4 },
+    { company:"Houzz, Inc.",                   sector:"Consumer & Business Svcs",    instrument:"Convertible", maturity:"May 2028", region:"US",            fvMM:110, spreadBps:0,   yieldPct:12.0 },
+    { company:"Gibraltar Acquisition LLC",     sector:"Diversified Financial Svcs",  instrument:"Unsecured",   maturity:"Jul 2029", region:"US",            fvMM:90,  spreadBps:0,   yieldPct:11.9 },
+    { company:"SeatGeek, Inc.",                sector:"Consumer & Business Svcs",    instrument:"Second Lien", maturity:"Jul 2026", region:"US",            fvMM:85,  spreadBps:900, yieldPct:13.5 },
+    { company:"DocPlanner",                    sector:"Application Software",        instrument:"First Lien",  maturity:"Jan 2030", region:"International", fvMM:140, spreadBps:610, yieldPct:10.8 },
+  ]
+};
+
+// ── MS PALETTE FOR CHARTS ─────────────────────────────────────────
+const PALETTE = ["#187ABA","#0A6F7A","#3EB661","#4CCACD","#335574","#4695C8","#3B8C95","#65C581","#99AAB9","#D3086F"];
+
+// ── HELPERS ───────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const esc = s => String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function uniq(arr) { return Array.from(new Set(arr.filter(Boolean))).sort((a,b)=>a.localeCompare(b)); }
+function fmtB(v)   { return `$${v.toFixed(2)}B`; }
+function fmtMM(v)  { return `$${Number(v).toFixed(0)}MM`; }
+
+function groupSum(rows, kFn, vFn) {
+  const m = new Map();
+  rows.forEach(r=>{ const k=kFn(r),v=vFn(r); m.set(k,(m.get(k)||0)+v); });
+  return Array.from(m.entries()).map(([k,v])=>({key:k,val:v}));
+}
+function weightedAvg(rows, wFn, vFn) {
+  let ws=0, xs=0;
+  rows.forEach(r=>{ const w=wFn(r),x=vFn(r); if(!isFinite(w)||!isFinite(x)) return; ws+=w; xs+=w*x; });
+  return ws ? xs/ws : 0;
+}
+function matYear(m) { const mt=String(m||"").match(/(20)\d{2}/); return mt?Number(mt[0]):null; }
+
+function instrChipClass(t) {
+  const l=(t||"").toLowerCase();
+  if (l.includes("first"))  return "chip first";
+  if (l.includes("second")) return "chip second";
+  if (l.includes("conv"))   return "chip convert";
+  if (l.includes("unsec"))  return "chip unsec";
+  return "chip";
+}
+function regionChipClass(r) { return (r||"").toLowerCase().includes("us") ? "chip us" : "chip intl"; }
+
+// ── ACTIVE TAB ────────────────────────────────────────────────────
+let activeTab = "concentration";
+let charts = {};
+
+function switchTab(name, btn) {
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+name).classList.add("active");
+  activeTab = name;
+  setTimeout(()=>rebuildCharts(filteredRows()), 40);
+}
+
+// ── FILTER STATE ─────────────────────────────────────────────────
+function filteredRows() {
+  const q      = $("search").value.trim().toLowerCase();
+  const sector = $("sectorFilter").value;
+  const type   = $("typeFilter").value;
+  return CONSTRUCTION.positions.filter(r=>{
+    const mq = !q || [r.company,r.sector,r.instrument,r.region,r.maturity].some(f=>(f||"").toLowerCase().includes(q));
+    return mq && (!sector||r.sector===sector) && (!type||r.instrument===type);
+  });
+}
+
+// ── DROPDOWNS ─────────────────────────────────────────────────────
+uniq(CONSTRUCTION.positions.map(p=>p.sector)).forEach(v=>{
+  const o=document.createElement("option"); o.value=v; o.textContent=v;
+  $("sectorFilter").appendChild(o);
+});
+uniq(CONSTRUCTION.positions.map(p=>p.instrument)).forEach(v=>{
+  const o=document.createElement("option"); o.value=v; o.textContent=v;
+  $("typeFilter").appendChild(o);
+});
+
+// ── KPI STRIP ─────────────────────────────────────────────────────
+function updateKPIs(rows) {
+  const totalFV = rows.reduce((s,r)=>s+r.fvMM,0);
+  const was = weightedAvg(rows, r=>r.fvMM, r=>r.spreadBps);
+  const way = weightedAvg(rows, r=>r.fvMM, r=>r.yieldPct);
+  const sectorAgg = groupSum(rows,r=>r.sector,r=>r.fvMM).sort((a,b)=>b.val-a.val);
+  const top = sectorAgg[0];
+
+  $("asof-pill").textContent      = `As of ${CONSTRUCTION.asOf}`;
+  $("kpi-fv").textContent         = fmtB(totalFV/1000);
+  $("kpi-count").textContent      = `${rows.length} positions`;
+  $("kpi-was").textContent        = `${Math.round(was)}`;
+  $("kpi-way").textContent        = `${way.toFixed(1)}%`;
+  $("kpi-top-sector").textContent = top ? top.key : "—";
+  $("kpi-top-pct").textContent    = top ? `${((top.val/totalFV)*100).toFixed(1)}% of FV` : "—";
+  $("row-count-pill").textContent = `${rows.length} positions`;
+}
+
+// ── CHART BUILDER ─────────────────────────────────────────────────
+function destroyAll() {
+  Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});
+  charts={};
+}
+
+function donutOpts(pos) {
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:pos||"bottom", labels:{font:{size:10},color:"#002B51",usePointStyle:true,boxWidth:8}} },
+    cutout:"60%", animation:{duration:350}
+  };
+}
+
+function barOpts(cbY) {
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false} },
+    scales:{
+      x:{ grid:{display:false}, ticks:{font:{size:10},color:"#335574"} },
+      y:{ grid:{color:"#D1E4F1"}, ticks:{callback:cbY, font:{size:10},color:"#335574"} }
+    },
+    animation:{duration:350}
+  };
+}
+
+function rebuildCharts(rows) {
+  destroyAll();
+
+  if (activeTab === "concentration") {
+    // Sector donut
+    const sA = groupSum(rows,r=>r.sector,r=>r.fvMM).sort((a,b)=>b.val-a.val);
+    $("sector-count").textContent = `${sA.length} sectors`;
+    charts.sector = new Chart($("sectorChart"), {
+      type:"doughnut",
+      data:{ labels:sA.map(x=>x.key), datasets:[{ data:sA.map(x=>x.val), backgroundColor:PALETTE, borderWidth:2, borderColor:"#fff" }] },
+      options:donutOpts("right")
+    });
+
+    // Instrument donut
+    const iA = groupSum(rows,r=>r.instrument,r=>r.fvMM).sort((a,b)=>b.val-a.val);
+    $("type-count").textContent = `${iA.length} types`;
+    charts.type = new Chart($("typeChart"), {
+      type:"doughnut",
+      data:{ labels:iA.map(x=>x.key), datasets:[{ data:iA.map(x=>x.val), backgroundColor:["#187ABA","#D3086F","#0A6F7A","#99AAB9"], borderWidth:2, borderColor:"#fff" }] },
+      options:donutOpts("right")
+    });
+
+    // Geography donut
+    const gA = groupSum(rows,r=>r.region,r=>r.fvMM).sort((a,b)=>b.val-a.val);
+    $("geo-count").textContent = `${gA.length} regions`;
+    charts.geo = new Chart($("geoChart"), {
+      type:"doughnut",
+      data:{ labels:gA.map(x=>x.key), datasets:[{ data:gA.map(x=>x.val), backgroundColor:["#3EB661","#4CCACD"], borderWidth:2, borderColor:"#fff" }] },
+      options:donutOpts("right")
+    });
+  }
+
+  if (activeTab === "maturity") {
+    const yearMap = new Map();
+    rows.forEach(r=>{ const y=matYear(r.maturity); if(y){ if(!yearMap.has(y)) yearMap.set(y,[]); yearMap.get(y).push(r); } });
+    const years = Array.from(yearMap.keys()).sort((a,b)=>a-b);
+    $("maturity-years").textContent = `${years.length} years`;
+
+    // Total bar
+    charts.maturity = new Chart($("maturityChart"), {
+      type:"bar",
+      data:{ labels:years, datasets:[{ label:"FV ($MM)", data:years.map(y=>yearMap.get(y).reduce((s,r)=>s+r.fvMM,0)), backgroundColor:"#187ABA", borderRadius:5, borderSkipped:false }] },
+      options:{...barOpts(v=>`$${v}MM`), plugins:{legend:{display:false}}}
+    });
+
+    // Sector stacked
+    const sectors = uniq(rows.map(r=>r.sector));
+    charts.matSec = new Chart($("maturitySectorChart"), {
+      type:"bar",
+      data:{ labels:years, datasets:sectors.map((s,i)=>({
+        label:s, data:years.map(y=>(yearMap.get(y)||[]).filter(r=>r.sector===s).reduce((a,r)=>a+r.fvMM,0)),
+        backgroundColor:PALETTE[i%PALETTE.length], borderRadius:3
+      }))},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:"bottom",labels:{font:{size:9},color:"#002B51",usePointStyle:true,boxWidth:7}}},
+        scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:"#335574"}},
+                y:{stacked:true,grid:{color:"#D1E4F1"},ticks:{font:{size:10},color:"#335574"}}},
+        animation:{duration:350}}
+    });
+
+    // Instrument stacked
+    const instrs = uniq(rows.map(r=>r.instrument));
+    const instrColors = {"First Lien":"#187ABA","Second Lien":"#D3086F","Convertible":"#0A6F7A","Unsecured":"#99AAB9"};
+    charts.matInstr = new Chart($("maturityInstrChart"), {
+      type:"bar",
+      data:{ labels:years, datasets:instrs.map(ins=>({
+        label:ins, data:years.map(y=>(yearMap.get(y)||[]).filter(r=>r.instrument===ins).reduce((a,r)=>a+r.fvMM,0)),
+        backgroundColor:instrColors[ins]||"#CCD5DC", borderRadius:3
+      }))},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:"bottom",labels:{font:{size:9},color:"#002B51",usePointStyle:true,boxWidth:7}}},
+        scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:"#335574"}},
+                y:{stacked:true,grid:{color:"#D1E4F1"},ticks:{font:{size:10},color:"#335574"}}},
+        animation:{duration:350}}
+    });
+  }
+
+  if (activeTab === "waswas") {
+    // WAS table
+    const sectorAgg = groupSum(rows,r=>r.sector,r=>r.fvMM).sort((a,b)=>b.val-a.val);
+    const totalFV   = rows.reduce((s,r)=>s+r.fvMM,0)||1;
+    $("was-tbody").innerHTML = sectorAgg.map(s=>{
+      const sr  = rows.filter(r=>r.sector===s.key);
+      const was = weightedAvg(sr,r=>r.fvMM,r=>r.spreadBps);
+      const way = weightedAvg(sr,r=>r.fvMM,r=>r.yieldPct);
+      return `<tr>
+        <td class="strong"><span class="chip">${esc(s.key)}</span></td>
+        <td class="r">${fmtMM(s.val)}</td>
+        <td class="r">${((s.val/totalFV)*100).toFixed(1)}%</td>
+        <td class="r">${Math.round(was)}</td>
+        <td class="r">${way.toFixed(1)}%</td>
+      </tr>`;
+    }).join("");
+
+    // Scatter
+    charts.scatter = new Chart($("scatterChart"), {
+      type:"bubble",
+      data:{
+        datasets: rows.map((r,i)=>({
+          label: r.company,
+          data:[{ x:r.spreadBps, y:r.yieldPct, r:Math.max(4, Math.sqrt(r.fvMM)*0.55) }],
+          backgroundColor: PALETTE[i%PALETTE.length]+"99",
+          borderColor: PALETTE[i%PALETTE.length],
+          borderWidth:1.5
+        }))
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{
+          legend:{display:false},
+          tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.x}bps / ${ctx.parsed.y.toFixed(1)}%`}}
+        },
+        scales:{
+          x:{title:{display:true,text:"Spread (bps)",font:{size:10},color:"#335574"},grid:{color:"#D1E4F1"},ticks:{font:{size:10},color:"#335574"}},
+          y:{title:{display:true,text:"Yield (%)",font:{size:10},color:"#335574"},grid:{color:"#D1E4F1"},ticks:{font:{size:10},color:"#335574"}}
+        },
+        animation:{duration:350}
+      }
+    });
+  }
+
+  if (activeTab === "positions") {
+    $("pos-count-pill").textContent = `${rows.length} positions`;
+    $("pos-tbody").innerHTML = rows.map(r=>`<tr>
+      <td class="strong">${esc(r.company)}</td>
+      <td><span class="chip">${esc(r.sector)}</span></td>
+      <td><span class="${instrChipClass(r.instrument)}">${esc(r.instrument)}</span></td>
+      <td style="font-size:11px;color:var(--muted);">${esc(r.maturity||"—")}</td>
+      <td><span class="${regionChipClass(r.region)}">${esc(r.region||"—")}</span></td>
+      <td class="r">${fmtMM(r.fvMM)}</td>
+      <td class="r">${Number(r.spreadBps||0).toFixed(0)}</td>
+      <td class="r">${Number(r.yieldPct||0).toFixed(1)}%</td>
+    </tr>`).join("");
+  }
+}
+
+// ── APPLY ─────────────────────────────────────────────────────────
+function apply() {
+  const rows = filteredRows();
+  updateKPIs(rows);
+  rebuildCharts(rows);
+}
+
+$("search").addEventListener("input", apply);
+$("sectorFilter").addEventListener("change", apply);
+$("typeFilter").addEventListener("change", apply);
+$("resetBtn").addEventListener("click",()=>{
+  $("search").value=""; $("sectorFilter").value=""; $("typeFilter").value="";
+  apply();
+});
+
+apply();
+</script>
+
+</body>
+</html>
