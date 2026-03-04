@@ -1,0 +1,308 @@
+<!-- /bdc/htgc/overview/overview.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • HTGC Overview</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px; padding: 2px 6px; border-radius: 8px;
+      border: 1px solid #e5e7eb; background: #fff; color: #111827;
+      white-space: nowrap;
+    }
+
+    .metric-label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color:#6b7280; }
+    .metric-value { font-size: 20px; font-weight: 700; color:#111827; letter-spacing:-.02em; }
+
+    @media (max-width: 767px) { #sidebar-placeholder { display: none; } }
+    html, body { overflow-x: hidden; }
+    main { min-width: 0; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      // overview.html lives in /bdc/htgc/overview/ so go up one level to /bdc/htgc/
+      const res = await fetch("../sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      // Ensure toggleSection exists even if sidebar script isn't executed (safe)
+      window.toggleSection = window.toggleSection || function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1200px] mx-auto md:mx-0 space-y-6">
+
+      <!-- HERO -->
+      <section class="space-y-3">
+        <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Hercules Capital (HTGC) — Overview</h1>
+
+        <div class="mt-2 bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+          <div class="text-sm text-gray-700">
+            Public BDC intelligence layer: portfolio snapshot, trends, non-accruals, and monitoring — built on filings + structured extracts.
+          </div>
+          <span class="pill">BDCs • HTGC</span>
+        </div>
+      </section>
+
+      <!-- TOP METRICS -->
+      <section class="grid grid-cols-12 gap-6">
+
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+
+          <div class="cardish p-6">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <div class="text-sm font-semibold">Snapshot (latest quarter)</div>
+                <div class="text-xs muted mt-1">Replace placeholders with real values once you load EDGAR/CSV.</div>
+              </div>
+              <span class="pill">As of: <span class="font-semibold">Q4 2025</span></span>
+            </div>
+
+            <div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div class="border rounded-2xl p-4 bg-white">
+                <div class="metric-label">Total portfolio</div>
+                <div class="metric-value">$X.XB</div>
+                <div class="text-xs muted mt-1">Fair value</div>
+              </div>
+
+              <div class="border rounded-2xl p-4 bg-white">
+                <div class="metric-label"># positions</div>
+                <div class="metric-value">XXX</div>
+                <div class="text-xs muted mt-1">Debt + equity</div>
+              </div>
+
+              <div class="border rounded-2xl p-4 bg-white">
+                <div class="metric-label">Non-accrual</div>
+                <div class="metric-value">X.X%</div>
+                <div class="text-xs muted mt-1">Fair value %</div>
+              </div>
+
+              <div class="border rounded-2xl p-4 bg-white">
+                <div class="metric-label">Wtd avg yield</div>
+                <div class="metric-value">X.X%</div>
+                <div class="text-xs muted mt-1">Est / disclosed</div>
+              </div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <a class="btn btn-primary" href="../portfolio/portfolio.html">Open Portfolio</a>
+              <a class="btn btn-ghost" href="../trends/trends.html">View Trends</a>
+              <a class="btn btn-ghost" href="../non-accruals/non-accruals.html">Non-Accruals</a>
+            </div>
+
+            <div class="mt-4 text-xs muted">
+              Tip: keep this page “executive summary.” Put deep tables in Portfolio/Trends.
+            </div>
+          </div>
+
+          <!-- WHAT'S INSIDE -->
+          <div class="cardish p-6">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <div class="text-sm font-semibold">What’s inside this HTGC pack</div>
+                <div class="text-xs muted mt-1">A repeatable template you can clone across BDCs.</div>
+              </div>
+              <span class="pill">Repeatable • EDGAR-backed</span>
+            </div>
+
+            <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <a href="../portfolio/portfolio.html" class="border rounded-2xl p-4 bg-white hover:bg-gray-50 block">
+                <div class="text-sm font-semibold">Portfolio</div>
+                <div class="text-xs muted mt-2">
+                  Schedule of investments: issuer, instrument, cost, fair value, yield/spread, maturity, QoQ mark changes.
+                </div>
+              </a>
+
+              <a href="../trends/trends.html" class="border rounded-2xl p-4 bg-white hover:bg-gray-50 block">
+                <div class="text-sm font-semibold">Trends</div>
+                <div class="text-xs muted mt-2">
+                  Historical snapshots across quarters: adds, exits, markdown persistence, concentration drift.
+                </div>
+              </a>
+
+              <a href="../construction/construction.html" class="border rounded-2xl p-4 bg-white hover:bg-gray-50 block">
+                <div class="text-sm font-semibold">Construction</div>
+                <div class="text-xs muted mt-2">
+                  Concentrations, maturity wall, mix by lien/instrument, top exposures, sponsor overlap (if available).
+                </div>
+              </a>
+
+              <a href="../news/news.html" class="border rounded-2xl p-4 bg-white hover:bg-gray-50 block">
+                <div class="text-sm font-semibold">News</div>
+                <div class="text-xs muted mt-2">
+                  Monitoring layer by portfolio company name: raises, layoffs, M&amp;A, distress signals.
+                </div>
+              </a>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <a href="../comparables/comparables.html" class="border rounded-2xl p-4 bg-white hover:bg-gray-50 block">
+                <div class="text-sm font-semibold">Comparables</div>
+                <div class="text-xs muted mt-2">
+                  Benchmark vs peer BDCs: spreads/yields, NAV trends, non-accruals, sector mix.
+                </div>
+              </a>
+
+              <a href="../oriongpt/oriongpt.html" class="border rounded-2xl p-4 bg-white hover:bg-gray-50 block">
+                <div class="text-sm font-semibold">OrionGPT</div>
+                <div class="text-xs muted mt-2">
+                  Ask natural-language questions across the structured dataset and cited filings.
+                </div>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT RAIL -->
+        <aside class="col-span-12 lg:col-span-4 space-y-6">
+
+          <!-- QUICK QUESTIONS -->
+          <div class="cardish p-6">
+            <div class="text-sm font-semibold">Suggested questions</div>
+            <div class="text-xs muted mt-1">Use these inside <span class="kbd">OrionGPT</span>.</div>
+
+            <div class="mt-4 border rounded-2xl p-4 bg-white text-sm text-gray-800">
+              <div class="font-semibold text-sm">Try:</div>
+              <ul class="mt-2 list-disc pl-5 space-y-1 text-xs muted">
+                <li>“Which holdings were marked down &gt;10% QoQ?”</li>
+                <li>“Which issuers have repeated markdowns across 3+ quarters?”</li>
+                <li>“What percentage of FV is in software/life sciences?”</li>
+                <li>“List every non-accrual and when it first appeared.”</li>
+                <li>“What’s the maturity wall over the next 24 months?”</li>
+              </ul>
+            </div>
+
+            <div class="mt-4">
+              <a class="btn btn-primary w-full" href="../oriongpt/oriongpt.html">Open OrionGPT</a>
+            </div>
+          </div>
+
+          <!-- NEXT ACTIONS -->
+          <div class="cardish p-6">
+            <div class="text-sm font-semibold">Recommended next clicks</div>
+            <div class="text-xs muted mt-1">If you’re new, do this in order.</div>
+
+            <div class="mt-4 space-y-3 text-sm">
+              <a href="../portfolio/portfolio.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+                <div class="font-semibold">1) Portfolio</div>
+                <div class="text-xs muted mt-1">See the schedule + marks in one table.</div>
+              </a>
+
+              <a href="../trends/trends.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+                <div class="font-semibold">2) Trends</div>
+                <div class="text-xs muted mt-1">Track drift across quarters.</div>
+              </a>
+
+              <a href="../non-accruals/non-accruals.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+                <div class="font-semibold">3) Non-Accruals</div>
+                <div class="text-xs muted mt-1">Fastest credit-quality signal.</div>
+              </a>
+            </div>
+          </div>
+
+          <!-- ACCOUNT -->
+          <div class="cardish p-6">
+            <div class="text-sm font-semibold">Account</div>
+            <div class="text-xs muted mt-1">Billing and access live here.</div>
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <a class="btn btn-ghost w-full text-center" href="../pricing/pricing.html">Pricing</a>
+              <a class="btn btn-ghost w-full text-center" href="../contact/contact.html">Contact</a>
+            </div>
+          </div>
+
+        </aside>
+
+      </section>
+
+      <!-- FOOTER NOTE -->
+      <section class="cardish p-6">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">HTGC BDC Intelligence Layer</div>
+            <div class="text-xs muted mt-1">
+              This is built on public filings and structured extracts — designed to be replicated across any BDC.
+            </div>
+          </div>
+          <span class="pill">Clone-ready</span>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Ask Orion Bot include -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      // overview.html lives in /bdc/htgc/overview/ so go up one level to /bdc/htgc/
+      const res = await fetch("../includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      // Re-run any scripts inside the injected HTML
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
