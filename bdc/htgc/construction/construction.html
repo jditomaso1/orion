@@ -1,0 +1,575 @@
+<!-- /bdc/htgc/construction/construction.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC • Portfolio Construction</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+
+    .th { font-size: 11px; letter-spacing:.06em; text-transform: uppercase; color:#6b7280; }
+    .td { font-size: 13px; color:#111827; }
+    .chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #e5e7eb; background:#f9fafb; color:#111827; }
+
+    .kpi { border:1px solid #e5e7eb; border-radius:16px; background:#fff; }
+    .kpi-label { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#6b7280; font-weight:600; }
+    .kpi-value { font-size:22px; font-weight:700; letter-spacing:-.02em; }
+    .kpi-sub { font-size:12px; color:#6b7280; }
+
+    @media (max-width: 767px) { #sidebar-placeholder { display:none; } }
+    html, body { overflow-x:hidden; }
+    main { min-width:0; }
+
+    /* Charts fill their cards (kills the “white space” problem) */
+    .chart-wrap { position:relative; flex:1 1 auto; min-height:320px; }
+    .chart-wrap.tall { min-height:380px; }
+    .chart-wrap canvas { width:100% !important; height:100% !important; display:block; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      // construction.html is in /bdc/htgc/construction/, sidebar is /bdc/htgc/sidebar.html
+      const res = await fetch("../sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = window.toggleSection || function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN -->
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1400px] mx-auto md:mx-0 space-y-6">
+
+      <!-- HEADER -->
+      <section class="space-y-3">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">HTGC — Portfolio Construction Analytics</h1>
+            <div class="text-sm muted mt-1">
+              Sector concentration, instrument mix, maturity wall, weighted average spread/yield, and geography.
+              Built to show “what’s in the box” fast.
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="pill" id="asof-pill">As of —</span>
+            <a class="btn btn-ghost" href="../overview/overview.html">Back to Overview</a>
+            <a class="btn btn-primary" href="../portfolio/portfolio.html">View Portfolio</a>
+          </div>
+        </div>
+
+        <div class="bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+          <div class="text-sm text-gray-700">
+            Placeholder dataset for now. Later: load the schedule + fair value + spread + geography from EDGAR parses.
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="pill">Next: make everything drill-down clickable</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- KPI STRIP -->
+      <section class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">Debt FV</div>
+          <div class="kpi-value mt-1" id="kpi-fv">—</div>
+          <div class="kpi-sub mt-1" id="kpi-count">— positions</div>
+        </div>
+
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">Weighted avg spread</div>
+          <div class="kpi-value mt-1" id="kpi-was">—</div>
+          <div class="kpi-sub mt-1">SOFR + spread (approx)</div>
+        </div>
+
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">Weighted avg yield</div>
+          <div class="kpi-value mt-1" id="kpi-way">—</div>
+          <div class="kpi-sub mt-1">coupon / yield (approx)</div>
+        </div>
+
+        <div class="col-span-12 md:col-span-3 kpi p-4">
+          <div class="kpi-label">Top sector</div>
+          <div class="kpi-value mt-1" id="kpi-top-sector">—</div>
+          <div class="kpi-sub mt-1" id="kpi-top-sector-pct">—</div>
+        </div>
+      </section>
+
+      <!-- FILTERS -->
+      <section class="cardish p-5">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">Filters</div>
+            <div class="text-xs muted mt-1">Filter the analytics + tables (placeholder wiring).</div>
+          </div>
+          <div class="text-xs muted">Tip: Sector + Instrument Type gives you instant risk mix</div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-12 gap-3">
+          <div class="col-span-12 lg:col-span-6">
+            <label class="th block mb-1">Search</label>
+            <input id="search" type="text"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200"
+              placeholder="Company, sector, structure, geography..." />
+          </div>
+
+          <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <label class="th block mb-1">Sector</label>
+            <select id="sectorFilter"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="">All</option>
+            </select>
+          </div>
+
+          <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <label class="th block mb-1">Instrument type</label>
+            <select id="typeFilter"
+              class="w-full border border-gray-200 rounded-xl px-3 py-2 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="">All</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHARTS GRID -->
+      <section class="grid grid-cols-12 gap-6 items-stretch">
+
+        <!-- Sector concentration -->
+        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col h-full">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Sector concentration</div>
+              <div class="text-xs muted mt-1">% of debt FV by sector</div>
+            </div>
+            <span class="pill" id="sector-count">— sectors</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="sectorChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Instrument mix -->
+        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col h-full">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Instrument type mix</div>
+              <div class="text-xs muted mt-1">First lien vs. riskier structures (by FV)</div>
+            </div>
+            <span class="pill" id="type-count">— types</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="typeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Maturity wall -->
+        <div class="col-span-12 cardish p-6 flex flex-col h-full">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Maturity wall</div>
+              <div class="text-xs muted mt-1">Debt FV by maturity year (where does the wall hit?)</div>
+            </div>
+            <span class="pill" id="maturity-years">— years</span>
+          </div>
+          <div class="chart-wrap tall mt-4">
+            <canvas id="maturityChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Geography -->
+        <div class="col-span-12 lg:col-span-6 cardish p-6 flex flex-col h-full">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Geographic concentration</div>
+              <div class="text-xs muted mt-1">% of debt FV by region</div>
+            </div>
+            <span class="pill" id="geo-count">— regions</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="geoChart"></canvas>
+          </div>
+        </div>
+
+        <!-- WA spread / yield table -->
+        <div class="col-span-12 lg:col-span-6 cardish p-6">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Weighted average spread / yield</div>
+              <div class="text-xs muted mt-1">By sector (placeholder calc)</div>
+            </div>
+            <span class="pill">WAS / WAY</span>
+          </div>
+
+          <div class="mt-4 overflow-x-auto">
+            <table class="min-w-full">
+              <thead class="bg-gray-50 border-b">
+                <tr>
+                  <th class="th text-left px-4 py-3">Sector</th>
+                  <th class="th text-right px-4 py-3">FV ($B)</th>
+                  <th class="th text-right px-4 py-3">WAS (bps)</th>
+                  <th class="th text-right px-4 py-3">WAY (%)</th>
+                </tr>
+              </thead>
+              <tbody id="was-table" class="bg-white divide-y"></tbody>
+            </table>
+          </div>
+
+          <div class="mt-4 text-xs muted">
+            Next: compute WAS from contractual spread + floors, compute WAY from effective yield.
+          </div>
+        </div>
+      </section>
+
+      <!-- POSITIONS SNAPSHOT -->
+      <section class="cardish overflow-hidden">
+        <div class="p-5 border-b flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div class="text-sm font-semibold">Positions snapshot (sample)</div>
+            <div class="text-xs muted mt-1">Use this as the drill-down landing table later.</div>
+          </div>
+          <div class="flex items-center gap-2 text-xs muted">
+            <span id="rowCount">0</span> rows
+            <button id="resetBtn" class="btn btn-ghost ml-2">Reset filters</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead class="bg-gray-50 border-b">
+              <tr>
+                <th class="th text-left px-5 py-3">Company</th>
+                <th class="th text-left px-5 py-3">Sector</th>
+                <th class="th text-left px-5 py-3">Instrument</th>
+                <th class="th text-left px-5 py-3">Maturity</th>
+                <th class="th text-left px-5 py-3">Region</th>
+                <th class="th text-right px-5 py-3">FV ($MM)</th>
+                <th class="th text-right px-5 py-3">Spread (bps)</th>
+                <th class="th text-right px-5 py-3">Yield (%)</th>
+              </tr>
+            </thead>
+            <tbody id="tbody" class="bg-white divide-y"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // =========================================================================
+    // Placeholder construction dataset
+    // Replace with EDGAR-derived schedule + FV + coupon/spread + geography.
+    // =========================================================================
+    const CONSTRUCTION = {
+      asOf: "Dec 31, 2025",
+      totalDebtFV_B: 4.28,
+      positions: [
+        { company:"Marathon Health, LLC", sector:"Healthcare Services", instrument:"First Lien", maturity:"Feb 2029", region:"US", fvMM:420, spreadBps:675, yieldPct:11.2 },
+        { company:"ChenMed, LLC", sector:"Healthcare Services", instrument:"First Lien", maturity:"May 2030", region:"US", fvMM:380, spreadBps:625, yieldPct:10.6 },
+        { company:"Shield AI, Inc.", sector:"Defense Technologies", instrument:"First Lien", maturity:"Feb 2029", region:"US", fvMM:290, spreadBps:700, yieldPct:11.4 },
+        { company:"Phathom Pharmaceuticals, Inc.", sector:"Drug Discovery & Dev.", instrument:"First Lien", maturity:"Dec 2027", region:"US", fvMM:260, spreadBps:725, yieldPct:12.0 },
+        { company:"Tipalti Solutions Ltd.", sector:"Application Software", instrument:"First Lien", maturity:"Apr 2029", region:"International", fvMM:230, spreadBps:650, yieldPct:11.0 },
+        { company:"Armis, Inc.", sector:"System Software", instrument:"First Lien", maturity:"Mar 2028", region:"International", fvMM:215, spreadBps:600, yieldPct:10.4 },
+        { company:"Houzz, Inc.", sector:"Consumer & Business Svcs", instrument:"Convertible", maturity:"May 2028", region:"US", fvMM:110, spreadBps:0, yieldPct:12.0 },
+        { company:"Gibraltar Acquisition LLC", sector:"Diversified Financial Services", instrument:"Unsecured", maturity:"Jul 2029", region:"US", fvMM:90, spreadBps:0, yieldPct:11.9 },
+        { company:"SeatGeek, Inc.", sector:"Consumer & Business Svcs", instrument:"Second Lien", maturity:"Jul 2026", region:"US", fvMM:85, spreadBps:900, yieldPct:13.5 },
+        { company:"DocPlanner", sector:"Application Software", instrument:"First Lien", maturity:"Jan 2030", region:"International", fvMM:140, spreadBps:610, yieldPct:10.8 }
+      ]
+    };
+
+    // =========================================================================
+    // Helpers
+    // =========================================================================
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function uniqSorted(arr) {
+      return Array.from(new Set(arr.filter(Boolean))).sort((a,b)=>a.localeCompare(b));
+    }
+
+    function groupSum(rows, keyFn, valFn) {
+      const m = new Map();
+      rows.forEach(r => {
+        const k = keyFn(r);
+        const v = valFn(r);
+        m.set(k, (m.get(k) || 0) + v);
+      });
+      return Array.from(m.entries()).map(([k,v]) => ({ key:k, val:v }));
+    }
+
+    function weightedAvg(rows, weightFn, valueFn) {
+      let wsum = 0, xsum = 0;
+      rows.forEach(r => {
+        const w = weightFn(r);
+        const x = valueFn(r);
+        if (!Number.isFinite(w) || !Number.isFinite(x)) return;
+        wsum += w;
+        xsum += w * x;
+      });
+      return wsum ? (xsum / wsum) : 0;
+    }
+
+    function maturityYear(maturity) {
+      // "Feb 2029" or "May 2030" -> 2029
+      const m = String(maturity || "").match(/(19|20)\d{2}/);
+      return m ? Number(m[0]) : null;
+    }
+
+    function fmtB(v) { return `$${v.toFixed(2)}B`; }
+    function fmtMM(v) { return `$${v.toFixed(0)}MM`; }
+
+    // =========================================================================
+    // Initial render scaffolding
+    // =========================================================================
+    $("asof-pill").textContent = `As of ${CONSTRUCTION.asOf}`;
+    $("kpi-fv").textContent = fmtB(CONSTRUCTION.totalDebtFV_B);
+    $("kpi-count").textContent = `${CONSTRUCTION.positions.length} positions`;
+
+    // Overall WAS / WAY from positions (placeholder)
+    const overallWAS = weightedAvg(CONSTRUCTION.positions, r=>r.fvMM, r=>r.spreadBps);
+    const overallWAY = weightedAvg(CONSTRUCTION.positions, r=>r.fvMM, r=>r.yieldPct);
+
+    $("kpi-was").textContent = `${Math.round(overallWAS)} bps`;
+    $("kpi-way").textContent = `${overallWAY.toFixed(1)}%`;
+
+    // Top sector
+    const sectorAggAll = groupSum(CONSTRUCTION.positions, r=>r.sector, r=>r.fvMM);
+    sectorAggAll.sort((a,b)=>b.val-a.val);
+    const topSector = sectorAggAll[0];
+    $("kpi-top-sector").textContent = topSector ? topSector.key : "—";
+    const totalFV = sectorAggAll.reduce((s,x)=>s+x.val,0) || 1;
+    $("kpi-top-sector-pct").textContent = topSector ? `${((topSector.val/totalFV)*100).toFixed(1)}% of FV` : "—";
+
+    // Populate filters
+    const sectorSelect = $("sectorFilter");
+    uniqSorted(CONSTRUCTION.positions.map(p=>p.sector)).forEach(v => {
+      const o = document.createElement("option");
+      o.value = v; o.textContent = v;
+      sectorSelect.appendChild(o);
+    });
+
+    const typeSelect = $("typeFilter");
+    uniqSorted(CONSTRUCTION.positions.map(p=>p.instrument)).forEach(v => {
+      const o = document.createElement("option");
+      o.value = v; o.textContent = v;
+      typeSelect.appendChild(o);
+    });
+
+    // =========================================================================
+    // Charts (kept as variables so we can update on filters)
+    // =========================================================================
+    let sectorChart, typeChart, maturityChart, geoChart;
+
+    function buildCharts(rows) {
+      // Sector
+      const sectorAgg = groupSum(rows, r=>r.sector, r=>r.fvMM).sort((a,b)=>b.val-a.val);
+      const sectorLabels = sectorAgg.map(x=>x.key);
+      const sectorVals = sectorAgg.map(x=>x.val);
+
+      $("sector-count").textContent = `${sectorLabels.length} sectors`;
+
+      if (sectorChart) sectorChart.destroy();
+      sectorChart = new Chart(document.getElementById("sectorChart"), {
+        type: "doughnut",
+        data: { labels: sectorLabels, datasets: [{ data: sectorVals, borderWidth: 0 }] },
+        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:"bottom" } }, cutout:"62%" }
+      });
+
+      // Instrument type mix
+      const typeAgg = groupSum(rows, r=>r.instrument, r=>r.fvMM).sort((a,b)=>b.val-a.val);
+      const typeLabels = typeAgg.map(x=>x.key);
+      const typeVals = typeAgg.map(x=>x.val);
+
+      $("type-count").textContent = `${typeLabels.length} types`;
+
+      if (typeChart) typeChart.destroy();
+      typeChart = new Chart(document.getElementById("typeChart"), {
+        type: "doughnut",
+        data: { labels: typeLabels, datasets: [{ data: typeVals, borderWidth: 0 }] },
+        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:"bottom" } }, cutout:"62%" }
+      });
+
+      // Maturity wall by year
+      const yearAgg = groupSum(
+        rows.filter(r=>maturityYear(r.maturity)),
+        r=>String(maturityYear(r.maturity)),
+        r=>r.fvMM
+      ).sort((a,b)=>Number(a.key)-Number(b.key));
+
+      const years = yearAgg.map(x=>x.key);
+      const yearVals = yearAgg.map(x=>x.val);
+
+      $("maturity-years").textContent = `${years.length} years`;
+
+      if (maturityChart) maturityChart.destroy();
+      maturityChart = new Chart(document.getElementById("maturityChart"), {
+        type: "bar",
+        data: { labels: years, datasets: [{ label:"FV ($MM)", data: yearVals }] },
+        options: {
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{ legend:{ display:false } },
+          scales:{
+            x:{ grid:{ display:false } },
+            y:{ ticks:{ callback:(v)=>`$${v}MM` } }
+          }
+        }
+      });
+
+      // Geography
+      const geoAgg = groupSum(rows, r=>r.region, r=>r.fvMM).sort((a,b)=>b.val-a.val);
+      const geoLabels = geoAgg.map(x=>x.key);
+      const geoVals = geoAgg.map(x=>x.val);
+
+      $("geo-count").textContent = `${geoLabels.length} regions`;
+
+      if (geoChart) geoChart.destroy();
+      geoChart = new Chart(document.getElementById("geoChart"), {
+        type: "doughnut",
+        data: { labels: geoLabels, datasets: [{ data: geoVals, borderWidth: 0 }] },
+        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:"bottom" } }, cutout:"62%" }
+      });
+    }
+
+    function buildWASTable(rows) {
+      const bySector = groupSum(rows, r=>r.sector, r=>r.fvMM).sort((a,b)=>b.val-a.val);
+
+      const tbody = $("was-table");
+      tbody.innerHTML = "";
+
+      bySector.forEach(s => {
+        const sectorRows = rows.filter(r => r.sector === s.key);
+        const was = weightedAvg(sectorRows, r=>r.fvMM, r=>r.spreadBps);
+        const way = weightedAvg(sectorRows, r=>r.fvMM, r=>r.yieldPct);
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-gray-50";
+        tr.innerHTML = `
+          <td class="td px-4 py-3"><span class="chip">${escapeHtml(s.key)}</span></td>
+          <td class="td px-4 py-3 text-right tabular-nums">${(s.val/1000).toFixed(2)}B</td>
+          <td class="td px-4 py-3 text-right tabular-nums font-semibold">${Math.round(was)}</td>
+          <td class="td px-4 py-3 text-right tabular-nums font-semibold">${way.toFixed(1)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderPositions(rows) {
+      const tbody = $("tbody");
+      tbody.innerHTML = "";
+
+      rows.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-gray-50";
+        tr.innerHTML = `
+          <td class="td px-5 py-3 font-semibold">${escapeHtml(r.company)}</td>
+          <td class="td px-5 py-3"><span class="chip">${escapeHtml(r.sector)}</span></td>
+          <td class="td px-5 py-3"><span class="chip">${escapeHtml(r.instrument)}</span></td>
+          <td class="td px-5 py-3">${escapeHtml(r.maturity || "—")}</td>
+          <td class="td px-5 py-3"><span class="chip">${escapeHtml(r.region || "—")}</span></td>
+          <td class="td px-5 py-3 text-right tabular-nums font-semibold">${fmtMM(r.fvMM)}</td>
+          <td class="td px-5 py-3 text-right tabular-nums">${Number(r.spreadBps||0).toFixed(0)}</td>
+          <td class="td px-5 py-3 text-right tabular-nums">${Number(r.yieldPct||0).toFixed(1)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      $("rowCount").textContent = rows.length;
+    }
+
+    function applyFilters() {
+      const q = $("search").value.trim().toLowerCase();
+      const sector = $("sectorFilter").value;
+      const type = $("typeFilter").value;
+
+      const rows = CONSTRUCTION.positions.filter(r => {
+        const matchesQ =
+          !q ||
+          (r.company||"").toLowerCase().includes(q) ||
+          (r.sector||"").toLowerCase().includes(q) ||
+          (r.instrument||"").toLowerCase().includes(q) ||
+          (r.region||"").toLowerCase().includes(q) ||
+          (r.maturity||"").toLowerCase().includes(q);
+
+        const matchesSector = !sector || r.sector === sector;
+        const matchesType = !type || r.instrument === type;
+
+        return matchesQ && matchesSector && matchesType;
+      });
+
+      buildCharts(rows);
+      buildWASTable(rows);
+      renderPositions(rows);
+    }
+
+    // Hook up filters
+    $("search").addEventListener("input", applyFilters);
+    $("sectorFilter").addEventListener("change", applyFilters);
+    $("typeFilter").addEventListener("change", applyFilters);
+
+    $("resetBtn").addEventListener("click", () => {
+      $("search").value = "";
+      $("sectorFilter").value = "";
+      $("typeFilter").value = "";
+      applyFilters();
+    });
+
+    // Initial
+    applyFilters();
+  </script>
+
+</body>
+</html>
