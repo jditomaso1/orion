@@ -1,0 +1,574 @@
+<!-- /bdc/htgc/overview/overview.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC • Overview</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ── Morgan Stanley palette ── */
+    :root {
+      --blue:       #187ABA;
+      --blue-80:    #4695C8;
+      --blue-40:    #A3CAE3;
+      --blue-20:    #D1E4F1;
+
+      --navy:       #002B51;
+      --navy-80:    #335574;
+      --navy-40:    #99AAB9;
+      --navy-20:    #CCD5DC;
+
+      --jade:       #3EB661;
+      --jade-80:    #65C581;
+      --jade-40:    #B2E2C0;
+
+      --ocean:      #0A6F7A;
+      --ocean-80:   #3B8C95;
+      --ocean-40:   #9DC5CA;
+      --ocean-20:   #CEE2E4;
+
+      --aqua:       #4CCACD;
+      --aqua-80:    #70D5D7;
+      --aqua-40:    #B7EBEA;
+
+      --berry:      #D3086F;
+      --berry-40:   #ED9CC5;
+      --berry-20:   #F6CEE2;
+
+      --bg:         #F4F7FA;
+      --surface:    #FFFFFF;
+      --border:     #E2EAF0;
+      --text:       #002B51;
+      --muted:      #335574;
+      --light:      #99AAB9;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: Poppins, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* ── Shell ── */
+    .shell {
+      display: grid;
+      grid-template-columns: 256px 1fr;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    #sidebar-placeholder {
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    /* ── Canvas: header + kpi-strip + content ── */
+    .canvas {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      height: 100vh;
+      overflow: hidden;
+      padding: 18px 22px 14px;
+      gap: 10px;
+      background: var(--bg);
+    }
+
+    /* ── Header ── */
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-title { font-size: 17px; font-weight: 700; letter-spacing: -.02em; color: var(--navy); }
+    .page-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border: 1px solid var(--border);
+      background: var(--surface); border-radius: 999px;
+      font-size: 11px; color: var(--muted); text-decoration: none;
+      cursor: pointer; transition: background .15s;
+    }
+    .pill:hover { background: var(--blue-20); }
+
+    .btn { border-radius: 8px; padding: 6px 13px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; cursor: pointer; border: none; }
+    .btn-ghost   { background: var(--surface); border: 1px solid var(--border); color: var(--navy); }
+    .btn-ghost:hover { background: var(--blue-20); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--navy-80); }
+
+    /* ── KPI strip ── */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 13px;
+      border-top: 3px solid var(--blue);
+      box-shadow: 0 1px 4px rgba(0,43,81,.05);
+    }
+
+    .kpi-card:nth-child(2) { border-top-color: var(--ocean); }
+    .kpi-card:nth-child(3) { border-top-color: var(--berry); }
+    .kpi-card:nth-child(4) { border-top-color: var(--jade); }
+    .kpi-card:nth-child(5) { border-top-color: var(--aqua); }
+
+    .kpi-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--light); }
+    .kpi-value { font-size: 20px; font-weight: 700; letter-spacing: -.02em; color: var(--navy); margin: 4px 0 2px; line-height: 1; }
+    .kpi-sub   { font-size: 10px; color: var(--muted); }
+
+    /* ── Content area ── */
+    .content-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 10px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,43,81,.06);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .card-header {
+      padding: 9px 14px 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to right, var(--blue-20), var(--surface));
+      flex-shrink: 0;
+    }
+
+    .card-title { font-size: 11px; font-weight: 700; color: var(--navy); }
+    .card-sub   { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+    .card-body {
+      padding: 10px 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* chart fills remaining space */
+    .chart-box { position: relative; flex: 1; min-height: 0; }
+    .chart-box canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+    /* ── Table styles ── */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--light); font-weight: 700; padding: 5px 8px;
+      border-bottom: 2px solid var(--blue-20); text-align: left;
+      position: sticky; top: 0; background: var(--surface); z-index: 1;
+    }
+    .data-table th.r { text-align: right; }
+    .data-table td {
+      padding: 5px 8px; font-size: 11px; color: var(--muted);
+      border-bottom: 1px solid var(--blue-20);
+    }
+    .data-table td.strong { font-weight: 600; color: var(--navy); }
+    .data-table td.r { text-align: right; font-weight: 600; color: var(--navy); }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--blue-20); }
+
+    .table-scroll { overflow-y: auto; flex: 1; min-height: 0; }
+    .table-scroll::-webkit-scrollbar { width: 3px; }
+    .table-scroll::-webkit-scrollbar-thumb { background: var(--blue-40); border-radius: 2px; }
+
+    /* ── Metric rows (key metrics card) ── */
+    .metric-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+
+    .metric-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--light); }
+    .metric-val { font-size: 13px; font-weight: 700; color: var(--navy); margin-top: 1px; }
+    .metric-sub-lbl { font-size: 10px; color: var(--light); text-align: right; }
+    .metric-sub-val { font-size: 12px; font-weight: 600; color: var(--muted); text-align: right; margin-top: 1px; }
+
+    /* ── Top sector legend ── */
+    .sector-legend { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; margin-top: 6px; }
+    .sector-leg-row { display: flex; align-items: center; justify-content: space-between; font-size: 10px; }
+    .sector-leg-bar { flex: 1; height: 3px; border-radius: 2px; margin: 0 8px; background: var(--border); overflow: hidden; }
+    .sector-leg-fill { height: 100%; border-radius: 2px; }
+
+    @media (max-width: 767px) {
+      .shell { grid-template-columns: 1fr; }
+      #sidebar-placeholder { display: none; }
+      .canvas { grid-column: 1; }
+      .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+      .content-area { grid-template-columns: 1fr; grid-template-rows: repeat(6, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      try {
+        const res = await fetch("/bdc/htgc/sidebar.html");
+        document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+        window.toggleSection = function(id) {
+          const s=document.getElementById(id), ic=document.getElementById("icon-"+id);
+          if(!s||!ic) return;
+          s.classList.toggle("hidden");
+          ic.style.transform=s.classList.contains("hidden")?"rotate(0deg)":"rotate(90deg)";
+          localStorage.setItem("sidebar-open-section",id);
+        };
+        const last=localStorage.getItem("sidebar-open-section");
+        if(last){const s=document.getElementById(last),ic=document.getElementById("icon-"+last);if(s&&ic){s.classList.remove("hidden");ic.style.transform="rotate(90deg)";}}
+      } catch(e){}
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CANVAS -->
+  <main class="canvas">
+
+    <!-- HEADER -->
+    <div class="header-row">
+      <div>
+        <div class="page-title">BDC Overview — HTGC</div>
+        <div class="page-sub">One-screen snapshot: portfolio size, non-accruals, rates, concentration, and trends &nbsp;·&nbsp; Hercules Capital</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="pill" id="asof-pill">As of —</span>
+        <a class="pill" id="sec-link" href="#" target="_blank">SEC / 10-K / 10-Q ↗</a>
+        <button class="btn btn-ghost" onclick="window.print()">Print</button>
+      </div>
+    </div>
+
+    <!-- KPI STRIP -->
+    <div class="kpi-strip">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Positions</div>
+        <div class="kpi-value" id="kpi-positions">—</div>
+        <div class="kpi-sub">Debt + equity / warrants</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Debt Portfolio (FV)</div>
+        <div class="kpi-value" id="kpi-debt-fv">—</div>
+        <div class="kpi-sub" id="kpi-debt-yoy">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Non-Accrual Rate</div>
+        <div class="kpi-value" id="kpi-nonaccrual">—</div>
+        <div class="kpi-sub" id="kpi-nonaccrual-detail">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">3M SOFR</div>
+        <div class="kpi-value" id="kpi-sofr">—</div>
+        <div class="kpi-sub" id="kpi-sofr-chg">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">NAV / Share</div>
+        <div class="kpi-value" id="kpi-nav">—</div>
+        <div class="kpi-sub" id="kpi-price-pnav">—</div>
+      </div>
+    </div>
+
+    <!-- CONTENT: 3-col × 2-row grid -->
+    <div class="content-area">
+
+      <!-- [R1C1] Debt trend chart — spans 2 cols -->
+      <div class="card" style="grid-column: 1 / 3;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Debt portfolio fair value — trend</div>
+            <div class="card-sub">Quarterly snapshot from filings (placeholder data)</div>
+          </div>
+          <span class="pill">$B</span>
+        </div>
+        <div class="card-body">
+          <div class="chart-box">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- [R1C3] Sector donut -->
+      <div class="card" style="grid-column: 3;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Portfolio concentration</div>
+            <div class="card-sub">% of debt FV by sector</div>
+          </div>
+          <span class="pill" id="sector-count">— sectors</span>
+        </div>
+        <div class="card-body" style="gap:6px;">
+          <div class="chart-box" style="flex: 0 0 55%;">
+            <canvas id="sectorChart"></canvas>
+          </div>
+          <div class="sector-legend" id="sector-legend"></div>
+        </div>
+      </div>
+
+      <!-- [R2C1] Top positions table -->
+      <div class="card" style="grid-column: 1 / 3;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Top positions by principal</div>
+            <div class="card-sub">Swap principal → FV once fair values are loaded</div>
+          </div>
+          <span class="pill">Sample data</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-scroll" style="padding: 0 4px;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Industry</th>
+                  <th>Type</th>
+                  <th class="r">Principal ($k)</th>
+                  <th>Maturity</th>
+                </tr>
+              </thead>
+              <tbody id="positions-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- [R2C3] Key metrics -->
+      <div class="card" style="grid-column: 3;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Key metrics</div>
+            <div class="card-sub">Quick read — wire to EDGAR parses later</div>
+          </div>
+        </div>
+        <div class="card-body" style="gap:6px;justify-content:center;">
+          <div class="metric-row">
+            <div><div class="metric-lbl">Debt FV</div><div class="metric-val" id="km-debt">—</div></div>
+            <div><div class="metric-sub-lbl">YoY</div><div class="metric-sub-val" id="km-debt-yoy">—</div></div>
+          </div>
+          <div class="metric-row">
+            <div><div class="metric-lbl">Non-Accrual %</div><div class="metric-val" id="km-na">—</div></div>
+            <div><div class="metric-sub-lbl">Prior</div><div class="metric-sub-val" id="km-na-prior">—</div></div>
+          </div>
+          <div class="metric-row">
+            <div><div class="metric-lbl">3M SOFR</div><div class="metric-val" id="km-sofr">—</div></div>
+            <div><div class="metric-sub-lbl">Change</div><div class="metric-sub-val" id="km-sofr-chg">—</div></div>
+          </div>
+          <div class="metric-row">
+            <div><div class="metric-lbl">NAV / Share</div><div class="metric-val" id="km-nav">—</div></div>
+            <div><div class="metric-sub-lbl">P/NAV</div><div class="metric-sub-val" id="km-pnav">—</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </main>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+const OVERVIEW = {
+  asOf: "Dec 31, 2025",
+  secUrl: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HTGC",
+  totalPositions: 138,
+  debtFairValue: 4.28,
+  debtYoY: "+193.1% of NAV",
+  nonAccrualRate: 0.14,
+  nonAccrualDetail: "vs 0.52% prior year",
+  sofr3m: 3.65,
+  sofrChange: "−66 bps since Dec '24",
+  navPerShare: 11.76,
+  price: 22.19,
+  pnav: 1.89,
+  sectorMix: [
+    { sector:"Application Software",    pct:25.0 },
+    { sector:"Drug Discovery & Dev.",    pct:23.3 },
+    { sector:"Healthcare Services",      pct:19.3 },
+    { sector:"System Software",          pct:10.7 },
+    { sector:"Consumer & Business Svcs", pct:10.2 },
+    { sector:"Defense Technologies",     pct:3.2  },
+    { sector:"Medical Devices",          pct:1.7  },
+    { sector:"Other",                    pct:6.6  }
+  ],
+  debtTrend: {
+    labels: ["Q1 '24","Q2 '24","Q3 '24","Q4 '24","Q1 '25","Q2 '25","Q3 '25","Q4 '25"],
+    values: [3.20, 3.35, 3.42, 3.43, 3.60, 3.75, 3.92, 4.28]
+  },
+  topPositions: [
+    { company:"Marathon Health, LLC",          industry:"Healthcare Services", type:"Senior Secured", principal:178230, maturity:"Feb 2029" },
+    { company:"Phathom Pharmaceuticals, Inc.", industry:"Drug Discovery",      type:"Senior Secured", principal:140460, maturity:"Dec 2027" },
+    { company:"ChenMed, LLC",                  industry:"Healthcare Services", type:"Senior Secured", principal:130000, maturity:"May 2030" },
+    { company:"Shield AI, Inc.",               industry:"Defense Tech",        type:"Senior Secured", principal:116675, maturity:"Feb 2029" },
+    { company:"Armis, Inc.",                   industry:"System Software",     type:"Senior Secured", principal:101183, maturity:"Mar 2028" },
+    { company:"Tipalti Solutions Ltd.",        industry:"Application Software",type:"Senior Secured", principal:98500,  maturity:"Apr 2029" },
+    { company:"DocPlanner",                    industry:"Application Software",type:"Senior Secured", principal:82000,  maturity:"Jan 2030" },
+  ]
+};
+
+const $ = id => document.getElementById(id);
+
+// ── KPIs ─────────────────────────────────────────────────────────
+$("asof-pill").textContent = `As of ${OVERVIEW.asOf}`;
+$("sec-link").href = OVERVIEW.secUrl;
+
+$("kpi-positions").textContent    = OVERVIEW.totalPositions.toLocaleString();
+$("kpi-debt-fv").textContent      = `$${OVERVIEW.debtFairValue.toFixed(2)}B`;
+$("kpi-debt-yoy").textContent     = OVERVIEW.debtYoY;
+$("kpi-nonaccrual").textContent   = `${OVERVIEW.nonAccrualRate.toFixed(2)}%`;
+$("kpi-nonaccrual-detail").textContent = OVERVIEW.nonAccrualDetail;
+$("kpi-sofr").textContent         = `${OVERVIEW.sofr3m.toFixed(2)}%`;
+$("kpi-sofr-chg").textContent     = OVERVIEW.sofrChange;
+$("kpi-nav").textContent          = `$${OVERVIEW.navPerShare.toFixed(2)}`;
+$("kpi-price-pnav").textContent   = `Mkt $${OVERVIEW.price.toFixed(2)} · P/NAV ${OVERVIEW.pnav.toFixed(2)}x`;
+
+$("km-debt").textContent          = `$${OVERVIEW.debtFairValue.toFixed(2)}B`;
+$("km-debt-yoy").textContent      = OVERVIEW.debtYoY;
+$("km-na").textContent            = `${OVERVIEW.nonAccrualRate.toFixed(2)}%`;
+$("km-na-prior").textContent      = OVERVIEW.nonAccrualDetail.replace("vs ","");
+$("km-sofr").textContent          = `${OVERVIEW.sofr3m.toFixed(2)}%`;
+$("km-sofr-chg").textContent      = OVERVIEW.sofrChange;
+$("km-nav").textContent           = `$${OVERVIEW.navPerShare.toFixed(2)}`;
+$("km-pnav").textContent          = `${OVERVIEW.pnav.toFixed(2)}x`;
+
+// ── POSITIONS TABLE ───────────────────────────────────────────────
+$("positions-tbody").innerHTML = OVERVIEW.topPositions.map(r=>`
+  <tr>
+    <td class="strong">${r.company}</td>
+    <td>${r.industry}</td>
+    <td>${r.type}</td>
+    <td class="r">${r.principal.toLocaleString()}</td>
+    <td>${r.maturity}</td>
+  </tr>`).join("");
+
+// ── SECTOR LEGEND ────────────────────────────────────────────────
+// MS palette cycle for sectors
+const sectorColors = [
+  "#187ABA","#0A6F7A","#3EB661","#4CCACD",
+  "#335574","#4695C8","#3B8C95","#99AAB9"
+];
+
+const top3 = [...OVERVIEW.sectorMix].sort((a,b)=>b.pct-a.pct).slice(0,4);
+$("sector-legend").innerHTML = top3.map((s,i)=>`
+  <div class="sector-leg-row">
+    <span style="color:var(--muted);font-size:10px;min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.sector}</span>
+    <div class="sector-leg-bar"><div class="sector-leg-fill" style="width:${s.pct/25*100}%;background:${sectorColors[i]};"></div></div>
+    <span style="font-size:10px;font-weight:700;color:var(--navy);min-width:32px;text-align:right;">${s.pct.toFixed(1)}%</span>
+  </div>`).join("");
+
+// ── CHARTS ───────────────────────────────────────────────────────
+
+// Trend line — MS Blue with ocean fill
+new Chart(document.getElementById("trendChart"), {
+  type: "line",
+  data: {
+    labels: OVERVIEW.debtTrend.labels,
+    datasets: [{
+      label: "Debt FV ($B)",
+      data: OVERVIEW.debtTrend.values,
+      tension: 0.38,
+      fill: true,
+      borderColor: "#187ABA",
+      borderWidth: 2.5,
+      backgroundColor: (ctx) => {
+        const chart = ctx.chart;
+        const {ctx: c, chartArea} = chart;
+        if (!chartArea) return "transparent";
+        const grad = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+        grad.addColorStop(0, "#A3CAE388");
+        grad.addColorStop(1, "#D1E4F100");
+        return grad;
+      },
+      pointBackgroundColor: "#187ABA",
+      pointBorderColor: "#fff",
+      pointBorderWidth: 2,
+      pointRadius: 5,
+      pointHoverRadius: 7
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 10 }, color: "#335574" }
+      },
+      y: {
+        grid: { color: "#D1E4F1" },
+        ticks: { callback: v=>`$${v}B`, font: { size: 10 }, color: "#335574" }
+      }
+    },
+    animation: { duration: 600 }
+  }
+});
+
+// Sector donut — MS palette
+const sectorLabels = OVERVIEW.sectorMix.map(s=>s.sector);
+const sectorPcts   = OVERVIEW.sectorMix.map(s=>s.pct);
+$("sector-count").textContent = `${sectorLabels.length} sectors`;
+
+new Chart(document.getElementById("sectorChart"), {
+  type: "doughnut",
+  data: {
+    labels: sectorLabels,
+    datasets: [{
+      data: sectorPcts,
+      backgroundColor: sectorColors,
+      borderWidth: 2,
+      borderColor: "#fff"
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false }
+    },
+    cutout: "65%",
+    animation: { duration: 600 }
+  }
+});
+</script>
+
+</body>
+</html>
