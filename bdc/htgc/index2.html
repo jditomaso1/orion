@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+
+    .btn { border-radius:12px; padding:10px 14px; font-weight:600; font-size:13px; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#fff; border:1px solid #e5e7eb; color:#111827; }
+    .btn-ghost:hover { background:#f9fafb; }
+    .btn-soft { background:#eff6ff; border:1px solid #bfdbfe; color:#1d4ed8; }
+    .btn-soft:hover { background:#dbeafe; }
+
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px; padding: 2px 6px; border-radius: 8px;
+      border: 1px solid #e5e7eb; background: #fff; color: #111827;
+      white-space: nowrap;
+    }
+
+    .checkdot{
+      width:18px;height:18px;border-radius:999px;
+      display:inline-grid; place-items:center;
+      background: rgba(16,185,129,.12);
+      border:1px solid rgba(16,185,129,.30);
+      color: #059669;
+      font-weight:800;
+      font-size:12px;
+      line-height:1;
+      flex: 0 0 auto;
+    }
+    @media (max-width: 767px) {
+      #sidebar-placeholder { display: none; }
+    }
+    html, body { overflow-x: hidden; }
+    main { min-width: 0; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      // HTGC BDC sidebar
+      const res = await fetch("/bdc/htgc/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      // allow sidebar.html to call toggleSection()
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      // restore last open section
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1200px] mx-auto md:mx-0 space-y-6">
+
+    <!-- HERO -->
+    <section class="space-y-3">
+      <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Welcome to Orion • BDC Intelligence</h1>
+
+      <div class="mt-2 bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+        <div class="text-sm text-gray-700">
+          Orion for BDCs turns public filings into a structured portfolio database — trends, non-accruals, exposures, and risk signals — with fast drilldowns.
+        </div>
+        <span class="pill">BDC • Hercules Capital (HTGC)</span>
+      </div>
+    </section>
+
+    <!-- WHAT IT DOES + QUICKSTART -->
+    <section class="grid grid-cols-12 gap-6">
+
+      <!-- LEFT -->
+      <div class="col-span-12 lg:col-span-8 space-y-6">
+
+        <div class="cardish p-6">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <div class="text-sm font-semibold">What Orion does for BDCs</div>
+              <div class="text-xs muted mt-1">A portfolio intelligence layer — not a generic chatbot.</div>
+            </div>
+            <span class="pill">EDGAR • Schedule of Investments • Monitoring</span>
+          </div>
+
+          <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border rounded-2xl p-4 bg-white">
+              <div class="text-sm font-semibold">Builds a clean portfolio database</div>
+              <div class="text-xs muted mt-2">
+                Parses 10-Q / 10-K Schedules of Investments into a normalized position-level dataset.
+              </div>
+            </div>
+            <div class="border rounded-2xl p-4 bg-white">
+              <div class="text-sm font-semibold">Tracks trends quarter-over-quarter</div>
+              <div class="text-xs muted mt-2">
+                Follow marks, spreads/yields, maturities, and position changes across reporting periods.
+              </div>
+            </div>
+            <div class="border rounded-2xl p-4 bg-white">
+              <div class="text-sm font-semibold">Non-accrual + credit quality monitor</div>
+              <div class="text-xs muted mt-2">
+                Dedicated view of non-accruals, markdown history, and repeat stress names.
+              </div>
+            </div>
+            <div class="border rounded-2xl p-4 bg-white">
+              <div class="text-sm font-semibold">Benchmarking & comparables</div>
+              <div class="text-xs muted mt-2">
+                Compare HTGC to peer BDCs on concentration, yield, credit quality, and origination terms.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cardish p-6">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <div class="text-sm font-semibold">Quickstart</div>
+              <div class="text-xs muted mt-1">Three clicks to understand the HTGC build.</div>
+            </div>
+            <span class="pill">Start here</span>
+          </div>
+
+          <div class="mt-5 space-y-3 text-sm text-gray-800">
+            <div class="flex items-start gap-3">
+              <span class="checkdot">1</span>
+              <div>
+                Open <span class="kbd">Portfolio</span> to view HTGC’s position-level dataset.
+                <div class="text-xs muted mt-1">Start with: sector, instrument type, fair value vs. cost.</div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <span class="checkdot">2</span>
+              <div>
+                Review <span class="kbd">Trends</span> to see quarter-over-quarter movement.
+                <div class="text-xs muted mt-1">Look for repeated markdowns and new/exit activity.</div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <span class="checkdot">3</span>
+              <div>
+                Check <span class="kbd">Non-Accruals</span> for stressed names and recovery path.
+                <div class="text-xs muted mt-1">This is the fastest “credit smell test” for a BDC.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <a class="btn btn-primary" href="/bdc/htgc/portfolio/portfolio.html">Open Portfolio</a>
+            <a class="btn btn-ghost" href="/bdc/htgc/trends/trends.html">View Trends</a>
+            <a class="btn btn-ghost" href="/bdc/htgc/non-accruals/non-accruals.html">Non-Accruals</a>
+          </div>
+
+          <div class="mt-4 text-xs muted">
+            Tip: Use the left sidebar to explore modules (Overview, Construction, Origination & Exits, News, Comps, Neural Network, OrionGPT).
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT RAIL -->
+      <aside class="col-span-12 lg:col-span-4 space-y-6">
+
+        <div class="cardish p-6">
+          <div class="text-sm font-semibold">Suggested first clicks</div>
+          <div class="text-xs muted mt-1">If you’re new, do this in order.</div>
+
+          <div class="mt-4 space-y-3 text-sm">
+            <a href="/bdc/htgc/overview/overview.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+              <div class="font-semibold">Overview</div>
+              <div class="text-xs muted mt-1">HTGC snapshot: portfolio mix, risk flags, key metrics.</div>
+            </a>
+
+            <a href="/bdc/htgc/portfolio/portfolio.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+              <div class="font-semibold">Portfolio</div>
+              <div class="text-xs muted mt-1">Every position, cleaned and structured.</div>
+            </a>
+
+            <a href="/bdc/htgc/trends/trends.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+              <div class="font-semibold">Trends</div>
+              <div class="text-xs muted mt-1">Quarter-over-quarter changes: marks, adds, exits, drift.</div>
+            </a>
+          </div>
+        </div>
+
+        <div class="cardish p-6">
+          <div class="text-sm font-semibold">How to use Orion for BDCs (one sentence)</div>
+          <div class="text-xs muted mt-2">
+            Start with the portfolio, look for drift and stress, then benchmark against peers to understand relative risk-taking.
+          </div>
+
+          <div class="mt-4 border rounded-2xl p-4 bg-white text-sm text-gray-800">
+            <div class="font-semibold text-sm">Example questions</div>
+            <ul class="mt-2 list-disc pl-5 space-y-1 text-xs muted">
+              <li>“Which positions have been marked down for 2+ consecutive quarters?”</li>
+              <li>“What’s the maturity wall over the next 24 months?”</li>
+              <li>“Which sectors drive the most concentration risk?”</li>
+              <li>“How do HTGC yields compare to peers?”</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="cardish p-6">
+          <div class="text-sm font-semibold">Account</div>
+          <div class="text-xs muted mt-1">Billing and access live here.</div>
+          <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <a class="btn btn-ghost w-full text-center" href="/bdc/htgc/pricing/pricing.html">Pricing</a>
+            <a class="btn btn-ghost w-full text-center" href="/bdc/htgc/contact/contact.html">Contact</a>
+          </div>
+        </div>
+
+      </aside>
+    </section>
+
+    <!-- OPTIONAL: FOOTER CARD -->
+    <section class="cardish p-6">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <div class="text-sm font-semibold">This is a BDC build</div>
+          <div class="text-xs muted mt-1">
+            The HTGC instance shows how Orion structures EDGAR data into a monitoring-grade portfolio intelligence layer.
+          </div>
+        </div>
+        <span class="pill">More BDCs soon</span>
+      </div>
+    </section>
+
+    </div>
+  </main>
+
+  <!-- Ask Orion Bot include -->
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat() {
+      // HTGC include path (update if you keep a shared include elsewhere)
+      const res = await fetch("/bdc/htgc/includes/orion-chat.html");
+      const html = await res.text();
+
+      const container = document.getElementById("orion-chat-include");
+      container.innerHTML = html;
+
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+        oldScript.remove();
+      });
+    }
+    loadOrionChat();
+  </script>
+
+</body>
+</html>
