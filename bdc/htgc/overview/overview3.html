@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BDC • HTGC • Overview</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .cardish { background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); }
+    .muted { color:#6b7280; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border:1px solid #e5e7eb; background:#f9fafb; border-radius:999px; font-size:12px; color:#111827; }
+
+    .kpi { border:1px solid #e5e7eb; border-radius:16px; background:#fff; }
+    .kpi-label { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#6b7280; font-weight:600; }
+    .kpi-value { font-size:22px; font-weight:700; letter-spacing:-.02em; }
+    .kpi-sub { font-size:12px; color:#6b7280; }
+
+    @media (max-width: 767px) { #sidebar-placeholder { display:none; } }
+    html, body { overflow-x:hidden; }
+    main { min-width:0; }
+    canvas { max-height: 280px; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      // IMPORTANT: this path must exist on your host
+      const res = await fetch("/bdc/htgc/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      // If your sidebar already defines toggleSection, you can remove this block.
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+        if (section && icon) {
+          section.classList.remove("hidden");
+          icon.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN -->
+  <main class="w-full p-4 md:p-8 md:ml-64">
+    <div class="max-w-[1400px] mx-auto md:mx-0 space-y-6">
+
+      <!-- HEADER -->
+      <section class="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">BDC Overview — HTGC</h1>
+          <div class="text-sm muted mt-1">One-screen snapshot: portfolio size, non-accruals, rates, concentration, and trends.</div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="pill" id="asof-pill">As of —</span>
+          <a class="pill hover:bg-gray-100" href="#" id="sec-link">SEC / 10-K / 10-Q</a>
+          <button class="pill hover:bg-gray-100" onclick="window.print()">Print</button>
+        </div>
+      </section>
+
+      <!-- KPI STRIP -->
+      <section class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 md:col-span-4 lg:col-span-3 kpi p-4">
+          <div class="kpi-label">Total positions</div>
+          <div class="kpi-value mt-1" id="kpi-positions">—</div>
+          <div class="kpi-sub mt-1">Debt + equity/warrants</div>
+        </div>
+
+        <div class="col-span-12 md:col-span-4 lg:col-span-3 kpi p-4">
+          <div class="kpi-label">Debt portfolio (FV)</div>
+          <div class="kpi-value mt-1" id="kpi-debt-fv">—</div>
+          <div class="kpi-sub mt-1" id="kpi-debt-yoy">—</div>
+        </div>
+
+        <div class="col-span-12 md:col-span-4 lg:col-span-2 kpi p-4">
+          <div class="kpi-label">Non-accrual rate</div>
+          <div class="kpi-value mt-1" id="kpi-nonaccrual">—</div>
+          <div class="kpi-sub mt-1" id="kpi-nonaccrual-detail">—</div>
+        </div>
+
+        <div class="col-span-12 md:col-span-6 lg:col-span-2 kpi p-4">
+          <div class="kpi-label">3M SOFR</div>
+          <div class="kpi-value mt-1" id="kpi-sofr">—</div>
+          <div class="kpi-sub mt-1" id="kpi-sofr-chg">—</div>
+        </div>
+
+        <div class="col-span-12 md:col-span-6 lg:col-span-2 kpi p-4">
+          <div class="kpi-label">NAV / share</div>
+          <div class="kpi-value mt-1" id="kpi-nav">—</div>
+          <div class="kpi-sub mt-1" id="kpi-price-pnav">—</div>
+        </div>
+      </section>
+
+      <!-- CHARTS ROW -->
+      <section class="grid grid-cols-12 gap-6">
+        <!-- Trend -->
+        <div class="col-span-12 lg:col-span-7 cardish p-6">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Debt portfolio fair value — trend</div>
+              <div class="text-xs muted mt-1">Quarterly snapshot from filings (placeholder sample data below).</div>
+            </div>
+            <span class="pill" id="trend-unit">$B</span>
+          </div>
+          <div class="mt-4">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Concentration -->
+        <div class="col-span-12 lg:col-span-5 cardish p-6">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Portfolio concentration</div>
+              <div class="text-xs muted mt-1">% of debt FV by sector</div>
+            </div>
+            <span class="pill" id="sector-count">— sectors</span>
+          </div>
+          <div class="mt-4">
+            <canvas id="sectorChart"></canvas>
+          </div>
+
+          <div class="mt-4 border rounded-2xl p-4 bg-white">
+            <div class="text-xs muted">Top concentration</div>
+            <div class="mt-2 text-sm" id="top-sector-lines">—</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABLES ROW -->
+      <section class="grid grid-cols-12 gap-6">
+        <!-- Top positions -->
+        <div class="col-span-12 lg:col-span-7 cardish p-6">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div class="text-sm font-semibold">Top positions by principal (sample)</div>
+              <div class="text-xs muted mt-1">Swap principal → FV later once you load fair values.</div>
+            </div>
+            <span class="pill">Export later</span>
+          </div>
+
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="text-xs uppercase text-gray-500">
+                <tr class="border-b">
+                  <th class="py-2 text-left">Company</th>
+                  <th class="py-2 text-left">Industry</th>
+                  <th class="py-2 text-left">Type</th>
+                  <th class="py-2 text-right">Principal ($k)</th>
+                  <th class="py-2 text-left">Maturity</th>
+                </tr>
+              </thead>
+              <tbody id="top-positions-body" class="divide-y"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Key metrics -->
+        <div class="col-span-12 lg:col-span-5 cardish p-6">
+          <div class="text-sm font-semibold">Key metrics</div>
+          <div class="text-xs muted mt-1">Quick read for investors.</div>
+
+          <div class="mt-4 space-y-3 text-sm">
+            <div class="flex items-center justify-between border rounded-2xl p-4 bg-white">
+              <div>
+                <div class="text-xs muted">Debt FV</div>
+                <div class="font-semibold" id="km-debt">—</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs muted">YoY</div>
+                <div class="font-semibold" id="km-debt-yoy">—</div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between border rounded-2xl p-4 bg-white">
+              <div>
+                <div class="text-xs muted">Non-accrual %</div>
+                <div class="font-semibold" id="km-na">—</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs muted">Prior</div>
+                <div class="font-semibold" id="km-na-prior">—</div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between border rounded-2xl p-4 bg-white">
+              <div>
+                <div class="text-xs muted">3M SOFR</div>
+                <div class="font-semibold" id="km-sofr">—</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs muted">Change</div>
+                <div class="font-semibold" id="km-sofr-chg">—</div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between border rounded-2xl p-4 bg-white">
+              <div>
+                <div class="text-xs muted">NAV / Share</div>
+                <div class="font-semibold" id="km-nav">—</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs muted">P/NAV</div>
+                <div class="font-semibold" id="km-pnav">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 text-xs muted">
+            Next: wire this to EDGAR parses so it auto-updates each quarter.
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // =========================
+    // 1) Replace these with real values from HTGC filings as you parse them
+    // =========================
+    const OVERVIEW = {
+      asOf: "Dec 31, 2025",
+      secUrl: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=HTGC",
+      totalPositions: 138,
+      debtFairValue: 4.28,              // $B
+      debtYoY: "+193.1% of NAV",        // or "+22.5% YoY" etc
+      nonAccrualRate: 0.14,             // %
+      nonAccrualDetail: "vs 0.52% prior year",
+      sofr3m: 3.65,                      // %
+      sofrChange: "-66 bps since Dec ’24",
+      navPerShare: 11.76,
+      price: 22.19,
+      pnav: 1.89,
+      sectorMix: [
+        { sector: "Application Software", pct: 25.0 },
+        { sector: "Drug Discovery & Dev.", pct: 23.3 },
+        { sector: "Healthcare Services", pct: 19.3 },
+        { sector: "System Software", pct: 10.7 },
+        { sector: "Consumer & Business Svcs", pct: 10.2 },
+        { sector: "Defense Technologies", pct: 3.2 },
+        { sector: "Medical Devices", pct: 1.7 },
+        { sector: "Other", pct: 6.6 }
+      ],
+      debtTrend: {
+        labels: ["Q1 '24","Q2 '24","Q3 '24","Q4 '24","Q1 '25","Q2 '25","Q3 '25","Q4 '25"],
+        values: [3.20, 3.35, 3.42, 3.43, 3.60, 3.75, 3.92, 4.28] // $B
+      },
+      topPositions: [
+        { company:"Marathon Health, LLC", industry:"Healthcare Services", type:"Senior Secured", principal:178230, maturity:"Feb 2029" },
+        { company:"Phathom Pharmaceuticals, Inc.", industry:"Drug Discovery", type:"Senior Secured", principal:140460, maturity:"Dec 2027" },
+        { company:"ChenMed, LLC", industry:"Healthcare Services", type:"Senior Secured", principal:130000, maturity:"May 2030" },
+        { company:"Shield AI, Inc.", industry:"Defense Technologies", type:"Senior Secured", principal:116675, maturity:"Feb 2029" },
+        { company:"Armis, Inc.", industry:"System Software", type:"Senior Secured", principal:101183, maturity:"Mar 2028" }
+      ]
+    };
+
+    // =========================
+    // 2) Render KPIs
+    // =========================
+    const $ = (id) => document.getElementById(id);
+
+    $("asof-pill").textContent = `As of ${OVERVIEW.asOf}`;
+    $("sec-link").href = OVERVIEW.secUrl;
+
+    $("kpi-positions").textContent = OVERVIEW.totalPositions.toLocaleString();
+    $("kpi-debt-fv").textContent = `$${OVERVIEW.debtFairValue.toFixed(2)}B`;
+    $("kpi-debt-yoy").textContent = OVERVIEW.debtYoY;
+
+    $("kpi-nonaccrual").textContent = `${OVERVIEW.nonAccrualRate.toFixed(2)}%`;
+    $("kpi-nonaccrual-detail").textContent = OVERVIEW.nonAccrualDetail;
+
+    $("kpi-sofr").textContent = `${OVERVIEW.sofr3m.toFixed(2)}%`;
+    $("kpi-sofr-chg").textContent = OVERVIEW.sofrChange;
+
+    $("kpi-nav").textContent = `$${OVERVIEW.navPerShare.toFixed(2)}`;
+    $("kpi-price-pnav").textContent = `Market: $${OVERVIEW.price.toFixed(2)}  •  P/NAV ${OVERVIEW.pnav.toFixed(2)}x`;
+
+    $("km-debt").textContent = `$${OVERVIEW.debtFairValue.toFixed(2)}B`;
+    $("km-debt-yoy").textContent = OVERVIEW.debtYoY;
+    $("km-na").textContent = `${OVERVIEW.nonAccrualRate.toFixed(2)}%`;
+    $("km-na-prior").textContent = OVERVIEW.nonAccrualDetail.replace("vs ","");
+    $("km-sofr").textContent = `${OVERVIEW.sofr3m.toFixed(2)}%`;
+    $("km-sofr-chg").textContent = OVERVIEW.sofrChange;
+    $("km-nav").textContent = `$${OVERVIEW.navPerShare.toFixed(2)}`;
+    $("km-pnav").textContent = `${OVERVIEW.pnav.toFixed(2)}x`;
+
+    // =========================
+    // 3) Render tables
+    // =========================
+    const tbody = $("top-positions-body");
+    tbody.innerHTML = OVERVIEW.topPositions.map(r => `
+      <tr>
+        <td class="py-2 font-semibold">${r.company}</td>
+        <td class="py-2 text-gray-700">${r.industry}</td>
+        <td class="py-2 text-gray-700">${r.type}</td>
+        <td class="py-2 text-right font-semibold">${r.principal.toLocaleString()}</td>
+        <td class="py-2 text-gray-700">${r.maturity}</td>
+      </tr>
+    `).join("");
+
+    // =========================
+    // 4) Charts
+    // =========================
+    // Trend chart
+    new Chart(document.getElementById("trendChart"), {
+      type: "line",
+      data: {
+        labels: OVERVIEW.debtTrend.labels,
+        datasets: [{
+          label: "Debt FV ($B)",
+          data: OVERVIEW.debtTrend.values,
+          tension: 0.35,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { ticks: { callback: (v)=>`$${v}B` } }
+        }
+      }
+    });
+
+    // Sector donut
+    const sectors = OVERVIEW.sectorMix.map(s => s.sector);
+    const pcts = OVERVIEW.sectorMix.map(s => s.pct);
+
+    $("sector-count").textContent = `${sectors.length} sectors`;
+
+    // Top sector lines
+    const top3 = [...OVERVIEW.sectorMix].sort((a,b)=>b.pct-a.pct).slice(0,3);
+    $("top-sector-lines").innerHTML = top3.map(s =>
+      `<div class="flex items-center justify-between"><span>${s.sector}</span><span class="font-semibold">${s.pct.toFixed(1)}%</span></div>`
+    ).join("");
+
+    new Chart(document.getElementById("sectorChart"), {
+      type: "doughnut",
+      data: {
+        labels: sectors,
+        datasets: [{ data: pcts, borderWidth: 0 }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "right", labels: { boxWidth: 10, boxHeight: 10 } }
+        },
+        cutout: "62%"
+      }
+    });
+  </script>
+
+</body>
+</html>
