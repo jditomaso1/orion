@@ -83,6 +83,7 @@
     .card:hover{
       box-shadow:0 6px 20px rgba(0,0,0,.08);
       transform:translateY(-1px);
+      transition:all .15s;
     }
 
     .card-title{font-weight:600;margin-bottom:6px;}
@@ -106,6 +107,80 @@
       border-radius:10px;
       margin:10px 0;
     }
+
+    /* Sidebar styles */
+    .sidebar-wrap{
+      padding:20px 16px;
+    }
+
+    .sidebar-brand{
+      font-size:18px;
+      font-weight:700;
+      color:#002B51;
+      margin-bottom:20px;
+    }
+
+    .sidebar-section-btn{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      background:none;
+      border:none;
+      padding:10px 8px;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:600;
+      color:#1f2937;
+      text-align:left;
+    }
+
+    .sidebar-section-btn:hover{
+      background:#f3f4f6;
+    }
+
+    .sidebar-icon{
+      transition:transform .2s ease;
+      font-size:12px;
+      color:#6b7280;
+    }
+
+    .sidebar-links{
+      padding:4px 0 10px 8px;
+    }
+
+    .sidebar-links.hidden{
+      display:none;
+    }
+
+    .sidebar-link{
+      display:block;
+      padding:8px 10px;
+      margin:2px 0;
+      border-radius:8px;
+      text-decoration:none;
+      color:#374151;
+      font-size:13px;
+    }
+
+    .sidebar-link:hover{
+      background:#eff6ff;
+      color:#1d4ed8;
+    }
+
+    .sidebar-link.active{
+      background:#dbeafe;
+      color:#1d4ed8;
+      font-weight:600;
+    }
+
+    .sidebar-subtle{
+      margin-top:16px;
+      padding:10px 8px 0;
+      font-size:11px;
+      color:#9ca3af;
+    }
   </style>
 </head>
 
@@ -114,7 +189,33 @@
 <div class="shell">
 
   <!-- SIDEBAR -->
-  <div id="sidebar-placeholder"></div>
+  <aside id="sidebar-placeholder">
+    <div class="sidebar-wrap">
+      <div class="sidebar-brand">Orion</div>
+
+      <button class="sidebar-section-btn" onclick="toggleSection('section-htgc')">
+        <span>HTGC / BDC</span>
+        <span id="icon-section-htgc" class="sidebar-icon">▶</span>
+      </button>
+      <div id="section-htgc" class="sidebar-links">
+        <a href="/bdc/htgc/overview.html" class="sidebar-link">Overview</a>
+        <a href="/bdc/htgc/news.html" class="sidebar-link active">News</a>
+        <a href="/bdc/htgc/neural-map.html" class="sidebar-link">Neural Map</a>
+        <a href="/bdc/htgc/command-center.html" class="sidebar-link">Command Center</a>
+      </div>
+
+      <button class="sidebar-section-btn" onclick="toggleSection('section-tools')">
+        <span>Tools</span>
+        <span id="icon-section-tools" class="sidebar-icon">▶</span>
+      </button>
+      <div id="section-tools" class="sidebar-links hidden">
+        <a href="/index.html" class="sidebar-link">Dashboard</a>
+        <a href="/dnb/neural-map.html" class="sidebar-link">Legacy Neural Map</a>
+      </div>
+
+      <div class="sidebar-subtle">Private Credit AI</div>
+    </div>
+  </aside>
 
   <!-- MAIN -->
   <main class="p-8">
@@ -150,41 +251,48 @@
 
 <script>
 /* =========================
-   SIDEBAR (BULLETPROOF)
+   SIDEBAR TOGGLE
 ========================= */
-async function loadSidebar(){
-  const el = document.getElementById("sidebar-placeholder");
+function toggleSection(id){
+  const section = document.getElementById(id);
+  const icon = document.getElementById("icon-" + id);
 
-  try{
-    const res = await fetch("/bdc/htgc/sidebar.html");
+  if (!section) return;
 
-    if(!res.ok) throw new Error("Sidebar not found");
+  section.classList.toggle("hidden");
 
-    const html = await res.text();
-    el.innerHTML = html;
-
-  } catch(err){
-    console.warn("Sidebar failed — using fallback");
-
-    // 🔥 fallback sidebar (ALWAYS WORKS)
-    el.innerHTML = `
-      <div style="padding:20px">
-        <div style="font-weight:600;margin-bottom:20px;">Orion</div>
-
-        <a href="/index.html" style="display:block;margin-bottom:10px;">Dashboard</a>
-        <a href="/bdc/htgc/news.html" style="display:block;margin-bottom:10px;">HTGC News</a>
-        <a href="/bdc/htgc/neural-map.html" style="display:block;margin-bottom:10px;">Neural Map</a>
-      </div>
-    `;
+  if (icon) {
+    icon.style.transform = section.classList.contains("hidden")
+      ? "rotate(0deg)"
+      : "rotate(90deg)";
   }
+
+  localStorage.setItem("sidebar-open-section", id);
 }
 
-loadSidebar();
+(function restoreSidebarState(){
+  const last = localStorage.getItem("sidebar-open-section");
+  if (!last) {
+    const defaultSection = document.getElementById("section-htgc");
+    const defaultIcon = document.getElementById("icon-section-htgc");
+    if (defaultSection && defaultIcon) {
+      defaultSection.classList.remove("hidden");
+      defaultIcon.style.transform = "rotate(90deg)";
+    }
+    return;
+  }
+
+  const section = document.getElementById(last);
+  const icon = document.getElementById("icon-" + last);
+  if (section && icon) {
+    section.classList.remove("hidden");
+    icon.style.transform = "rotate(90deg)";
+  }
+})();
 
 /* =========================
    DATA + TAGGING
 ========================= */
-
 const API = '/api/media-feed?query=Hercules%20Capital%20HTGC%20BDC';
 let _items = [];
 
@@ -207,13 +315,12 @@ function inferTagsFromText(text=""){
 /* =========================
    RENDER
 ========================= */
-
 function render(items=_items){
   const top = document.getElementById('top10');
   const feed = document.getElementById('feed');
 
   top.innerHTML = items.slice(0,10).map(i=>`
-    <a class="card" href="${i.url || '#'}" target="_blank">
+    <a class="card" href="${i.url || '#'}" target="_blank" rel="noopener">
       <div class="card-title">${i.title || ''}</div>
       <div class="card-meta">${i.source || ''}</div>
       <div class="card-tags">${(i.tags||[]).join(' · ')}</div>
@@ -221,7 +328,7 @@ function render(items=_items){
   `).join('');
 
   feed.innerHTML = items.map(i=>`
-    <a href="${i.url || '#'}" target="_blank">
+    <a href="${i.url || '#'}" target="_blank" rel="noopener">
       <span>${i.title || ''}</span>
       <span class="right">${i.source || ''}</span>
     </a>
@@ -231,7 +338,6 @@ function render(items=_items){
 /* =========================
    LOAD
 ========================= */
-
 async function load(){
   try{
     const res = await fetch(API);
@@ -247,13 +353,13 @@ async function load(){
 
   } catch(e){
     document.getElementById('loader').innerText='Error loading data';
+    console.error(e);
   }
 }
 
 /* =========================
    FILTERS
 ========================= */
-
 document.querySelectorAll('#filters .pill').forEach(btn=>{
   btn.onclick = ()=>{
     document.querySelectorAll('.pill').forEach(b=>b.classList.remove('pill--active'));
