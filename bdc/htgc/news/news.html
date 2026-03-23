@@ -1,34 +1,39 @@
 <script>
 
 //
-// 🔥 FORCE CLEAN QUERY (prevents backend bleed-through)
+// ✅ KEEP ORIGINAL API (DO NOT CHANGE — THIS WAS BREAKING YOU)
 //
-const API = '/api/media-feed?forceQuery=Hercules%20Capital%20HTGC%20BDC%20private%20credit%20venture%20debt';
+const API = '/api/media-feed?universe=play';
 
 let _items = [];
+const _loader = document.getElementById('loader');
 
 //
-// 🔥 HARD FILTER — removes Dave & Buster’s + irrelevant junk
+// 🔥 SAFE FILTER (won’t kill entire feed)
 //
 function isRelevant(item){
   const t = (item.title || "").toLowerCase();
-  const s = (item.source || "").toLowerCase();
 
-  // ❌ HARD EXCLUDE (your main issue)
-  if (t.includes("dave & buster") || t.includes("play")) return false;
+  // ❌ remove Dave & Buster’s specifically
+  if (t.includes("dave & buster")) return false;
 
-  // ❌ remove obvious non-credit noise
-  if (t.includes("restaurant") || t.includes("arcade") || t.includes("gaming venue")) return false;
+  // ❌ remove generic PLAY ticker noise
+  if (t.includes("ticker: play") || t.includes("play earnings")) return false;
 
-  // ✅ MUST MATCH CREDIT / BDC CONTEXT
-  const relevant =
-    /(htgc|hercules|bdc|business development company|private credit|venture debt|direct lending)/.test(t);
+  // ❌ remove restaurant / arcade junk
+  if (/(arcade|restaurant chain|eatertainment venue)/.test(t)) return false;
 
-  return relevant;
+  // ✅ allow credit / BDC / HTGC
+  if (/(htgc|hercules|bdc|business development company|private credit|venture debt|direct lending)/.test(t)) {
+    return true;
+  }
+
+  // ⚠️ fallback: KEEP instead of drop (prevents blank page)
+  return true;
 }
 
 //
-// TAG ENGINE (BDC / CREDIT SPECIFIC)
+// TAG ENGINE (unchanged logic)
 //
 function inferTagsFromText(text=""){
   const t = text.toLowerCase();
@@ -47,20 +52,32 @@ function inferTagsFromText(text=""){
 }
 
 //
-// RENDER
+// HELPERS (minimal set to keep your page working)
 //
-function render(items=_items){
-  const top = document.getElementById('top10');
-  const feed = document.getElementById('feed');
+function timeAgo(iso){
+  if (!iso) return '';
+  const d = new Date(iso);
+  const diffMs = Date.now() - d.getTime();
+  const m = Math.round(diffMs/60000);
+  if (m < 60) return `${m}m`;
+  const h = Math.round(m/60);
+  if (h < 24) return `${h}h`;
+  return `${Math.round(h/24)}d`;
+}
 
-  top.innerHTML = items.slice(0,10).map(i=>`
+function renderTop10(items){
+  const el = document.getElementById('top10');
+  el.innerHTML = (items||[]).slice(0,10).map(i=>`
     <div class="card">
       <div class="card-title">${i.title}</div>
-      <div class="card-meta">${i.source || ''}</div>
+      <div class="card-meta">${i.source || ''} · ${timeAgo(i.published_at)}</div>
     </div>
   `).join('');
+}
 
-  feed.innerHTML = items.map(i=>`
+function renderFeed(items){
+  const el = document.getElementById('feed');
+  el.innerHTML = (items||[]).map(i=>`
     <a href="${i.url}" target="_blank">
       <span>${i.title}</span>
       <span>${i.source || ''}</span>
@@ -68,51 +85,65 @@ function render(items=_items){
   `).join('');
 }
 
+function applyFilter(tag="All"){
+  let filtered = _items;
+
+  if(tag !== "All"){
+    filtered = _items.filter(i => (i.tags || []).includes(tag));
+  }
+
+  renderTop10(filtered);
+  renderFeed(filtered);
+}
+
 //
-// LOAD (with filtering)
+// 🔥 LOAD (SAFE VERSION — WILL NOT BREAK PAGE)
 //
-async function load(){
-  try {
-    const res = await fetch(API, { cache: "no-store" });
+async function loadFeed(){
+  try{
+    const res = await fetch(API, { cache: 'no-store' });
     const data = await res.json();
 
-    _items = (data.items || data)
-      .filter(isRelevant) // 🔥 KEY FIX
+    const rawItems = data.items || data || [];
+
+    _items = rawItems
+      .filter(isRelevant) // 🔥 FIX APPLIED HERE
       .map(i=>{
-        return {...i, tags: inferTagsFromText(i.title || '')};
+        const tags = inferTagsFromText(i.title || '');
+        return {...i, tags};
       });
 
-    document.getElementById('loader').style.display = 'none';
-    render();
+    if (!_items.length){
+      document.getElementById('feed').innerHTML =
+        '<div style="color:#6b7280">No relevant stories found.</div>';
+      document.getElementById('top10').innerHTML = '';
+    } else {
+      applyFilter("All");
+    }
 
-  } catch (e) {
-    document.getElementById('loader').innerHTML = "Error loading data";
+    if (_loader) _loader.style.display = 'none';
+
+  } catch(e){
     console.error(e);
+    document.getElementById('feed').innerHTML =
+      '<div style="color:#b91c1c">Error loading feed</div>';
   }
 }
 
 //
 // FILTER UI
 //
-document.querySelectorAll('.pill').forEach(btn=>{
+document.querySelectorAll('#filters .pill').forEach(btn=>{
   btn.onclick = ()=>{
-    document.querySelectorAll('.pill').forEach(b=>b.classList.remove('pill--active'));
+    document.querySelectorAll('#filters .pill').forEach(b=>b.classList.remove('pill--active'));
     btn.classList.add('pill--active');
-
-    const tag = btn.dataset.tag;
-
-    if(tag === "All"){
-      render();
-    } else {
-      const filtered = _items.filter(i => i.tags.includes(tag));
-      render(filtered);
-    }
+    applyFilter(btn.dataset.tag);
   }
 });
 
 //
 // INIT
 //
-load();
+document.addEventListener('DOMContentLoaded', loadFeed);
 
 </script>
