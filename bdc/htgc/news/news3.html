@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion — HTGC / BDC News Dashboard</title>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6GY4CQ6ZFH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6GY4CQ6ZFH');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background:#f5f6f8;
+      margin:0;
+    }
+
+    .shell {
+      display:grid;
+      grid-template-columns:256px 1fr;
+      min-height:100vh;
+    }
+
+    #sidebar-placeholder {
+      background:#fff;
+      border-right:1px solid #e5e7eb;
+      overflow:auto;
+    }
+
+    main {
+      padding:24px;
+      min-width:0;
+    }
+
+    .pill{
+      border:1px solid #d5d8dd;
+      background:#fff;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      cursor:pointer;
+    }
+
+    .pill--active{
+      background:#2c7cf1;
+      color:#fff;
+      border-color:#2c7cf1;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid #eee;
+      border-radius:10px;
+      padding:14px;
+      text-decoration:none;
+      color:#111;
+      display:block;
+    }
+
+    .card:hover{
+      box-shadow:0 6px 20px rgba(0,0,0,.08);
+    }
+
+    .list a{
+      display:flex;
+      justify-content:space-between;
+      padding:10px 0;
+      border-bottom:1px solid #eee;
+      text-decoration:none;
+      color:#111;
+    }
+
+    .loader{
+      padding:10px;
+      background:#fff;
+      border-radius:10px;
+      margin:10px 0;
+    }
+
+    @media(max-width:768px){
+      .shell{grid-template-columns:1fr;}
+      #sidebar-placeholder{display:none;}
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR (IDENTICAL LOGIC) -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+  (async function(){
+    try {
+      const res = await fetch("/bdc/htgc/sidebar.html");
+      if (!res.ok) return;
+
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id){
+        const s = document.getElementById(id);
+        const i = document.getElementById("icon-"+id);
+        if(!s) return;
+
+        s.classList.toggle("hidden");
+
+        if(i){
+          i.style.transform = s.classList.contains("hidden")
+            ? "rotate(0deg)"
+            : "rotate(90deg)";
+        }
+
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if(last){
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-"+last);
+        if(s){
+          s.classList.remove("hidden");
+          if(i) i.style.transform="rotate(90deg)";
+        }
+      }
+
+    } catch(e){
+      console.warn("Sidebar failed");
+    }
+  })();
+  </script>
+
+  <!-- MAIN -->
+  <main>
+
+    <h1 class="text-3xl font-semibold mb-2">
+      Media Hub - HTGC / BDC News
+    </h1>
+
+    <p class="text-gray-600 mb-4">
+      Credit markets / BDC / Hercules Capital intelligence
+    </p>
+
+    <div id="loader" class="loader">Loading...</div>
+
+    <!-- FILTERS -->
+    <nav id="filters" style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0;">
+      <button data-tag="All" class="pill pill--active">All</button>
+      <button data-tag="Credit Markets" class="pill">Credit Markets</button>
+      <button data-tag="BDC" class="pill">BDC</button>
+      <button data-tag="Hercules Capital" class="pill">Hercules Capital</button>
+      <button data-tag="Hercules BDC" class="pill">Hercules BDC</button>
+      <button data-tag="HTGC" class="pill">HTGC</button>
+    </nav>
+
+    <h3 class="text-lg mb-2">Top 10</h3>
+    <div id="top10" class="grid"></div>
+
+    <h3 class="text-lg mt-6 mb-2">All Stories</h3>
+    <div id="feed" class="list"></div>
+
+  </main>
+</div>
+
+<script>
+const API = '/api/media-feed?query=Hercules%20Capital%20HTGC%20BDC';
+
+let _items = [];
+
+function inferTags(text=""){
+  const t = text.toLowerCase();
+  const out = new Set();
+
+  if(/credit|loan|lending|spread/.test(t)) out.add("Credit Markets");
+  if(/bdc|business development/.test(t)) out.add("BDC");
+  if(/hercules capital/.test(t)) out.add("Hercules Capital");
+  if(/htgc/.test(t)) out.add("HTGC");
+
+  if(/hercules.*bdc|bdc.*hercules/.test(t)){
+    out.add("Hercules BDC");
+  }
+
+  return Array.from(out);
+}
+
+function render(items=_items){
+  const top = document.getElementById('top10');
+  const feed = document.getElementById('feed');
+
+  top.innerHTML = items.slice(0,10).map(i=>`
+    <a class="card" href="${i.url}" target="_blank">
+      <div>${i.title}</div>
+      <div class="text-xs text-gray-500">${i.source || ''}</div>
+    </a>
+  `).join('');
+
+  feed.innerHTML = items.map(i=>`
+    <a href="${i.url}" target="_blank">
+      <span>${i.title}</span>
+      <span class="text-xs text-gray-500">${i.source || ''}</span>
+    </a>
+  `).join('');
+}
+
+async function load(){
+  const res = await fetch(API);
+  const data = await res.json();
+
+  _items = (data.items || data).map(i=>{
+    const text = (i.title || '') + ' ' + (i.summary || '');
+    return {...i, tags: inferTags(text)};
+  });
+
+  document.getElementById('loader').style.display='none';
+  render();
+}
+
+document.querySelectorAll('#filters .pill').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('.pill').forEach(b=>b.classList.remove('pill--active'));
+    btn.classList.add('pill--active');
+
+    const tag = btn.dataset.tag;
+
+    if(tag==="All"){
+      render();
+    } else {
+      render(_items.filter(i => (i.tags||[]).includes(tag)));
+    }
+  };
+});
+
+load();
+</script>
+
+</body>
+</html>
