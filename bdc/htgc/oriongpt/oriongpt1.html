@@ -1,0 +1,32 @@
+<script>
+async function injectSidebar() {
+  const res = await fetch("/dnb/sidebar.html");
+  document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+  // REQUIRED for sidebar clicks
+  window.toggleSection = function (id) {
+    const section = document.getElementById(id);
+    const icon = document.getElementById("icon-" + id);
+    if (!section || !icon) return;
+
+    section.classList.toggle("hidden");
+    icon.style.transform = section.classList.contains("hidden")
+      ? "rotate(0deg)"
+      : "rotate(90deg)";
+
+    localStorage.setItem("sidebar-open-section", id);
+  };
+
+  // Restore last open section
+  const last = localStorage.getItem("sidebar-open-section");
+  if (last) {
+    const section = document.getElementById(last);
+    const icon = document.getElementById("icon-" + last);
+    if (section && icon) {
+      section.classList.remove("hidden");
+      icon.style.transform = "rotate(90deg)";
+    }
+  }
+}
+injectSidebar();
+</script>
