@@ -164,18 +164,37 @@ body {
 
   document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
+  // ---- TOGGLE + SAVE STATE ----
   window.toggleSection = function(id){
-    const s=document.getElementById(id);
-    const i=document.getElementById("icon-"+id);
+    const s = document.getElementById(id);
+    const i = document.getElementById("icon-"+id);
     if(!s) return;
 
-    s.classList.toggle("hidden");
+    const isHidden = s.classList.toggle("hidden");
+
     if(i){
-      i.style.transform = s.classList.contains("hidden")
+      i.style.transform = isHidden
         ? "rotate(0deg)"
         : "rotate(90deg)";
     }
+
+    // 🔥 THIS FIXES YOUR ISSUE
+    localStorage.setItem("sidebar-open-section", id);
   };
+
+  // ---- RESTORE OPEN SECTION ----
+  const last = localStorage.getItem("sidebar-open-section");
+
+  if(last){
+    const s = document.getElementById(last);
+    const i = document.getElementById("icon-"+last);
+
+    if(s){
+      s.classList.remove("hidden");
+      if(i) i.style.transform = "rotate(90deg)";
+    }
+  }
+
 })();
 </script>
 
