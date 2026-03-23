@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion — Neural Map</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background:#f5f6f8;
+      margin:0;
+    }
+
+    .shell {
+      display:grid;
+      grid-template-columns:256px 1fr;
+      height:100vh;
+    }
+
+    #sidebar-placeholder {
+      background:#fff;
+      border-right:1px solid #e5e7eb;
+      overflow:auto;
+    }
+
+    main {
+      padding:24px;
+    }
+
+    .card {
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:16px;
+    }
+
+    #plot {
+      width:100%;
+      height:70vh;
+    }
+
+    @media(max-width:768px){
+      .shell{grid-template-columns:1fr;}
+      #sidebar-placeholder{display:none;}
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+  (async function(){
+    try {
+      const res = await fetch("/bdc/htgc/sidebar.html");
+      if (!res.ok) return;
+
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id){
+        const s = document.getElementById(id);
+        const i = document.getElementById("icon-"+id);
+        if(!s) return;
+
+        s.classList.toggle("hidden");
+
+        if(i){
+          i.style.transform = s.classList.contains("hidden")
+            ? "rotate(0deg)"
+            : "rotate(90deg)";
+        }
+
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if(last){
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-"+last);
+        if(s){
+          s.classList.remove("hidden");
+          if(i) i.style.transform="rotate(90deg)";
+        }
+      }
+
+    } catch(e){
+      console.warn("Sidebar failed");
+    }
+  })();
+  </script>
+
+  <!-- MAIN -->
+  <main>
+
+    <div class="card">
+      <h2 class="text-lg font-semibold mb-2">
+        Orion Neural Map — Simulated Credit Network
+      </h2>
+
+      <div id="status" class="text-sm text-gray-500 mb-2">
+        Loading simulation…
+      </div>
+
+      <div id="plot"></div>
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+/* ---------- FAKE NEURAL MAP ---------- */
+
+const NUM_POINTS = 50;
+const K_NEIGHBORS = 2;
+
+// clustered data (looks real)
+function generatePoints(n){
+  const clusters = [
+    {x:-2,y:1},
+    {x:2,y:1},
+    {x:0,y:-2}
+  ];
+
+  const pts = [];
+
+  for(let i=0;i<n;i++){
+    const c = clusters[i % clusters.length];
+
+    pts.push({
+      x: c.x + (Math.random()-0.5)*1.5,
+      y: c.y + (Math.random()-0.5)*1.5,
+      label: "Deal " + (i+1)
+    });
+  }
+
+  return pts;
+}
+
+// connections
+function buildEdges(points,k){
+  const edges=[];
+
+  for(let i=0;i<points.length;i++){
+    const a=points[i];
+    const d=[];
+
+    for(let j=0;j<points.length;j++){
+      if(i===j) continue;
+
+      const b=points[j];
+      const dx=a.x-b.x;
+      const dy=a.y-b.y;
+
+      d.push({j,dist:dx*dx+dy*dy});
+    }
+
+    d.sort((a,b)=>a.dist-b.dist);
+
+    for(let t=0;t<k;t++){
+      edges.push({s:i,t:d[t].j});
+    }
+  }
+
+  return edges;
+}
+
+// render
+function render(){
+  const pts = generatePoints(NUM_POINTS);
+  const edges = buildEdges(pts,K_NEIGHBORS);
+
+  const edgeX=[], edgeY=[];
+
+  edges.forEach(e=>{
+    edgeX.push(pts[e.s].x, pts[e.t].x, null);
+    edgeY.push(pts[e.s].y, pts[e.t].y, null);
+  });
+
+  const edgeTrace = {
+    type:"scattergl",
+    mode:"lines",
+    x:edgeX,
+    y:edgeY,
+    line:{width:1,color:"rgba(0,0,0,0.2)"},
+    hoverinfo:"skip"
+  };
+
+  const nodeTrace = {
+    type:"scattergl",
+    mode:"markers",
+    x:pts.map(p=>p.x),
+    y:pts.map(p=>p.y),
+    text:pts.map(p=>p.label),
+    hovertemplate:"<b>%{text}</b><extra></extra>",
+    marker:{
+      size:10,
+      color:"rgba(53,208,186,0.95)"
+    }
+  };
+
+  Plotly.newPlot("plot",[edgeTrace,nodeTrace],{
+    margin:{l:0,r:0,t:0,b:0},
+    xaxis:{visible:false},
+    yaxis:{visible:false}
+  },{displayModeBar:false});
+
+  document.getElementById("status").innerText =
+    `${NUM_POINTS} nodes · ${edges.length} connections`;
+}
+
+render();
+</script>
+
+</body>
+</html>
