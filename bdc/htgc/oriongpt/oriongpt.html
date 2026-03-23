@@ -143,17 +143,54 @@
 </div>
 
 <script>
-/* ---------- SIDEBAR (SAFE LOAD) ---------- */
+/* ---------- SIDEBAR (FULLY WORKING) ---------- */
 (async function(){
   try {
     const res = await fetch("/bdc/htgc/sidebar.html");
-    if(res.ok){
-      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+    if(!res.ok){
+      console.warn("Sidebar failed to load:", res.status);
+      return;
     }
+
+    const html = await res.text();
+    document.getElementById("sidebar-placeholder").innerHTML = html;
+
+    // ✅ Toggle logic (this was missing)
+    window.toggleSection = function(id){
+      const section = document.getElementById(id);
+      const icon = document.getElementById("icon-" + id);
+
+      if(!section) return;
+
+      section.classList.toggle("hidden");
+
+      if(icon){
+        icon.style.transform = section.classList.contains("hidden")
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
+      }
+
+      localStorage.setItem("sidebar-open", id);
+    };
+
+    // ✅ Restore last open section
+    const last = localStorage.getItem("sidebar-open");
+    if(last){
+      const section = document.getElementById(last);
+      const icon = document.getElementById("icon-" + last);
+
+      if(section){
+        section.classList.remove("hidden");
+        if(icon) icon.style.transform = "rotate(90deg)";
+      }
+    }
+
   } catch(e){
-    console.warn("Sidebar not loaded");
+    console.warn("Sidebar error:", e);
   }
 })();
+</script>
 
 /* ---------- CHAT ---------- */
 const API = "http://127.0.0.1:8000";
