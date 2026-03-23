@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Team Chat — Orion</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6GY4CQ6ZFH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6GY4CQ6ZFH', {
+      app_name: 'orion',
+      page_title: 'Neural Map — Orion',
+      page_path: '/dnb/neural-map.html'
+    });
+  </script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+  <style>
+    html.auth-pending body { visibility: hidden; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6f8;
+    }
+  </style>
+
+  <script>document.documentElement.classList.add('auth-pending');</script>
+  <script src="/dnb/js/guard.js?v=20260115-1" defer></script>
+
+</head>
+
+<body class="flex">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+
+  <script>
+  /* ---------- SIDEBAR (FIXED + ROBUST) ---------- */
+  (async function(){
+    try {
+      const res = await fetch("/bdc/htgc/sidebar.html");
+
+      if (!res.ok) {
+        console.warn("Sidebar failed:", res.status);
+        return;
+      }
+
+      const html = await res.text();
+      document.getElementById("sidebar-placeholder").innerHTML = html;
+
+      // Toggle behavior
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+
+        if (!section) return;
+
+        section.classList.toggle("hidden");
+
+        if (icon) {
+          icon.style.transform = section.classList.contains("hidden")
+            ? "rotate(0deg)"
+            : "rotate(90deg)";
+        }
+
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      // Restore last open section
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const section = document.getElementById(last);
+        const icon = document.getElementById("icon-" + last);
+
+        if (section) {
+          section.classList.remove("hidden");
+          if (icon) icon.style.transform = "rotate(90deg)";
+        }
+      }
+
+    } catch (e) {
+      console.warn("Sidebar load error:", e);
+    }
+  })();
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8 flex flex-col">
+
+    <section class="card neural" aria-labelledby="neural-title">
+      <style>
+        .card.neural{
+          border:1px solid #e6e6e6;border-radius:14px;padding:16px;background:#fff;
+          max-width:1100px;margin-top:24px
+        }
+        .plotWrap{
+          border:1px solid #eee;border-radius:12px;
+          background:#fff;padding:10px;
+        }
+        #plot{width:100%; height:72vh;}
+      </style>
+
+      <h2 id="neural-title">Orion Neural Map — HTGC</h2>
+
+      <div class="plotWrap">
+        <div id="status">Loading…</div>
+        <div id="plot"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- NEURAL MAP -->
+  <script>
+    const DATA_URL = "http://localhost:8000/neural-map";
+
+    async function fetchPoints() {
+      const res = await fetch(DATA_URL);
+      if (!res.ok) throw new Error(res.status);
+      return res.json();
+    }
+
+    function render(points) {
+      Plotly.newPlot("plot", [{
+        type:"scattergl",
+        mode:"markers",
+        x:points.map(p=>p.x),
+        y:points.map(p=>p.y),
+        marker:{size:8}
+      }], {
+        margin:{l:0,r:0,t:0,b:0}
+      });
+    }
+
+    (async ()=>{
+      const status = document.getElementById("status");
+      try {
+        const pts = await fetchPoints();
+        render(pts);
+        status.textContent = `Loaded ${pts.length}`;
+      } catch(e){
+        status.textContent = "Error loading data";
+      }
+    })();
+  </script>
+
+</body>
+</html>
