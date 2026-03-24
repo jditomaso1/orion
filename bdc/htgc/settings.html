@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orion Settings</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Include Sidebar -->
+  <link rel="stylesheet" href="/private-credit/styles.css" />
+
+</head>
+
+<body class="bg-gray-50">
+
+  <!-- 🔥 SIDEBAR -->
+  <!-- Literally paste your sidebar.html here OR use server-side include -->
+  <!--#include virtual="/private-credit/sidebar.html" -->
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/private-credit/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+        localStorage.setItem("sidebar-open-section", id);
+      };
+
+      const last = localStorage.getItem("sidebar-open-section");
+      if (last) {
+        const s = document.getElementById(last);
+        const i = document.getElementById("icon-" + last);
+        if (s && i) {
+          s.classList.remove("hidden");
+          i.style.transform = "rotate(90deg)";
+        }
+      }
+    }
+    injectSidebar();
+  </script>
+  <!-- PAGE WRAPPER SHIFTED FOR SIDEBAR -->
+  <div class="ml-64 p-8">
+
+    <!-- Page Title -->
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Settings</h1>
+
+    <!-- SETTINGS GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- USER INFO -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">User Profile</h2>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Name</label>
+            <input class="w-full border rounded px-3 py-2" placeholder="John Doe" />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">User ID</label>
+            <input class="w-full border rounded px-3 py-2" placeholder="USR-00123" />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Company</label>
+            <input class="w-full border rounded px-3 py-2" placeholder="Acme Capital" />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Company ID</label>
+            <input class="w-full border rounded px-3 py-2" placeholder="CMP-44556" />
+          </div>
+        </div>
+      </div>
+
+      <!-- LLM CONFIGURATION -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">LLM Provider</h2>
+
+        <p class="text-sm text-gray-600 mb-4">
+          Choose which language model your version of Orion should run on.
+        </p>
+
+        <div class="space-y-3">
+          <label class="flex items-center gap-3"><input type="radio" name="llm" /> OpenAI</label>
+          <label class="flex items-center gap-3"><input type="radio" name="llm" /> Anthropic</label>
+          <label class="flex items-center gap-3"><input type="radio" name="llm" /> Grok</label>
+          <label class="flex items-center gap-3"><input type="radio" name="llm" /> Mistral</label>
+          <label class="flex items-center gap-3"><input type="radio" name="llm" /> Cohere</label>
+        </div>
+      </div>
+
+      <!-- DATABASE -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Primary Database</h2>
+
+        <p class="text-sm text-gray-600 mb-4">
+          Select the database Orion uses for structured storage.
+        </p>
+
+        <div class="space-y-3">
+          <label class="flex items-center gap-3"><input type="radio" name="db" /> PostgreSQL</label>
+          <label class="flex items-center gap-3"><input type="radio" name="db" /> Snowflake</label>
+          <label class="flex items-center gap-3"><input type="radio" name="db" /> Local / Embedded</label>
+          <label class="flex items-center gap-3"><input type="radio" name="db" /> MySQL</label>
+        </div>
+      </div>
+
+      <!-- VECTOR DATABASE -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Vector Database</h2>
+
+        <p class="text-sm text-gray-600 mb-4">
+          Choose where embeddings are stored for semantic search & retrieval.
+        </p>
+
+        <div class="space-y-3">
+          <label class="flex items-center gap-3"><input type="radio" name="vectordb" /> Pinecone</label>
+          <label class="flex items-center gap-3"><input type="radio" name="vectordb" /> Weaviate</label>
+          <label class="flex items-center gap-3"><input type="radio" name="vectordb" /> Milvus</label>
+          <label class="flex items-center gap-3"><input type="radio" name="vectordb" /> Local (FAISS)</label>
+        </div>
+      </div>
+
+      <!-- DOCUMENT SOURCES / DRIVE CONNECTION -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Document Sources & Drives
+        </h2>
+
+        <p class="text-sm text-gray-600 mb-4">
+          Connect Orion to your firm’s document repositories. These are used for ingestion,
+          summarization, and credit DNA building.
+        </p>
+
+        <div class="space-y-4">
+          <!-- Google Drive -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Google Drive</p>
+              <p class="text-xs text-gray-500">
+                Recommended for Orion Distiller prototypes and smaller teams.
+              </p>
+            </div>
+            <button
+              class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+
+          <!-- OneDrive / SharePoint -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">OneDrive / SharePoint</p>
+              <p class="text-xs text-gray-500">
+                Common for banks and larger institutions.
+              </p>
+            </div>
+            <button
+              class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+
+          <!-- Local / SFTP / Network Drive -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Local / SFTP / Network Drive</p>
+              <p class="text-xs text-gray-500">
+                Behind-firewall data sources (configured via IT / DevOps).
+              </p>
+            </div>
+            <button
+              class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Configure
+            </button>
+          </div>
+
+          <!-- Status note -->
+          <p class="text-[11px] text-gray-400 border-t pt-3 mt-2">
+            * Buttons are placeholders for now — wire them to your actual OAuth / service
+            accounts when you’re ready.
+          </p>
+        </div>
+      </div>
+
+      <!-- PORTFOLIO POSITION SYSTEMS -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Portfolio Position System
+        </h2>
+      
+        <p class="text-sm text-gray-600 mb-4">
+          Connect Orion to your portfolio accounting / position management system to
+          ingest holdings, trades, and daily marks.
+        </p>
+      
+        <div class="space-y-5">
+      
+          <!-- Allvue -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Allvue / Black Mountain</p>
+              <p class="text-xs text-gray-500">Industry standard for CLOs & credit funds.</p>
+            </div>
+            <button
+              class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100">
+              Connect
+            </button>
+          </div>
+      
+          <!-- Solvas -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Solvas (Moody’s)</p>
+              <p class="text-xs text-gray-500">Administrator & portfolio reporting.</p>
+            </div>
+            <button
+              class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100">
+              Connect
+            </button>
+          </div>
+      
+          <!-- Clearwater -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Clearwater Analytics</p>
+              <p class="text-xs text-gray-500">Daily position files, pricing & accounting.</p>
+            </div>
+            <button
+              class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100">
+              Connect
+            </button>
+          </div>
+      
+          <!-- Geneva -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Geneva (Advent / SS&C)</p>
+              <p class="text-xs text-gray-500">Hedge fund & credit portfolio system.</p>
+            </div>
+            <button
+              class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100">
+              Connect
+            </button>
+          </div>
+      
+          <!-- CSV / Excel -->
+          <div class="pt-4 mt-2 border-t">
+            <p class="text-sm font-medium text-gray-800 mb-1">CSV / Excel Uploads</p>
+            <p class="text-xs text-gray-500 mb-2">Use this if your administrator sends daily export files.</p>
+      
+            <label class="block">
+              <input type="file"
+                     class="w-full text-xs text-gray-700 border rounded px-2 py-1.5 cursor-pointer bg-gray-50 hover:bg-gray-100" />
+            </label>
+          </div>
+      
+        </div>
+      </div>
+      <!-- API KEYS -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">API Keys</h2>
+
+        <div class="space-y-4">
+          <div>
+            <label class="text-sm text-gray-600">OpenAI API Key</label>
+            <input type="password" class="w-full border rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-600">Anthropic API Key</label>
+            <input type="password" class="w-full border rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-600">Pinecone API Key</label>
+            <input type="password" class="w-full border rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-600">Snowflake Token</label>
+            <input type="password" class="w-full border rounded px-3 py-2" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- FINANCIAL DATA PROVIDERS -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Market Data Providers & Pricing APIs
+        </h2>
+      
+        <p class="text-sm text-gray-600 mb-4">
+          Connect Orion to your firm’s market data sources. These enable real-time loan prices,
+          credit spreads, and market intelligence.
+        </p>
+      
+        <div class="space-y-6">
+      
+          <!-- Bloomberg -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Bloomberg API</p>
+              <p class="text-xs text-gray-500">Requires Bloomberg Server API (BLPAPI) entitlement.</p>
+              <input type="password"
+                     placeholder="Bloomberg API Key / SAPI Token"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+      
+          <!-- LSEG / LPC Loan Pricing -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">LSEG Loan Pricing (LPC / Markit)</p>
+              <p class="text-xs text-gray-500">
+                Live & historical pricing for syndicated loans, LSTA/LPC marks.
+              </p>
+              <input type="password"
+                     placeholder="LSEG / LPC API Token"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+      
+          <!-- Refinitiv DataScope -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Refinitiv DataScope</p>
+              <p class="text-xs text-gray-500">
+                Pricing, reference data, identifiers, and corporate actions.
+              </p>
+              <input type="password"
+                     placeholder="Refinitiv App Key"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+      
+          <!-- ICE / Merrill -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">ICE / Merrill Pricing API</p>
+              <p class="text-xs text-gray-500">Corporate loan prices, credit curves, and indices.</p>
+              <input type="password"
+                     placeholder="ICE API Key"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+      
+          <!-- ClearPar / Settlement -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">ClearPar (Settlement)</p>
+              <p class="text-xs text-gray-500">
+                Loan settlement, allocation, trade status, and par activity.
+              </p>
+              <input type="password"
+                     placeholder="ClearPar Auth Token"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Connect
+            </button>
+          </div>
+      
+          <!-- Custom / Other -->
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-800">Custom Market Data API</p>
+              <p class="text-xs text-gray-500">For proprietary or client-specific data feeds.</p>
+              <input type="password"
+                     placeholder="Endpoint or Token"
+                     class="mt-2 w-full border rounded px-3 py-2 text-sm" />
+            </div>
+            <button
+              class="ml-4 px-3 py-1.5 text-xs rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100"
+            >
+              Configure
+            </button>
+          </div>
+      
+        </div>
+      </div>
+      <!-- SYSTEM PREFS -->
+      <div class="bg-white rounded-lg shadow p-6 border">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">System Preferences</h2>
+
+        <div class="space-y-3">
+          <label class="flex items-center gap-3"><input type="checkbox" /> Enable Dark Mode</label>
+          <label class="flex items-center gap-3"><input type="checkbox" /> Auto-save Prompts</label>
+          <label class="flex items-center gap-3"><input type="checkbox" /> Show Developer Tools</label>
+          <label class="flex items-center gap-3"><input type="checkbox" /> Enable Experimental Features</label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SAVE BUTTON -->
+    <div class="mt-10">
+      <button class="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Save Settings
+      </button>
+    </div>
+
+  </div>
+
+
+  <!-- JS -->
+  <script>
+    const composeBtn = document.getElementById("composeBtn");
+    const composeModal = document.getElementById("composeModal");
+
+    composeBtn.onclick = () => {
+      composeModal.classList.remove("hidden");
+    };
+
+    function closeCompose() {
+      composeModal.classList.add("hidden");
+    }
+  </script>
+    <!--Ask Orion Bot -->
+    <div id="orion-chat-include"></div>
+    <script>
+      async function loadOrionChat() {
+        const res = await fetch("/private-credit/includes/orion-chat.html");
+        const html = await res.text();
+    
+        // Insert into DOM
+        const container = document.getElementById("orion-chat-include");
+        container.innerHTML = html;
+    
+        // --- EXECUTE SCRIPTS ---
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement("script");
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          document.body.appendChild(newScript);
+          oldScript.remove();
+        });
+      }
+    
+      loadOrionChat();
+    </script>
+
+</body>
+</html>
