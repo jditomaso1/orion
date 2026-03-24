@@ -243,7 +243,7 @@ body {
 </div>
 
 <script>
-const API = '/api/media-feed?query=Hercules%20Capital%20HTGC%20BDC';
+const API = '/api/media-feed?query=BDC%20credit%20markets%20Hercules%20Capital%20HTGC%20venture%20lending';
 
 let _items = [];
 
@@ -257,7 +257,7 @@ function inferTags(text=""){
   if(/htgc/.test(t)) out.add("HTGC");
 
   // 🔥 NEW TAGS
-  if(/sec|securities and exchange commission/.test(t)) out.add("SEC");
+  if(/\bsec\b|securities and exchange commission/.test(t)) out.add("SEC");
 
   if(/10-k|10-q|8-k|sec filing/.test(t)) {
     out.add("SEC");
@@ -275,6 +275,9 @@ function render(items=_items){
     <a class="card" href="${i.url}" target="_blank">
       <div class="card-title">${i.title}</div>
       <div class="card-meta">${i.source||''}</div>
+      <div style="font-size:11px;color:#335574;margin-top:6px;">
+        ${i.summary || ''}
+      </div>
       <div class="card-tags">${(i.tags||[]).join(" · ")}</div>
     </a>
   `).join('');
@@ -295,19 +298,14 @@ async function load(){
     _items = (data.items || data || [])
       .filter(i => {
         const text = ((i.title || '') + ' ' + (i.summary || '')).toLowerCase();
-
+      
         return (
           text.includes('hercules capital') ||
           text.includes('htgc') ||
-          text.includes('hercules') ||
-        
-          // 🔥 SEC SIGNALS
-          text.includes('sec') ||
-          text.includes('securities and exchange commission') ||
-          text.includes('10-k') ||
-          text.includes('10-q') ||
-          text.includes('8-k') ||
-          text.includes('sec filing')
+          text.includes('venture lending') ||
+          text.includes('bdc') ||
+          text.includes('private credit') ||
+          text.includes('direct lending')
         );
       })
       .map(i => {
