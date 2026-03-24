@@ -133,12 +133,12 @@ button {
 
 <!-- 🔥 PRESET QUESTIONS -->
 <div style="padding:12px 20px;display:flex;gap:8px;flex-wrap:wrap;">
-  <button class="pill" onclick="askPreset('What is the portfolio composition?')">Portfolio</button>
-  <button class="pill" onclick="askPreset('What is the average yield?')">Yield</button>
-  <button class="pill" onclick="askPreset('What are the top risk exposures?')">Risk</button>
-  <button class="pill" onclick="askPreset('What is the credit quality breakdown?')">Credit Quality</button>
-  <button class="pill" onclick="askPreset('Any recent activity or changes?')">Activity</button>
-  <button class="pill" onclick="askPreset('What are the largest positions?')">Top Positions</button>
+  <button class="pill" onclick="askPreset('Give me an overview of the portfolio')">Overview</button>
+  <button class="pill" onclick="askPreset('What is the yield and structure of the portfolio?')">Yield</button>
+  <button class="pill" onclick="askPreset('What are the key risk exposures?')">Risk</button>
+  <button class="pill" onclick="askPreset('How is the portfolio allocated by sector?')">Sector</button>
+  <button class="pill" onclick="askPreset('What are the largest positions and concentrations?')">Top Positions</button>
+  <button class="pill" onclick="askPreset('What stands out as interesting or differentiated?')">Insights</button>
 </div>
 
 <div id="chat" class="chat"></div>
@@ -211,28 +211,122 @@ add("assistant","<b>Orion is live.</b> Select a question or ask directly.");
 function getLocalAnswer(q){
   const t = q.toLowerCase();
 
-  if(t.includes("portfolio")){
-    return "The portfolio is primarily composed of senior secured loans to venture-backed technology and life sciences companies.";
+  if(t.includes("overview")){
+    return `
+    The portfolio consists of ~140+ positions, predominantly senior secured loans to growth-stage companies across technology, healthcare, and venture-backed sectors.
+
+    The strategy is heavily focused on:
+    • Application & System Software (~largest allocation)
+    • Healthcare Services & Biotech
+    • Select exposure to Consumer and Industrial innovation
+
+    Structurally, nearly all positions are first-lien with strong covenant packages, and many include PIK components and exit fees, enhancing total return.
+
+    This is a classic venture lending / growth credit portfolio with a strong bias toward downside protection and yield enhancement.
+    `;
   }
 
   if(t.includes("yield")){
-    return "The portfolio generates an average yield of approximately 11–13%, driven by floating rate structures.";
+    return `
+    The portfolio is primarily floating rate, with spreads typically ranging:
+
+    • SOFR + ~6% to 9%
+    • Prime-based structures with floors ~8%–11%
+    • Frequent PIK components (1%–5%)
+    • Exit fees commonly 2%–7%
+
+    All-in yields are generally in the low-to-mid teens (≈11%–14%), depending on PIK realization and fee capture.
+
+    The structure is designed to:
+    • Protect downside via floors
+    • Enhance returns via PIK + fees
+    • Maintain floating rate exposure in a higher rate environment
+    `;
   }
 
   if(t.includes("risk")){
-    return "Key risks include borrower concentration, exposure to venture-backed issuers, and capital markets dependency.";
+    return `
+    Key risks in the portfolio:
+
+    1. Venture / Growth Exposure  
+    Many borrowers are not fully cash-flow positive, increasing dependency on capital markets.
+
+    2. Sector Concentration  
+    Heavy exposure to software and healthcare innovation creates correlation risk.
+
+    3. Large Position Sizes  
+    Several positions exceed $50MM–$100MM (e.g., Shield AI, Marathon Health, Phathom), creating idiosyncratic exposure.
+
+    4. PIK Utilization  
+    Higher PIK levels can signal stress or deferred cash interest.
+
+    That said, risk is mitigated by:
+    • Senior secured positioning
+    • Strong sponsor backing
+    • Structured downside protection (floors, fees)
+    `;
   }
 
-  if(t.includes("credit")){
-    return "The portfolio is largely first lien with a BB/B equivalent shadow rating profile.";
+  if(t.includes("sector")){
+    return `
+    The portfolio is highly concentrated in innovation-driven sectors:
+
+    • Application / System Software → dominant allocation  
+    • Healthcare Services & Biotech → major secondary exposure  
+    • Consumer Platforms → smaller but meaningful  
+    • Defense / Space / Energy Transition → emerging themes  
+
+    This reflects a clear strategy:
+    lending into high-growth, venture-backed ecosystems where traditional lenders are less active.
+
+    It is not a diversified LBO-style portfolio — it is a growth credit strategy.
+    `;
   }
 
-  if(t.includes("activity")){
-    return "Recent activity includes new originations, refinancings, and continued defensive structuring.";
+  if(t.includes("largest") || t.includes("top")){
+    return `
+    The portfolio includes several large, concentrated positions:
+
+    Notable exposures:
+    • Shield AI → ~$117MM  
+    • Marathon Health → ~$180MM combined  
+    • Phathom Pharmaceuticals → ~$170MM combined  
+    • Tipalti → ~$115MM combined  
+    • Armis → ~$150MM+ combined  
+
+    This indicates:
+    • High conviction underwriting
+    • Deep relationships with borrowers
+    • Willingness to scale within winners
+
+    However, it also introduces concentration risk that requires active monitoring.
+    `;
   }
 
-  if(t.includes("largest")){
-    return "Top positions are concentrated in high-quality venture-backed companies with strong sponsor support.";
+  if(t.includes("insight") || t.includes("interesting")){
+    return `
+    What stands out about this portfolio:
+
+    1. Strong Thematic Positioning  
+    Heavy exposure to AI, cybersecurity, biotech, and next-gen infrastructure.
+
+    2. Sophisticated Structuring  
+    Frequent use of:
+    • PIK interest  
+    • Rate floors  
+    • Exit fees  
+    → indicating advanced credit structuring
+
+    3. Hybrid Credit Profile  
+    Sits between:
+    • Traditional private credit  
+    • Venture lending  
+
+    4. Upside Orientation  
+    Many borrowers have equity-like upside characteristics, even though the structure is debt.
+
+    This is not just yield lending — this is strategic growth credit deployment.
+    `;
   }
 
   return "No predefined answer available.";
