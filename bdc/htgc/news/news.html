@@ -223,6 +223,8 @@ body {
   <button data-tag="BDC" class="pill">BDC</button>
   <button data-tag="Hercules Capital" class="pill">Hercules</button>
   <button data-tag="HTGC" class="pill">HTGC</button>
+  <button data-tag="SEC" class="pill">SEC</button>
+  <button data-tag="Filings" class="pill">Filings</button>
 </nav>
 
 <!-- TOP -->
@@ -246,13 +248,21 @@ const API = '/api/media-feed?query=Hercules%20Capital%20HTGC%20BDC';
 let _items = [];
 
 function inferTags(text=""){
-  const t=text.toLowerCase();
-  const out=new Set();
+  const t = text.toLowerCase();
+  const out = new Set();
 
   if(/credit|loan|spread/.test(t)) out.add("Credit Markets");
   if(/bdc/.test(t)) out.add("BDC");
   if(/hercules/.test(t)) out.add("Hercules Capital");
   if(/htgc/.test(t)) out.add("HTGC");
+
+  // 🔥 NEW TAGS
+  if(/sec|securities and exchange commission/.test(t)) out.add("SEC");
+
+  if(/10-k|10-q|8-k|sec filing/.test(t)) {
+    out.add("SEC");
+    out.add("Filings");
+  }
 
   return Array.from(out);
 }
