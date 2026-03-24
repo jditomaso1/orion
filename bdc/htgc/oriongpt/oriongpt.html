@@ -337,13 +337,12 @@ function getLocalAnswer(q){
   return "No predefined answer available.";
 }
   
-function typeText(element, html, speed = 10){
+function typeText(element, text, speed = 10){
   let i = 0;
-  element.innerHTML = "";
 
   function type(){
-    if(i < html.length){
-      element.innerHTML += html.charAt(i);
+    if(i < text.length){
+      element.innerHTML += text.charAt(i);
       i++;
       chat.scrollTop = chat.scrollHeight;
       setTimeout(type, speed);
@@ -362,11 +361,11 @@ async function run(){
   input.value="";
   send.disabled = true;
 
-  const bubble = add("assistant","");
+  const bubble = add("assistant","<b>Orion:</b> ");
 
   setTimeout(()=>{
-    const response = "<b>Orion:</b> " + getLocalAnswer(q);
-    typeText(bubble, response, 8); // ← speed control
+    const response = getLocalAnswer(q);
+    typeText(bubble, response, 8);
     send.disabled = false;
   }, 300);
 }
