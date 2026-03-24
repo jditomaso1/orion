@@ -125,6 +125,61 @@ const K_NEIGHBORS = 2;
 
 // clustered data (looks real)
 function generatePoints(n){
+
+  // 🔥 REAL PORTFOLIO NAMES (trimmed to match ~50 nodes)
+  const names = [
+    "Alchemer LLC",
+    "AlphaSense, Inc.",
+    "Annex Cloud",
+    "Babel Street",
+    "Behavox Limited",
+    "Brain Corporation",
+    "Carbyne, Inc.",
+    "Ceros, Inc.",
+    "Chainalysis, Inc.",
+    "Dashlane, Inc.",
+    "Dispatch Technologies",
+    "Distributed Creation Inc.",
+    "DocPlanner",
+    "Earnix, Inc.",
+    "Elation Health, Inc.",
+    "Funnel Holding AB",
+    "Imagen Technologies",
+    "iSpot.tv, Inc.",
+    "Khoros, LLC",
+    "LinenMaster, LLC",
+    "Loftware, Inc.",
+    "LogicSource",
+    "Mango Technologies",
+    "Marigold Group, Inc.",
+    "Omeda Holdings",
+    "Pindrop Security",
+    "Proven Optics",
+    "Remodel Health",
+    "Reveleer",
+    "ShadowDragon",
+    "Simon Data",
+    "Sisense Ltd.",
+    "Smartsheet Inc.",
+    "Snappt, Inc.",
+    "Streamline Healthcare",
+    "Suzy, Inc.",
+    "TaxCalc",
+    "Tipalti",
+    "Ushur, Inc.",
+    "Zappi, Inc.",
+    "ZeroEyes, Inc.",
+    "AppDirect, Inc.",
+    "Carwow LTD",
+    "Finix Payments",
+    "GoEuro Travel",
+    "Houzz, Inc.",
+    "Nerdy Inc.",
+    "Thumbtack, Inc.",
+    "Shield AI, Inc.",
+    "Marathon Health, LLC"
+  ];
+
   const clusters = [
     {x:-2,y:1},
     {x:2,y:1},
@@ -139,7 +194,7 @@ function generatePoints(n){
     pts.push({
       x: c.x + (Math.random()-0.5)*1.5,
       y: c.y + (Math.random()-0.5)*1.5,
-      label: "Deal " + (i+1)
+      label: names[i % names.length] // 🔥 REAL LABELS
     });
   }
 
