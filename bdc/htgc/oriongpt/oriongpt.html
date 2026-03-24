@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Orion — Command Center</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body {
+  font-family:'Poppins',sans-serif;
+  background:#f4f7fa;
+  margin:0;
+}
+
+.shell {
+  display:grid;
+  grid-template-columns:256px 1fr;
+  height:100vh;
+}
+
+#sidebar-placeholder {
+  background:#fff;
+  border-right:1px solid #e5e7eb;
+  overflow:auto;
+}
+
+.canvas {
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  height:100vh;
+}
+
+.header {
+  padding:16px 20px;
+  border-bottom:1px solid #e5e7eb;
+  background:#fff;
+  display:flex;
+  justify-content:space-between;
+}
+
+.pill {
+  padding:6px 10px;
+  border:1px solid #e5e7eb;
+  border-radius:999px;
+  font-size:11px;
+  cursor:pointer;
+  background:#fff;
+}
+
+.pill:hover {
+  background:#187ABA;
+  color:#fff;
+}
+
+.chat {
+  padding:20px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.bubble {
+  max-width:70%;
+  padding:10px 14px;
+  border-radius:14px;
+  font-size:13px;
+}
+
+.user {
+  align-self:flex-end;
+  background:#187ABA;
+  color:#fff;
+}
+
+.assistant {
+  align-self:flex-start;
+  background:#fff;
+  border:1px solid #e5e7eb;
+}
+
+.input-area {
+  padding:14px;
+  border-top:1px solid #e5e7eb;
+  background:#fff;
+  display:flex;
+  gap:10px;
+}
+
+textarea {
+  flex:1;
+  resize:none;
+  padding:8px;
+  border:1px solid #ccc;
+  border-radius:8px;
+}
+
+button {
+  padding:8px 14px;
+  background:#002B51;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+}
+
+@media(max-width:768px){
+  .shell{grid-template-columns:1fr;}
+  #sidebar-placeholder{display:none;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="shell">
+
+<!-- SIDEBAR -->
+<div id="sidebar-placeholder"></div>
+
+<!-- MAIN -->
+<main class="canvas">
+
+<div class="header">
+  <div>
+    <div style="font-weight:600;">Orion — Ask the Deal Stack</div>
+    <div style="font-size:11px;color:#666;">Simulated Intelligence Layer</div>
+  </div>
+  <div style="font-size:11px;color:#16a34a;">● Active</div>
+</div>
+
+<!-- 🔥 PRESET QUESTIONS -->
+<div style="padding:12px 20px;display:flex;gap:8px;flex-wrap:wrap;">
+  <button class="pill" onclick="askPreset('What is the portfolio composition?')">Portfolio</button>
+  <button class="pill" onclick="askPreset('What is the average yield?')">Yield</button>
+  <button class="pill" onclick="askPreset('What are the top risk exposures?')">Risk</button>
+  <button class="pill" onclick="askPreset('What is the credit quality breakdown?')">Credit Quality</button>
+  <button class="pill" onclick="askPreset('Any recent activity or changes?')">Activity</button>
+  <button class="pill" onclick="askPreset('What are the largest positions?')">Top Positions</button>
+</div>
+
+<div id="chat" class="chat"></div>
+
+<div class="input-area">
+  <textarea id="input" rows="1" placeholder="Ask something..."></textarea>
+  <button id="send">Ask</button>
+</div>
+
+</main>
+</div>
+
+<script>
+/* ---------- SIDEBAR (PERSISTENT) ---------- */
+(async function(){
+  try {
+    const res = await fetch("/bdc/htgc/sidebar.html");
+    if(!res.ok) return;
+
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+    window.toggleSection = function(id){
+      const s = document.getElementById(id);
+      const i = document.getElementById("icon-"+id);
+      if(!s) return;
+
+      const hidden = s.classList.toggle("hidden");
+
+      if(i){
+        i.style.transform = hidden ? "rotate(0deg)" : "rotate(90deg)";
+      }
+
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    const last = localStorage.getItem("sidebar-open-section");
+
+    if(last){
+      const s = document.getElementById(last);
+      const i = document.getElementById("icon-"+last);
+
+      if(s){
+        s.classList.remove("hidden");
+        if(i) i.style.transform = "rotate(90deg)";
+      }
+    }
+
+  } catch(e){
+    console.warn("Sidebar error");
+  }
+})();
+
+/* ---------- CHAT ENGINE ---------- */
+const chat = document.getElementById("chat");
+const input = document.getElementById("input");
+const send = document.getElementById("send");
+
+function add(role, text){
+  const div = document.createElement("div");
+  div.className = `bubble ${role}`;
+  div.innerHTML = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+add("assistant","<b>Orion is live.</b> Select a question or ask directly.");
+
+/* ---------- LOCAL RESPONSES ---------- */
+function getLocalAnswer(q){
+  const t = q.toLowerCase();
+
+  if(t.includes("portfolio")){
+    return "The portfolio is primarily composed of senior secured loans to venture-backed technology and life sciences companies.";
+  }
+
+  if(t.includes("yield")){
+    return "The portfolio generates an average yield of approximately 11–13%, driven by floating rate structures.";
+  }
+
+  if(t.includes("risk")){
+    return "Key risks include borrower concentration, exposure to venture-backed issuers, and capital markets dependency.";
+  }
+
+  if(t.includes("credit")){
+    return "The portfolio is largely first lien with a BB/B equivalent shadow rating profile.";
+  }
+
+  if(t.includes("activity")){
+    return "Recent activity includes new originations, refinancings, and continued defensive structuring.";
+  }
+
+  if(t.includes("largest")){
+    return "Top positions are concentrated in high-quality venture-backed companies with strong sponsor support.";
+  }
+
+  return "No predefined answer available.";
+}
+
+/* ---------- RUN ---------- */
+async function run(){
+  const q = input.value.trim();
+  if(!q) return;
+
+  add("user", q);
+  input.value="";
+  send.disabled = true;
+
+  const thinking = add("assistant","Thinking...");
+
+  setTimeout(()=>{
+    thinking.innerHTML = "<b>Orion:</b> " + getLocalAnswer(q);
+    send.disabled = false;
+  }, 400);
+}
+
+/* ---------- PRESET CLICK ---------- */
+function askPreset(q){
+  input.value = q;
+  run();
+}
+
+send.onclick = run;
+
+input.addEventListener("keydown", e=>{
+  if(e.key==="Enter" && !e.shiftKey){
+    e.preventDefault();
+    run();
+  }
+});
+</script>
+
+</body>
+</html>
