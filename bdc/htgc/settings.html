@@ -1,0 +1,46 @@
+<!-- 🔥 SIDEBAR -->
+<div id="sidebar-placeholder"></div>
+
+<script>
+(async function(){
+  try {
+    const res = await fetch("/bdc/htgc/sidebar.html");  // ✅ FIXED PATH
+    if(!res.ok) return;
+
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+
+    // ---- TOGGLE + SAVE STATE ----
+    window.toggleSection = function(id){
+      const s = document.getElementById(id);
+      const i = document.getElementById("icon-"+id);
+      if(!s) return;
+
+      const hidden = s.classList.toggle("hidden");
+
+      if(i){
+        i.style.transform = hidden
+          ? "rotate(0deg)"
+          : "rotate(90deg)";
+      }
+
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    // ---- RESTORE OPEN SECTION ----
+    const last = localStorage.getItem("sidebar-open-section");
+
+    if(last){
+      const s = document.getElementById(last);
+      const i = document.getElementById("icon-"+last);
+
+      if(s){
+        s.classList.remove("hidden");
+        if(i) i.style.transform = "rotate(90deg)";
+      }
+    }
+
+  } catch(e){
+    console.warn("Sidebar failed to load");
+  }
+})();
+</script>
