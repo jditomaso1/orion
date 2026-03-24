@@ -278,16 +278,32 @@ function render(items=_items){
 }
 
 async function load(){
-  const res=await fetch(API);
-  const data=await res.json();
+  try {
+    const res = await fetch(API);
+    const data = await res.json();
 
-  _items=(data.items||data).map(i=>{
-    const text=(i.title||'')+' '+(i.summary||'');
-    return {...i,tags:inferTags(text)};
-  });
+    _items = (data.items || data || [])
+      .filter(i => {
+        const text = ((i.title || '') + ' ' + (i.summary || '')).toLowerCase();
 
-  document.getElementById('loader').style.display='none';
-  render();
+        return (
+          text.includes('hercules capital') ||
+          text.includes('htgc') ||
+          text.includes('hercules')
+        );
+      })
+      .map(i => {
+        const text = (i.title || '') + ' ' + (i.summary || '');
+        return { ...i, tags: inferTags(text) };
+      });
+
+    document.getElementById('loader').style.display = 'none';
+    render();
+
+  } catch(e){
+    console.error(e);
+    document.getElementById('loader').innerText = 'Error loading data';
+  }
 }
 
 document.querySelectorAll('.pill').forEach(btn=>{
