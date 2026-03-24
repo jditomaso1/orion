@@ -9,7 +9,6 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-/* ===== DESIGN SYSTEM (FROM OVERVIEW) ===== */
 :root {
   --blue:#187ABA;
   --navy:#002B51;
@@ -21,7 +20,6 @@
   --light:#99AAB9;
 }
 
-/* ===== BASE ===== */
 body {
   font-family:Poppins, sans-serif;
   background:var(--bg);
@@ -39,7 +37,6 @@ body {
   border-right:1px solid var(--border);
 }
 
-/* ===== CANVAS ===== */
 .canvas {
   display:flex;
   flex-direction:column;
@@ -47,7 +44,6 @@ body {
   gap:16px;
 }
 
-/* ===== HEADER ===== */
 .header-row {
   display:flex;
   justify-content:space-between;
@@ -67,7 +63,6 @@ body {
   color:var(--muted);
 }
 
-/* ===== PILLS ===== */
 .pill {
   padding:5px 10px;
   border:1px solid var(--border);
@@ -83,7 +78,6 @@ body {
   border-color:var(--blue);
 }
 
-/* ===== CARDS ===== */
 .card {
   background:var(--surface);
   border:1px solid var(--border);
@@ -91,6 +85,8 @@ body {
   padding:14px;
   box-shadow:0 1px 6px rgba(0,43,81,.05);
   transition:.15s;
+  text-decoration:none;
+  display:block;
 }
 
 .card:hover {
@@ -116,20 +112,21 @@ body {
   margin-top:6px;
 }
 
-/* ===== GRID ===== */
 .grid {
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:14px;
 }
 
-/* ===== LIST ===== */
 .list a {
   display:flex;
   justify-content:space-between;
+  gap:16px;
   padding:10px 0;
   border-bottom:1px solid var(--border);
   font-size:12px;
+  text-decoration:none;
+  color:var(--text);
 }
 
 .list a:hover {
@@ -141,7 +138,12 @@ body {
   color:var(--muted);
 }
 
-/* ===== MOBILE ===== */
+.empty-state {
+  font-size:12px;
+  color:var(--muted);
+  padding:12px 0;
+}
+
 @media(max-width:768px){
   .shell{grid-template-columns:1fr;}
   #sidebar-placeholder{display:none;}
@@ -154,92 +156,84 @@ body {
 
 <div class="shell">
 
-<!-- SIDEBAR -->
-<div id="sidebar-placeholder"></div>
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
 
-<script>
-(async function(){
-  const res = await fetch("/bdc/htgc/sidebar.html");
-  if(!res.ok) return;
+  <script>
+  (async function(){
+    const res = await fetch("/bdc/htgc/sidebar.html");
+    if(!res.ok) return;
 
-  document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+    document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
-  // ---- TOGGLE + SAVE STATE ----
-  window.toggleSection = function(id){
-    const s = document.getElementById(id);
-    const i = document.getElementById("icon-"+id);
-    if(!s) return;
+    window.toggleSection = function(id){
+      const s = document.getElementById(id);
+      const i = document.getElementById("icon-"+id);
+      if(!s) return;
 
-    const isHidden = s.classList.toggle("hidden");
+      const isHidden = s.classList.toggle("hidden");
 
-    if(i){
-      i.style.transform = isHidden
-        ? "rotate(0deg)"
-        : "rotate(90deg)";
+      if(i){
+        i.style.transform = isHidden ? "rotate(0deg)" : "rotate(90deg)";
+      }
+
+      localStorage.setItem("sidebar-open-section", id);
+    };
+
+    const last = localStorage.getItem("sidebar-open-section");
+    if(last){
+      const s = document.getElementById(last);
+      const i = document.getElementById("icon-"+last);
+      if(s){
+        s.classList.remove("hidden");
+        if(i) i.style.transform = "rotate(90deg)";
+      }
     }
+  })();
+  </script>
 
-    // 🔥 THIS FIXES YOUR ISSUE
-    localStorage.setItem("sidebar-open-section", id);
-  };
+  <!-- MAIN -->
+  <main class="canvas">
 
-  // ---- RESTORE OPEN SECTION ----
-  const last = localStorage.getItem("sidebar-open-section");
+    <!-- HEADER -->
+    <div class="header-row">
+      <div>
+        <div class="page-title">BDC News — HTGC</div>
+        <div class="page-sub">Live feed · Credit markets · Hercules Capital · BDC signals</div>
+      </div>
 
-  if(last){
-    const s = document.getElementById(last);
-    const i = document.getElementById("icon-"+last);
+      <div style="display:flex;gap:8px;">
+        <span class="pill">Live Feed</span>
+        <span class="pill">HTGC</span>
+      </div>
+    </div>
 
-    if(s){
-      s.classList.remove("hidden");
-      if(i) i.style.transform = "rotate(90deg)";
-    }
-  }
+    <div id="loader" class="loader">Loading news…</div>
 
-})();
-</script>
+    <!-- FILTERS -->
+    <nav id="filters" style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button data-tag="All" class="pill pill--active">All</button>
+      <button data-tag="Credit Markets" class="pill">Credit</button>
+      <button data-tag="BDC" class="pill">BDC</button>
+      <button data-tag="Hercules Capital" class="pill">Hercules</button>
+      <button data-tag="HTGC" class="pill">HTGC</button>
+      <button data-tag="SEC" class="pill">SEC</button>
+      <button data-tag="Filings" class="pill">Filings</button>
+    </nav>
 
-<!-- MAIN -->
-<main class="canvas">
+    <!-- TOP -->
+    <div>
+      <div style="font-size:12px;font-weight:700;margin-bottom:6px;">Top Stories</div>
+      <div id="top10" class="grid"></div>
+    </div>
 
-<!-- HEADER -->
-<div class="header-row">
-  <div>
-    <div class="page-title">BDC News — HTGC</div>
-    <div class="page-sub">Live feed · Credit markets · Hercules Capital · BDC signals</div>
-  </div>
+    <!-- ALL -->
+    <div>
+      <div style="font-size:12px;font-weight:700;margin-bottom:6px;">All Headlines</div>
+      <div id="feed" class="list"></div>
+    </div>
 
-  <div style="display:flex;gap:8px;">
-    <span class="pill">Live Feed</span>
-    <span class="pill">HTGC</span>
-  </div>
-</div>
-
-<div id="loader" class="loader">Loading news…</div>
-
-<!-- FILTERS -->
-<nav id="filters" style="display:flex;gap:8px;flex-wrap:wrap;">
-  <button data-tag="All" class="pill pill--active">All</button>
-  <button data-tag="Credit Markets" class="pill">Credit</button>
-  <button data-tag="BDC" class="pill">BDC</button>
-  <button data-tag="Hercules Capital" class="pill">Hercules</button>
-  <button data-tag="HTGC" class="pill">HTGC</button>
-  <button data-tag="SEC" class="pill">SEC</button>
-  <button data-tag="Filings" class="pill">Filings</button>
-</nav>
-
-<!-- TOP -->
-<div>
-  <div style="font-size:12px;font-weight:700;margin-bottom:6px;">Top Stories</div>
-  <div id="top10" class="grid"></div>
-</div>
-
-<!-- ALL -->
-<div>
-  <div style="font-size:12px;font-weight:700;margin-bottom:6px;">All Headlines</div>
-  <div id="feed" class="list"></div>
-</div>
-
-</main>
+  </main>
 </div>
 
 <script>
@@ -247,19 +241,18 @@ const API = '/api/media-feed?query=BDC%20credit%20markets%20Hercules%20Capital%2
 
 let _items = [];
 
-function inferTags(text=""){
+function inferTags(text = ""){
   const t = text.toLowerCase();
   const out = new Set();
 
-  if(/credit|loan|spread/.test(t)) out.add("Credit Markets");
-  if(/bdc/.test(t)) out.add("BDC");
-  if(/hercules/.test(t)) out.add("Hercules Capital");
-  if(/htgc/.test(t)) out.add("HTGC");
+  if (/\bcredit\b|\bloan\b|\bspread\b|\blending\b/.test(t)) out.add("Credit Markets");
+  if (/\bbdc\b|business development company/.test(t)) out.add("BDC");
+  if (/hercules/.test(t)) out.add("Hercules Capital");
+  if (/\bhtgc\b/.test(t)) out.add("HTGC");
 
-  // 🔥 NEW TAGS
-  if(/\bsec\b|securities and exchange commission/.test(t)) out.add("SEC");
+  if (/\bsec\b|securities and exchange commission/.test(t)) out.add("SEC");
 
-  if(/10-k|10-q|8-k|sec filing/.test(t)) {
+  if (/10-k|10-q|8-k|sec filing/.test(t)) {
     out.add("SEC");
     out.add("Filings");
   }
@@ -267,25 +260,31 @@ function inferTags(text=""){
   return Array.from(out);
 }
 
-function render(items=_items){
-  const top=document.getElementById('top10');
-  const feed=document.getElementById('feed');
+function render(items = _items){
+  const top = document.getElementById('top10');
+  const feed = document.getElementById('feed');
 
-  top.innerHTML=items.slice(0,10).map(i=>`
-    <a class="card" href="${i.url}" target="_blank">
-      <div class="card-title">${i.title}</div>
-      <div class="card-meta">${i.source||''}</div>
+  if(!items.length){
+    top.innerHTML = '';
+    feed.innerHTML = '<div class="empty-state">No stories available right now.</div>';
+    return;
+  }
+
+  top.innerHTML = items.slice(0, 10).map(i => `
+    <a class="card" href="${i.url || '#'}" target="_blank" rel="noopener">
+      <div class="card-title">${i.title || ''}</div>
+      <div class="card-meta">${i.source || ''}</div>
       <div style="font-size:11px;color:#335574;margin-top:6px;">
         ${i.summary || ''}
       </div>
-      <div class="card-tags">${(i.tags||[]).join(" · ")}</div>
+      <div class="card-tags">${(i.tags || []).join(" · ")}</div>
     </a>
   `).join('');
 
-  feed.innerHTML=items.map(i=>`
-    <a href="${i.url}" target="_blank">
-      <span>${i.title}</span>
-      <span style="color:var(--light);font-size:11px;">${i.source||''}</span>
+  feed.innerHTML = items.map(i => `
+    <a href="${i.url || '#'}" target="_blank" rel="noopener">
+      <span>${i.title || ''}</span>
+      <span style="color:var(--light);font-size:11px;">${i.source || ''}</span>
     </a>
   `).join('');
 }
@@ -294,24 +293,19 @@ async function load(){
   try {
     const res = await fetch(API);
     const data = await res.json();
+    console.log("RAW NEWS DATA:", data);
 
     _items = (data.items || data || [])
-      .filter(i => {
-        const text = ((i.title || '') + ' ' + (i.summary || '')).toLowerCase();
-      
-        return (
-          text.includes('hercules capital') ||
-          text.includes('htgc') ||
-          text.includes('venture lending') ||
-          text.includes('bdc') ||
-          text.includes('private credit') ||
-          text.includes('direct lending')
-        );
-      })
       .map(i => {
-        const text = (i.title || '') + ' ' + (i.summary || '');
+        const text = `${i.title || ''} ${i.summary || ''}`;
         return { ...i, tags: inferTags(text) };
       });
+
+    if(!_items.length){
+      document.getElementById('loader').innerText = 'No news returned from API';
+      render([]);
+      return;
+    }
 
     document.getElementById('loader').style.display = 'none';
     render();
@@ -322,15 +316,18 @@ async function load(){
   }
 }
 
-document.querySelectorAll('.pill').forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll('.pill').forEach(b=>b.classList.remove('pill--active'));
+document.querySelectorAll('.pill').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.pill').forEach(b => b.classList.remove('pill--active'));
     btn.classList.add('pill--active');
 
-    const tag=btn.dataset.tag;
+    const tag = btn.dataset.tag;
 
-    if(tag==="All") render();
-    else render(_items.filter(i=>(i.tags||[]).includes(tag)));
+    if(tag === "All"){
+      render();
+    } else {
+      render(_items.filter(i => (i.tags || []).includes(tag)));
+    }
   };
 });
 
