@@ -336,7 +336,23 @@ function getLocalAnswer(q){
 
   return "No predefined answer available.";
 }
+  
+function typeText(element, html, speed = 10){
+  let i = 0;
+  element.innerHTML = "";
 
+  function type(){
+    if(i < html.length){
+      element.innerHTML += html.charAt(i);
+      i++;
+      chat.scrollTop = chat.scrollHeight;
+      setTimeout(type, speed);
+    }
+  }
+
+  type();
+}
+  
 /* ---------- RUN ---------- */
 async function run(){
   const q = input.value.trim();
@@ -346,12 +362,13 @@ async function run(){
   input.value="";
   send.disabled = true;
 
-  const thinking = add("assistant","Thinking...");
+  const bubble = add("assistant","");
 
   setTimeout(()=>{
-    thinking.innerHTML = "<b>Orion:</b> " + getLocalAnswer(q);
+    const response = "<b>Orion:</b> " + getLocalAnswer(q);
+    typeText(bubble, response, 8); // ← speed control
     send.disabled = false;
-  }, 400);
+  }, 300);
 }
 
 /* ---------- PRESET CLICK ---------- */
