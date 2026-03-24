@@ -289,7 +289,15 @@ async function load(){
         return (
           text.includes('hercules capital') ||
           text.includes('htgc') ||
-          text.includes('hercules')
+          text.includes('hercules') ||
+        
+          // 🔥 SEC SIGNALS
+          text.includes('sec') ||
+          text.includes('securities and exchange commission') ||
+          text.includes('10-k') ||
+          text.includes('10-q') ||
+          text.includes('8-k') ||
+          text.includes('sec filing')
         );
       })
       .map(i => {
