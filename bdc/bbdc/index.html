@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Orion • BDC • HTGC</title>
+  <title>Orion • BDC • BBDC</title>
 
   <!-- Favicon -->
   <link rel="icon" type="image/png"
@@ -61,8 +61,8 @@
   <div id="sidebar-placeholder"></div>
   <script>
     async function injectSidebar() {
-      // HTGC BDC sidebar
-      const res = await fetch("/bdc/htgc/sidebar.html");
+      // BBDC BDC sidebar
+      const res = await fetch("/bdc/bbdc/sidebar.html");
       document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
       // allow sidebar.html to call toggleSection()
@@ -102,7 +102,7 @@
         <div class="text-sm text-gray-700">
           Orion for BDCs turns public filings into a structured portfolio database — trends, non-accruals, exposures, and risk signals — with fast drilldowns.
         </div>
-        <span class="pill">BDC • Hercules Capital (HTGC)</span>
+        <span class="pill">BDC • Hercules Capital (BBDC)</span>
       </div>
     </section>
 
@@ -143,7 +143,7 @@
             <div class="border rounded-2xl p-4 bg-white">
               <div class="text-sm font-semibold">Benchmarking & comparables</div>
               <div class="text-xs muted mt-2">
-                Compare HTGC to peer BDCs on concentration, yield, credit quality, and origination terms.
+                Compare BBDC to peer BDCs on concentration, yield, credit quality, and origination terms.
               </div>
             </div>
           </div>
@@ -153,7 +153,7 @@
           <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
               <div class="text-sm font-semibold">Quickstart</div>
-              <div class="text-xs muted mt-1">Three clicks to understand the HTGC build.</div>
+              <div class="text-xs muted mt-1">Three clicks to understand the BBDC build.</div>
             </div>
             <span class="pill">Start here</span>
           </div>
@@ -162,7 +162,7 @@
             <div class="flex items-start gap-3">
               <span class="checkdot">1</span>
               <div>
-                Open <span class="kbd">Portfolio</span> to view HTGC’s position-level dataset.
+                Open <span class="kbd">Portfolio</span> to view BBDC’s position-level dataset.
                 <div class="text-xs muted mt-1">Start with: sector, instrument type, fair value vs. cost.</div>
               </div>
             </div>
@@ -185,9 +185,9 @@
           </div>
 
           <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <a class="btn btn-primary" href="/bdc/htgc/portfolio/portfolio.html">Open Portfolio</a>
-            <a class="btn btn-ghost" href="/bdc/htgc/trends/trends.html">View Trends</a>
-            <a class="btn btn-ghost" href="/bdc/htgc/non-accruals/non-accruals.html">Non-Accruals</a>
+            <a class="btn btn-primary" href="/bdc/bbdc/portfolio/portfolio.html">Open Portfolio</a>
+            <a class="btn btn-ghost" href="/bdc/bbdc/trends/trends.html">View Trends</a>
+            <a class="btn btn-ghost" href="/bdc/bbdc/non-accruals/non-accruals.html">Non-Accruals</a>
           </div>
 
           <div class="mt-4 text-xs muted">
@@ -205,17 +205,17 @@
           <div class="text-xs muted mt-1">If you’re new, do this in order.</div>
 
           <div class="mt-4 space-y-3 text-sm">
-            <a href="/bdc/htgc/overview/overview.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+            <a href="/bdc/bbdc/overview/overview.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
               <div class="font-semibold">Overview</div>
-              <div class="text-xs muted mt-1">HTGC snapshot: portfolio mix, risk flags, key metrics.</div>
+              <div class="text-xs muted mt-1">BBDC snapshot: portfolio mix, risk flags, key metrics.</div>
             </a>
 
-            <a href="/bdc/htgc/portfolio/portfolio.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+            <a href="/bdc/bbdc/portfolio/portfolio.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
               <div class="font-semibold">Portfolio</div>
               <div class="text-xs muted mt-1">Every position, cleaned and structured.</div>
             </a>
 
-            <a href="/bdc/htgc/trends/trends.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+            <a href="/bdc/bbdc/trends/trends.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
               <div class="font-semibold">Trends</div>
               <div class="text-xs muted mt-1">Quarter-over-quarter changes: marks, adds, exits, drift.</div>
             </a>
@@ -234,7 +234,7 @@
               <li>“Which positions have been marked down for 2+ consecutive quarters?”</li>
               <li>“What’s the maturity wall over the next 24 months?”</li>
               <li>“Which sectors drive the most concentration risk?”</li>
-              <li>“How do HTGC yields compare to peers?”</li>
+              <li>“How do BBDC yields compare to peers?”</li>
             </ul>
           </div>
         </div>
@@ -243,8 +243,8 @@
           <div class="text-sm font-semibold">Account</div>
           <div class="text-xs muted mt-1">Billing and access live here.</div>
           <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <a class="btn btn-ghost w-full text-center" href="/bdc/htgc/pricing/pricing.html">Pricing</a>
-            <a class="btn btn-ghost w-full text-center" href="/bdc/htgc/contact/contact.html">Contact</a>
+            <a class="btn btn-ghost w-full text-center" href="/bdc/bbdc/pricing/pricing.html">Pricing</a>
+            <a class="btn btn-ghost w-full text-center" href="/bdc/bbdc/contact/contact.html">Contact</a>
           </div>
         </div>
 
@@ -257,7 +257,7 @@
         <div>
           <div class="text-sm font-semibold">This is a BDC build</div>
           <div class="text-xs muted mt-1">
-            The HTGC instance shows how Orion structures EDGAR data into a monitoring-grade portfolio intelligence layer.
+            The BBDC instance shows how Orion structures EDGAR data into a monitoring-grade portfolio intelligence layer.
           </div>
         </div>
         <span class="pill">More BDCs soon</span>
@@ -271,8 +271,8 @@
   <div id="orion-chat-include"></div>
   <script>
     async function loadOrionChat() {
-      // HTGC include path (update if you keep a shared include elsewhere)
-      const res = await fetch("/bdc/htgc/includes/orion-chat.html");
+      // BBDC include path (update if you keep a shared include elsewhere)
+      const res = await fetch("/bdc/bbdc/includes/orion-chat.html");
       const html = await res.text();
 
       const container = document.getElementById("orion-chat-include");
