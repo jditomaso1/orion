@@ -139,18 +139,38 @@
     async function loadSidebar(){
       try{
         const r=await fetch("/bdc/bbdc/sidebar.html",{cache:"no-store"});
-        if(!r.ok) throw new Error(r.status);
+        if(!r.ok)throw new Error(r.status);
         $("sidebar-placeholder").innerHTML=await r.text();
+
         window.toggleSection=id=>{
           const section=document.getElementById(id),icon=document.getElementById("icon-"+id);
           if(!section||!icon)return;
           section.classList.toggle("hidden");
-          icon.style.transform=section.classList.contains("hidden")?"rotate(0deg)":"rotate(90deg)";
+          const isOpen=!section.classList.contains("hidden");
+          icon.style.transform=isOpen?"rotate(90deg)":"rotate(0deg)";
+          const open=JSON.parse(localStorage.getItem("bbdc-sidebar-sections")||"[]");
+          const updated=isOpen?[...new Set([...open,id])]:open.filter(x=>x!==id);
+          localStorage.setItem("bbdc-sidebar-sections",JSON.stringify(updated));
           localStorage.setItem("sidebar-open-section",id);
         };
-        const section=document.getElementById("BBDC"),icon=document.getElementById("icon-BBDC");
-        if(section&&icon){section.classList.remove("hidden");icon.style.transform="rotate(90deg)";}
-      }catch(e){console.warn("Sidebar could not be loaded",e);}
+
+        const open=JSON.parse(localStorage.getItem("bbdc-sidebar-sections")||"[]");
+        const sections=open.length?open:["portfolio-nav"];
+        if(!sections.includes("portfolio-nav"))sections.push("portfolio-nav");
+        sections.forEach(id=>{
+          const section=document.getElementById(id),icon=document.getElementById("icon-"+id);
+          if(section&&icon){section.classList.remove("hidden");icon.style.transform="rotate(90deg)"}
+        });
+        localStorage.setItem("bbdc-sidebar-sections",JSON.stringify(sections));
+
+        const current=window.location.pathname;
+        document.querySelectorAll("#sidebar-placeholder a[href]").forEach(a=>{
+          if(a.getAttribute("href")===current){
+            a.classList.add("bg-blue-50","text-[#187ABA]");
+            a.setAttribute("aria-current","page");
+          }
+        });
+      }catch(e){console.warn("Sidebar could not be loaded",e)}
     }
 
     async function loadChat(){
