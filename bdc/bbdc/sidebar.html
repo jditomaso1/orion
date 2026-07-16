@@ -91,45 +91,57 @@
 
       <div id="credits-nav" class="hidden ml-2">
 
-        <div class="px-3 pt-2 pb-1 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">
-          Portfolio Credit
-        </div>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/index.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
-          Credit Dashboard
-        </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/portfolio-companies.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
-          All Companies
-        </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/credit-watchlist.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
-          Watchlist
-        </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/shadow-ratings.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
-          Shadow Ratings
-        </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/monitoring-alerts.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
-          Monitoring &amp; Alerts
-        </a>
+        <!-- Portfolio Credit -->
+        <button onclick="toggleSection('portfolio-credit-nav')"
+                class="w-full flex items-center justify-between px-3 py-2 text-[12px] font-semibold text-gray-500 uppercase tracking-wide hover:text-gray-800">
+          <span>Portfolio Credit</span>
+          <span id="icon-portfolio-credit-nav" class="transition-transform">▶</span>
+        </button>
 
-        <div class="px-3 pt-3 pb-1 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">
-          Credit Analysis
+        <div id="portfolio-credit-nav" class="hidden ml-2">
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/index.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+            Credit Dashboard
+          </a>
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/portfolio-companies.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+            All Companies
+          </a>
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/credit-watchlist.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+            Watchlist
+          </a>
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/shadow-ratings.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+            Shadow Ratings
+          </a>
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/monitoring-alerts.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+            Monitoring &amp; Alerts
+          </a>
         </div>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/index.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
-          Coherus Oncology
-        </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/index.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
-          Ocular Therapeutix
-        </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/index.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
-          Herbalife
-        </a>
+
+        <!-- Credit Analysis -->
+        <button onclick="toggleSection('credit-analysis-nav')"
+                class="w-full flex items-center justify-between px-3 py-2 text-[12px] font-semibold text-gray-500 uppercase tracking-wide hover:text-gray-800">
+          <span>Credit Analysis</span>
+          <span id="icon-credit-analysis-nav" class="transition-transform">▶</span>
+        </button>
+
+        <div id="credit-analysis-nav" class="hidden ml-2">
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/index.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+            Coherus Oncology
+          </a>
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/index.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+            Ocular Therapeutix
+          </a>
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/index.html"
+             class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+            Herbalife
+          </a>
+        </div>
       </div>
     </div>
 
