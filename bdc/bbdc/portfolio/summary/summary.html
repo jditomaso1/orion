@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BBDC Portfolio</title>
+
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --blue: #187aba;
+      --blue-dark: #0f639c;
+      --blue-soft: #d1e4f1;
+      --navy: #002b51;
+      --navy-soft: #335574;
+      --jade: #3eb661;
+      --red: #dc2626;
+      --amber: #d97706;
+      --bg: #f4f7fa;
+      --surface: #ffffff;
+      --border: #e2eaf0;
+      --muted: #64748b;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--navy);
+      font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+
+    .page-shell { min-height: 100vh; }
+    .page-main { min-width: 0; padding: 18px 22px 14px; margin-left: 256px; }
+    .page-inner { max-width: none; margin: 0; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0, 43, 81, 0.06);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #f8fafc;
+      color: var(--navy-soft);
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--jade); }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .kpi { padding: 12px 14px; }
+    .kpi-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .055em;
+      text-transform: uppercase;
+    }
+    .kpi-value { margin-top: 7px; color: var(--navy); font-size: 18px; font-weight: 700; letter-spacing: -.025em; }
+    .kpi-detail { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .negative { color: var(--red) !important; }
+    .positive { color: #16803d !important; }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.7fr) minmax(180px, 1fr) minmax(190px, 1fr) auto;
+      gap: 10px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+
+    .control {
+      width: 100%;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid #d8e2ea;
+      border-radius: 8px;
+      outline: none;
+      background: #fff;
+      color: var(--navy);
+      font: inherit;
+      font-size: 12px;
+    }
+    .control:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(24, 122, 186, .12); }
+
+    .btn {
+      min-height: 40px;
+      padding: 9px 13px;
+      border: 1px solid #d8e2ea;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--navy);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .btn:hover { background: #f8fafc; }
+
+    .table-card { margin-top: 10px; overflow: hidden; }
+    .table-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 16px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .table-wrap { width: 100%; overflow: auto; max-height: calc(100vh - 310px); }
+    table { width: 100%; min-width: 1280px; border-collapse: separate; border-spacing: 0; }
+    thead { position: sticky; top: 0; z-index: 3; }
+    th {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      background: #f7fafc;
+      color: var(--navy-soft);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .045em;
+      text-align: left;
+      text-transform: uppercase;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    th:hover { background: #eef5f9; }
+    th.num, td.num { text-align: right; }
+    td {
+      padding: 7px 14px;
+      border-bottom: 1px solid #edf2f6;
+      color: #334155;
+      font-size: 11px;
+      vertical-align: middle;
+    }
+    tbody tr:hover td { background: #f8fbfd; }
+    .company { color: var(--navy); font-size: 11px; font-weight: 600; }
+    .subtle { color: var(--muted); font-size: 9px; margin-top: 2px; }
+    .category-chip {
+      display: inline-block;
+      max-width: 235px;
+      padding: 3px 7px;
+      overflow: hidden;
+      border: 1px solid var(--blue-soft);
+      border-radius: 999px;
+      background: #f1f7fb;
+      color: var(--blue-dark);
+      font-size: 9px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .mark-low { color: var(--red); font-weight: 700; }
+    .mark-watch { color: var(--amber); font-weight: 700; }
+    .notes { max-width: 245px; color: var(--muted); font-size: 10px; }
+    .empty-state { display: none; padding: 50px 20px; text-align: center; color: var(--muted); font-size: 12px; }
+    .error-banner {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      background: #fff1f2;
+      color: #991b1b;
+      font-size: 12px;
+    }
+
+    .header-row {
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-title {
+      margin-top: 2px;
+      color: var(--navy);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+    .page-sub {
+      margin-top: 2px;
+      color: var(--navy-soft);
+      font-size: 11px;
+    }
+
+    @media (max-width: 1100px) {
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 767px) {
+      #sidebar-placeholder { display: none; }
+      .page-main { margin-left: 0; padding: 14px; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .toolbar { grid-template-columns: 1fr; }
+      .table-wrap { max-height: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-shell">
+    <div id="sidebar-placeholder"></div>
+
+    <main class="page-main">
+      <div class="page-inner">
+        <header class="header-row flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <div class="text-[11px] font-semibold uppercase tracking-[.12em] text-slate-500">Orion • BDC Intelligence</div>
+            <h1 class="page-title">BBDC — Master Portfolio</h1>
+      <p class="page-sub">Company-level debt and equity exposure loaded directly from the BBDC CSV file.</p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="pill"><span class="status-dot"></span><span id="data-status">Loading portfolio…</span></span>
+            <span class="pill">Barings BDC, Inc. • BBDC</span>
+          </div>
+        </header>
+
+        <div id="error-banner" class="error-banner"></div>
+
+        <section class="kpi-grid" aria-label="Portfolio summary">
+          <article class="card kpi">
+            <div class="kpi-label">Portfolio Companies</div>
+            <div id="kpi-positions" class="kpi-value">—</div>
+            <div id="kpi-companies" class="kpi-detail">— underlying instruments</div>
+          </article>
+          <article class="card kpi">
+            <div class="kpi-label">Fair Value</div>
+            <div id="kpi-fair-value" class="kpi-value">—</div>
+            <div class="kpi-detail">Reported values in $000</div>
+          </article>
+          <article class="card kpi">
+            <div class="kpi-label">Cost</div>
+            <div id="kpi-cost" class="kpi-value">—</div>
+            <div class="kpi-detail">Aggregate amortized cost</div>
+          </article>
+          <article class="card kpi">
+            <div class="kpi-label">Unrealized Gain / (Loss)</div>
+            <div id="kpi-unrealized" class="kpi-value">—</div>
+            <div id="kpi-unrealized-detail" class="kpi-detail">Fair value less cost</div>
+          </article>
+          <article class="card kpi">
+            <div class="kpi-label">Fair Value / Cost</div>
+            <div id="kpi-rate" class="kpi-value">—</div>
+            <div class="kpi-detail">Aggregate portfolio valuation ratio</div>
+          </article>
+        </section>
+
+        <section class="card toolbar" aria-label="Portfolio filters">
+          <input id="search" class="control" type="search" placeholder="Search company, industry, or classification…" />
+          <select id="industry-filter" class="control"><option value="">All industries</option></select>
+          <select id="category-filter" class="control"><option value="">All classifications</option></select>
+          <button id="reset-btn" class="btn" type="button">Reset filters</button>
+        </section>
+
+        <section class="card table-card">
+          <div class="table-heading">
+            <div>
+              <div class="text-sm font-semibold text-slate-800">Portfolio companies</div>
+              <div id="table-caption" class="mt-0.5 text-[10px] text-slate-500">Loading rows…</div>
+            </div>
+            <a class="btn no-underline" href="/bdc/bbdc/data/bbdc_portfolio.csv" download>Download CSV</a>
+          </div>
+
+          <div class="table-wrap">
+            <table aria-describedby="table-caption">
+              <thead>
+                <tr>
+                  <th data-key="company">Portfolio company <span data-sort="company"></span></th>
+                  <th data-key="industry">Industry <span data-sort="industry"></span></th>
+                  <th data-key="classification">Classification <span data-sort="classification"></span></th>
+                  <th class="num" data-key="debtCost">Debt cost <span data-sort="debtCost"></span></th>
+                  <th class="num" data-key="debtFairValue">Debt fair value <span data-sort="debtFairValue"></span></th>
+                  <th class="num" data-key="equityCost">Equity cost <span data-sort="equityCost"></span></th>
+                  <th class="num" data-key="equityFairValue">Equity fair value <span data-sort="equityFairValue"></span></th>
+                  <th class="num" data-key="totalCost">Total cost <span data-sort="totalCost"></span></th>
+                  <th class="num" data-key="totalFairValue">Total fair value <span data-sort="totalFairValue"></span></th>
+                  <th class="num" data-key="instrumentCount">Instruments <span data-sort="instrumentCount"></span></th>
+                  <th class="num" data-key="fvCost">FV / cost <span data-sort="fvCost"></span></th>
+                </tr>
+              </thead>
+              <tbody id="portfolio-body"></tbody>
+            </table>
+            <div id="empty-state" class="empty-state">No portfolio companies match the selected filters.</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div id="orion-chat-include"></div>
+
+  <script>
+    const CSV_URL = "/bdc/bbdc/data/bbdc_portfolio.csv";
+    let portfolio = [];
+    let sortKey = "totalFairValue";
+    let sortDirection = -1;
+
+    const $ = (id) => document.getElementById(id);
+
+    async function injectSidebar() {
+      try {
+        const response = await fetch("/bdc/bbdc/sidebar.html", { cache: "no-store" });
+        if (!response.ok) throw new Error(`Sidebar returned ${response.status}`);
+        $("sidebar-placeholder").innerHTML = await response.text();
+
+        window.toggleSection = function (id) {
+          const section = document.getElementById(id);
+          const icon = document.getElementById("icon-" + id);
+          if (!section || !icon) return;
+
+          section.classList.toggle("hidden");
+          const isOpen = !section.classList.contains("hidden");
+          icon.style.transform = isOpen ? "rotate(90deg)" : "rotate(0deg)";
+
+          const openSections = JSON.parse(localStorage.getItem("bbdc-sidebar-sections") || "[]");
+          const updatedSections = isOpen
+            ? [...new Set([...openSections, id])]
+            : openSections.filter(sectionId => sectionId !== id);
+          localStorage.setItem("bbdc-sidebar-sections", JSON.stringify(updatedSections));
+        };
+
+        let openSections = JSON.parse(localStorage.getItem("bbdc-sidebar-sections") || "[]");
+        if (!openSections.length) openSections = ["portfolio-nav"];
+
+        openSections.forEach((id) => {
+          const section = document.getElementById(id);
+          const icon = document.getElementById("icon-" + id);
+          if (section && icon) {
+            section.classList.remove("hidden");
+            icon.style.transform = "rotate(90deg)";
+          }
+        });
+
+        const currentPath = window.location.pathname;
+        document.querySelectorAll("#sidebar-placeholder a[href]").forEach((link) => {
+          if (link.getAttribute("href") === currentPath) {
+            link.classList.add("bg-blue-50", "text-[#187ABA]");
+            link.setAttribute("aria-current", "page");
+          }
+        });
+      } catch (error) {
+        console.warn("Sidebar could not be loaded:", error);
+      }
+    }
+
+    async function loadOrionChat() {
+      try {
+        const response = await fetch("/bdc/bbdc/includes/orion-chat.html", { cache: "no-store" });
+        if (!response.ok) return;
+        const container = $("orion-chat-include");
+        container.innerHTML = await response.text();
+        container.querySelectorAll("script").forEach((oldScript) => {
+          const newScript = document.createElement("script");
+          if (oldScript.src) newScript.src = oldScript.src;
+          else newScript.textContent = oldScript.textContent;
+          document.body.appendChild(newScript);
+          oldScript.remove();
+        });
+      } catch (error) {
+        console.warn("Orion chat include could not be loaded:", error);
+      }
+    }
+
+    function numberValue(value) {
+      const text = String(value ?? "").trim();
+      if (!text || text === "-") return null;
+      const negative = /^\(.*\)$/.test(text);
+      const cleaned = text.replace(/[,$%()]/g, "").trim();
+      const number = Number(cleaned);
+      if (!Number.isFinite(number)) return null;
+      return negative ? -number : number;
+    }
+
+    function firstValue(row, names) {
+      for (const name of names) {
+        if (Object.prototype.hasOwnProperty.call(row, name)) return row[name];
+      }
+      return "";
+    }
+
+    function mapRow(row) {
+      return {
+        company: String(firstValue(row, ["Portfolio Company"])).trim(),
+        industry: String(firstValue(row, ["Industries"])).trim(),
+        classification: String(firstValue(row, ["Classifications"])).trim(),
+        debtCost: numberValue(firstValue(row, ["Debt Cost ($000)"])),
+        debtFairValue: numberValue(firstValue(row, ["Debt Fair Value ($000)"])),
+        equityCost: numberValue(firstValue(row, ["Equity Cost ($000)"])),
+        equityFairValue: numberValue(firstValue(row, ["Equity Fair Value ($000)"])),
+        totalCost: numberValue(firstValue(row, ["Total Cost ($000)"])),
+        totalFairValue: numberValue(firstValue(row, ["Total Fair Value ($000)"])),
+        instrumentCount: numberValue(firstValue(row, ["Instrument Count"])),
+        fvCost: numberValue(firstValue(row, ["FV / Cost"]))
+      };
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatMoneyThousands(value) {
+      if (value === null) return "—";
+      return `$${value.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+    }
+
+    function formatMoneySummary(value) {
+      if (!Number.isFinite(value)) return "—";
+      const sign = value < 0 ? "−" : "";
+      return `${sign}$${Math.abs(value / 1000).toLocaleString("en-US", { maximumFractionDigits: 1 })}MM`;
+    }
+
+    function formatPercent(value, digits = 1) {
+      return value === null ? "—" : `${value.toFixed(digits)}%`;
+    }
+
+    function sum(rows, key) {
+      return rows.reduce((total, row) => total + (Number.isFinite(row[key]) ? row[key] : 0), 0);
+    }
+
+    function unique(values) {
+      return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    }
+
+    function populateFilters() {
+      unique(portfolio.map((row) => row.industry)).forEach((value) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        $("industry-filter").appendChild(option);
+      });
+      unique(portfolio.map((row) => row.classification)).forEach((value) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        $("category-filter").appendChild(option);
+      });
+    }
+
+    function updateSummary() {
+      const instruments = sum(portfolio, "instrumentCount");
+      const fairValue = sum(portfolio, "totalFairValue");
+      const cost = sum(portfolio, "totalCost");
+      const unrealized = fairValue - cost;
+
+      $("kpi-positions").textContent = portfolio.length.toLocaleString("en-US");
+      $("kpi-companies").textContent = `${instruments.toLocaleString("en-US")} underlying instruments`;
+      $("kpi-fair-value").textContent = formatMoneySummary(fairValue);
+      $("kpi-cost").textContent = formatMoneySummary(cost);
+      $("kpi-unrealized").textContent = formatMoneySummary(unrealized);
+      $("kpi-unrealized").classList.toggle("negative", unrealized < 0);
+      $("kpi-unrealized").classList.toggle("positive", unrealized > 0);
+      $("kpi-unrealized-detail").textContent = cost ? `${(unrealized / cost * 100).toFixed(1)}% of cost` : "Fair value less cost";
+      $("kpi-rate").textContent = cost ? `${(fairValue / cost).toFixed(2)}x` : "—";
+    }
+
+    function selectedRows() {
+      const query = $("search").value.trim().toLowerCase();
+      const industry = $("industry-filter").value;
+      const classification = $("category-filter").value;
+
+      const rows = portfolio.filter((row) => {
+        const matchesQuery = !query || [row.company, row.industry, row.classification]
+          .some((value) => value.toLowerCase().includes(query));
+        return matchesQuery && (!industry || row.industry === industry) && (!classification || row.classification === classification);
+      });
+
+      return rows.sort((a, b) => {
+        const av = a[sortKey];
+        const bv = b[sortKey];
+        if (av === null && bv === null) return 0;
+        if (av === null) return 1;
+        if (bv === null) return -1;
+        if (typeof av === "number" && typeof bv === "number") return (av - bv) * sortDirection;
+        return String(av).localeCompare(String(bv), undefined, { sensitivity: "base" }) * sortDirection;
+      });
+    }
+
+    function markClass(value) {
+      if (value === null) return "";
+      if (value < 80) return "mark-low";
+      if (value < 95) return "mark-watch";
+      return "";
+    }
+
+    function renderTable() {
+      const rows = selectedRows();
+      $("portfolio-body").innerHTML = rows.map((row) => `
+        <tr>
+          <td><div class="company">${escapeHtml(row.company)}</div></td>
+          <td>${escapeHtml(row.industry || "—")}</td>
+          <td><span class="category-chip" title="${escapeHtml(row.classification)}">${escapeHtml(row.classification || "—")}</span></td>
+          <td class="num">${formatMoneyThousands(row.debtCost)}</td>
+          <td class="num">${formatMoneyThousands(row.debtFairValue)}</td>
+          <td class="num">${formatMoneyThousands(row.equityCost)}</td>
+          <td class="num">${formatMoneyThousands(row.equityFairValue)}</td>
+          <td class="num">${formatMoneyThousands(row.totalCost)}</td>
+          <td class="num">${formatMoneyThousands(row.totalFairValue)}</td>
+          <td class="num">${row.instrumentCount === null ? "—" : row.instrumentCount.toLocaleString("en-US")}</td>
+          <td class="num ${markClass(row.fvCost === null ? null : row.fvCost * 100)}">${row.fvCost === null ? "—" : row.fvCost.toFixed(2) + "x"}</td>
+        </tr>
+      `).join("");
+
+      $("table-caption").textContent = `Showing ${rows.length.toLocaleString("en-US")} of ${portfolio.length.toLocaleString("en-US")} portfolio companies`;
+      $("empty-state").style.display = rows.length ? "none" : "block";
+
+      document.querySelectorAll("[data-sort]").forEach((element) => {
+        element.textContent = element.dataset.sort === sortKey ? (sortDirection === 1 ? " ↑" : " ↓") : "";
+      });
+    }
+
+    function showError(message) {
+      $("data-status").textContent = "Portfolio unavailable";
+      $("error-banner").textContent = message;
+      $("error-banner").style.display = "block";
+    }
+
+    async function loadPortfolio() {
+      try {
+        const response = await fetch(CSV_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error(`CSV request returned ${response.status}`);
+        const csv = await response.text();
+        const result = Papa.parse(csv, { header: true, skipEmptyLines: "greedy" });
+        if (result.errors.length) console.warn("CSV parsing warnings:", result.errors);
+
+        portfolio = result.data
+          .map(mapRow)
+          .filter((row) => row.company && !row.company.toUpperCase().startsWith("TOTAL"));
+
+        if (!portfolio.length) throw new Error("The CSV did not contain any portfolio companies.");
+        populateFilters();
+        updateSummary();
+        renderTable();
+        $("data-status").textContent = `${portfolio.length.toLocaleString("en-US")} companies loaded`;
+      } catch (error) {
+        console.error(error);
+        showError(`The portfolio CSV could not be loaded from ${CSV_URL}. Confirm the file name and folder path, then refresh the page.`);
+      }
+    }
+
+    document.querySelectorAll("th[data-key]").forEach((header) => {
+      header.addEventListener("click", () => {
+        const key = header.dataset.key;
+        if (sortKey === key) sortDirection *= -1;
+        else { sortKey = key; sortDirection = 1; }
+        renderTable();
+      });
+    });
+
+    ["search", "industry-filter", "category-filter"].forEach((id) => {
+      $(id).addEventListener(id === "search" ? "input" : "change", renderTable);
+    });
+
+    $("reset-btn").addEventListener("click", () => {
+      $("search").value = "";
+      $("industry-filter").value = "";
+      $("category-filter").value = "";
+      renderTable();
+    });
+
+    injectSidebar();
+    loadPortfolio();
+    loadOrionChat();
+  </script>
+</body>
+</html>
