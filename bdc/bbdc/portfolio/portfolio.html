@@ -37,14 +37,14 @@
     }
 
     .page-shell { min-height: 100vh; }
-    .page-main { min-width: 0; padding: 22px; margin-left: 256px; }
-    .page-inner { max-width: 1500px; margin: 0 auto; }
+    .page-main { min-width: 0; padding: 18px 22px 14px; margin-left: 256px; }
+    .page-inner { max-width: none; margin: 0; }
 
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: 0 4px 14px rgba(0, 43, 81, 0.055);
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0, 43, 81, 0.06);
     }
 
     .pill {
@@ -66,11 +66,11 @@
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 16px;
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    .kpi { padding: 16px; }
+    .kpi { padding: 12px 14px; }
     .kpi-label {
       color: var(--muted);
       font-size: 10px;
@@ -78,7 +78,7 @@
       letter-spacing: .055em;
       text-transform: uppercase;
     }
-    .kpi-value { margin-top: 7px; color: var(--navy); font-size: 22px; font-weight: 700; letter-spacing: -.025em; }
+    .kpi-value { margin-top: 7px; color: var(--navy); font-size: 18px; font-weight: 700; letter-spacing: -.025em; }
     .kpi-detail { margin-top: 3px; color: var(--muted); font-size: 10px; }
     .negative { color: var(--red) !important; }
     .positive { color: #16803d !important; }
@@ -87,16 +87,16 @@
       display: grid;
       grid-template-columns: minmax(220px, 1.7fr) minmax(180px, 1fr) minmax(190px, 1fr) auto;
       gap: 10px;
-      padding: 14px;
-      margin-top: 14px;
+      padding: 12px 14px;
+      margin-top: 10px;
     }
 
     .control {
       width: 100%;
-      min-height: 40px;
-      padding: 9px 11px;
+      min-height: 34px;
+      padding: 6px 10px;
       border: 1px solid #d8e2ea;
-      border-radius: 10px;
+      border-radius: 8px;
       outline: none;
       background: #fff;
       color: var(--navy);
@@ -120,24 +120,24 @@
     }
     .btn:hover { background: #f8fafc; }
 
-    .table-card { margin-top: 14px; overflow: hidden; }
+    .table-card { margin-top: 10px; overflow: hidden; }
     .table-heading {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 14px 16px;
+      padding: 9px 16px 8px;
       border-bottom: 1px solid var(--border);
     }
-    .table-wrap { width: 100%; overflow: auto; max-height: calc(100vh - 355px); }
+    .table-wrap { width: 100%; overflow: auto; max-height: calc(100vh - 310px); }
     table { width: 100%; min-width: 1280px; border-collapse: separate; border-spacing: 0; }
     thead { position: sticky; top: 0; z-index: 3; }
     th {
-      padding: 10px 10px;
+      padding: 8px 14px;
       border-bottom: 1px solid var(--border);
       background: #f7fafc;
       color: var(--navy-soft);
-      font-size: 9px;
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: .045em;
       text-align: left;
@@ -149,7 +149,7 @@
     th:hover { background: #eef5f9; }
     th.num, td.num { text-align: right; }
     td {
-      padding: 11px 10px;
+      padding: 7px 14px;
       border-bottom: 1px solid #edf2f6;
       color: #334155;
       font-size: 11px;
@@ -186,6 +186,23 @@
       font-size: 12px;
     }
 
+    .header-row {
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-title {
+      margin-top: 2px;
+      color: var(--navy);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+    .page-sub {
+      margin-top: 2px;
+      color: var(--navy-soft);
+      font-size: 11px;
+    }
+
     @media (max-width: 1100px) {
       .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .toolbar { grid-template-columns: 1fr 1fr; }
@@ -206,11 +223,11 @@
 
     <main class="page-main">
       <div class="page-inner">
-        <header class="flex items-start justify-between gap-4 flex-wrap">
+        <header class="header-row flex items-start justify-between gap-4 flex-wrap">
           <div>
             <div class="text-[11px] font-semibold uppercase tracking-[.12em] text-slate-500">Orion • BDC Intelligence</div>
-            <h1 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">BBDC Portfolio</h1>
-      <p class="mt-1 text-xs text-slate-500">Company-level debt and equity exposure loaded directly from the BBDC CSV file.</p>
+            <h1 class="page-title">BBDC — Master Portfolio</h1>
+      <p class="page-sub">Company-level debt and equity exposure loaded directly from the BBDC CSV file.</p>
           </div>
           <div class="flex items-center gap-2 flex-wrap">
             <span class="pill"><span class="status-dot"></span><span id="data-status">Loading portfolio…</span></span>
@@ -310,17 +327,37 @@
           const section = document.getElementById(id);
           const icon = document.getElementById("icon-" + id);
           if (!section || !icon) return;
+
           section.classList.toggle("hidden");
-          icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
-          localStorage.setItem("sidebar-open-section", id);
+          const isOpen = !section.classList.contains("hidden");
+          icon.style.transform = isOpen ? "rotate(90deg)" : "rotate(0deg)";
+
+          const openSections = JSON.parse(localStorage.getItem("bbdc-sidebar-sections") || "[]");
+          const updatedSections = isOpen
+            ? [...new Set([...openSections, id])]
+            : openSections.filter(sectionId => sectionId !== id);
+          localStorage.setItem("bbdc-sidebar-sections", JSON.stringify(updatedSections));
         };
 
-        const section = document.getElementById("BBDC");
-        const icon = document.getElementById("icon-BBDC");
-        if (section && icon) {
-          section.classList.remove("hidden");
-          icon.style.transform = "rotate(90deg)";
-        }
+        let openSections = JSON.parse(localStorage.getItem("bbdc-sidebar-sections") || "[]");
+        if (!openSections.length) openSections = ["portfolio-nav"];
+
+        openSections.forEach((id) => {
+          const section = document.getElementById(id);
+          const icon = document.getElementById("icon-" + id);
+          if (section && icon) {
+            section.classList.remove("hidden");
+            icon.style.transform = "rotate(90deg)";
+          }
+        });
+
+        const currentPath = window.location.pathname;
+        document.querySelectorAll("#sidebar-placeholder a[href]").forEach((link) => {
+          if (link.getAttribute("href") === currentPath) {
+            link.classList.add("bg-blue-50", "text-[#187ABA]");
+            link.setAttribute("aria-current", "page");
+          }
+        });
       } catch (error) {
         console.warn("Sidebar could not be loaded:", error);
       }
