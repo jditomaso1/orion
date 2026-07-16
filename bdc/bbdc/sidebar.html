@@ -15,31 +15,31 @@
   </a>
 
   <!-- Navigation -->
-  <nav class="flex-1 overflow-y-auto p-4 space-y-2">
+  <nav class="flex-1 overflow-y-auto p-4 space-y-0.5">
 
     <!-- Overview -->
     <div>
       <button onclick="toggleSection('overview-nav')"
-              class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+              class="w-full flex items-center justify-between px-3 py-1.5 text-sm font-medium text-gray-500 uppercase tracking-wide">
         <span>Overview</span>
         <span id="icon-overview-nav" class="transition-transform">▶</span>
       </button>
 
       <div id="overview-nav" class="hidden ml-2">
         <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/overview/overview.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+           class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Overview
         </a>
         <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/financials/financials.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+           class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Financials
         </a>
         <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/comparables/comparables.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+           class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Comparables
         </a>
         <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/news/news.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+           class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           News
         </a>
       </div>
@@ -48,34 +48,34 @@
     <!-- Portfolio Intelligence -->
     <div>
       <button onclick="toggleSection('portfolio-nav')"
-              class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+              class="w-full flex items-center justify-between px-3 py-1.5 text-sm font-medium text-gray-500 uppercase tracking-wide">
         <span>Portfolio</span>
         <span id="icon-portfolio-nav" class="transition-transform">▶</span>
       </button>
 
       <div id="portfolio-nav" class="hidden ml-2">
         <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/portfolio/portfolio.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+           class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Summary
         </a>
         <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/position-detail/position-detail.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+           class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Positions
         </a>
         <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/construction/construction.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+           class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Construction
         </a>
         <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/credit-quality/credit-quality.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+           class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Quality
         </a>
         <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/portfolio-activity/portfolio-activity.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+           class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Activity
         </a>
         <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/trends/trends.html"
-           class="block px-3 py-2 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
+           class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Trends
         </a>
       </div>
@@ -84,7 +84,7 @@
     <!-- Credits / Positions -->
     <div>
       <button onclick="toggleSection('credits-nav')"
-              class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wide">
+              class="w-full flex items-center justify-between px-3 py-1.5 text-sm font-medium text-gray-500 uppercase tracking-wide">
         <span>Credits</span>
         <span id="icon-credits-nav" class="transition-transform">▶</span>
       </button>
@@ -93,7 +93,7 @@
 
         <!-- Portfolio Credit -->
         <button onclick="toggleSection('portfolio-credit-nav')"
-                class="w-full flex items-center justify-between px-3 py-2 text-[14px] font-semibold text-gray-500 uppercase tracking-wide hover:text-gray-800">
+                class="w-full flex items-center justify-between px-3 py-1.5 text-[14px] font-semibold text-gray-500 uppercase tracking-wide hover:text-gray-800">
           <span>Portfolio Credit</span>
           <span id="icon-portfolio-credit-nav" class="transition-transform">▶</span>
         </button>
@@ -123,14 +123,14 @@
 
         <!-- Credit Analysis -->
         <button onclick="toggleSection('credit-analysis-nav')"
-                class="w-full flex items-center justify-between px-3 py-2 text-[14px] font-semibold text-gray-500 uppercase tracking-wide hover:text-gray-800">
+                class="w-full flex items-center justify-between px-3 py-1.5 text-[14px] font-semibold text-gray-500 uppercase tracking-wide hover:text-gray-800">
           <span>Credit Analysis</span>
           <span id="icon-credit-analysis-nav" class="transition-transform">▶</span>
         </button>
 
         <div id="credit-analysis-nav" class="hidden ml-3 border-l border-gray-200 pl-1">
           <button onclick="toggleSection('coherus-nav')"
-                  class="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-gray-800 uppercase tracking-wide hover:bg-gray-100 rounded">
+                  class="w-full flex items-center justify-between px-3 py-1.5 text-[13px] font-medium text-gray-800 uppercase tracking-wide hover:bg-gray-100 rounded">
             <span>Coherus Oncology</span>
             <span id="icon-coherus-nav" class="transition-transform text-gray-400">▶</span>
           </button>
@@ -182,7 +182,7 @@
             </a>
           </div>
           <button onclick="toggleSection('ocular-nav')"
-                  class="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-gray-800 uppercase tracking-wide hover:bg-gray-100 rounded">
+                  class="w-full flex items-center justify-between px-3 py-1.5 text-[13px] font-medium text-gray-800 uppercase tracking-wide hover:bg-gray-100 rounded">
             <span>Ocular Therapeutix</span>
             <span id="icon-ocular-nav" class="transition-transform text-gray-400">▶</span>
           </button>
@@ -234,7 +234,7 @@
             </a>
           </div>
           <button onclick="toggleSection('herbalife-nav')"
-                  class="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-gray-800 uppercase tracking-wide hover:bg-gray-100 rounded">
+                  class="w-full flex items-center justify-between px-3 py-1.5 text-[13px] font-medium text-gray-800 uppercase tracking-wide hover:bg-gray-100 rounded">
             <span>Herbalife</span>
             <span id="icon-herbalife-nav" class="transition-transform text-gray-400">▶</span>
           </button>
