@@ -1,0 +1,18 @@
+section,period,item,value,value_text,unit,capacity,capacity_text,percentage,percentage_text,notes,source_id
+FUNDING SOURCES (3/31/26),Q1 2026,Senior Secured Credit Facility (revolver),292.7,,USD millions,822.9,,0.205374684254841,,Relationships with 15+ banks,Q1_2026_10Q
+FUNDING SOURCES (3/31/26),Q1 2026,Public Unsecured Notes,950,,USD millions,,n/a,0.666573112545608,,Placed with 70+ third-party investors,Q1_2026_10Q
+FUNDING SOURCES (3/31/26),Q1 2026,Private Placement Notes,182.5,,USD millions,,n/a,0.128052203199551,,Institutional private placements,Q1_2026_10Q
+FUNDING SOURCES (3/31/26),Q1 2026,Total Debt (principal),1425.2,,USD millions,,,,,,Q1_2026_10Q
+LEVERAGE,Q1 2026,Debt-to-Equity,1.24,,x,,,,,,Q1_2026_10Q
+LEVERAGE,Q1 2026,Net Debt-to-Equity,1.17,,x,,,,,,Q1_2026_10Q
+LEVERAGE,Q1 2026,Target Leverage Range,,0.90x – 1.25x,USD millions,,,,,,Q1_2026_10Q
+LEVERAGE,Q1 2026,Regulatory Limit (BDC 150% asset coverage = 2.0x max D/E),,Comfortably within,x,,,,,,Q1_2026_10Q
+BORROWING COST & MATURITIES,Q1 2026,Interest & Other Financing Fees — Q1 2026 ($M),18.9,,USD millions,,,,,,Q1_2026_10Q
+BORROWING COST & MATURITIES,Q1 2026,Effective Cost of Debt (annualized Q1 fees / avg principal),0.052784080991447,,USD millions,,,,,,Q1_2026_10Q
+BORROWING COST & MATURITIES,Q1 2026,Effective Cost of Debt — FY 2025,0.0586310241482655,,USD millions,,,,,,Q1_2026_10Q
+BORROWING COST & MATURITIES,Q1 2026,Maturity Profile,,Laddered 2026–2029; limited near-term maturities,USD millions,,,,,,Q1_2026_10Q
+BORROWING COST & MATURITIES,Q1 2026,Interest Rate & FX Hedges,,Swaps on Feb 2029 & Sep 2028 notes; FX forwards on non-USD assets,USD millions,,,,,,Q1_2026_10Q
+AVAILABLE LIQUIDITY (3/31/26),Q1 2026,Unrestricted Cash & FX,79.8,,USD millions,,,,,,Q1_2026_10Q
+AVAILABLE LIQUIDITY (3/31/26),Q1 2026,Undrawn Revolver Capacity,530.2,,USD millions,,,,,,Q1_2026_10Q
+AVAILABLE LIQUIDITY (3/31/26),Q1 2026,Total Available Liquidity,610,,USD millions,,,,,,Q1_2026_10Q
+AVAILABLE LIQUIDITY (3/31/26),Q1 2026,Purpose,,Sized to cover unfunded commitments,USD millions,,,,,,Q1_2026_10Q

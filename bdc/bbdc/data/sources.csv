@@ -1,0 +1,10 @@
+source_id,source_name,document_type,period,source_date,url,notes
+Q1_2026_10Q,BBDC Q1 2026 Form 10-Q,SEC filing,Q1 2026,2026-05-07,,Primary source for Q1 2026 financial and balance-sheet data
+FY2025_10K,BBDC FY2025 Form 10-K,SEC filing,FY 2025,2026-02-19,,Primary source for FY2025 annual data
+FY2024_RESULTS,BBDC FY2024 annual results,Earnings release,FY 2024,,,Annual results source identified in the workbook
+FY2023_RESULTS,BBDC FY2023 annual results,Earnings release,FY 2023,,,Some figures are approximations as noted in the workbook
+BBDC_QUARTERLY_RELEASES,BBDC quarterly earnings releases,Earnings releases,Q2 2024–Q4 2025,,,Quarterly source group identified in the workbook
+Q1_2026_PRESENTATION,BBDC Q1 2026 earnings presentation,Investor presentation,Q1 2026,2026-05-07,,Portfolio and operating metrics
+Q1_2026_MANAGEMENT_COMMENTARY,BBDC Q1 2026 management commentary,Earnings call commentary,Q1 2026,,,Includes estimated spillover income per share
+MARKET_DATA_2026_07,Approximate market data,Market data,July 2026,2026-07-16,,Share price and market capitalization move daily
+BBDC_COMPILED_MODEL,BBDC Financials workbook,Compiled analysis,Multiple,2026-07-16,,Calculations and compiled figures from the supplied workbook
