@@ -80,7 +80,42 @@
     const COLORS=["#187aba","#3eb661","#0a6f7a","#4ccacd","#d97706","#7c3aed","#64748b","#ef4444","#94a3b8","#335574"];
     let rows=[];
 
-    async function loadSidebar(){try{const r=await fetch("/bdc/bbdc/sidebar.html",{cache:"no-store"});if(!r.ok)throw new Error(r.status);$("sidebar-placeholder").innerHTML=await r.text();window.toggleSection=id=>{const s=document.getElementById(id),i=document.getElementById("icon-"+id);if(!s||!i)return;s.classList.toggle("hidden");i.style.transform=s.classList.contains("hidden")?"rotate(0deg)":"rotate(90deg)";localStorage.setItem("sidebar-open-section",id)};const s=document.getElementById("BBDC"),i=document.getElementById("icon-BBDC");if(s&&i){s.classList.remove("hidden");i.style.transform="rotate(90deg)"}}catch(e){console.warn(e)}}
+    async function loadSidebar(){
+      try{
+        const r=await fetch("/bdc/bbdc/sidebar.html",{cache:"no-store"});
+        if(!r.ok)throw new Error(r.status);
+        $("sidebar-placeholder").innerHTML=await r.text();
+
+        window.toggleSection=id=>{
+          const s=document.getElementById(id),i=document.getElementById("icon-"+id);
+          if(!s||!i)return;
+          s.classList.toggle("hidden");
+          const isOpen=!s.classList.contains("hidden");
+          i.style.transform=isOpen?"rotate(90deg)":"rotate(0deg)";
+          const open=JSON.parse(localStorage.getItem("bbdc-sidebar-sections")||"[]");
+          const updated=isOpen?[...new Set([...open,id])]:open.filter(x=>x!==id);
+          localStorage.setItem("bbdc-sidebar-sections",JSON.stringify(updated));
+          localStorage.setItem("sidebar-open-section",id);
+        };
+
+        const open=JSON.parse(localStorage.getItem("bbdc-sidebar-sections")||"[]");
+        const sections=open.length?open:["overview-nav"];
+        if(!sections.includes("overview-nav"))sections.push("overview-nav");
+        sections.forEach(id=>{
+          const s=document.getElementById(id),i=document.getElementById("icon-"+id);
+          if(s&&i){s.classList.remove("hidden");i.style.transform="rotate(90deg)"}
+        });
+        localStorage.setItem("bbdc-sidebar-sections",JSON.stringify(sections));
+
+        const current=window.location.pathname;
+        document.querySelectorAll("#sidebar-placeholder a[href]").forEach(a=>{
+          if(a.getAttribute("href")===current){
+            a.classList.add("bg-blue-50","text-[#187ABA]");
+            a.setAttribute("aria-current","page");
+          }
+        });
+      }catch(e){console.warn(e)}
+    }
     async function loadChat(){try{const r=await fetch("/bdc/bbdc/includes/orion-chat.html",{cache:"no-store"});if(!r.ok)return;const box=$("orion-chat-include");box.innerHTML=await r.text();box.querySelectorAll("script").forEach(old=>{const s=document.createElement("script");if(old.src)s.src=old.src;else s.textContent=old.textContent;document.body.appendChild(s);old.remove()})}catch(e){console.warn(e)}}
     const clean=v=>String(v??"").replace(/^\uFEFF/,"").trim();
     function num(v){let s=clean(v);if(!s||s==="-")return null;const neg=/^\(.*\)$/.test(s);s=s.replace(/[,$%x()]/gi,"").replace(/,/g,"");const n=Number(s);return Number.isFinite(n)?(neg?-n:n):null}
