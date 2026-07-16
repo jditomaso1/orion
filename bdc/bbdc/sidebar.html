@@ -17,6 +17,16 @@
   <!-- Navigation -->
   <nav class="flex-1 overflow-y-auto p-4 space-y-0.5">
 
+    <!-- BBDC Fund -->
+    <div>
+      <button onclick="toggleSection('bbdc-nav')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-[15px] font-semibold text-[#002B51] uppercase tracking-wide hover:bg-gray-100">
+        <span>BBDC</span>
+        <span id="icon-bbdc-nav" class="transition-transform" style="transform:rotate(90deg)">▶</span>
+      </button>
+
+      <div id="bbdc-nav" class="mt-1 ml-2 pl-1 border-l border-gray-200 space-y-0.5">
+
     <!-- Overview -->
     <div>
       <button onclick="toggleSection('overview-nav')"
@@ -26,19 +36,19 @@
       </button>
 
       <div id="overview-nav" class="hidden ml-2">
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/overview/overview.html"
+        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/overview/overview.html"
            class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Overview
         </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/financials/financials.html"
+        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/financials/financials.html"
            class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Financials
         </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/comparables/comparables.html"
+        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/comparables/comparables.html"
            class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Comparables
         </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/news/news.html"
+        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','overview-nav'])); localStorage.setItem('sidebar-open-section', 'overview-nav')" href="/bdc/bbdc/news/news.html"
            class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           News
         </a>
@@ -54,27 +64,27 @@
       </button>
 
       <div id="portfolio-nav" class="hidden ml-2">
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/portfolio/portfolio.html"
+        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/portfolio/portfolio.html"
            class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Summary
         </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/position-detail/position-detail.html"
+        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/position-detail/position-detail.html"
            class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Positions
         </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/construction/construction.html"
+        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/construction/construction.html"
            class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Construction
         </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/credit-quality/credit-quality.html"
+        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/credit-quality/credit-quality.html"
            class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Quality
         </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/portfolio-activity/portfolio-activity.html"
+        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/portfolio-activity/portfolio-activity.html"
            class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Activity
         </a>
-        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/trends/trends.html"
+        <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','portfolio-nav'])); localStorage.setItem('sidebar-open-section', 'portfolio-nav')" href="/bdc/bbdc/trends/trends.html"
            class="block px-3 py-1.5 rounded font-medium text-[14px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
           Trends
         </a>
@@ -99,23 +109,23 @@
         </button>
 
         <div id="portfolio-credit-nav" class="hidden ml-3 border-l border-gray-200 pl-1">
-          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/index.html"
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/index.html"
              class="block px-3 py-2 rounded font-medium text-[13px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
             Credit Dashboard
           </a>
-          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/portfolio-companies.html"
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/portfolio-companies.html"
              class="block px-3 py-2 rounded font-medium text-[13px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
             All Companies
           </a>
-          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/credit-watchlist.html"
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/credit-watchlist.html"
              class="block px-3 py-2 rounded font-medium text-[13px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
             Watchlist
           </a>
-          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/shadow-ratings.html"
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/shadow-ratings.html"
              class="block px-3 py-2 rounded font-medium text-[13px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
             Shadow Ratings
           </a>
-          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/monitoring-alerts.html"
+          <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','portfolio-credit-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/monitoring-alerts.html"
              class="block px-3 py-2 rounded font-medium text-[13px] text-gray-800 uppercase tracking-wide hover:bg-gray-100">
             Monitoring &amp; Alerts
           </a>
@@ -136,47 +146,47 @@
           </button>
 
           <div id="coherus-nav" class="hidden ml-3 border-l border-gray-200 pl-1">
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/index.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/index.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Credit Overview
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/financials.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/financials.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Financials
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/projections.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/projections.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Projections
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/capital-structure.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/capital-structure.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Capital Structure
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/credit-agreement.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/credit-agreement.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Credit Agreement
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/shadow-rating.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/shadow-rating.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Shadow Rating
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/monitoring.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/monitoring.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Monitoring
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/news.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/news.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               News &amp; Catalysts
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/sec-filings.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/sec-filings.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               SEC Filings
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/investment-memo.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/investment-memo.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Investment Memo
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/tear-sheet.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','coherus-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/tear-sheet.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Tear Sheet
             </a>
@@ -188,47 +198,47 @@
           </button>
 
           <div id="ocular-nav" class="hidden ml-3 border-l border-gray-200 pl-1">
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/index.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/index.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Credit Overview
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/financials.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/financials.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Financials
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/projections.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/projections.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Projections
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/capital-structure.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/capital-structure.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Capital Structure
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/credit-agreement.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/credit-agreement.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Credit Agreement
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/shadow-rating.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/shadow-rating.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Shadow Rating
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/monitoring.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/monitoring.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Monitoring
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/news.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/news.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               News &amp; Catalysts
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/sec-filings.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/sec-filings.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               SEC Filings
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/investment-memo.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/investment-memo.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Investment Memo
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/tear-sheet.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','ocular-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/tear-sheet.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Tear Sheet
             </a>
@@ -240,52 +250,55 @@
           </button>
 
           <div id="herbalife-nav" class="hidden ml-3 border-l border-gray-200 pl-1">
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/index.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/index.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Credit Overview
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/financials.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/financials.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Financials
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/projections.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/projections.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Projections
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/capital-structure.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/capital-structure.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Capital Structure
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/credit-agreement.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/credit-agreement.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Credit Agreement
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/shadow-rating.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/shadow-rating.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Shadow Rating
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/monitoring.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/monitoring.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Monitoring
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/news.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/news.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               News &amp; Catalysts
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/sec-filings.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/sec-filings.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               SEC Filings
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/investment-memo.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/investment-memo.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Investment Memo
             </a>
-            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/tear-sheet.html"
+            <a onclick="localStorage.setItem('bbdc-sidebar-sections', JSON.stringify(['bbdc-nav','credits-nav','credit-analysis-nav','herbalife-nav'])); localStorage.setItem('sidebar-open-section', 'credits-nav')" href="/bdc/bbdc/credit-intelligence/companies/herbalife/tear-sheet.html"
                class="block px-3 py-1.5 rounded font-medium text-[12px] text-gray-700 uppercase tracking-wide hover:bg-gray-100">
               Tear Sheet
             </a>
           </div>
         </div>
+      </div>
+    </div>
+
       </div>
     </div>
 
@@ -329,7 +342,7 @@ function toggleSection(id) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const openSections = JSON.parse(localStorage.getItem("bbdc-sidebar-sections") || '["overview-nav"]');
+  const openSections = JSON.parse(localStorage.getItem("bbdc-sidebar-sections") || '["bbdc-nav","overview-nav"]');
 
   openSections.forEach(id => {
     const section = document.getElementById(id);
