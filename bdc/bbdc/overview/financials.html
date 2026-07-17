@@ -138,20 +138,42 @@ function renderSources(){
 function setupTabs(){document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab,.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.panel).classList.add('active')}))}
 async function loadSidebar(){
  try{
-  const html=await fetch('/bdc/bbdc/sidebar.html').then(r=>{if(!r.ok)throw Error();return r.text()});
+  const html=await fetch('/bdc/bbdc/sidebar.html?v=20260716-financials').then(r=>{if(!r.ok)throw Error();return r.text()});
   document.getElementById('sidebar').innerHTML=html;
-  const store='bbdc-sidebar-sections'; let open=[];
+  const store='bbdc-sidebar-sections';
+  let open=[];
   try{open=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}
   ['bbdc-nav','overview-nav'].forEach(id=>{if(!open.includes(id))open.push(id)});
+
+  const applyState=(id,isOpen)=>{
+   const target=document.getElementById(id);
+   const icon=document.getElementById('icon-'+id);
+   if(!target)return;
+   target.classList.toggle('hidden',!isOpen);
+   if(icon)icon.style.transform=isOpen?'rotate(90deg)':'rotate(0deg)';
+  };
+
+  window.toggleSection=(id)=>{
+   let saved=[];
+   try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}
+   const target=document.getElementById(id);
+   if(!target)return;
+   const isOpen=target.classList.contains('hidden');
+   saved=isOpen?[...new Set([...saved,id])]:saved.filter(x=>x!==id);
+   localStorage.setItem(store,JSON.stringify(saved));
+   applyState(id,isOpen);
+  };
+
   localStorage.setItem(store,JSON.stringify(open));
-  document.querySelectorAll('#sidebar [data-target]').forEach(btn=>{
-    const id=btn.dataset.target, target=document.getElementById(id);
-    if(!target)return; const show=open.includes(id); target.classList.toggle('hidden',!show);
-    const arrow=btn.querySelector('.arrow'); if(arrow)arrow.textContent=show?'▼':'▶';
-    btn.addEventListener('click',()=>{target.classList.toggle('hidden');let saved=[];try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){};const isOpen=!target.classList.contains('hidden');saved=isOpen?[...new Set([...saved,id])]:saved.filter(x=>x!==id);localStorage.setItem(store,JSON.stringify(saved));if(arrow)arrow.textContent=isOpen?'▼':'▶'});
+  document.querySelectorAll('#sidebar [id$="-nav"]').forEach(el=>applyState(el.id,open.includes(el.id)));
+  document.querySelectorAll('#sidebar a').forEach(a=>{
+   if(new URL(a.href,location.origin).pathname===location.pathname){
+    a.classList.add('bg-blue-50','text-blue-700','font-semibold');
+   }
   });
-  document.querySelectorAll('#sidebar a').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('active')});
- }catch(e){document.getElementById('sidebar').innerHTML='<div style="padding:24px;font-size:12px">ORION</div>'}
+ }catch(e){
+  document.getElementById('sidebar').innerHTML='<div style="padding:24px;font-size:12px">ORION</div>';
+ }
 }
 async function init(){
  setupTabs(); loadSidebar();
