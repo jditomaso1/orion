@@ -91,6 +91,7 @@ export default async function handler(req, res) {
     const dates = recent.filingDate || [];
     const accessions = recent.accessionNumber || [];
     const primaryDocs = recent.primaryDocument || [];
+    const reportDates = recent.reportDate || [];
 
     const rows = [];
     for (let i = 0; i < forms.length; i++) {
@@ -105,6 +106,7 @@ export default async function handler(req, res) {
 
       rows.push({
         filed: dates[i] || null,
+        reportDate: reportDates[i] || null,
         form,
         accession,
         indexUrl: `https://www.sec.gov/Archives/edgar/data/${Number(cik10)}/${accNoDash}/${accession}-index.html`,
