@@ -1,6 +1,112 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>BBDC News | Orion</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>*{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#172033;font-family:Poppins,sans-serif}#sidebar{position:fixed;inset:0 auto 0 0;width:256px;background:#fff;border-right:1px solid #e2eaf0;overflow:auto}main{margin-left:256px;padding:28px}.eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;color:#64748b}h1{font-size:22px;margin:5px 0}.card{margin-top:18px;background:#fff;border:1px solid #e2eaf0;border-radius:13px;padding:24px;font-size:12px;color:#64748b}@media(max-width:850px){#sidebar{display:none}main{margin-left:0}}</style></head>
-<body><aside id="sidebar"></aside><main><div class="eyebrow">ORION · BDC INTELLIGENCE</div><h1>BBDC News</h1><div class="card">BBDC news and market developments will be added here.</div></main>
-<script>fetch('/bdc/bbdc/sidebar.html').then(r=>r.text()).then(h=>{sidebar.innerHTML=h;let open=['bbdc-nav','overview-nav'];try{open=[...new Set([...JSON.parse(localStorage.getItem('bbdc-sidebar-sections')||'[]'),...open])]}catch(e){}localStorage.setItem('bbdc-sidebar-sections',JSON.stringify(open));document.querySelectorAll('#sidebar [data-target]').forEach(b=>{const t=document.getElementById(b.dataset.target);if(t&&open.includes(b.dataset.target)){t.classList.remove('hidden');const a=b.querySelector('.arrow');if(a)a.textContent='▼'}});document.querySelectorAll('#sidebar a').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('active')})})</script></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>BBDC News Intelligence | Orion</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#002b51;--blue:#187aba;--green:#3eb661;--red:#dc3545;--amber:#f59e0b;--bg:#f4f7fa;--line:#e2eaf0;--muted:#64748b}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Poppins,sans-serif}
+    #sidebar{position:fixed;inset:0 auto 0 0;width:256px;background:#fff;border-right:1px solid var(--line);z-index:30;overflow:auto}
+    main{margin-left:256px;min-height:100vh}.wrap{max-width:1480px;margin:auto;padding:25px 28px 42px}
+    .eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#64748b}
+    h1{font-size:22px;line-height:1.2;margin:5px 0;color:#111827;font-weight:700}.subtitle{font-size:11px;color:#64748b}
+    .card{background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 1px 2px rgba(15,23,42,.025)}
+    .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}.kpi{padding:14px 16px;min-height:94px}
+    .kpi-label{font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.06em}.kpi-value{font-size:23px;color:var(--navy);font-weight:700;margin-top:7px}.kpi-note{font-size:9px;color:#718096}
+    .filters{padding:11px;display:grid;grid-template-columns:2.2fr repeat(4,1fr);gap:8px;margin-bottom:13px}
+    input,select{width:100%;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 10px;font:500 9px Poppins;color:#334155;outline:none}
+    input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(24,122,186,.09)}
+    .layout{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(250px,.8fr);gap:13px}.feed{display:flex;flex-direction:column;gap:10px}
+    .news-card{padding:15px 17px;transition:.15s}.news-card:hover{border-color:#bdd7e8;box-shadow:0 4px 14px rgba(0,43,81,.06)}
+    .news-top{display:flex;justify-content:space-between;gap:12px}.meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:8px;color:#64748b;text-transform:uppercase;font-weight:700;letter-spacing:.04em}
+    .pill{padding:4px 7px;border-radius:999px}.level{background:#eef5fa;color:#345b78}.Positive{background:#eaf8ef;color:#237a3b}.Neutral{background:#eef2f6;color:#526779}.Negative{background:#fff0f1;color:#b4232f}
+    .headline{font-size:13px;font-weight:700;color:#172033;margin:8px 0 5px;line-height:1.35}.summary{font-size:10px;color:#526174;line-height:1.55}
+    .why{margin-top:10px;padding:10px 12px;border-left:3px solid var(--blue);background:#f5f9fc;border-radius:0 8px 8px 0}.why-label{font-size:8px;color:var(--blue);font-weight:700;text-transform:uppercase;letter-spacing:.07em}.why p{font-size:9px;color:#334155;margin:4px 0 0;line-height:1.55}
+    .news-foot{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:10px;font-size:8px;color:#64748b}.source{color:var(--blue);font-weight:700;text-decoration:none}.source:hover{text-decoration:underline}
+    .side-card{padding:15px;margin-bottom:12px}.side-title{font-size:11px;font-weight:700;color:#172033}.side-sub{font-size:8px;color:#64748b;margin-top:2px}
+    .signal-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #edf2f7;font-size:9px}.signal-row:last-child{border:0}.signal-count{font-weight:700;color:var(--navy)}
+    .watch-item{padding:9px 0;border-bottom:1px solid #edf2f7}.watch-item:last-child{border:0}.watch-company{font-size:9px;font-weight:700}.watch-headline{font-size:8px;color:#64748b;margin-top:3px;line-height:1.4}
+    .empty{padding:40px;text-align:center;color:#64748b;font-size:11px}.status{padding:24px;text-align:center;font-size:11px;color:#64748b}.error{color:#b91c1c}
+    @media(max-width:1100px){.filters{grid-template-columns:repeat(2,1fr)}.filters input{grid-column:1/-1}.layout{grid-template-columns:1fr}.rail{display:grid;grid-template-columns:1fr 1fr;gap:12px}.side-card{margin:0}}
+    @media(max-width:850px){#sidebar{display:none}main{margin-left:0}.wrap{padding:20px 14px}.kpis{grid-template-columns:repeat(2,1fr)}.rail{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<aside id="sidebar"></aside>
+<main><div class="wrap">
+  <div class="eyebrow">ORION · BDC INTELLIGENCE</div><h1>BBDC News Intelligence</h1>
+  <div class="subtitle">Corporate, portfolio-company and market developments translated into credit relevance</div>
+  <section class="kpis" id="kpis"><div class="card status" style="grid-column:1/-1">Loading news intelligence…</div></section>
+  <section class="card filters">
+    <input id="search" type="search" placeholder="Search company, headline or credit…">
+    <select id="level"><option value="">ALL LEVELS</option></select>
+    <select id="category"><option value="">ALL CATEGORIES</option></select>
+    <select id="signal"><option value="">ALL SIGNALS</option></select>
+    <select id="status"><option value="">ALL STATUSES</option></select>
+  </section>
+  <section class="layout">
+    <div><div id="feed" class="feed"></div></div>
+    <aside class="rail">
+      <div class="card side-card"><div class="side-title">Signal summary</div><div class="side-sub">Current filtered feed</div><div id="signalSummary"></div></div>
+      <div class="card side-card"><div class="side-title">Credit watch</div><div class="side-sub">Negative and monitoring items</div><div id="watchlist"></div></div>
+    </aside>
+  </section>
+</div></main>
+<script>
+const CSV='/bdc/bbdc/data/bbdc_news.csv?v=20260716';
+let all=[],filtered=[];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dateFmt=s=>{const d=new Date(s+'T12:00:00');return Number.isNaN(d.getTime())?s:d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})};
+const unique=key=>[...new Set(all.map(r=>r[key]).filter(Boolean))].sort();
+function fillSelect(id,key){const el=document.getElementById(id);unique(key).forEach(v=>el.insertAdjacentHTML('beforeend',`<option value="${esc(v)}">${esc(v.toUpperCase())}</option>`))}
+function renderKpis(){
+ const count=k=>all.filter(r=>r.Signal===k).length;
+ const monitoring=all.filter(r=>r.Status==='Monitoring').length;
+ document.getElementById('kpis').innerHTML=[
+  ['TOTAL ITEMS',all.length,'Curated intelligence feed'],
+  ['NEGATIVE SIGNALS',count('Negative'),'Potential credit or NAV pressure'],
+  ['MONITORING',monitoring,'Items requiring follow-up'],
+  ['PORTFOLIO COMPANY',all.filter(r=>r['News Level']==='Portfolio Company').length,'Borrower-level developments']
+ ].map(([l,v,n])=>`<div class="card kpi"><div class="kpi-label">${l}</div><div class="kpi-value">${v}</div><div class="kpi-note">${n}</div></div>`).join('');
+}
+function applyFilters(){
+ const q=document.getElementById('search').value.trim().toLowerCase(),level=document.getElementById('level').value,category=document.getElementById('category').value,signal=document.getElementById('signal').value,status=document.getElementById('status').value;
+ filtered=all.filter(r=>(!q||[r.Company,r.Ticker,r.Headline,r.Summary,r['Related Credit']].join(' ').toLowerCase().includes(q))&&(!level||r['News Level']===level)&&(!category||r.Category===category)&&(!signal||r.Signal===signal)&&(!status||r.Status===status));
+ render();
+}
+function render(){
+ document.getElementById('feed').innerHTML=filtered.length?filtered.map(r=>`<article class="card news-card">
+  <div class="news-top"><div class="meta"><span>${dateFmt(r.Date)}</span><span>·</span><span>${esc(r.Company)}</span>${r.Ticker?`<span>· ${esc(r.Ticker)}</span>`:''}<span class="pill level">${esc(r['News Level'])}</span><span class="pill ${esc(r.Signal)}">${esc(r.Signal)}</span></div><span class="meta">${esc(r.Status)}</span></div>
+  <div class="headline">${esc(r.Headline)}</div><div class="summary">${esc(r.Summary)}</div>
+  <div class="why"><div class="why-label">Why this matters</div><p>${esc(r['Why This Matters'])}</p></div>
+  <div class="news-foot"><span>${esc(r.Category)} · Impact: ${esc(r['Potential Impact'])} · Exposure: ${esc(r['BBDC Exposure'])}${r['Related Credit']?` · Credit: ${esc(r['Related Credit'])}`:''}</span><a class="source" href="${esc(r['Source URL'])}" target="_blank" rel="noopener">${esc(r.Source)} ↗</a></div>
+ </article>`).join(''):'<div class="card empty">No news items match the selected filters.</div>';
+ const sigs=['Negative','Neutral','Positive'];document.getElementById('signalSummary').innerHTML=sigs.map(s=>`<div class="signal-row"><span><span class="pill ${s}">${s}</span></span><span class="signal-count">${filtered.filter(r=>r.Signal===s).length}</span></div>`).join('');
+ const watch=filtered.filter(r=>r.Signal==='Negative'||r.Status==='Monitoring').slice(0,6);
+ document.getElementById('watchlist').innerHTML=watch.length?watch.map(r=>`<div class="watch-item"><div class="watch-company">${esc(r.Company)} <span class="pill ${esc(r.Signal)}">${esc(r.Signal)}</span></div><div class="watch-headline">${esc(r.Headline)}</div></div>`).join(''):'<div class="watch-item"><div class="watch-headline">No watch items in the current filter.</div></div>';
+}
+async function loadSidebar(){
+ try{
+  const html=await fetch('/bdc/bbdc/sidebar.html?v=20260716-news').then(r=>{if(!r.ok)throw Error();return r.text()});document.getElementById('sidebar').innerHTML=html;
+  const store='bbdc-sidebar-sections';let open=[];try{open=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}['bbdc-nav','overview-nav'].forEach(id=>{if(!open.includes(id))open.push(id)});
+  const apply=(id,on)=>{const t=document.getElementById(id),icon=document.getElementById('icon-'+id);if(!t)return;t.classList.toggle('hidden',!on);if(icon)icon.style.transform=on?'rotate(90deg)':'rotate(0deg)'};
+  window.toggleSection=id=>{let saved=[];try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}const t=document.getElementById(id);if(!t)return;const on=t.classList.contains('hidden');saved=on?[...new Set([...saved,id])]:saved.filter(x=>x!==id);localStorage.setItem(store,JSON.stringify(saved));apply(id,on)};
+  localStorage.setItem(store,JSON.stringify(open));document.querySelectorAll('#sidebar [id$="-nav"]').forEach(el=>apply(el.id,open.includes(el.id)));
+  document.querySelectorAll('#sidebar a').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('bg-blue-50','text-blue-700','font-semibold')});
+ }catch(e){document.getElementById('sidebar').innerHTML='<div style="padding:24px;font-size:12px">ORION</div>'}
+}
+function init(){
+ loadSidebar();
+ Papa.parse(CSV,{download:true,header:true,skipEmptyLines:true,complete:r=>{
+  all=r.data.filter(x=>x.Date&&x.Headline).sort((a,b)=>new Date(b.Date)-new Date(a.Date));filtered=[...all];renderKpis();
+  fillSelect('level','News Level');fillSelect('category','Category');fillSelect('signal','Signal');fillSelect('status','Status');
+  ['search','level','category','signal','status'].forEach(id=>document.getElementById(id).addEventListener(id==='search'?'input':'change',applyFilters));render();
+ },error:e=>{console.error(e);document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">The news CSV could not be loaded.</div>'}});
+}
+init();
+</script>
+</body></html>
