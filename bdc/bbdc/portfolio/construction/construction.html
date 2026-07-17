@@ -61,7 +61,10 @@
 
 <script>
 const CSV='/bdc/bbdc/data/bbdc_portfolio_construction.csv?v=20260716';
-const COLORS=['#002b51','#187aba','#3eb661','#5aa9d6','#335574','#86cf9b','#94a3b8','#14b8a6','#b8c7d3','#6faecf','#4f6f8c'];
+// Accessible chart palette from FW UX Design System: vary luminance first,
+// and keep purple / berry / peach / tangerine accents to about 20% or less.
+const COLORS=['#187ABA','#65C581','#C2ADEB','#0A6F7A','#4CCACD','#335574','#A3CAE3','#3B8C95','#B2E2C0','#FB9B63','#99AAB9'];
+const BLUE_SCALE=['#187ABA','#4695C8','#A3CAE3','#D1E4F1'];
 const n=v=>{const x=Number(String(v??'').replace(/[,$%()]/g,''));return String(v??'').trim()!==''&&Number.isFinite(x)?(/^\(.*\)$/.test(String(v))?-x:x):null};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sum=(a,key='fv')=>a.reduce((t,r)=>t+(Number.isFinite(r[key])?r[key]:0),0);
@@ -72,7 +75,7 @@ function donut(id,items){new Chart(document.getElementById(id),{type:'doughnut',
 function bars(id,items,horizontal=false){
  new Chart(document.getElementById(id),{
   type:'bar',
-  data:{labels:items.map(x=>x[0]),datasets:[{data:items.map(x=>x[1]),backgroundColor:items.map((_,i)=>i===0?'#002b51':'#187aba'),hoverBackgroundColor:'#3eb661',borderRadius:4,maxBarThickness:28}]},
+  data:{labels:items.map(x=>x[0]),datasets:[{data:items.map(x=>x[1]),backgroundColor:items.map((_,i)=>BLUE_SCALE[i%BLUE_SCALE.length]),hoverBackgroundColor:'#65C581',borderColor:items.map((_,i)=>i%BLUE_SCALE.length===3?'#A3CAE3':'transparent'),borderWidth:1,borderRadius:4,maxBarThickness:28}]},
   options:{responsive:true,maintainAspectRatio:false,indexAxis:horizontal?'y':'x',
    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Fair value: '+money(c.raw)},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},
    scales:{
