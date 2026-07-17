@@ -64,7 +64,6 @@ const CSV='/bdc/bbdc/data/bbdc_portfolio_construction.csv?v=20260716';
 // Accessible chart palette from FW UX Design System: vary luminance first,
 // and keep purple / berry / peach / tangerine accents to about 20% or less.
 const COLORS=['#187ABA','#65C581','#C2ADEB','#0A6F7A','#4CCACD','#335574','#A3CAE3','#3B8C95','#B2E2C0','#FB9B63','#99AAB9'];
-const BLUE_SCALE=['#187ABA','#4695C8','#A3CAE3','#D1E4F1'];
 const n=v=>{const x=Number(String(v??'').replace(/[,$%()]/g,''));return String(v??'').trim()!==''&&Number.isFinite(x)?(/^\(.*\)$/.test(String(v))?-x:x):null};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sum=(a,key='fv')=>a.reduce((t,r)=>t+(Number.isFinite(r[key])?r[key]:0),0);
@@ -72,10 +71,10 @@ const pct=(x,d)=>d?x/d*100:0;const money=v=>'$'+(v/1000).toLocaleString(undefine
 const group=(rows,key,value='fv')=>{const m={};rows.forEach(r=>{const k=r[key]||'Not disclosed';m[k]=(m[k]||0)+(Number.isFinite(r[value])?r[value]:0)});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
 function map(r){return{date:r['Reporting Date'],company:r['Portfolio Company'],industry:r['Industry'],instrument:r['Instrument Description'],asset:r['Asset Type'],lien:r['Lien / Seniority'],classification:r['Classification'],cost:n(r['Cost ($000)']),fv:n(r['Fair Value ($000)']),pik:n(r['PIK Rate (%)']),rateType:r['Rate Type'],maturity:r['Maturity Date'],nonAccrual:String(r['Non-Accrual']||'').trim().toLowerCase()==='yes'}}
 function donut(id,items){new Chart(document.getElementById(id),{type:'doughnut',data:{labels:items.map(x=>x[0]),datasets:[{data:items.map(x=>x[1]),backgroundColor:COLORS,borderColor:'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{position:'bottom',labels:{boxWidth:8,boxHeight:8,usePointStyle:true,padding:11,font:{family:'Poppins',size:8}}},tooltip:{callbacks:{label:c=>`${c.label}: ${money(c.raw)} (${pct(c.raw,c.dataset.data.reduce((a,b)=>a+b,0)).toFixed(1)}%)`},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}}}})}
-function bars(id,items,horizontal=false){
+function bars(id,items,horizontal=false,categorical=false){
  new Chart(document.getElementById(id),{
   type:'bar',
-  data:{labels:items.map(x=>x[0]),datasets:[{data:items.map(x=>x[1]),backgroundColor:items.map((_,i)=>BLUE_SCALE[i%BLUE_SCALE.length]),hoverBackgroundColor:'#65C581',borderColor:items.map((_,i)=>i%BLUE_SCALE.length===3?'#A3CAE3':'transparent'),borderWidth:1,borderRadius:4,maxBarThickness:28}]},
+  data:{labels:items.map(x=>x[0]),datasets:[{data:items.map(x=>x[1]),backgroundColor:items.map((_,i)=>categorical?COLORS[i%COLORS.length]:'#187ABA'),hoverBackgroundColor:'#65C581',borderColor:'#ffffff',borderWidth:categorical?1:0,borderRadius:4,maxBarThickness:28}]},
   options:{responsive:true,maintainAspectRatio:false,indexAxis:horizontal?'y':'x',
    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Fair value: '+money(c.raw)},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},
    scales:{
@@ -92,7 +91,7 @@ function render(rows){
  document.getElementById('kpis').innerHTML=cards.map(x=>`<article class="card kpi"><div class="kpi-label">${x[0]}</div><div class="kpi-value">${x[1]}</div><div class="kpi-note">${x[2]}</div></article>`).join('');
  document.getElementById('subtitle').textContent=`Portfolio composition, concentration and structural risk · As of ${rows[0].date||'latest reporting date'} · ${pct(nonAcc,total).toFixed(1)}% non-accruals by fair value`;
  let industries=group(rows,'industry'),other=industries.slice(9).reduce((t,x)=>t+x[1],0);industries=industries.slice(0,9);if(other)industries.push(['Other',other]);
- bars('industryChart',industries,true);donut('assetChart',group(rows,'asset'));donut('lienChart',group(rows,'lien'));
+ bars('industryChart',industries,true,true);donut('assetChart',group(rows,'asset'));donut('lienChart',group(rows,'lien'));
  const maturities={};debt.forEach(r=>{if(!r.maturity)return;const m=String(r.maturity).match(/(\d{2,4})$/);if(!m)return;let y=Number(m[1]);if(y<100)y+=2000;maturities[y]=(maturities[y]||0)+(r.fv||0)});bars('maturityChart',Object.entries(maturities).sort((a,b)=>Number(a[0])-Number(b[0])));
  donut('classificationChart',group(rows,'classification'));
  const byCompany={};rows.forEach(r=>{const x=byCompany[r.company]||(byCompany[r.company]={company:r.company,industry:r.industry,count:0,cost:0,fv:0});x.count++;x.cost+=r.cost||0;x.fv+=r.fv||0});
