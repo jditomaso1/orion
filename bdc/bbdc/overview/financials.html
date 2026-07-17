@@ -93,11 +93,11 @@ function latest(rows,metric){
 function renderKpis(){
   const q=DATA['quarterly_trends.csv'], snap=DATA['financial_snapshot.csv'], fund=DATA['leverage_funding.csv'];
   const defs=[
-    ['NAV / SHARE',latest(q,'nav_per_share'),'Latest reported'],
-    ['NII / SHARE',latest(q,'nii_per_share'),'Latest quarter'],
-    ['REGULAR DIVIDEND',latest(q,'regular_dividend_per_share'),'Per share'],
-    ['DIVIDEND COVERAGE',latest(q,'dividend_coverage'),'NII / total dividend'],
-    ['NET LEVERAGE',latest(q,'net_debt_to_equity'),'Net debt / equity'],
+    ['NAV / SHARE',latest(q,'NAV per Share'),'Latest reported'],
+    ['NII / SHARE',latest(q,'NII per Share'),'Latest quarter'],
+    ['REGULAR DIVIDEND',latest(q,'Regular Dividend per Share'),'Per share'],
+    ['DIVIDEND COVERAGE',latest(q,'Dividend Coverage (NII / Total Dividend)'),'NII / total dividend'],
+    ['NET LEVERAGE',latest(q,'Net Debt-to-Equity'),'Net debt / equity'],
     ['AVAILABLE LIQUIDITY',fund.find(r=>(r.item||'').toLowerCase().includes('available liquidity'))||{},'Funding capacity']
   ];
   document.getElementById('kpis').innerHTML=defs.map(([label,r,note])=>`<div class="card kpi"><div class="kpi-label">${label}</div><div class="kpi-value">${fmt(r.value,r.unit,r.value_text)}</div><div class="kpi-note">${note} · ${esc(r.period||'Q1 2026')}</div></div>`).join('');
@@ -110,10 +110,10 @@ function chart(id,type,labels,datasets,opts={}){
 function renderCharts(){
  const rows=quarterRows(DATA['quarterly_trends.csv']); const labels=[...new Set(rows.map(r=>r.period))];
  const common={borderWidth:2,pointRadius:2,tension:.25};
- chart('navChart','line',labels,[{label:'NAV / share',data:series(rows,'nav_per_share'),borderColor:'#187ABA',backgroundColor:'rgba(24,122,186,.12)',fill:true,...common}],{ticks:{callback:v=>'$'+v}});
- chart('earningsChart','line',labels,[{label:'NII / share',data:series(rows,'nii_per_share'),borderColor:'#187ABA',...common},{label:'Total dividend',data:series(rows,'total_dividend_per_share'),borderColor:'#3EB661',...common}],{ticks:{callback:v=>'$'+v}});
- chart('coverageChart','bar',labels,[{label:'Coverage',data:series(rows,'dividend_coverage').map(v=>v*100),backgroundColor:series(rows,'dividend_coverage').map(v=>v>=1?'#3EB661':'#f59e0b'),borderRadius:4}],{ticks:{callback:v=>v+'%'}});
- chart('portfolioChart','line',labels,[{label:'Portfolio FV',data:series(rows,'portfolio_fair_value'),borderColor:'#187ABA',...common},{label:'Debt principal',data:series(rows,'debt_principal'),borderColor:'#002B51',...common}],{ticks:{callback:v=>'$'+v.toLocaleString()}});
+ chart('navChart','line',labels,[{label:'NAV / share',data:series(rows,'NAV per Share'),borderColor:'#187ABA',backgroundColor:'rgba(24,122,186,.12)',fill:true,...common}],{ticks:{callback:v=>'$'+v}});
+ chart('earningsChart','line',labels,[{label:'NII / share',data:series(rows,'NII per Share'),borderColor:'#187ABA',...common},{label:'Total dividend',data:series(rows,'Total Dividend per Share'),borderColor:'#3EB661',...common}],{ticks:{callback:v=>'$'+v}});
+ chart('coverageChart','bar',labels,[{label:'Coverage',data:series(rows,'Dividend Coverage (NII / Total Dividend)').map(v=>v*100),backgroundColor:series(rows,'Dividend Coverage (NII / Total Dividend)').map(v=>v>=1?'#3EB661':'#f59e0b'),borderRadius:4}],{ticks:{callback:v=>v+'%'}});
+ chart('portfolioChart','line',labels,[{label:'Portfolio FV',data:series(rows,'Portfolio Fair Value ($M)'),borderColor:'#187ABA',...common},{label:'Debt principal',data:series(rows,'Total Debt, Principal ($M)'),borderColor:'#002B51',...common}],{ticks:{callback:v=>'$'+v.toLocaleString()}});
 }
 function pivotTable(rows,title,subtitle){
   const periods=[...new Set(rows.map(r=>r.period))]; const metrics=[...new Set(rows.map(r=>r.metric||r.item))];
