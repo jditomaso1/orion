@@ -1,6 +1,175 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>BBDC Comparables | Orion</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>*{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#172033;font-family:Poppins,sans-serif}#sidebar{position:fixed;inset:0 auto 0 0;width:256px;background:#fff;border-right:1px solid #e2eaf0;overflow:auto}main{margin-left:256px;padding:28px}.eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;color:#64748b}h1{font-size:22px;margin:5px 0}.card{margin-top:18px;background:#fff;border:1px solid #e2eaf0;border-radius:13px;padding:24px;font-size:12px;color:#64748b}@media(max-width:850px){#sidebar{display:none}main{margin-left:0}}</style></head>
-<body><aside id="sidebar"></aside><main><div class="eyebrow">ORION · BDC INTELLIGENCE</div><h1>BBDC Comparables</h1><div class="card">Peer comparison analysis will be added here.</div></main>
-<script>fetch('/bdc/bbdc/sidebar.html').then(r=>r.text()).then(h=>{sidebar.innerHTML=h;let open=['bbdc-nav','overview-nav'];try{open=[...new Set([...JSON.parse(localStorage.getItem('bbdc-sidebar-sections')||'[]'),...open])]}catch(e){}localStorage.setItem('bbdc-sidebar-sections',JSON.stringify(open));document.querySelectorAll('#sidebar [data-target]').forEach(b=>{const t=document.getElementById(b.dataset.target);if(t&&open.includes(b.dataset.target)){t.classList.remove('hidden');const a=b.querySelector('.arrow');if(a)a.textContent='▼'}});document.querySelectorAll('#sidebar a').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('active')})})</script></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BBDC Comparables | Orion</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#002b51;--blue:#187aba;--green:#3eb661;--red:#dc3545;--amber:#f59e0b;--bg:#f4f7fa;--line:#e2eaf0;--muted:#64748b}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Poppins,sans-serif}
+    #sidebar{position:fixed;inset:0 auto 0 0;width:256px;background:#fff;border-right:1px solid var(--line);z-index:30;overflow:auto}
+    main{margin-left:256px;min-height:100vh}.wrap{max-width:1540px;margin:auto;padding:25px 28px 42px}
+    .eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#64748b}
+    h1{font-size:22px;line-height:1.2;margin:5px 0;color:#111827;font-weight:700}.subtitle{font-size:11px;color:#64748b}
+    .card{background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 1px 2px rgba(15,23,42,.025)}
+    .kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:18px 0}
+    .kpi{padding:15px 16px;min-height:112px}.kpi-label{font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+    .kpi-line{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:8px}
+    .kpi-value{font-size:22px;color:var(--navy);font-weight:700;white-space:nowrap}.badge{font-size:8px;padding:4px 6px;border-radius:999px;font-weight:700;white-space:nowrap}
+    .good{background:#eaf8ef;color:#237a3b}.bad{background:#fff0f1;color:#b4232f}.neutral{background:#eef5fa;color:#526779}
+    .kpi-note{font-size:9px;color:#718096;margin-top:5px}.section-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:13px}
+    .chart-card{padding:16px;height:315px}.card-title{font-size:12px;font-weight:700;color:#172033}.card-subtitle{font-size:9px;color:#64748b;margin:2px 0 10px}
+    .chart-wrap{height:244px}.table-card{overflow:hidden}.table-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+    .toggle{display:flex;gap:4px;background:#f1f5f9;padding:4px;border-radius:8px}.toggle button{border:0;background:transparent;color:#64748b;font:600 9px Poppins;padding:6px 9px;border-radius:6px;cursor:pointer}
+    .toggle button.active{background:var(--navy);color:#fff}.table-scroll{overflow:auto;max-height:630px}
+    table{width:100%;border-collapse:collapse;font-size:9px;white-space:nowrap}th{position:sticky;top:0;background:#f8fafc;color:#64748b;text-transform:uppercase;letter-spacing:.035em;font-size:8px;text-align:right;padding:9px 10px;border-bottom:1px solid var(--line);cursor:pointer;z-index:2}
+    th:first-child,td:first-child{text-align:left;position:sticky;left:0;z-index:3}td{padding:10px;border-bottom:1px solid #edf2f7;text-align:right;background:#fff}
+    tr:nth-child(even) td{background:#fbfdff}tr:hover td{background:#f1f7fb}.bbdc-row td{background:#eaf4fb!important;color:var(--navy);font-weight:600}
+    .company{font-weight:600}.ticker{display:inline-block;color:#fff;background:var(--navy);font-size:8px;font-weight:700;border-radius:5px;padding:3px 5px;margin-left:6px}
+    .source{color:var(--blue);font-weight:700;text-decoration:none}.source:hover{text-decoration:underline}
+    .method{margin-top:13px;padding:16px;display:grid;grid-template-columns:1.2fr 2fr;gap:18px}.method p{font-size:9px;color:#64748b;line-height:1.6;margin:5px 0 0}
+    .legend{display:flex;gap:12px;align-items:center;font-size:9px;color:#64748b}.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+    .status{padding:24px;text-align:center;font-size:11px;color:#64748b}.error{color:#b91c1c}
+    @media(max-width:1200px){.kpis{grid-template-columns:repeat(3,1fr)}.section-grid{grid-template-columns:1fr 1fr}} 
+    @media(max-width:850px){#sidebar{display:none}main{margin-left:0}.wrap{padding:20px 14px}.kpis{grid-template-columns:repeat(2,1fr)}.section-grid{grid-template-columns:1fr}.method{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <aside id="sidebar"></aside>
+  <main><div class="wrap">
+    <div class="eyebrow">ORION · BDC INTELLIGENCE</div>
+    <h1>BBDC Comparables</h1>
+    <div class="subtitle">BBDC versus selected public BDC peers · Reporting period ended March 31, 2026</div>
+
+    <section id="kpis" class="kpis"><div class="card status" style="grid-column:1/-1">Loading peer data…</div></section>
+
+    <section class="section-grid">
+      <div class="card chart-card"><div class="card-title">Price to NAV</div><div class="card-subtitle">Current market valuation relative to reported NAV</div><div class="chart-wrap"><canvas id="priceNavChart"></canvas></div></div>
+      <div class="card chart-card"><div class="card-title">Dividend yield</div><div class="card-subtitle">Regular dividend, annualized / share price</div><div class="chart-wrap"><canvas id="yieldChart"></canvas></div></div>
+      <div class="card chart-card"><div class="card-title">Dividend coverage</div><div class="card-subtitle">Quarterly NII / regular dividend</div><div class="chart-wrap"><canvas id="coverageChart"></canvas></div></div>
+    </section>
+
+    <section class="card table-card">
+      <div class="table-head">
+        <div><div class="card-title">Peer comparison</div><div class="card-subtitle">Click a column header to sort · BBDC highlighted</div></div>
+        <div class="toggle">
+          <button class="active" data-view="core">CORE</button>
+          <button data-view="portfolio">PORTFOLIO</button>
+          <button data-view="performance">PERFORMANCE</button>
+        </div>
+      </div>
+      <div class="table-scroll"><table><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div>
+    </section>
+
+    <section class="card method">
+      <div><div class="card-title">Methodology</div><p>Peer figures are sourced from company filings and releases. BBDC is compared with eight publicly traded BDCs. Blank values are displayed as “—” and excluded from peer medians.</p></div>
+      <div><div class="card-title">Comparability note</div><p>Portfolio yield, first-lien exposure, floating-rate exposure and non-accruals may use different denominators across issuers. Use the source notes for each company before drawing a precise conclusion. Market prices are approximate as of July 15, 2026.</p></div>
+    </section>
+  </div></main>
+
+<script>
+const CSV='/bdc/bbdc/data/bdc_comparables.csv?v=20260716';
+const H={
+ name:'Company Name',ticker:'Ticker',date:'Reporting Date',price:'Share Price ($)',priceDate:'Share Price Date',
+ nav:'NAV per Share ($)',pn:'Price / NAV',regular:'Regular Dividend per Share ($/qtr)',supp:'Supplemental Dividend per Share ($/qtr)',
+ yield:'Dividend Yield (regular, annualized / price)',nii:'NII per Share ($/qtr)',coverage:'Dividend Coverage (NII / regular div)',
+ fv:'Portfolio Fair Value ($mm)',portYield:'Portfolio Yield',first:'First-Lien %',floating:'Floating-Rate %',nonAcc:'Non-Accruals (% of FV)',
+ de:'Debt / Equity (x)',netde:'Net Debt / Equity (x)',priorNav:'NAV per Share, Prior Qtr ($)',yearNav:'NAV per Share, Year Ago ($)',
+ ttm:'TTM Distributions per Share ($)',qNav:'Quarterly NAV Change',yNav:'One-Year NAV Change',totalReturn:'One-Year Total Return (NAV basis)',
+ threeYear:'Three-Year Annualized Return',realized:'Net Realized Gains / (Losses) per Share ($/qtr)',
+ unrealized:'Net Unrealized Appr. / (Depr.) per Share ($/qtr)',source:'Source ID',url:'Source URL',notes:'Notes'
+};
+let rows=[],view='core',sortKey=H.pn,sortAsc=false; const charts=[];
+const n=v=>v===''||v==null||Number.isNaN(Number(v))?null:Number(v);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=(v,type)=>{
+ const x=n(v);if(x===null)return '—';
+ if(type==='money')return '$'+x.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+ if(type==='mm')return '$'+x.toLocaleString(undefined,{maximumFractionDigits:0});
+ if(type==='pct')return (x*100).toFixed(1)+'%';
+ if(type==='x')return x.toFixed(2)+'x';
+ return x.toLocaleString(undefined,{maximumFractionDigits:2});
+};
+const median=vals=>{const a=vals.map(n).filter(v=>v!==null).sort((a,b)=>a-b);if(!a.length)return null;const m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2};
+const peerMedian=key=>median(rows.filter(r=>r[H.ticker]!=='BBDC').map(r=>r[key]));
+const bbdc=()=>rows.find(r=>r[H.ticker]==='BBDC')||{};
+function relativeBadge(value,med,betterHigh=true){
+ if(value===null||med===null)return '<span class="badge neutral">NO PEER MEDIAN</span>';
+ const diff=(value-med)/Math.abs(med||1),good=betterHigh?diff>=0:diff<=0;
+ return `<span class="badge ${Math.abs(diff)<.025?'neutral':good?'good':'bad'}">${diff>=0?'+':''}${(diff*100).toFixed(0)}% VS MEDIAN</span>`;
+}
+function renderKpis(){
+ const b=bbdc();
+ const defs=[
+  ['PRICE / NAV',H.pn,'x',false,'Market valuation'],
+  ['DIVIDEND YIELD',H.yield,'pct',true,'Regular annualized'],
+  ['DIVIDEND COVERAGE',H.coverage,'x',true,'NII / regular dividend'],
+  ['NET LEVERAGE',H.netde,'x',false,'Net debt / equity'],
+  ['NON-ACCRUALS',H.nonAcc,'pct',false,'Percentage of fair value']
+ ];
+ document.getElementById('kpis').innerHTML=defs.map(([label,key,type,better,note])=>{const v=n(b[key]),m=peerMedian(key);return `<div class="card kpi"><div class="kpi-label">${label}</div><div class="kpi-line"><div class="kpi-value">${fmt(v,type)}</div>${relativeBadge(v,m,better)}</div><div class="kpi-note">Peer median: ${fmt(m,type)} · ${note}</div></div>`}).join('');
+}
+function makeChart(id,key,label,type='pct',baseline=null){
+ const sorted=[...rows].sort((a,b)=>(n(b[key])??-Infinity)-(n(a[key])??-Infinity));
+ const values=sorted.map(r=>n(r[key])); const labels=sorted.map(r=>r[H.ticker]);
+ const colors=sorted.map(r=>r[H.ticker]==='BBDC'?'#002B51':'#187ABA');
+ const cfg={type:'bar',data:{labels,datasets:[{label,data:values,backgroundColor:colors,borderRadius:4,maxBarThickness:26}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>label+': '+fmt(c.raw,type)},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{beginAtZero:baseline===0,grid:{color:'#edf2f7'},ticks:{font:{family:'Poppins',size:8},callback:v=>type==='pct'?(v*100).toFixed(0)+'%':type==='x'?Number(v).toFixed(1)+'x':v}},y:{grid:{display:false},ticks:{font:{family:'Poppins',size:9,weight:'600'}}}}}};
+ charts.push(new Chart(document.getElementById(id),cfg));
+}
+const views={
+ core:[
+  ['Company',H.name,'text'],['Price',H.price,'money'],['NAV / Sh.',H.nav,'money'],['Price / NAV',H.pn,'x'],['Dividend Yield',H.yield,'pct'],['NII / Sh.',H.nii,'money'],['Coverage',H.coverage,'x'],['Net Leverage',H.netde,'x'],['Source',H.source,'source']
+ ],
+ portfolio:[
+  ['Company',H.name,'text'],['Portfolio FV',H.fv,'mm'],['Portfolio Yield',H.portYield,'pct'],['First-Lien',H.first,'pct'],['Floating Rate',H.floating,'pct'],['Non-Accruals',H.nonAcc,'pct'],['Debt / Equity',H.de,'x'],['Net Debt / Equity',H.netde,'x'],['Source',H.source,'source']
+ ],
+ performance:[
+  ['Company',H.name,'text'],['Quarterly NAV',H.qNav,'pct'],['One-Year NAV',H.yNav,'pct'],['One-Year Return',H.totalReturn,'pct'],['TTM Distributions',H.ttm,'money'],['Realized / Sh.',H.realized,'money'],['Unrealized / Sh.',H.unrealized,'money'],['Source',H.source,'source']
+ ]
+};
+function renderTable(){
+ const cols=views[view],sorted=[...rows].sort((a,b)=>{
+  const av=n(a[sortKey]),bv=n(b[sortKey]);
+  if(av!==null||bv!==null){if(av===null)return 1;if(bv===null)return -1;return sortAsc?av-bv:bv-av}
+  return sortAsc?String(a[sortKey]||'').localeCompare(String(b[sortKey]||'')):String(b[sortKey]||'').localeCompare(String(a[sortKey]||''));
+ });
+ document.getElementById('tableHead').innerHTML='<tr>'+cols.map(([label,key])=>`<th data-key="${esc(key)}">${label}${sortKey===key?(sortAsc?' ↑':' ↓'):''}</th>`).join('')+'</tr>';
+ document.getElementById('tableBody').innerHTML=sorted.map(r=>'<tr class="'+(r[H.ticker]==='BBDC'?'bbdc-row':'')+'">'+cols.map(([label,key,type],i)=>{
+  if(i===0)return `<td><span class="company">${esc(r[H.name])}</span><span class="ticker">${esc(r[H.ticker])}</span></td>`;
+  if(type==='source')return `<td>${r[H.url]?`<a class="source" href="${esc(r[H.url])}" target="_blank" rel="noopener">${esc(r[H.source])} ↗</a>`:'—'}</td>`;
+  return `<td title="${esc(r[H.notes])}">${fmt(r[key],type)}</td>`;
+ }).join('')+'</tr>').join('');
+ document.querySelectorAll('#tableHead th').forEach(th=>th.addEventListener('click',()=>{const key=th.dataset.key;if(sortKey===key)sortAsc=!sortAsc;else{sortKey=key;sortAsc=false}renderTable()}));
+}
+function setupToggles(){document.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.toggle button').forEach(x=>x.classList.remove('active'));b.classList.add('active');view=b.dataset.view;sortKey=views[view][1][1];sortAsc=false;renderTable()}))}
+async function loadSidebar(){
+ try{
+  const html=await fetch('/bdc/bbdc/sidebar.html?v=20260716-comparables').then(r=>{if(!r.ok)throw Error();return r.text()});
+  document.getElementById('sidebar').innerHTML=html;
+  const store='bbdc-sidebar-sections';let open=[];
+  try{open=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}
+  ['bbdc-nav','overview-nav'].forEach(id=>{if(!open.includes(id))open.push(id)});
+  const apply=(id,on)=>{const t=document.getElementById(id),icon=document.getElementById('icon-'+id);if(!t)return;t.classList.toggle('hidden',!on);if(icon)icon.style.transform=on?'rotate(90deg)':'rotate(0deg)'};
+  window.toggleSection=id=>{let saved=[];try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}const t=document.getElementById(id);if(!t)return;const on=t.classList.contains('hidden');saved=on?[...new Set([...saved,id])]:saved.filter(x=>x!==id);localStorage.setItem(store,JSON.stringify(saved));apply(id,on)};
+  localStorage.setItem(store,JSON.stringify(open));document.querySelectorAll('#sidebar [id$="-nav"]').forEach(el=>apply(el.id,open.includes(el.id)));
+  document.querySelectorAll('#sidebar a').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('bg-blue-50','text-blue-700','font-semibold')});
+ }catch(e){document.getElementById('sidebar').innerHTML='<div style="padding:24px;font-size:12px">ORION</div>'}
+}
+function init(){
+ loadSidebar();setupToggles();
+ Papa.parse(CSV,{download:true,header:true,skipEmptyLines:true,complete:r=>{
+  if(r.errors.length)console.warn(r.errors);rows=r.data.filter(x=>x[H.ticker]);
+  if(!rows.length){document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">No comparable-company data was found.</div>';return}
+  renderKpis();makeChart('priceNavChart',H.pn,'Price / NAV','x');makeChart('yieldChart',H.yield,'Dividend yield','pct',0);makeChart('coverageChart',H.coverage,'Coverage','x',0);renderTable();
+ },error:e=>{console.error(e);document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">The comparable-company CSV could not be loaded.</div>'}});
+}
+init();
+</script>
+</body>
+</html>
