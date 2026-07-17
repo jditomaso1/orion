@@ -1,39 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>BBDC Portfolio Activity | Orion</title>
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    *{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#172033;font-family:Poppins,sans-serif}
-    #sidebar{position:fixed;inset:0 auto 0 0;width:256px;background:#fff;border-right:1px solid #e2eaf0;z-index:30;overflow:auto}
-    main{margin-left:256px;min-height:100vh;padding:28px}.eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;color:#64748b}
-    h1{font-size:22px;font-weight:700;margin:5px 0}.card{margin-top:18px;background:#fff;border:1px solid #e2eaf0;border-radius:13px;padding:24px;font-size:12px;color:#64748b}
-    @media(max-width:850px){#sidebar{display:none}main{margin-left:0}}
+    :root{--navy:#002b51;--blue:#187aba;--jade:#3eb661;--ocean:#0a6f7a;--berry:#d3086f;--tangerine:#fa823c;--bg:#f4f7fa;--line:#e2eaf0;--muted:#64748b}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Poppins,sans-serif}#sidebar{position:fixed;inset:0 auto 0 0;width:256px;background:#fff;border-right:1px solid var(--line);z-index:30;overflow:auto}
+    main{margin-left:256px;min-height:100vh}.wrap{max-width:1540px;margin:auto;padding:25px 28px 42px}.eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}h1{font-size:22px;line-height:1.2;margin:5px 0;color:#111827;font-weight:700}.subtitle{font-size:11px;color:var(--muted)}
+    .card{background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 1px 2px rgba(15,23,42,.025)}.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:18px 0 13px}.kpi{padding:15px 16px;min-height:108px}.kpi-label{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}.kpi-value{margin-top:8px;font-size:21px;color:var(--navy);font-weight:700}.kpi-note{font-size:9px;color:#718096;margin-top:4px}
+    .charts{display:grid;grid-template-columns:1fr 1.3fr;gap:13px;margin-bottom:13px}.chart-card{padding:16px;height:315px}.card-title{font-size:12px;font-weight:700}.card-subtitle{font-size:9px;color:var(--muted);margin:2px 0 10px}.chart-wrap{height:240px}
+    .toolbar{display:grid;grid-template-columns:minmax(220px,1.5fr) repeat(2,minmax(150px,1fr)) auto;gap:10px;padding:13px;margin-bottom:13px}.control,.btn{min-height:38px;border:1px solid #d8e2ea;border-radius:9px;background:#fff;color:var(--navy);font:500 10px Poppins;padding:8px 10px}.control{width:100%;outline:none}.control:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,122,186,.11)}.btn{cursor:pointer;font-weight:700}
+    .events{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.event{padding:15px 16px}.event-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.event-company{font-size:12px;font-weight:700;color:var(--navy)}.event-meta{font-size:9px;color:var(--muted);margin-top:3px}.event-desc{font-size:9px;line-height:1.55;color:#526273;margin-top:10px}.event-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px;padding-top:9px;border-top:1px solid #edf2f7}.tag{display:inline-block;padding:4px 7px;border-radius:999px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.035em}.tag-exit{background:#f6cee2;color:#8e084d}.tag-sale{background:#fee6d8;color:#934318}.tag-non{background:#ffe5e6;color:#9f2f35}.tag-repayment{background:#b2e2c0;color:#246e39}.tag-restructuring{background:#e0d6f5;color:#573196}.tag-default{background:#d1e4f1;color:#0f5d8f}.source{color:var(--blue);font-size:8px;font-weight:700;text-decoration:none}.amount{color:var(--navy);font-size:10px;font-weight:700}.empty{display:none;padding:45px;text-align:center;color:var(--muted);font-size:11px}
+    .note{margin-top:13px;padding:14px 16px;font-size:9px;line-height:1.6;color:var(--muted)}.status{padding:40px;text-align:center;font-size:11px;color:var(--muted)}.error{color:#b91c1c}
+    @media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.charts{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr 1fr}.events{grid-template-columns:1fr}}
+    @media(max-width:850px){#sidebar{display:none}main{margin-left:0}.wrap{padding:20px 14px}.kpis{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr}}
   </style>
 </head>
-<body>
-  <aside id="sidebar"></aside>
-  <main><div class="eyebrow">ORION · BDC INTELLIGENCE</div><h1>Portfolio Activity</h1><div class="card">Quarterly portfolio activity will be added here.</div></main>
-  <script>
-    async function loadSidebar(){
-      try{
-        const html=await fetch('/bdc/bbdc/sidebar.html?v=20260717-activity',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(r.status);return r.text()});
-        document.getElementById('sidebar').innerHTML=html;
-        const store='bbdc-sidebar-sections';let open=[];
-        try{open=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}
-        ['bbdc-nav','portfolio-nav'].forEach(id=>{if(!open.includes(id))open.push(id)});
-        const apply=(id,on)=>{const section=document.getElementById(id),icon=document.getElementById('icon-'+id);if(!section)return;section.classList.toggle('hidden',!on);if(icon)icon.style.transform=on?'rotate(90deg)':'rotate(0deg)'};
-        window.toggleSection=id=>{let saved=[];try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}const section=document.getElementById(id);if(!section)return;const on=section.classList.contains('hidden');saved=on?[...new Set([...saved,id])]:saved.filter(x=>x!==id);localStorage.setItem(store,JSON.stringify(saved));apply(id,on)};
-        localStorage.setItem(store,JSON.stringify(open));
-        document.querySelectorAll('#sidebar [id$="-nav"]').forEach(el=>apply(el.id,open.includes(el.id)));
-        document.querySelectorAll('#sidebar a[href]').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname){a.classList.add('bg-blue-50','text-blue-700','font-semibold');a.setAttribute('aria-current','page')}});
-      }catch(e){console.warn('Sidebar could not be loaded',e)}
-    }
-    loadSidebar();
-  </script>
-</body>
-</html>
+<body><aside id="sidebar"></aside><main><div class="wrap">
+  <div class="eyebrow">ORION · BDC INTELLIGENCE</div><h1>BBDC Portfolio Activity</h1>
+  <div id="subtitle" class="subtitle">Selected, source-verified portfolio transactions and credit developments</div>
+  <section id="kpis" class="kpis"><div class="card status" style="grid-column:1/-1">Loading portfolio activity…</div></section>
+  <section id="dashboard" style="display:none">
+    <div class="charts">
+      <article class="card chart-card"><div class="card-title">Activity by type</div><div class="card-subtitle">Count of specifically disclosed portfolio events</div><div class="chart-wrap"><canvas id="typeChart"></canvas></div></article>
+      <article class="card chart-card"><div class="card-title">Quarterly disclosed events</div><div class="card-subtitle">Event counts by reporting period and activity classification</div><div class="chart-wrap"><canvas id="quarterChart"></canvas></div></article>
+    </div>
+    <section class="card toolbar"><input id="search" class="control" type="search" placeholder="Search company, instrument or description…"><select id="quarter" class="control"><option value="">All quarters</option></select><select id="type" class="control"><option value="">All activity types</option></select><button id="reset" class="btn" type="button">RESET</button></section>
+    <div class="flex items-center justify-between gap-3 mb-3"><div><div class="card-title">Selected Disclosed Portfolio Events</div><div id="caption" class="card-subtitle">Loading events…</div></div><a class="btn no-underline" href="/bdc/bbdc/data/bbdc_portfolio_activity.csv" download>DOWNLOAD CSV</a></div>
+    <section id="events" class="events"></section><div id="empty" class="card empty">No disclosed events match the selected filters.</div>
+    <section class="card note"><strong>Scope note:</strong> Events reflect specifically disclosed transactions and credit developments identified in BBDC filings, earnings materials and management commentary. They are not an exhaustive instrument-level activity history. Undisclosed amounts are displayed as “Not separately disclosed” and are not estimated.</section>
+  </section>
+</div></main>
+<script>
+const CSV='/bdc/bbdc/data/bbdc_portfolio_activity.csv?v=20260717';
+const COLORS=['#187ABA','#65C581','#C2ADEB','#0A6F7A','#4CCACD','#FA823C','#D3086F','#335574'];
+const n=v=>{const t=String(v??'').trim(),x=Number(t.replace(/[,$%()]/g,''));return t!==''&&Number.isFinite(x)?(/^\(.*\)$/.test(t)?-x:x):null};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uniq=a=>[...new Set(a.filter(Boolean))].sort();const qlabel=d=>new Date(d+'T00:00:00').toLocaleDateString('en-US',{year:'numeric',month:'short'});
+let rows=[];
+function tagClass(type){if(type==='Exit')return'tag-exit';if(type==='Sale')return'tag-sale';if(type.includes('Non-Accrual'))return'tag-non';if(type==='Repayment')return'tag-repayment';if(type==='Restructuring')return'tag-restructuring';return'tag-default'}
+function renderKpis(){const latest=rows.map(x=>x.date).sort().at(-1),latestRows=rows.filter(x=>x.date===latest),exits=rows.filter(x=>x.type==='Exit').length,non=rows.filter(x=>x.type==='Added to Non-Accrual').length,returned=rows.filter(x=>x.type==='Repayment').reduce((t,x)=>t+(x.amount||0),0);const cards=[['DISCLOSED EVENTS',rows.length,'Across '+uniq(rows.map(x=>x.date)).length+' reporting periods'],['LATEST QUARTER',latestRows.length,latest?qlabel(latest):'—'],['EXITS',exits,'Specifically identified exits'],['NEW NON-ACCRUALS',non,'Instrument-level disclosures'],['KNOWN CAPITAL RETURNED',returned?'$'+(returned/1000).toFixed(1)+'MM':'—','Only separately disclosed amounts']];document.getElementById('kpis').innerHTML=cards.map(x=>`<article class="card kpi"><div class="kpi-label">${x[0]}</div><div class="kpi-value">${x[1]}</div><div class="kpi-note">${x[2]}</div></article>`).join('')}
+function charts(){const types=uniq(rows.map(x=>x.type)),counts=types.map(t=>rows.filter(x=>x.type===t).length);new Chart(document.getElementById('typeChart'),{type:'doughnut',data:{labels:types,datasets:[{data:counts,backgroundColor:COLORS,borderColor:'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'64%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,padding:10,font:{family:'Poppins',size:8}}},tooltip:{titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}}}});const quarters=uniq(rows.map(x=>x.date));new Chart(document.getElementById('quarterChart'),{type:'bar',data:{labels:quarters.map(qlabel),datasets:types.map((t,i)=>({label:t,data:quarters.map(q=>rows.filter(x=>x.date===q&&x.type===t).length),backgroundColor:COLORS[i%COLORS.length],borderRadius:3}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,padding:10,font:{family:'Poppins',size:8}}},tooltip:{titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Poppins',size:8}}},y:{stacked:true,beginAtZero:true,ticks:{stepSize:1,font:{family:'Poppins',size:8}},grid:{color:'#edf2f7'}}}}})}
+function filtered(){const q=document.getElementById('search').value.toLowerCase().trim(),quarter=document.getElementById('quarter').value,type=document.getElementById('type').value;return rows.filter(x=>(!q||[x.company,x.industry,x.instrument,x.description,x.type].some(v=>v.toLowerCase().includes(q)))&&(!quarter||x.date===quarter)&&(!type||x.type===type)).sort((a,b)=>b.date.localeCompare(a.date)||a.company.localeCompare(b.company))}
+function renderEvents(){const shown=filtered();document.getElementById('events').innerHTML=shown.map(x=>`<article class="card event"><div class="event-top"><div><div class="event-company">${esc(x.company)}</div><div class="event-meta">${esc(x.industry||'Industry not disclosed')} · ${esc(x.instrument||'Instrument not separately identified')} · ${qlabel(x.date)}</div></div><span class="tag ${tagClass(x.type)}">${esc(x.type)}</span></div><div class="event-desc">${esc(x.description)}</div><div class="event-foot"><span class="amount">${x.amount!==null?'$'+x.amount.toLocaleString()+'K':'Amount not separately disclosed'}</span><a class="source" href="${esc(x.url)}" target="_blank" rel="noopener">VIEW SOURCE ↗</a></div></article>`).join('');document.getElementById('caption').textContent=`Showing ${shown.length} of ${rows.length} specifically disclosed events`;document.getElementById('empty').style.display=shown.length?'none':'block'}
+function options(id,values,label){for(const v of uniq(values)){const o=document.createElement('option');o.value=v;o.textContent=label?label(v):v;document.getElementById(id).appendChild(o)}}
+async function loadData(){try{const r=await fetch(CSV,{cache:'no-store'});if(!r.ok)throw Error(r.status);const parsed=Papa.parse(await r.text(),{header:true,skipEmptyLines:'greedy'});rows=parsed.data.map(x=>({date:String(x['Reporting Date']||'').trim(),company:String(x['Portfolio Company']||'').trim(),industry:String(x['Industry']||'').trim(),type:String(x['Activity Type']||'').trim(),instrument:String(x['Instrument']||'').trim(),amount:n(x['Amount ($000)']),description:String(x['Description']||'').trim(),url:String(x['Source URL']||'').trim()})).filter(x=>x.date&&x.company&&x.type);if(!rows.length)throw Error('No events');renderKpis();charts();options('quarter',rows.map(x=>x.date),qlabel);options('type',rows.map(x=>x.type));renderEvents();document.getElementById('dashboard').style.display='block';document.getElementById('subtitle').textContent=`Selected, source-verified portfolio transactions and credit developments · Through ${rows.map(x=>x.date).sort().at(-1)}`}catch(e){console.error(e);document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">The portfolio activity CSV could not be loaded.</div>'}}
+async function loadSidebar(){try{const html=await fetch('/bdc/bbdc/sidebar.html?v=20260717-activity-dashboard',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(r.status);return r.text()});document.getElementById('sidebar').innerHTML=html;const store='bbdc-sidebar-sections';let open=[];try{open=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){};['bbdc-nav','portfolio-nav'].forEach(id=>{if(!open.includes(id))open.push(id)});const apply=(id,on)=>{const s=document.getElementById(id),icon=document.getElementById('icon-'+id);if(!s)return;s.classList.toggle('hidden',!on);if(icon)icon.style.transform=on?'rotate(90deg)':'rotate(0deg)'};window.toggleSection=id=>{let saved=[];try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}const s=document.getElementById(id);if(!s)return;const on=s.classList.contains('hidden');saved=on?[...new Set([...saved,id])]:saved.filter(x=>x!==id);localStorage.setItem(store,JSON.stringify(saved));apply(id,on)};localStorage.setItem(store,JSON.stringify(open));document.querySelectorAll('#sidebar [id$="-nav"]').forEach(el=>apply(el.id,open.includes(el.id)));document.querySelectorAll('#sidebar a[href]').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('bg-blue-50','text-blue-700','font-semibold')})}catch(e){console.warn(e)}}
+['search','quarter','type'].forEach(id=>document.getElementById(id).addEventListener(id==='search'?'input':'change',renderEvents));document.getElementById('reset').addEventListener('click',()=>{document.getElementById('search').value='';document.getElementById('quarter').value='';document.getElementById('type').value='';renderEvents()});loadSidebar();loadData();
+</script></body></html>
