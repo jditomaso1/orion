@@ -1,1 +1,91 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Portfolio Construction | Orion</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#172033;font-family:Poppins,sans-serif}#sidebar{position:fixed;inset:0 auto 0 0;width:256px;background:#fff;border-right:1px solid #e2eaf0;overflow:auto}main{margin-left:256px;padding:28px}.eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;color:#64748b}h1{font-size:22px;margin:5px 0}.card{margin-top:18px;background:#fff;border:1px solid #e2eaf0;border-radius:13px;padding:24px;font-size:12px;color:#64748b}@media(max-width:850px){#sidebar{display:none}main{margin-left:0}}</style></head><body><aside id="sidebar"></aside><main><div class="eyebrow">ORION · BDC INTELLIGENCE</div><h1>Portfolio Construction</h1><div class="card">Portfolio construction analysis will be added here.</div></main><script>fetch('/bdc/bbdc/sidebar.html').then(r=>r.text()).then(h=>{sidebar.innerHTML=h;const open=['bbdc-nav','portfolio-nav'];localStorage.setItem('bbdc-sidebar-sections',JSON.stringify(open));document.querySelectorAll('#sidebar [data-target]').forEach(b=>{const t=document.getElementById(b.dataset.target);if(t&&open.includes(b.dataset.target)){t.classList.remove('hidden');const a=b.querySelector('.arrow');if(a)a.textContent='▼'}});document.querySelectorAll('#sidebar a').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('active')})})</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BBDC Portfolio Construction | Orion</title>
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#002b51;--blue:#187aba;--green:#3eb661;--red:#dc3545;--amber:#f59e0b;--bg:#f4f7fa;--line:#e2eaf0;--muted:#64748b}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#172033;font-family:Poppins,sans-serif}
+    #sidebar{position:fixed;inset:0 auto 0 0;width:256px;background:#fff;border-right:1px solid var(--line);z-index:30;overflow:auto}
+    main{margin-left:256px;min-height:100vh}.wrap{max-width:1540px;margin:auto;padding:25px 28px 42px}
+    .eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+    h1{font-size:22px;line-height:1.2;margin:5px 0;color:#111827;font-weight:700}.subtitle{font-size:11px;color:var(--muted)}
+    .card{background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 1px 2px rgba(15,23,42,.025)}
+    .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:18px 0 13px}.kpi{padding:15px 16px;min-height:108px}
+    .kpi-label{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}.kpi-value{margin-top:8px;font-size:21px;color:var(--navy);font-weight:700;white-space:nowrap}
+    .kpi-note{font-size:9px;color:#718096;margin-top:4px}.charts{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:13px;margin-bottom:13px}.charts.two{grid-template-columns:1.4fr 1fr}
+    .chart-card{padding:16px;height:320px}.card-title{font-size:12px;font-weight:700;color:#172033}.card-subtitle{font-size:9px;color:var(--muted);margin:2px 0 10px}.chart-wrap{height:245px}
+    .table-card{overflow:hidden}.table-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+    .download{border:1px solid #d8e2ea;border-radius:8px;padding:7px 10px;color:var(--navy);font-size:9px;font-weight:700;text-decoration:none}.download:hover{background:#f8fafc}
+    .table-scroll{overflow:auto;max-height:520px}table{width:100%;border-collapse:collapse;font-size:9px;white-space:nowrap}th{position:sticky;top:0;background:#f8fafc;color:var(--muted);text-transform:uppercase;letter-spacing:.035em;font-size:8px;text-align:right;padding:9px 10px;border-bottom:1px solid var(--line);z-index:2}
+    th:first-child,td:first-child{text-align:left}td{padding:10px;border-bottom:1px solid #edf2f7;text-align:right;background:#fff}tr:nth-child(even) td{background:#fbfdff}tr:hover td{background:#f1f7fb}.company{font-weight:600;color:var(--navy)}
+    .bar{display:inline-block;width:72px;height:5px;margin-left:7px;background:#e8f0f5;border-radius:99px;overflow:hidden;vertical-align:middle}.bar i{display:block;height:100%;background:var(--blue);border-radius:99px}
+    .note{margin-top:13px;padding:14px 16px;font-size:9px;line-height:1.6;color:var(--muted)}.status{padding:40px;text-align:center;font-size:11px;color:var(--muted)}.error{color:#b91c1c}
+    @media(max-width:1200px){.kpis{grid-template-columns:repeat(3,1fr)}.charts,.charts.two{grid-template-columns:1fr 1fr}}
+    @media(max-width:850px){#sidebar{display:none}main{margin-left:0}.wrap{padding:20px 14px}.kpis{grid-template-columns:repeat(2,1fr)}.charts,.charts.two{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <aside id="sidebar"></aside>
+  <main><div class="wrap">
+    <div class="eyebrow">ORION · BDC INTELLIGENCE</div>
+    <h1>BBDC Portfolio Construction</h1>
+    <div id="subtitle" class="subtitle">Portfolio composition, concentration, structural seniority and income characteristics</div>
+
+    <section id="kpis" class="kpis"><div class="card status" style="grid-column:1/-1">Loading portfolio construction data…</div></section>
+
+    <section id="dashboard" style="display:none">
+      <div class="charts">
+        <article class="card chart-card"><div class="card-title">Industry concentration</div><div class="card-subtitle">Fair value allocation · largest industries shown</div><div class="chart-wrap"><canvas id="industryChart"></canvas></div></article>
+        <article class="card chart-card"><div class="card-title">Asset type</div><div class="card-subtitle">Debt and equity exposure by fair value</div><div class="chart-wrap"><canvas id="assetChart"></canvas></div></article>
+        <article class="card chart-card"><div class="card-title">Lien / seniority</div><div class="card-subtitle">Capital-structure position by fair value</div><div class="chart-wrap"><canvas id="lienChart"></canvas></div></article>
+      </div>
+      <div class="charts two">
+        <article class="card chart-card"><div class="card-title">Maturity schedule</div><div class="card-subtitle">Debt fair value by contractual maturity year</div><div class="chart-wrap"><canvas id="maturityChart"></canvas></div></article>
+        <article class="card chart-card"><div class="card-title">Portfolio classification</div><div class="card-subtitle">Control, affiliate and non-affiliate exposure</div><div class="chart-wrap"><canvas id="classificationChart"></canvas></div></article>
+      </div>
+
+      <section class="card table-card">
+        <div class="table-head"><div><div class="card-title">Largest portfolio exposures</div><div class="card-subtitle">Aggregated by portfolio company · ranked by fair value</div></div><a class="download" href="/bdc/bbdc/data/bbdc_portfolio_construction.csv" download>DOWNLOAD CSV</a></div>
+        <div class="table-scroll"><table><thead><tr><th>Portfolio company</th><th>Industry</th><th>Instruments</th><th>Cost ($000)</th><th>Fair value ($000)</th><th>% portfolio FV</th><th>FV / cost</th></tr></thead><tbody id="positions"></tbody></table></div>
+      </section>
+      <section class="card note">Construction metrics are calculated from reported investment-level fair values. Floating-rate, PIK and first-lien percentages use debt fair value as the denominator; industry, asset type, classification and company concentration use total portfolio fair value. Blank fields are excluded from the relevant calculation.</section>
+    </section>
+  </div></main>
+
+<script>
+const CSV='/bdc/bbdc/data/bbdc_portfolio_construction.csv?v=20260716';
+const COLORS=['#187aba','#3eb661','#002b51','#5aa9d6','#86cf9b','#f59e0b','#8b5cf6','#94a3b8','#dc3545','#14b8a6','#64748b'];
+const n=v=>{const x=Number(String(v??'').replace(/[,$%()]/g,''));return String(v??'').trim()!==''&&Number.isFinite(x)?(/^\(.*\)$/.test(String(v))?-x:x):null};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sum=(a,key='fv')=>a.reduce((t,r)=>t+(Number.isFinite(r[key])?r[key]:0),0);
+const pct=(x,d)=>d?x/d*100:0;const money=v=>'$'+(v/1000).toLocaleString(undefined,{maximumFractionDigits:1})+'MM';
+const group=(rows,key,value='fv')=>{const m={};rows.forEach(r=>{const k=r[key]||'Not disclosed';m[k]=(m[k]||0)+(Number.isFinite(r[value])?r[value]:0)});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
+function map(r){return{date:r['Reporting Date'],company:r['Portfolio Company'],industry:r['Industry'],instrument:r['Instrument Description'],asset:r['Asset Type'],lien:r['Lien / Seniority'],classification:r['Classification'],cost:n(r['Cost ($000)']),fv:n(r['Fair Value ($000)']),pik:n(r['PIK Rate (%)']),rateType:r['Rate Type'],maturity:r['Maturity Date'],nonAccrual:String(r['Non-Accrual']||'').trim().toLowerCase()==='yes'}}
+function donut(id,items){new Chart(document.getElementById(id),{type:'doughnut',data:{labels:items.map(x=>x[0]),datasets:[{data:items.map(x=>x[1]),backgroundColor:COLORS,borderColor:'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{position:'bottom',labels:{boxWidth:8,boxHeight:8,usePointStyle:true,padding:11,font:{family:'Poppins',size:8}}},tooltip:{callbacks:{label:c=>`${c.label}: ${money(c.raw)} (${pct(c.raw,c.dataset.data.reduce((a,b)=>a+b,0)).toFixed(1)}%)`},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}}}})}
+function bars(id,items,horizontal=false){new Chart(document.getElementById(id),{type:'bar',data:{labels:items.map(x=>x[0]),datasets:[{data:items.map(x=>x[1]),backgroundColor:items.map((_,i)=>COLORS[i%COLORS.length]),borderRadius:4,maxBarThickness:28}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:horizontal?'y':'x',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>money(c.raw)},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{grid:{display:!horizontal,color:'#edf2f7'},ticks:{font:{family:'Poppins',size:8},callback:v=>horizontal?'$'+(v/1000).toFixed(0)+'MM':v}},y:{grid:{display:horizontal?false:true,color:'#edf2f7'},ticks:{font:{family:'Poppins',size:8},callback:v=>horizontal?v:'$'+(v/1000).toFixed(0)+'MM'}}}}})}
+function render(rows){
+ const total=sum(rows),debt=rows.filter(r=>r.asset==='Debt'),debtFV=sum(debt),first=sum(debt.filter(r=>r.lien==='First Lien')),floating=sum(debt.filter(r=>r.rateType==='Floating')),pik=sum(debt.filter(r=>(r.pik||0)>0)),nonAcc=sum(rows.filter(r=>r.nonAccrual));
+ const companies=group(rows,'company'),top10=companies.slice(0,10).reduce((t,x)=>t+x[1],0);
+ const cards=[['PORTFOLIO FAIR VALUE',money(total),`${rows.length.toLocaleString()} instruments`],['PORTFOLIO COMPANIES',companies.length.toLocaleString(),'Distinct borrowers / issuers'],['FIRST-LIEN EXPOSURE',pct(first,debtFV).toFixed(1)+'%','Percentage of debt fair value'],['FLOATING-RATE EXPOSURE',pct(floating,debtFV).toFixed(1)+'%','Percentage of debt fair value'],['PIK-BEARING EXPOSURE',pct(pik,debtFV).toFixed(1)+'%','Debt positions with a PIK component'],['TOP 10 CONCENTRATION',pct(top10,total).toFixed(1)+'%','Percentage of portfolio fair value']];
+ document.getElementById('kpis').innerHTML=cards.map(x=>`<article class="card kpi"><div class="kpi-label">${x[0]}</div><div class="kpi-value">${x[1]}</div><div class="kpi-note">${x[2]}</div></article>`).join('');
+ document.getElementById('subtitle').textContent=`Portfolio composition, concentration and structural risk · As of ${rows[0].date||'latest reporting date'} · ${pct(nonAcc,total).toFixed(1)}% non-accruals by fair value`;
+ let industries=group(rows,'industry'),other=industries.slice(9).reduce((t,x)=>t+x[1],0);industries=industries.slice(0,9);if(other)industries.push(['Other',other]);
+ bars('industryChart',industries,true);donut('assetChart',group(rows,'asset'));donut('lienChart',group(rows,'lien'));
+ const maturities={};debt.forEach(r=>{if(!r.maturity)return;const m=String(r.maturity).match(/(\d{2,4})$/);if(!m)return;let y=Number(m[1]);if(y<100)y+=2000;maturities[y]=(maturities[y]||0)+(r.fv||0)});bars('maturityChart',Object.entries(maturities).sort((a,b)=>Number(a[0])-Number(b[0])));
+ donut('classificationChart',group(rows,'classification'));
+ const byCompany={};rows.forEach(r=>{const x=byCompany[r.company]||(byCompany[r.company]={company:r.company,industry:r.industry,count:0,cost:0,fv:0});x.count++;x.cost+=r.cost||0;x.fv+=r.fv||0});
+ document.getElementById('positions').innerHTML=Object.values(byCompany).sort((a,b)=>b.fv-a.fv).slice(0,25).map(r=>`<tr><td><span class="company">${esc(r.company)}</span></td><td>${esc(r.industry)}</td><td>${r.count}</td><td>${r.cost.toLocaleString()}</td><td>${r.fv.toLocaleString()}</td><td>${pct(r.fv,total).toFixed(2)}% <span class="bar"><i style="width:${Math.min(100,pct(r.fv,companies[0][1]))}%"></i></span></td><td>${r.cost?(r.fv/r.cost).toFixed(2)+'x':'—'}</td></tr>`).join('');
+ document.getElementById('dashboard').style.display='block';
+}
+async function loadSidebar(){try{const html=await fetch('/bdc/bbdc/sidebar.html?v=20260716-construction',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.text()});document.getElementById('sidebar').innerHTML=html;const store='bbdc-sidebar-sections';let open=[];try{open=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){};['bbdc-nav','portfolio-nav'].forEach(id=>{if(!open.includes(id))open.push(id)});const apply=(id,on)=>{const t=document.getElementById(id),icon=document.getElementById('icon-'+id);if(!t)return;t.classList.toggle('hidden',!on);if(icon)icon.style.transform=on?'rotate(90deg)':'rotate(0deg)'};window.toggleSection=id=>{let saved=[];try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}const t=document.getElementById(id);if(!t)return;const on=t.classList.contains('hidden');saved=on?[...new Set([...saved,id])]:saved.filter(x=>x!==id);localStorage.setItem(store,JSON.stringify(saved));apply(id,on)};localStorage.setItem(store,JSON.stringify(open));document.querySelectorAll('#sidebar [id$="-nav"]').forEach(el=>apply(el.id,open.includes(el.id)));document.querySelectorAll('#sidebar a').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('bg-blue-50','text-blue-700','font-semibold')})}catch(e){document.getElementById('sidebar').innerHTML='<div style="padding:24px;font-size:12px">ORION</div>'}}
+loadSidebar();Papa.parse(CSV,{download:true,header:true,skipEmptyLines:'greedy',complete:r=>{const rows=r.data.map(map).filter(x=>x.company&&Number.isFinite(x.fv));if(!rows.length){document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">No portfolio construction data was found.</div>';return}render(rows)},error:()=>{document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">The portfolio construction CSV could not be loaded.</div>'}});
+</script>
+</body>
+</html>
