@@ -61,7 +61,7 @@
 
 <script>
 const CSV='/bdc/bbdc/data/bbdc_portfolio_construction.csv?v=20260716';
-const COLORS=['#187aba','#3eb661','#002b51','#5aa9d6','#86cf9b','#f59e0b','#8b5cf6','#94a3b8','#dc3545','#14b8a6','#64748b'];
+const COLORS=['#002b51','#187aba','#3eb661','#5aa9d6','#335574','#86cf9b','#94a3b8','#14b8a6','#b8c7d3','#6faecf','#4f6f8c'];
 const n=v=>{const x=Number(String(v??'').replace(/[,$%()]/g,''));return String(v??'').trim()!==''&&Number.isFinite(x)?(/^\(.*\)$/.test(String(v))?-x:x):null};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sum=(a,key='fv')=>a.reduce((t,r)=>t+(Number.isFinite(r[key])?r[key]:0),0);
@@ -69,7 +69,19 @@ const pct=(x,d)=>d?x/d*100:0;const money=v=>'$'+(v/1000).toLocaleString(undefine
 const group=(rows,key,value='fv')=>{const m={};rows.forEach(r=>{const k=r[key]||'Not disclosed';m[k]=(m[k]||0)+(Number.isFinite(r[value])?r[value]:0)});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
 function map(r){return{date:r['Reporting Date'],company:r['Portfolio Company'],industry:r['Industry'],instrument:r['Instrument Description'],asset:r['Asset Type'],lien:r['Lien / Seniority'],classification:r['Classification'],cost:n(r['Cost ($000)']),fv:n(r['Fair Value ($000)']),pik:n(r['PIK Rate (%)']),rateType:r['Rate Type'],maturity:r['Maturity Date'],nonAccrual:String(r['Non-Accrual']||'').trim().toLowerCase()==='yes'}}
 function donut(id,items){new Chart(document.getElementById(id),{type:'doughnut',data:{labels:items.map(x=>x[0]),datasets:[{data:items.map(x=>x[1]),backgroundColor:COLORS,borderColor:'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{position:'bottom',labels:{boxWidth:8,boxHeight:8,usePointStyle:true,padding:11,font:{family:'Poppins',size:8}}},tooltip:{callbacks:{label:c=>`${c.label}: ${money(c.raw)} (${pct(c.raw,c.dataset.data.reduce((a,b)=>a+b,0)).toFixed(1)}%)`},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}}}})}
-function bars(id,items,horizontal=false){new Chart(document.getElementById(id),{type:'bar',data:{labels:items.map(x=>x[0]),datasets:[{data:items.map(x=>x[1]),backgroundColor:items.map((_,i)=>COLORS[i%COLORS.length]),borderRadius:4,maxBarThickness:28}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:horizontal?'y':'x',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>money(c.raw)},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{grid:{display:!horizontal,color:'#edf2f7'},ticks:{font:{family:'Poppins',size:8},callback:v=>horizontal?'$'+(v/1000).toFixed(0)+'MM':v}},y:{grid:{display:horizontal?false:true,color:'#edf2f7'},ticks:{font:{family:'Poppins',size:8},callback:v=>horizontal?v:'$'+(v/1000).toFixed(0)+'MM'}}}}})}
+function bars(id,items,horizontal=false){
+ new Chart(document.getElementById(id),{
+  type:'bar',
+  data:{labels:items.map(x=>x[0]),datasets:[{data:items.map(x=>x[1]),backgroundColor:items.map((_,i)=>i===0?'#002b51':'#187aba'),hoverBackgroundColor:'#3eb661',borderRadius:4,maxBarThickness:28}]},
+  options:{responsive:true,maintainAspectRatio:false,indexAxis:horizontal?'y':'x',
+   plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Fair value: '+money(c.raw)},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},
+   scales:{
+    x:{grid:{display:!horizontal,color:'#edf2f7'},title:{display:true,text:horizontal?'Fair value ($MM)':'Maturity year',color:'#64748b',font:{family:'Poppins',size:8,weight:'600'}},ticks:{font:{family:'Poppins',size:8},callback:function(v){return horizontal?'$'+(Number(v)/1000).toLocaleString(undefined,{maximumFractionDigits:0})+'MM':this.getLabelForValue(v)}}},
+    y:{beginAtZero:true,grid:{display:horizontal?false:true,color:'#edf2f7'},title:{display:!horizontal,text:'Fair value ($MM)',color:'#64748b',font:{family:'Poppins',size:8,weight:'600'}},ticks:{font:{family:'Poppins',size:8},callback:function(v){return horizontal?this.getLabelForValue(v):'$'+(Number(v)/1000).toLocaleString(undefined,{maximumFractionDigits:0})+'MM'}}}
+   }
+  }
+ });
+}
 function render(rows){
  const total=sum(rows),debt=rows.filter(r=>r.asset==='Debt'),debtFV=sum(debt),first=sum(debt.filter(r=>r.lien==='First Lien')),floating=sum(debt.filter(r=>r.rateType==='Floating')),pik=sum(debt.filter(r=>(r.pik||0)>0)),nonAcc=sum(rows.filter(r=>r.nonAccrual));
  const companies=group(rows,'company'),top10=companies.slice(0,10).reduce((t,x)=>t+x[1],0);
