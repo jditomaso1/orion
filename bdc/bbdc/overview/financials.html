@@ -108,7 +108,7 @@ function renderKpis(){
 const quarterRows=rows=>rows.filter(r=>r.period_type!=='annual');
 function series(rows,metric){return rows.filter(r=>r.metric===metric).map(r=>num(r.value));}
 function chart(id,type,labels,datasets,opts={}){
-  charts.push(new Chart(document.getElementById(id),{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{boxWidth:8,usePointStyle:true,font:{family:'Poppins',size:12}}},tooltip:{titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{grid:{display:false},ticks:{font:{family:'Poppins',size:12}}},y:{beginAtZero:false,grid:{color:'#edf2f7'},ticks:{font:{family:'Poppins',size:12},...opts.ticks}}}}}));
+  charts.push(new Chart(document.getElementById(id),{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{boxWidth:22,boxHeight:10,pointStyleWidth:14,padding:18,usePointStyle:true,font:{family:'Poppins',size:12}}},tooltip:{titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{grid:{display:false},ticks:{font:{family:'Poppins',size:12}}},y:{beginAtZero:false,grid:{color:'#edf2f7'},ticks:{font:{family:'Poppins',size:12},...opts.ticks}}}}}));
 }
 function renderCharts(){
  const rows=quarterRows(DATA['quarterly_trends.csv']); const labels=[...new Set(rows.map(r=>r.period))];
