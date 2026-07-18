@@ -106,28 +106,3 @@ loadSidebar();Papa.parse(CSV,{download:true,header:true,skipEmptyLines:'greedy',
 </script>
 </body>
 </html>
-+(Number(v)/1000).toLocaleString(undefined,{maximumFractionDigits:0}):this.getLabelForValue(v)}}},
-    y:{beginAtZero:true,grid:{display:horizontal?false:true,color:'#edf2f7'},title:{display:!horizontal,text:'Fair value ($MM)',color:'#64748b',font:{family:'Poppins',size:12,weight:'600'}},ticks:{font:{family:'Poppins',size:12},callback:function(v){return horizontal?this.getLabelForValue(v):'$'+(Number(v)/1000).toLocaleString(undefined,{maximumFractionDigits:0})+'MM'}}}
-   }
-  }
- });
-}
-function render(rows){
- const total=sum(rows),debt=rows.filter(r=>r.asset==='Debt'),debtFV=sum(debt),first=sum(debt.filter(r=>r.lien==='First Lien')),floating=sum(debt.filter(r=>r.rateType==='Floating')),pik=sum(debt.filter(r=>(r.pik||0)>0)),nonAcc=sum(rows.filter(r=>r.nonAccrual));
- const companies=group(rows,'company'),top10=companies.slice(0,10).reduce((t,x)=>t+x[1],0);
- const cards=[['PORTFOLIO FAIR VALUE',money(total),`${rows.length.toLocaleString()} instruments`],['PORTFOLIO COMPANIES',companies.length.toLocaleString(),'Distinct borrowers / issuers'],['FIRST-LIEN EXPOSURE',pct(first,debtFV).toFixed(1)+'%','Percentage of debt fair value'],['FLOATING-RATE EXPOSURE',pct(floating,debtFV).toFixed(1)+'%','Percentage of debt fair value'],['PIK-BEARING EXPOSURE',pct(pik,debtFV).toFixed(1)+'%','Debt positions with a PIK component'],['TOP 10 CONCENTRATION',pct(top10,total).toFixed(1)+'%','Percentage of portfolio fair value']];
- document.getElementById('kpis').innerHTML=cards.map(x=>`<article class="card kpi"><div class="kpi-label">${x[0]}</div><div class="kpi-value">${x[1]}</div><div class="kpi-note">${x[2]}</div></article>`).join('');
- document.getElementById('subtitle').textContent=`Portfolio composition, concentration and structural risk · As of ${rows[0].date||'latest reporting date'} · ${pct(nonAcc,total).toFixed(1)}% non-accruals by fair value`;
- let industries=group(rows,'industry'),other=industries.slice(9).reduce((t,x)=>t+x[1],0);industries=industries.slice(0,9);if(other)industries.push(['Other',other]);
- bars('industryChart',industries,true,true,true);donut('assetChart',group(rows,'asset'));donut('lienChart',group(rows,'lien'));
- const maturities={};debt.forEach(r=>{if(!r.maturity)return;const m=String(r.maturity).match(/(\d{2,4})$/);if(!m)return;let y=Number(m[1]);if(y<100)y+=2000;maturities[y]=(maturities[y]||0)+(r.fv||0)});bars('maturityChart',Object.entries(maturities).sort((a,b)=>Number(a[0])-Number(b[0])));
- donut('classificationChart',group(rows,'classification'));
- const byCompany={};rows.forEach(r=>{const x=byCompany[r.company]||(byCompany[r.company]={company:r.company,industry:r.industry,count:0,cost:0,fv:0});x.count++;x.cost+=r.cost||0;x.fv+=r.fv||0});
- document.getElementById('positions').innerHTML=Object.values(byCompany).sort((a,b)=>b.fv-a.fv).slice(0,25).map(r=>`<tr><td><span class="company">${esc(r.company)}</span></td><td>${esc(r.industry)}</td><td>${r.count}</td><td>${r.cost.toLocaleString()}</td><td>${r.fv.toLocaleString()}</td><td>${pct(r.fv,total).toFixed(2)}% <span class="bar"><i style="width:${Math.min(100,pct(r.fv,companies[0][1]))}%"></i></span></td><td>${r.cost?(r.fv/r.cost).toFixed(2)+'x':'—'}</td></tr>`).join('');
- document.getElementById('dashboard').style.display='block';
-}
-async function loadSidebar(){try{const html=await fetch('/bdc/bbdc/sidebar.html?v=20260716-construction',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.text()});document.getElementById('sidebar').innerHTML=html;const store='bbdc-sidebar-sections';let open=[];try{open=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){};['bbdc-nav','portfolio-nav'].forEach(id=>{if(!open.includes(id))open.push(id)});const apply=(id,on)=>{const t=document.getElementById(id),icon=document.getElementById('icon-'+id);if(!t)return;t.classList.toggle('hidden',!on);if(icon)icon.style.transform=on?'rotate(90deg)':'rotate(0deg)'};window.toggleSection=id=>{let saved=[];try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}const t=document.getElementById(id);if(!t)return;const on=t.classList.contains('hidden');saved=on?[...new Set([...saved,id])]:saved.filter(x=>x!==id);localStorage.setItem(store,JSON.stringify(saved));apply(id,on)};localStorage.setItem(store,JSON.stringify(open));document.querySelectorAll('#sidebar [id$="-nav"]').forEach(el=>apply(el.id,open.includes(el.id)));document.querySelectorAll('#sidebar a').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('bg-blue-50','text-blue-700','font-semibold')})}catch(e){document.getElementById('sidebar').innerHTML='<div style="padding:24px;font-size:12px">ORION</div>'}}
-loadSidebar();Papa.parse(CSV,{download:true,header:true,skipEmptyLines:'greedy',complete:r=>{const rows=r.data.map(map).filter(x=>x.company&&Number.isFinite(x.fv));if(!rows.length){document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">No portfolio construction data was found.</div>';return}render(rows)},error:()=>{document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">The portfolio construction CSV could not be loaded.</div>'}});
-</script>
-</body>
-</html>
