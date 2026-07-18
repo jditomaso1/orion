@@ -81,7 +81,7 @@ function bars(id,items,horizontal=false,categorical=false,showPortfolioPct=false
   options:{responsive:true,maintainAspectRatio:false,indexAxis:horizontal?'y':'x',
    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>showPortfolioPct?['Fair value: '+money(c.raw),'Portfolio exposure: '+pct(c.raw,chartTotal).toFixed(1)+'%']:['Fair value: '+money(c.raw)]},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},
    scales:{
-    x:{grid:{display:!horizontal,color:'#edf2f7'},title:{display:true,text:horizontal?'Fair value ($MM)':'Maturity year',color:'#64748b',font:{family:'Poppins',size:12,weight:'600'}},ticks:{font:{family:'Poppins',size:11},minRotation:0,maxRotation:0,callback:function(v){return horizontal?'},
+    x:{grid:{display:!horizontal,color:'#edf2f7'},title:{display:true,text:horizontal?'Fair value ($MM)':'Maturity year',color:'#64748b',font:{family:'Poppins',size:12,weight:'600'}},ticks:{font:{family:'Poppins',size:11},minRotation:0,maxRotation:0,callback:function(v){return horizontal?'$'+(Number(v)/1000).toLocaleString(undefined,{maximumFractionDigits:0}):this.getLabelForValue(v)}}},
     y:{beginAtZero:true,grid:{display:horizontal?false:true,color:'#edf2f7'},title:{display:!horizontal,text:'Fair value ($MM)',color:'#64748b',font:{family:'Poppins',size:12,weight:'600'}},ticks:{font:{family:'Poppins',size:12},callback:function(v){return horizontal?this.getLabelForValue(v):'$'+(Number(v)/1000).toLocaleString(undefined,{maximumFractionDigits:0})+'MM'}}}
    }
   }
