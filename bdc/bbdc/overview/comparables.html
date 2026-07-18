@@ -20,26 +20,27 @@
     h1{font-size:22px;line-height:1.2;margin:5px 0;color:#111827;font-weight:700}.subtitle{font-size:11px;color:#64748b}
     .card{background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 1px 2px rgba(15,23,42,.025)}
     .kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:18px 0}
-    .kpi{padding:15px 16px;min-height:112px}.kpi-label{font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+    .kpi{padding:15px 16px;min-height:112px}.kpi-label{font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
     .kpi-line{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:8px}
-    .kpi-value{font-size:22px;color:var(--navy);font-weight:700;white-space:nowrap}.badge{font-size:8px;padding:4px 6px;border-radius:999px;font-weight:700;white-space:nowrap}
+    .kpi-value{font-size:22px;color:var(--navy);font-weight:700;white-space:nowrap}.badge{font-size:10px;padding:4px 6px;border-radius:999px;font-weight:700;white-space:nowrap}
     .good{background:#eaf8ef;color:#237a3b}.bad{background:#fff0f1;color:#b4232f}.neutral{background:#eef5fa;color:#526779}
-    .kpi-note{font-size:9px;color:#718096;margin-top:5px}.section-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:13px}
-    .chart-card{padding:16px;height:315px}.card-title{font-size:12px;font-weight:700;color:#172033}.card-subtitle{font-size:9px;color:#64748b;margin:2px 0 10px}
+    .kpi-note{font-size:10px;color:#718096;margin-top:5px}.section-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:13px}
+    .chart-card{padding:16px;height:315px}.card-title{font-size:12px;font-weight:700;color:#172033}.card-subtitle{font-size:10px;color:#64748b;margin:2px 0 10px}
     .chart-wrap{height:244px}.table-card{overflow:hidden}.table-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
     .toggle{display:flex;gap:4px;background:#f1f5f9;padding:4px;border-radius:8px}.toggle button{border:0;background:transparent;color:#64748b;font:600 9px Poppins;padding:6px 9px;border-radius:6px;cursor:pointer}
     .toggle button.active{background:var(--navy);color:#fff}.table-scroll{overflow:auto;max-height:630px}
-    table{width:100%;border-collapse:collapse;font-size:9px;white-space:nowrap}th{position:sticky;top:0;background:#f8fafc;color:#64748b;text-transform:uppercase;letter-spacing:.035em;font-size:8px;text-align:right;padding:9px 10px;border-bottom:1px solid var(--line);cursor:pointer;z-index:2}
+    table{width:100%;border-collapse:collapse;font-size:10px;white-space:nowrap}th{position:sticky;top:0;background:#f8fafc;color:#64748b;text-transform:uppercase;letter-spacing:.035em;font-size:10px;text-align:right;padding:9px 10px;border-bottom:1px solid var(--line);cursor:pointer;z-index:2}
     th:first-child,td:first-child{text-align:left;position:sticky;left:0;z-index:3}td{padding:10px;border-bottom:1px solid #edf2f7;text-align:right;background:#fff}
     tr:nth-child(even) td{background:#fbfdff}tr:hover td{background:#f1f7fb}.bbdc-row td{background:#eaf4fb!important;color:var(--navy);font-weight:600}
-    .company{font-weight:600}.ticker{display:inline-block;color:#fff;background:var(--navy);font-size:8px;font-weight:700;border-radius:5px;padding:3px 5px;margin-left:6px}
+    .company{font-weight:600}.ticker{display:inline-block;color:#fff;background:var(--navy);font-size:10px;font-weight:700;border-radius:5px;padding:3px 5px;margin-left:6px}
     .source{color:var(--blue);font-weight:700;text-decoration:none}.source:hover{text-decoration:underline}
-    .method{margin-top:13px;padding:16px;display:grid;grid-template-columns:1.2fr 2fr;gap:18px}.method p{font-size:9px;color:#64748b;line-height:1.6;margin:5px 0 0}
-    .legend{display:flex;gap:12px;align-items:center;font-size:9px;color:#64748b}.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+    .method{margin-top:13px;padding:16px;display:grid;grid-template-columns:1.2fr 2fr;gap:18px}.method p{font-size:10px;color:#64748b;line-height:1.6;margin:5px 0 0}
+    .legend{display:flex;gap:12px;align-items:center;font-size:10px;color:#64748b}.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
     .status{padding:24px;text-align:center;font-size:11px;color:#64748b}.error{color:#b91c1c}
     @media(max-width:1200px){.kpis{grid-template-columns:repeat(3,1fr)}.section-grid{grid-template-columns:1fr 1fr}} 
     @media(max-width:850px){#sidebar{display:none}main{margin-left:0}.wrap{padding:20px 14px}.kpis{grid-template-columns:repeat(2,1fr)}.section-grid{grid-template-columns:1fr}.method{grid-template-columns:1fr}}
   </style>
+<style id="orion-readability-standard">.card-subtitle,.panel-sub,.kpi-detail,.kpi-note,.source-note,.note,.footer-note{font-size:10px!important;line-height:1.5!important}table{font-size:10px!important}th{font-size:10px!important}button,select,input,.control,.download,.action{font-size:10px!important}</style>
 </head>
 <body>
   <aside id="sidebar"></aside>
@@ -120,7 +121,7 @@ function makeChart(id,key,label,type='pct',baseline=null){
  const sorted=[...rows].sort((a,b)=>(n(b[key])??-Infinity)-(n(a[key])??-Infinity));
  const values=sorted.map(r=>n(r[key])); const labels=sorted.map(r=>r[H.ticker]);
  const colors=sorted.map(r=>r[H.ticker]==='BBDC'?'#002B51':'#187ABA');
- const cfg={type:'bar',data:{labels,datasets:[{label,data:values,backgroundColor:colors,borderRadius:4,maxBarThickness:26}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>label+': '+fmt(c.raw,type)},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{beginAtZero:baseline===0,grid:{color:'#edf2f7'},ticks:{font:{family:'Poppins',size:8},callback:v=>type==='pct'?(v*100).toFixed(0)+'%':type==='x'?Number(v).toFixed(1)+'x':v}},y:{grid:{display:false},ticks:{font:{family:'Poppins',size:9,weight:'600'}}}}}};
+ const cfg={type:'bar',data:{labels,datasets:[{label,data:values,backgroundColor:colors,borderRadius:4,maxBarThickness:26}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>label+': '+fmt(c.raw,type)},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{beginAtZero:baseline===0,grid:{color:'#edf2f7'},ticks:{font:{family:'Poppins',size:10},callback:v=>type==='pct'?(v*100).toFixed(0)+'%':type==='x'?Number(v).toFixed(1)+'x':v}},y:{grid:{display:false},ticks:{font:{family:'Poppins',size:10,weight:'600'}}}}}};
  charts.push(new Chart(document.getElementById(id),cfg));
 }
 const views={

@@ -20,21 +20,22 @@
     h1{font-size:22px;line-height:1.2;margin:5px 0;color:#111827;font-weight:700}.subtitle{font-size:11px;color:#64748b}
     .card{background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 1px 2px rgba(15,23,42,.025)}
     .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:18px 0}
-    .kpi{padding:15px 16px;min-height:104px}.kpi-label{font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-    .kpi-value{font-size:22px;color:var(--navy);font-weight:700;margin-top:9px;white-space:nowrap}.kpi-note{font-size:9px;color:#718096;margin-top:4px}
+    .kpi{padding:15px 16px;min-height:104px}.kpi-label{font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+    .kpi-value{font-size:22px;color:var(--navy);font-weight:700;margin-top:9px;white-space:nowrap}.kpi-note{font-size:10px;color:#718096;margin-top:4px}
     .tabs{display:flex;gap:5px;flex-wrap:wrap;padding:6px;margin-bottom:13px}.tab{border:0;background:transparent;padding:8px 12px;border-radius:8px;font:600 10px Poppins;color:#64748b;cursor:pointer}
     .tab:hover{background:#f1f5f9;color:var(--navy)}.tab.active{background:var(--navy);color:#fff}
     .panel{display:none}.panel.active{display:block}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-    .chart-card{padding:16px;height:310px}.card-title{font-size:12px;font-weight:700;color:#172033}.card-subtitle{font-size:9px;color:#64748b;margin:2px 0 10px}
+    .chart-card{padding:16px;height:310px}.card-title{font-size:12px;font-weight:700;color:#172033}.card-subtitle{font-size:10px;color:#64748b;margin:2px 0 10px}
     .chart-wrap{height:240px}.table-card{overflow:hidden}.table-head{padding:14px 16px;border-bottom:1px solid var(--line)}
     .table-scroll{overflow:auto;max-height:640px}table{width:100%;border-collapse:collapse;font-size:10px;white-space:nowrap}
-    th{position:sticky;top:0;background:#f8fafc;color:#64748b;text-transform:uppercase;letter-spacing:.04em;font-size:8px;text-align:right;padding:9px 11px;border-bottom:1px solid var(--line);z-index:1}
+    th{position:sticky;top:0;background:#f8fafc;color:#64748b;text-transform:uppercase;letter-spacing:.04em;font-size:10px;text-align:right;padding:9px 11px;border-bottom:1px solid var(--line);z-index:1}
     th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:inherit}td{padding:9px 11px;border-bottom:1px solid #edf2f7;text-align:right}
     tr:nth-child(even){background:#fbfdff}tr:hover{background:#f3f8fc}.metric{font-weight:600;color:#253247}.section-row td{background:#eef5fa!important;color:var(--navy);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
     .status{padding:18px;text-align:center;font-size:11px;color:#64748b}.error{color:#b91c1c}
-    .sources{margin-top:13px;padding:16px}.source-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.source-item{padding:10px;border:1px solid var(--line);border-radius:9px;font-size:9px}.source-item a{color:var(--blue);font-weight:600}
+    .sources{margin-top:13px;padding:16px}.source-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.source-item{padding:10px;border:1px solid var(--line);border-radius:9px;font-size:10px}.source-item a{color:var(--blue);font-weight:600}
     @media(max-width:1200px){.kpis{grid-template-columns:repeat(3,1fr)}} @media(max-width:850px){#sidebar{display:none}main{margin-left:0}.wrap{padding:20px 14px}.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.source-list{grid-template-columns:1fr}}
   </style>
+<style id="orion-readability-standard">.card-subtitle,.panel-sub,.kpi-detail,.kpi-note,.source-note,.note,.footer-note{font-size:10px!important;line-height:1.5!important}table{font-size:10px!important}th{font-size:10px!important}button,select,input,.control,.download,.action{font-size:10px!important}</style>
 </head>
 <body>
   <aside id="sidebar"></aside>
@@ -106,7 +107,7 @@ function renderKpis(){
 const quarterRows=rows=>rows.filter(r=>r.period_type!=='annual');
 function series(rows,metric){return rows.filter(r=>r.metric===metric).map(r=>num(r.value));}
 function chart(id,type,labels,datasets,opts={}){
-  charts.push(new Chart(document.getElementById(id),{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{boxWidth:8,usePointStyle:true,font:{family:'Poppins',size:9}}},tooltip:{titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{grid:{display:false},ticks:{font:{family:'Poppins',size:8}}},y:{beginAtZero:false,grid:{color:'#edf2f7'},ticks:{font:{family:'Poppins',size:8},...opts.ticks}}}}}));
+  charts.push(new Chart(document.getElementById(id),{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{boxWidth:8,usePointStyle:true,font:{family:'Poppins',size:10}}},tooltip:{titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{grid:{display:false},ticks:{font:{family:'Poppins',size:10}}},y:{beginAtZero:false,grid:{color:'#edf2f7'},ticks:{font:{family:'Poppins',size:10},...opts.ticks}}}}}));
 }
 function renderCharts(){
  const rows=quarterRows(DATA['quarterly_trends.csv']); const labels=[...new Set(rows.map(r=>r.period))];
