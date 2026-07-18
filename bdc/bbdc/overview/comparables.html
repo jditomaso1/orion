@@ -40,7 +40,7 @@
     @media(max-width:1200px){.kpis{grid-template-columns:repeat(3,1fr)}.section-grid{grid-template-columns:1fr 1fr}} 
     @media(max-width:850px){#sidebar{display:none}main{margin-left:0}.wrap{padding:20px 14px}.kpis{grid-template-columns:repeat(2,1fr)}.section-grid{grid-template-columns:1fr}.method{grid-template-columns:1fr}}
   </style>
-<style id="orion-readability-standard">main .card-subtitle,main .panel-sub,main .kpi-detail,main .kpi-note,main .source-note,main .note,main .footer-note{font-size:11px!important;line-height:1.55!important}main .panel-title,main .card-title{font-size:13px!important}main table{font-size:11px!important}main th{font-size:10px!important}main td{font-size:11px!important}main button,main select,main input,main .control,main .download,main .action{font-size:11px!important}</style>
+<style id="orion-readability-standard">main .card-subtitle,main .panel-sub,main .kpi-detail,main .kpi-note,main .source-note,main .note,main .footer-note{font-size:12px!important;line-height:1.55!important}main .panel-title,main .card-title{font-size:14px!important}main table{font-size:12px!important}main th{font-size:11px!important}main td{font-size:12px!important}main button,main select,main input,main .control,main .download,main .action{font-size:12px!important}</style>
 <style id="orion-overview-title-standard">.page-title{font-size:22px!important;line-height:1.2!important;margin:5px 0!important;color:#111827!important;font-weight:700!important;letter-spacing:normal!important}</style>
 </head>
 <body>
@@ -122,7 +122,7 @@ function makeChart(id,key,label,type='pct',baseline=null){
  const sorted=[...rows].sort((a,b)=>(n(b[key])??-Infinity)-(n(a[key])??-Infinity));
  const values=sorted.map(r=>n(r[key])); const labels=sorted.map(r=>r[H.ticker]);
  const colors=sorted.map(r=>r[H.ticker]==='BBDC'?'#002B51':'#187ABA');
- const cfg={type:'bar',data:{labels,datasets:[{label,data:values,backgroundColor:colors,borderRadius:4,maxBarThickness:26}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>label+': '+fmt(c.raw,type)},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{beginAtZero:baseline===0,grid:{color:'#edf2f7'},ticks:{font:{family:'Poppins',size:11},callback:v=>type==='pct'?(v*100).toFixed(0)+'%':type==='x'?Number(v).toFixed(1)+'x':v}},y:{grid:{display:false},ticks:{font:{family:'Poppins',size:11,weight:'600'}}}}}};
+ const cfg={type:'bar',data:{labels,datasets:[{label,data:values,backgroundColor:colors,borderRadius:4,maxBarThickness:26}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>label+': '+fmt(c.raw,type)},titleFont:{family:'Poppins'},bodyFont:{family:'Poppins'}}},scales:{x:{beginAtZero:baseline===0,grid:{color:'#edf2f7'},ticks:{font:{family:'Poppins',size:12},callback:v=>type==='pct'?(v*100).toFixed(0)+'%':type==='x'?Number(v).toFixed(1)+'x':v}},y:{grid:{display:false},ticks:{font:{family:'Poppins',size:12,weight:'600'}}}}}};
  charts.push(new Chart(document.getElementById(id),cfg));
 }
 const views={
