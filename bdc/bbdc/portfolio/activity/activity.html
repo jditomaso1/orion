@@ -58,4 +58,22 @@ function options(id,values,label){for(const v of uniq(values)){const o=document.
 async function loadData(){try{const [er,sr]=await Promise.all([fetch(CSV,{cache:'no-store'}),fetch(SUMMARY,{cache:'no-store'})]);if(!er.ok||!sr.ok)throw Error('CSV unavailable');const [et,st]=await Promise.all([er.text(),sr.text()]);rows=Papa.parse(et,{header:true,skipEmptyLines:'greedy'}).data.map(x=>({date:String(x['Reporting Date']||'').trim(),company:String(x['Portfolio Company']||'').trim(),industry:String(x['Industry']||'').trim(),type:String(x['Activity Type']||'').trim(),instrument:String(x['Instrument']||'').trim(),amount:n(x['Amount ($000)']),description:String(x['Description']||'').trim(),url:String(x['Source URL']||'').trim()})).filter(x=>x.date&&x.company&&x.type);summary=Papa.parse(st,{header:true,skipEmptyLines:'greedy'}).data.map(x=>({date:String(x['Reporting Date']||'').trim(),newInvestments:n(x['New Investments ($000)']),sales:n(x['Sales and Repayments ($000)']),net:n(x['Net Portfolio Activity ($000)']),gains:n(x['Realized Gains ($000)']),losses:n(x['Realized Losses ($000)']),netRealized:n(x['Net Realized Gain Loss ($000)']),endingFV:n(x['Ending Portfolio Fair Value ($000)'])})).filter(x=>x.date&&x.newInvestments!==null).sort((a,b)=>a.date.localeCompare(b.date));if(!rows.length||summary.length<2)throw Error('No data');renderKpis();charts();options('quarter',rows.map(x=>x.date),qlabel);options('type',rows.map(x=>x.type));renderEvents();document.getElementById('dashboard').style.display='block';document.getElementById('subtitle').textContent=`Quarterly portfolio movement and selected, source-verified events · Five quarters through ${summary.at(-1).date}`}catch(e){console.error(e);document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">The portfolio activity data could not be loaded.</div>'}}
 async function loadSidebar(){try{const html=await fetch('/bdc/bbdc/sidebar.html?v=20260717-activity-dashboard',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(r.status);return r.text()});document.getElementById('sidebar').innerHTML=html;const store='bbdc-sidebar-sections';let open=[];try{open=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){};['bbdc-nav','portfolio-nav'].forEach(id=>{if(!open.includes(id))open.push(id)});const apply=(id,on)=>{const s=document.getElementById(id),icon=document.getElementById('icon-'+id);if(!s)return;s.classList.toggle('hidden',!on);if(icon)icon.style.transform=on?'rotate(90deg)':'rotate(0deg)'};window.toggleSection=id=>{let saved=[];try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}const s=document.getElementById(id);if(!s)return;const on=s.classList.contains('hidden');saved=on?[...new Set([...saved,id])]:saved.filter(x=>x!==id);localStorage.setItem(store,JSON.stringify(saved));apply(id,on)};localStorage.setItem(store,JSON.stringify(open));document.querySelectorAll('#sidebar [id$="-nav"]').forEach(el=>apply(el.id,open.includes(el.id)));document.querySelectorAll('#sidebar a[href]').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('bg-blue-50','text-blue-700','font-semibold')})}catch(e){console.warn(e)}}
 ['search','quarter','type'].forEach(id=>document.getElementById(id).addEventListener(id==='search'?'input':'change',renderEvents));document.getElementById('reset').addEventListener('click',()=>{document.getElementById('search').value='';document.getElementById('quarter').value='';document.getElementById('type').value='';renderEvents()});loadSidebar();loadData();
-</script></body></html>
+</script>
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat(){
+      try{
+        const r=await fetch("/bdc/bbdc/includes/orion-chat.html",{cache:"no-store"});
+        if(!r.ok)return;
+        const box=document.getElementById("orion-chat-include");
+        box.innerHTML=await r.text();
+        box.querySelectorAll("script").forEach(old=>{
+          const s=document.createElement("script");
+          if(old.src)s.src=old.src;else s.textContent=old.textContent;
+          document.body.appendChild(s);old.remove();
+        });
+      }catch(e){console.warn(e)}
+    }
+    loadOrionChat();
+  </script>
+</body></html>
