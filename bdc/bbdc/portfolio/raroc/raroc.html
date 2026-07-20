@@ -41,7 +41,7 @@ const n=v=>{const x=Number(String(v??'').replace(/[$,%]/g,''));return Number.isF
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
 function asset(r){const d=r["Instrument Description"]||"",l=r["Lien / Seniority"]||"";if(/revolver/i.test(d))return"Revolver";if(/second/i.test(l+" "+d))return"Second Lien";if(/subordinated/i.test(l+" "+d))return"Subordinated";if(/first/i.test(l+" "+d))return"First Lien";return"Other Debt"}
 function score(r){if(String(r["Non-Accrual"]||"").trim())return 5;let s=1.65,a=asset(r),cost=n(r["Cost ($000)"]),fv=n(r["Fair Value ($000)"]),ratio=cost>0?fv/cost:1,pik=n(r["PIK Rate (%)"]);if(a==="Second Lien")s+=.65;if(a==="Subordinated")s+=1.15;if(a==="Other Debt")s+=.45;if(ratio<1)s+=Math.min(1.6,(1-ratio)*5);if(pik>0)s+=.45;const mat=String(r["Maturity Date"]||"");const yr=Number(mat.slice(-2));if(yr&&yr<=27)s+=.25;return Math.max(1,Math.min(5,s))}
-function lgd(a){return a==="First Lien"||a==="Revolver"?.35:a==="Second Lien"?.55:a==="Subordinated"?.70:.60}
+function lgd(a){return(a==="First Lien"||a==="Revolver")?.35:a==="Second Lien"?.55:a==="Subordinated"?.70:.60}
 function prepare(r){const a=asset(r),risk=score(r),bucket=Math.max(1,Math.min(5,Math.round(risk))),rate=n(r["All-in Rate (%)"]),fv=n(r["Fair Value ($000)"]),el=pd[bucket]*lgd(a)*100,capital=cap[bucket]*100,raroc=capital?((rate-el)/capital)*100:null;return{...r,asset:a,risk,rate,fv,el,capital,raroc}}
 function fmt(v,d=1){return Number.isFinite(v)?v.toFixed(d):"—"}function money(v){return"$"+Math.round(v).toLocaleString()+"K"}
 function visible(){return positions.filter(p=>active.has(p.asset)&&p.rate>0&&p.fv>0)}
