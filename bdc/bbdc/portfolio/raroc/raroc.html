@@ -47,7 +47,34 @@ function fmt(v,d=1){return Number.isFinite(v)?v.toFixed(d):"—"}function money(
 function visible(){return positions.filter(p=>active.has(p.asset)&&p.rate>0&&p.fv>0)}
 function renderKpis(data){const fv=data.reduce((s,p)=>s+p.fv,0),w=(key)=>fv?data.reduce((s,p)=>s+p[key]*p.fv,0)/fv:0,classes=new Set(data.map(p=>p.asset)).size;document.getElementById("kpis").innerHTML=[["DEBT FAIR VALUE",money(fv),"Visible filtered instruments"],["WEIGHTED ALL-IN RATE",fmt(w("rate"))+"%","Reported contractual return"],["WEIGHTED RISK SCORE",fmt(w("risk"),2)+" / 5","Orion estimated"],["WEIGHTED RAROC",fmt(w("raroc"))+"%","Orion proxy"],["ASSET CLASSES",classes,"Currently visible"]].map(x=>'<article class="card kpi"><div class="label">'+x[0]+'</div><div class="value">'+x[1]+'</div><div class="note">'+x[2]+'</div></article>').join("")}
 function datasets(data){return Object.keys(COLORS).map(a=>({label:a,data:data.filter(p=>p.asset===a).map(p=>({x:p.risk,y:p.rate,r:Math.max(4,Math.min(22,Math.sqrt(p.fv)/3)),raw:p})),backgroundColor:COLORS[a]+"aa",borderColor:COLORS[a],borderWidth:1}))}
-function renderChart(data){if(chart)chart.destroy();chart=new Chart(document.getElementById("scatter"),{type:"bubble",data:{datasets:datasets(data)},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"nearest",intersect:true},plugins:{legend:{labels:{font:{family:"Poppins",size:11},usePointStyle:true}},tooltip:{callbacks:{label:c=>{const p=c.raw.raw;return[p["Portfolio Company"],p.asset+" · "+p["Instrument Description"],"Return: "+fmt(p.rate)+"% · Risk: "+fmt(p.risk,2),"FV: "+money(p.fv)+" · RAROC: "+fmt(p.raroc)+"%"]}}},scales:{x:{min:.8,max:5.2,title:{display:true,text:"Orion estimated risk score (1 = lower, 5 = higher)",font:{family:"Poppins",size:11,weight:"600"}},ticks:{stepSize:1,font:{family:"Poppins",size:10}},grid:{color:"#e8eff4"}},y:{beginAtZero:true,title:{display:true,text:"Reported all-in rate (%)",font:{family:"Poppins",size:11,weight:"600"}},ticks:{callback:v=>v+"%",font:{family:"Poppins",size:10}},grid:{color:"#e8eff4"}}}})}
+function renderChart(data){
+  if(chart) chart.destroy();
+  chart=new Chart(document.getElementById("scatter"),{
+    type:"bubble",
+    data:{datasets:datasets(data)},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{mode:"nearest",intersect:true},
+      plugins:{
+        legend:{labels:{font:{family:"Poppins",size:11},usePointStyle:true}},
+        tooltip:{callbacks:{label(context){
+          const p=context.raw.raw;
+          return [
+            p["Portfolio Company"],
+            p.asset+" · "+p["Instrument Description"],
+            "Return: "+fmt(p.rate)+"% · Risk: "+fmt(p.risk,2),
+            "FV: "+money(p.fv)+" · RAROC: "+fmt(p.raroc)+"%"
+          ];
+        }}}
+      },
+      scales:{
+        x:{min:.8,max:5.2,title:{display:true,text:"Orion estimated risk score (1 = lower, 5 = higher)",font:{family:"Poppins",size:11,weight:"600"}},ticks:{stepSize:1,font:{family:"Poppins",size:10}},grid:{color:"#e8eff4"}},
+        y:{beginAtZero:true,title:{display:true,text:"Reported all-in rate (%)",font:{family:"Poppins",size:11,weight:"600"}},ticks:{callback:v=>v+"%",font:{family:"Poppins",size:10}},grid:{color:"#e8eff4"}}
+      }
+    }
+  });
+}
 function renderTable(data){const q=document.getElementById("search").value.toLowerCase(),d=data.filter(p=>!q||[p["Portfolio Company"],p["Industry"],p["Instrument Description"]].join(" ").toLowerCase().includes(q)).sort((a,b)=>(b.raroc??-99)-(a.raroc??-99));document.getElementById("tableCount").textContent=d.length+" instruments shown";document.getElementById("rows").innerHTML=d.map(p=>{const rc=p.risk>=3.5?"high":p.risk>=2.5?"medium":"low";return'<tr><td class="company">'+esc(p["Portfolio Company"])+'<div class="note">'+esc(p["Instrument Description"])+'</div></td><td><span style="color:'+COLORS[p.asset]+';font-weight:600">'+esc(p.asset)+'</span></td><td>'+esc(p["Industry"])+'</td><td>'+money(p.fv)+'</td><td>'+fmt(p.rate)+'%</td><td class="risk '+rc+'">'+fmt(p.risk,2)+'</td><td>'+fmt(p.el,2)+'%</td><td>'+fmt(p.capital)+'%</td><td><strong>'+fmt(p.raroc)+'%</strong></td></tr>'}).join("")}
 function render(){const d=visible();renderKpis(d);renderChart(d);renderTable(d)}
 function makeToggles(){document.getElementById("toggles").innerHTML=Object.keys(COLORS).map(a=>'<button class="toggle active" data-a="'+a+'" style="background:'+COLORS[a]+'">'+a+'</button>').join("");document.querySelectorAll(".toggle").forEach(b=>b.onclick=()=>{const a=b.dataset.a;if(active.has(a)){active.delete(a);b.classList.remove("active");b.style.background="#fff"}else{active.add(a);b.classList.add("active");b.style.background=COLORS[a]}render()})}
