@@ -61,5 +61,22 @@
     const e=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     document.getElementById('watch-rows').innerHTML=ORION_PUBLIC_CREDITS.map(c=>`<tr><td><a class="company" href="/bdc/bbdc/credit-intelligence/companies/${e(c.slug)}/index.html">${e(c.company)}</a></td><td><span class="pill ${c.direction.startsWith('Deteriorating')?'risk':c.direction==='Improving'?'good':'watch'}">${e(c.direction)}</span></td><td class="action">${e(c.status)}</td><td>${e(c.fairValue)}</td><td>${e(c.mark)}</td><td>${e(c.portfolio)}</td><td class="conclusion-cell">${e(c.conclusion)}</td><td>${e(c.confidence)}</td></tr>`).join('');
   </script>
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat(){
+      try{
+        const r=await fetch('/bdc/bbdc/includes/orion-chat.html',{cache:'no-store'});
+        if(!r.ok)return;
+        const box=document.getElementById('orion-chat-include');
+        box.innerHTML=await r.text();
+        box.querySelectorAll('script').forEach(old=>{
+          const s=document.createElement('script');
+          if(old.src)s.src=old.src;else s.textContent=old.textContent;
+          document.body.appendChild(s);old.remove();
+        });
+      }catch(error){console.warn('Orion chat could not be loaded',error)}
+    }
+    loadOrionChat();
+  </script>
 </body>
 </html>
