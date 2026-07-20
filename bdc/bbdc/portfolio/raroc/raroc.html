@@ -29,8 +29,8 @@ h1{margin:4px 0;font-size:24px;line-height:1.2}.subtitle{font-size:12px;color:va
 <section id="kpis" class="kpis"></section>
 <section class="card controls"><span class="controls-title">Asset classes</span><div id="toggles" style="display:flex;gap:7px;flex-wrap:wrap"></div></section>
 <section class="card chart-card"><div class="chart-head"><div><div class="section-title">Risk / return map</div><div class="section-sub">Y-axis: reported all-in rate · X-axis: Orion estimated risk score · Bubble size: fair value</div></div><div class="section-sub">Click legend items or asset-class filters to isolate exposures</div></div><div class="chart-wrap"><canvas id="scatter"></canvas></div></section>
-<section class="grid2"><div class="card method"><div class="section-title">Orion RAROC screening methodology</div><div class="section-sub">A transparent proxy designed for portfolio comparison, not an official BBDC calculation</div><div class="method-grid"><div class="method-box"><strong>Estimated risk score (1–5)</strong>Combines lien priority, fair-value-to-cost markdown, PIK exposure, maturity proximity and non-accrual status.</div><div class="method-box"><strong>Expected credit loss</strong>Estimated probability of default by risk score × loss severity by seniority.</div><div class="method-box"><strong>RAROC proxy</strong>(Reported all-in rate − expected credit loss) ÷ estimated economic-capital requirement.</div></div></div><aside class="card warning"><strong>Important limitation</strong>Risk scores, expected losses and capital requirements are Orion estimates derived from public position data. They are not BBDC internal risk ratings, regulatory capital measures, investment recommendations or audited RAROC figures. Equity and instruments without a reported all-in rate are excluded from return calculations.</aside></section>
-<section class="card table-card"><div class="table-head"><div><div class="section-title">Position-level RAROC table</div><div id="tableCount" class="section-sub"></div></div><input id="search" class="search" placeholder="Search company, industry or instrument…"></div><div class="table-scroll"><table><thead><tr><th>Portfolio company</th><th>Asset class</th><th>Industry</th><th>Fair value</th><th>All-in rate</th><th>Risk score</th><th>Expected loss</th><th>Capital</th><th>RAROC proxy</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section class="grid2"><div class="card method"><div class="section-title">Orion RAROC screening methodology</div><div class="section-sub">A transparent proxy designed for portfolio comparison, not an official BBDC calculation</div><div class="method-grid"><div class="method-box"><strong>Estimated risk score (1–5)</strong>Continuous score combining reported all-in rate, lien priority, fair-value-to-cost mark, PIK exposure, maturity proximity and non-accrual status.</div><div class="method-box"><strong>Expected credit loss</strong>Estimated probability of default by risk score × loss severity by seniority.</div><div class="method-box"><strong>RAROC proxy</strong>(Reported all-in rate − expected credit loss) ÷ estimated economic-capital requirement.</div></div></div><aside class="card warning"><strong>Important limitation</strong>Risk scores, expected losses and capital requirements are Orion estimates derived from public position data. They are not BBDC internal risk ratings, regulatory capital measures, investment recommendations or audited RAROC figures. Equity and instruments without a reported all-in rate are excluded from return calculations.</aside></section>
+<section class="card table-card"><div class="table-head"><div><div class="section-title">Position-level RAROC table</div><div id="tableCount" class="section-sub"></div></div><input id="search" class="search" placeholder="Search company, industry or instrument…"></div><div class="table-scroll"><table><thead><tr><th>Portfolio company</th><th>Asset class</th><th>Industry</th><th>Fair value</th><th>All-in rate</th><th>Risk score</th><th>Primary risk drivers</th><th>Expected loss</th><th>Capital</th><th>RAROC proxy</th></tr></thead><tbody id="rows"></tbody></table></div></section>
 </div></main>
 <div id="orion-chat-include"></div>
 <script>
@@ -40,9 +40,44 @@ let positions=[],active=new Set(Object.keys(COLORS)),chart;
 const n=v=>{const x=Number(String(v??'').replace(/[$,%]/g,''));return Number.isFinite(x)?x:0};
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
 function asset(r){const d=r["Instrument Description"]||"",l=r["Lien / Seniority"]||"";if(/revolver/i.test(d))return"Revolver";if(/second/i.test(l+" "+d))return"Second Lien";if(/subordinated/i.test(l+" "+d))return"Subordinated";if(/first/i.test(l+" "+d))return"First Lien";return"Other Debt"}
-function score(r){if(String(r["Non-Accrual"]||"").trim())return 5;let s=1.65,a=asset(r),cost=n(r["Cost ($000)"]),fv=n(r["Fair Value ($000)"]),ratio=cost>0?fv/cost:1,pik=n(r["PIK Rate (%)"]);if(a==="Second Lien")s+=.65;if(a==="Subordinated")s+=1.15;if(a==="Other Debt")s+=.45;if(ratio<1)s+=Math.min(1.6,(1-ratio)*5);if(pik>0)s+=.45;const mat=String(r["Maturity Date"]||"");const yr=Number(mat.slice(-2));if(yr&&yr<=27)s+=.25;return Math.max(1,Math.min(5,s))}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function curve(values,risk){
+  const lo=Math.max(1,Math.floor(risk)),hi=Math.min(5,Math.ceil(risk)),t=risk-lo;
+  return values[lo]+(values[hi]-values[lo])*t;
+}
+function score(r){
+  if(String(r["Non-Accrual"]||"").trim()) return 5;
+  const a=asset(r),cost=n(r["Cost ($000)"]),fv=n(r["Fair Value ($000)"]);
+  const ratio=cost>0?fv/cost:1,rate=n(r["All-in Rate (%)"]),pik=n(r["PIK Rate (%)"]);
+  let s=1.05;
+  s+=clamp((rate-6)/7*1.40,0,1.40);
+  if(a==="Revolver")s-=0.08;
+  if(a==="Second Lien")s+=0.55;
+  if(a==="Subordinated")s+=1.00;
+  if(a==="Other Debt")s+=0.35;
+  s+=clamp((1-ratio)*5,-0.20,1.60);
+  s+=Math.min(0.65,pik*0.10);
+  const yr=Number(String(r["Maturity Date"]||"").slice(-2));
+  if(yr&&yr<=27)s+=0.30;else if(yr===28)s+=0.12;
+  return clamp(s,1,5);
+}
 function lgd(a){return (a==="First Lien"||a==="Revolver") ? 0.35 : a==="Second Lien" ? 0.55 : a==="Subordinated" ? 0.70 : 0.60}
-function prepare(r){const a=asset(r),risk=score(r),bucket=Math.max(1,Math.min(5,Math.round(risk))),rate=n(r["All-in Rate (%)"]),fv=n(r["Fair Value ($000)"]),el=pd[bucket]*lgd(a)*100,capital=cap[bucket]*100,raroc=capital?((rate-el)/capital)*100:null;return{...r,asset:a,risk,rate,fv,el,capital,raroc}}
+function riskDrivers(r,a,risk){
+  const cost=n(r["Cost ($000)"]),fv=n(r["Fair Value ($000)"]),ratio=cost>0?fv/cost:1;
+  const out=[a,n(r["All-in Rate (%)"]).toFixed(1)+"% contractual rate"];
+  if(ratio<0.985)out.push(((1-ratio)*100).toFixed(1)+"% below cost");
+  else if(ratio>1.02)out.push(((ratio-1)*100).toFixed(1)+"% above cost");
+  const pik=n(r["PIK Rate (%)"]);if(pik>0)out.push(pik.toFixed(1)+"% PIK");
+  if(String(r["Non-Accrual"]||"").trim())out.push("Non-accrual");
+  const m=r["Maturity Date"];if(m)out.push("Matures "+m);
+  return out.join(" · ");
+}
+function prepare(r){
+  const a=asset(r),risk=score(r),rate=n(r["All-in Rate (%)"]),fv=n(r["Fair Value ($000)"]);
+  const pdRate=curve(pd,risk),capitalRate=curve(cap,risk),el=pdRate*lgd(a)*100,capital=capitalRate*100;
+  const raroc=capital?((rate-el)/capital)*100:null;
+  return{...r,asset:a,risk,rate,fv,el,capital,raroc,drivers:riskDrivers(r,a,risk)};
+}
 function fmt(v,d=1){return Number.isFinite(v)?v.toFixed(d):"—"}function money(v){return"$"+Math.round(v).toLocaleString()+"K"}
 function visible(){return positions.filter(p=>active.has(p.asset)&&p.rate>0&&p.fv>0)}
 function renderKpis(data){const fv=data.reduce((s,p)=>s+p.fv,0),w=(key)=>fv?data.reduce((s,p)=>s+p[key]*p.fv,0)/fv:0,classes=new Set(data.map(p=>p.asset)).size;document.getElementById("kpis").innerHTML=[["DEBT FAIR VALUE",money(fv),"Visible filtered instruments"],["WEIGHTED ALL-IN RATE",fmt(w("rate"))+"%","Reported contractual return"],["WEIGHTED RISK SCORE",fmt(w("risk"),2)+" / 5","Orion estimated"],["WEIGHTED RAROC",fmt(w("raroc"))+"%","Orion proxy"],["ASSET CLASSES",classes,"Currently visible"]].map(x=>'<article class="card kpi"><div class="label">'+x[0]+'</div><div class="value">'+x[1]+'</div><div class="note">'+x[2]+'</div></article>').join("")}
@@ -75,7 +110,7 @@ function renderChart(data){
     }
   });
 }
-function renderTable(data){const q=document.getElementById("search").value.toLowerCase(),d=data.filter(p=>!q||[p["Portfolio Company"],p["Industry"],p["Instrument Description"]].join(" ").toLowerCase().includes(q)).sort((a,b)=>(b.raroc??-99)-(a.raroc??-99));document.getElementById("tableCount").textContent=d.length+" instruments shown";document.getElementById("rows").innerHTML=d.map(p=>{const rc=p.risk>=3.5?"high":p.risk>=2.5?"medium":"low";return'<tr><td class="company">'+esc(p["Portfolio Company"])+'<div class="note">'+esc(p["Instrument Description"])+'</div></td><td><span style="color:'+COLORS[p.asset]+';font-weight:600">'+esc(p.asset)+'</span></td><td>'+esc(p["Industry"])+'</td><td>'+money(p.fv)+'</td><td>'+fmt(p.rate)+'%</td><td class="risk '+rc+'">'+fmt(p.risk,2)+'</td><td>'+fmt(p.el,2)+'%</td><td>'+fmt(p.capital)+'%</td><td><strong>'+fmt(p.raroc)+'%</strong></td></tr>'}).join("")}
+function renderTable(data){const q=document.getElementById("search").value.toLowerCase(),d=data.filter(p=>!q||[p["Portfolio Company"],p["Industry"],p["Instrument Description"]].join(" ").toLowerCase().includes(q)).sort((a,b)=>(b.raroc??-99)-(a.raroc??-99));document.getElementById("tableCount").textContent=d.length+" instruments shown";document.getElementById("rows").innerHTML=d.map(p=>{const rc=p.risk>=3.5?"high":p.risk>=2.5?"medium":"low";return'<tr><td class="company">'+esc(p["Portfolio Company"])+'<div class="note">'+esc(p["Instrument Description"])+'</div></td><td><span style="color:'+COLORS[p.asset]+';font-weight:600">'+esc(p.asset)+'</span></td><td>'+esc(p["Industry"])+'</td><td>'+money(p.fv)+'</td><td>'+fmt(p.rate)+'%</td><td class="risk '+rc+'">'+fmt(p.risk,2)+'</td><td style="white-space:normal;min-width:240px;color:#52657d">'+esc(p.drivers)+'</td><td>'+fmt(p.el,2)+'%</td><td>'+fmt(p.capital)+'%</td><td><strong>'+fmt(p.raroc)+'%</strong></td></tr>'}).join("")}
 function render(){const d=visible();renderKpis(d);renderChart(d);renderTable(d)}
 function makeToggles(){document.getElementById("toggles").innerHTML=Object.keys(COLORS).map(a=>'<button class="toggle active" data-a="'+a+'" style="background:'+COLORS[a]+'">'+a+'</button>').join("");document.querySelectorAll(".toggle").forEach(b=>b.onclick=()=>{const a=b.dataset.a;if(active.has(a)){active.delete(a);b.classList.remove("active");b.style.background="#fff"}else{active.add(a);b.classList.add("active");b.style.background=COLORS[a]}render()})}
 Papa.parse("/bdc/bbdc/data/bbdc_portfolio_construction.csv?v=20260720-raroc",{download:true,header:true,skipEmptyLines:true,complete:r=>{positions=r.data.filter(x=>x["Asset Type"]==="Debt").map(prepare);makeToggles();render()},error:e=>{document.querySelector(".chart-wrap").innerHTML='<div style="padding:60px;text-align:center;color:#dc2626">Unable to load RAROC source data.</div>'}});
