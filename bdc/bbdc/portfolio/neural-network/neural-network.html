@@ -338,6 +338,7 @@
       </section>
     </div>
   </main>
+  <div id="orion-chat-include"></div>
   <script>
     (async function(){
       try{
@@ -367,6 +368,26 @@
           }
         });
       }catch(error){console.warn("Sidebar could not be loaded",error)}
+    })();
+  </script>
+  <script>
+    (async function loadOrionChat(){
+      try{
+        const response=await fetch("/bdc/bbdc/includes/orion-chat.html",{cache:"no-store"});
+        if(!response.ok)return;
+        const container=document.getElementById("orion-chat-include");
+        if(!container)return;
+        container.innerHTML=await response.text();
+        container.querySelectorAll("script").forEach(oldScript=>{
+          const newScript=document.createElement("script");
+          if(oldScript.src)newScript.src=oldScript.src;
+          else newScript.textContent=oldScript.textContent;
+          document.body.appendChild(newScript);
+          oldScript.remove();
+        });
+      }catch(error){
+        console.warn("Orion chat include could not be loaded:",error);
+      }
     })();
   </script>
 </body>
