@@ -174,5 +174,23 @@ function init(){
 }
 init();
 </script>
+
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat(){
+      try{
+        const r=await fetch("/bdc/bbdc/includes/orion-chat.html",{cache:"no-store"});
+        if(!r.ok)return;
+        const box=document.getElementById("orion-chat-include");
+        box.innerHTML=await r.text();
+        box.querySelectorAll("script").forEach(old=>{
+          const s=document.createElement("script");
+          if(old.src)s.src=old.src;else s.textContent=old.textContent;
+          document.body.appendChild(s);old.remove();
+        });
+      }catch(e){console.warn(e)}
+    }
+    loadOrionChat();
+  </script>
 </body>
 </html>
