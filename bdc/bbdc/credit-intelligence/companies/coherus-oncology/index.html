@@ -30,13 +30,13 @@
   <aside id="sidebar"></aside>
   <main>
     <div class="header-row">
-      <div><div class="eyebrow">ORION · BDC INTELLIGENCE</div><h1 class="page-title">Coherus Credit Overview</h1><p class="subtitle" id="subtitle">BBDC exposure, current credit profile and Orion assessment</p></div>
+      <div><div class="eyebrow">ORION · BDC INTELLIGENCE</div><h1 class="page-title">Coherus Credit Overview</h1><p class="subtitle" id="subtitle">BBDC exposure, current credit profile and preliminary assessment</p></div>
       <div class="status-pill"><span class="status-dot"></span><span id="review-status">Source-backed analysis</span></div>
     </div>
     <div id="loading" class="loading">Loading Coherus credit data…</div>
     <div id="dashboard" class="hidden">
       <section id="kpis" class="kpis"></section>
-      <section class="panel thesis"><div class="thesis-label">Preliminary Orion View</div><div class="thesis-text" id="thesis"></div></section>
+      <section class="panel thesis"><div class="thesis-label">Preliminary Credit View</div><div class="thesis-text" id="thesis"></div></section>
       <div class="grid">
         <div class="section-stack">
           <section class="panel"><div class="panel-title">Credit snapshot</div><div class="panel-sub">Business, performance, liquidity and capital structure</div><div id="snapshot" class="metric-list"></div></section>
@@ -49,13 +49,14 @@
           <section class="panel"><div class="panel-title">Source trail</div><div class="panel-sub">Primary documents supporting this overview</div><div id="sources" class="metric-list"></div></section>
         </div>
       </div>
-      <div class="footnote">Orion analysis is based on public company filings, executed credit documents and Barings BDC disclosures. Calculated and analytical fields are clearly identified in the underlying CSV files. Values are shown using the units reported by the source document.</div>
+      <div class="footnote">Credit analysis is based on public company filings, executed credit documents and Barings BDC disclosures. Calculated and analytical fields are clearly identified in the underlying CSV files. Values are shown using the units reported by the source document.</div>
     </div>
   </main>
   <script>
     const PAGE_CSV='/bdc/bbdc/data/credits/analysis/coherus/coherus_credit_overview_page.csv';
     const MASTER_CSV='/bdc/bbdc/data/credits/analysis/coherus/coherus_credit_overview.csv';
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const neutral=v=>String(v??'').replace(/^Orion Analysis(?: conclusion)?(?: \(preliminary\))?:\s*/i,'');
     const number=v=>{const s=String(v??'').trim(),neg=/^\(.*\)$/.test(s),n=Number(s.replace(/[,$()%]/g,''));return Number.isFinite(n)?(neg?-n:n):null};
     function fmt(row){if(!row)return '—';const v=row.value,u=row.unit,n=number(v);if(u==='USD thousands'&&n!==null)return '$'+(n/1000).toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:1})+'M';if(u==='USD millions'&&n!==null)return '$'+n.toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:1})+'M';if(u==='USD'&&n!==null)return '$'+n.toLocaleString();if(u==='percent'&&n!==null)return n.toLocaleString(undefined,{maximumFractionDigits:2})+'%';if(u==='shares'&&n!==null)return n.toLocaleString();return esc(v)}
     function find(rows,metric){return rows.find(r=>r.metric===metric)}
@@ -76,7 +77,7 @@
         ['TERM LOAN MATURITY',p('Maturity date'),'First-lien secured term loan']
       ];
       document.getElementById('kpis').innerHTML=kpis.map(([l,r,d])=>`<div class="kpi"><div class="kpi-label">${l}</div><div class="kpi-value">${fmt(r,true)}</div><div class="kpi-detail">${esc(d)}${r?` · ${esc(r.as_of_date)}`:''}</div></div>`).join('');
-      document.getElementById('thesis').textContent=p('Preliminary Orion outlook')?.notes||p('Preliminary Orion outlook')?.value||'Assessment pending.';
+      document.getElementById('thesis').textContent=neutral(p('Preliminary Orion outlook')?.notes||p('Preliminary Orion outlook')?.value||'Assessment pending.');
       const snapshot=[
         [p('Company description'),'Business'],[p('Commercial product'),'Commercial product'],[p('Total financial liabilities (company debt/monetization)'),'Financial liabilities'],[p('Cash, cash equivalents and marketable securities'),'Cash & securities'],[p('Management liquidity assessment (going concern)'),'Liquidity assessment'],[p('Net cash vs. total debt/monetization position'),'Net cash position']
       ].filter(x=>x[0]);
