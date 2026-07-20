@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BBDC — Ask Orion</title>
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--blue:#187aba;--blue-dark:#0f639c;--navy:#002b51;--jade:#3eb661;--red:#dc2626;--amber:#d97706;--bg:#f4f7fa;--surface:#fff;--border:#e2eaf0;--muted:#64748b}
+    *{box-sizing:border-box}html,body{min-height:100%}body{margin:0;background:var(--bg);color:var(--navy);font-family:Poppins,system-ui,-apple-system,Segoe UI,sans-serif}
+    main{min-width:0;margin-left:256px;padding:18px 22px 28px}.page-inner{max-width:none;margin:0}.header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}.eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#64748b}.page-title{font-size:22px;line-height:1.2;margin:5px 0;color:#111827;font-weight:700}.subtitle{font-size:11px;line-height:1.5;color:#64748b;margin:0}.status-pill{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;color:#52657d;font-size:10px;font-weight:600}.status-dot{width:7px;height:7px;border-radius:50%;background:var(--jade)}.card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 1px 6px rgba(0,43,81,.06)}
+    .ask-shell{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:12px;margin-top:16px}.conversation{min-height:620px;display:flex;flex-direction:column;overflow:hidden}.chat-head{padding:16px 18px;border-bottom:1px solid var(--border)}.chat-title{font-size:14px;font-weight:700;color:#172033}.chat-sub{margin-top:3px;font-size:10px;color:var(--muted)}.messages{flex:1;padding:22px;background:#f8fafc}.welcome{max-width:680px;padding:15px 17px;border:1px solid var(--border);border-radius:14px 14px 14px 5px;background:#fff;color:#34445a;font-size:12px;line-height:1.65}.source-line{margin-top:10px;padding-top:8px;border-top:1px solid #edf2f6;color:var(--blue);font-size:9px}.prompt-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}.prompt{border:1px solid #cfe0ec;border-radius:999px;background:#fff;color:#36536e;padding:7px 10px;font:500 10px Poppins,sans-serif;cursor:pointer}.composer{display:flex;gap:8px;align-items:flex-end;padding:14px;border-top:1px solid var(--border);background:#fff}.composer textarea{flex:1;resize:none;min-height:42px;max-height:120px;border:1px solid #d7e2ea;border-radius:11px;padding:11px 12px;outline:none;font:400 11px Poppins,sans-serif}.composer button{border:0;border-radius:10px;background:#063b66;color:#fff;padding:11px 15px;font:600 11px Poppins,sans-serif;cursor:pointer}.side{padding:16px}.side-title{font-size:12px;font-weight:700;color:#172033}.scope-list{margin-top:10px;display:grid;gap:8px}.scope{padding:10px;border:1px solid var(--border);border-radius:9px}.scope strong{display:block;font-size:10px;color:#17324d}.scope span{display:block;margin-top:2px;font-size:9px;line-height:1.45;color:var(--muted)}.notice{margin-top:14px;padding:11px;border-radius:9px;background:#fff8e8;color:#8a5a00;font-size:9px;line-height:1.5}@media(max-width:900px){.ask-shell{grid-template-columns:1fr}.conversation{min-height:560px}}
+    @media(max-width:767px){#sidebar-placeholder{display:none}main{margin-left:0;padding:14px}}
+  </style>
+</head>
+<body>
+  <div id="sidebar-placeholder"></div>
+  <main><div class="page-inner">
+    <header class="header-row"><div><div class="eyebrow">ORION · BBDC INTELLIGENCE</div><h1 class="page-title">BBDC — Ask Orion</h1><p class="subtitle">Ask portfolio-, credit- and source-level questions across the complete authorized BBDC intelligence environment.</p></div><span class="status-pill"><span class="status-dot"></span>Portfolio-wide briefing</span></header>
+    <section class="ask-shell"><div class="card conversation"><div class="chat-head"><div class="chat-title">Portfolio-wide Ask Orion</div><div class="chat-sub">Current scope: BBDC portfolio, underlying credits, analytical pages and authorized source library</div></div><div id="messages" class="messages"><div class="welcome">I’m focused on Barings BDC and its portfolio. Ask about BBDC financials, portfolio construction, credit quality, activity, trends, individual borrowers, covenants, liquidity, valuation, alerts or source documents.<div class="source-line">Portfolio-wide interface prototype · Intelligence connection follows</div></div><div class="prompt-row"><button class="prompt">What requires attention?</button><button class="prompt">Which credits are deteriorating?</button><button class="prompt">Summarize portfolio changes</button><button class="prompt">Show upcoming catalysts</button></div></div><form id="ask-form" class="composer"><textarea id="ask-input" rows="1" placeholder="Ask anything about BBDC…"></textarea><button type="submit">Ask Orion</button></form></div><aside class="card side"><div class="side-title">Authorized scope</div><div class="scope-list"><div class="scope"><strong>BBDC</strong><span>Overview, financials, comparables and news</span></div><div class="scope"><strong>Portfolio</strong><span>Positions, construction, quality, activity and trends</span></div><div class="scope"><strong>Credits</strong><span>Coherus, Ocular, Herbalife and future borrower workspaces</span></div><div class="scope"><strong>Evidence</strong><span>Filings, agreements, financial data, notes, memos and monitoring signals</span></div></div><div class="notice">This page establishes the portfolio-wide interaction. Live model retrieval, automated citations and the daily intelligence engine are not yet connected.</div></aside></section>
+  </div></main>
+  <script>
+    (async function(){
+      try{
+        const response=await fetch("/bdc/bbdc/sidebar.html",{cache:"no-store"});
+        if(!response.ok)return;
+        const holder=document.getElementById("sidebar-placeholder");
+        holder.innerHTML=await response.text();
+        window.toggleSection=function(id){
+          const section=document.getElementById(id),icon=document.getElementById("icon-"+id);
+          if(!section||!icon)return;section.classList.toggle("hidden");
+          const open=!section.classList.contains("hidden");icon.style.transform=open?"rotate(90deg)":"rotate(0deg)";
+          const prior=JSON.parse(localStorage.getItem("bbdc-sidebar-sections")||"[]");
+          localStorage.setItem("bbdc-sidebar-sections",JSON.stringify(open?[...new Set([...prior,id])]:prior.filter(x=>x!==id)));
+        };
+        ["bbdc-nav","briefing-nav"].forEach(id=>{const section=document.getElementById(id),icon=document.getElementById("icon-"+id);if(section&&icon){section.classList.remove("hidden");icon.style.transform="rotate(90deg)"}});
+        document.querySelectorAll('#sidebar-placeholder a[href]').forEach(link=>{if(link.getAttribute("href")===window.location.pathname){link.classList.add("bg-blue-50","text-[#187ABA]");link.setAttribute("aria-current","page")}});
+      }catch(error){console.warn("Sidebar could not be loaded",error)}
+    })();
+    const form=document.getElementById("ask-form"),input=document.getElementById("ask-input"),messages=document.getElementById("messages");document.querySelectorAll(".prompt").forEach(button=>button.addEventListener("click",()=>{input.value=button.textContent;input.focus()}));form.addEventListener("submit",event=>{event.preventDefault();const question=input.value.trim();if(!question)return;const row=document.createElement("div");row.style.cssText="margin:14px 0 0 auto;max-width:78%;padding:11px 13px;border-radius:14px 14px 5px 14px;background:#187aba;color:#fff;font-size:11px;line-height:1.55";row.textContent=question;messages.appendChild(row);input.value="";const reply=document.createElement("div");reply.className="welcome";reply.style.marginTop="10px";reply.textContent="This portfolio-wide interface is ready for the BBDC intelligence connection. The next layer will retrieve the relevant structured data and documents, generate an evidence-backed answer, and cite its sources.";messages.appendChild(reply);messages.scrollTop=messages.scrollHeight});
+  </script>
+</body>
+</html>
