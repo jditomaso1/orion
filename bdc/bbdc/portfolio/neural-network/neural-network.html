@@ -84,6 +84,8 @@
   #bbdc-neural-field .satellite.is-dimmed { opacity: .24; }
   #bbdc-neural-field .link.is-active { stroke: var(--viz-series-1); stroke-width: 1.8; opacity: .95; }
   #bbdc-neural-field .node-label { fill: var(--foreground); font-family: Poppins, system-ui, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: .01em; pointer-events: none; }
+  #bbdc-neural-field .input-label { fill: var(--foreground); stroke: var(--background); stroke-width: 4px; paint-order: stroke; font-family: Poppins, system-ui, sans-serif; font-size: 11px; font-weight: 500; pointer-events: none; opacity: 0; transition: opacity .14s ease; }
+  #bbdc-neural-field .input-label.is-visible { opacity: 1; }
   #bbdc-neural-field .node-readout { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; min-height: 30px; padding: 0 0 10px 2px; font-family: Poppins, system-ui, sans-serif; font-size: 12px; color: var(--foreground); }
   #bbdc-neural-field .node-readout strong { font-size: 12px; font-weight: 500; }
   #bbdc-neural-field .node-readout .text-muted { font-size: 11px; }
@@ -279,10 +281,21 @@
     c.addEventListener('click',()=>focus(node));
   });
 
+  const inputLabel=document.createElementNS(ns,'text');
+  inputLabel.setAttribute('class','input-label');
+  inputLabel.setAttribute('aria-hidden','true');
+  nodeLayer.appendChild(inputLabel);
+
   function focusInput(input,connectedNode) {
     kindOut.textContent=input.kind;
     labelOut.textContent=input.label;
     descriptionOut.textContent=input.description+' Connected to: '+connectedNode.label+'.';
+    const placeLeft=input.x>800;
+    inputLabel.setAttribute('x',input.x+(placeLeft?-10:10));
+    inputLabel.setAttribute('y',input.y-8);
+    inputLabel.setAttribute('text-anchor',placeLeft?'end':'start');
+    inputLabel.textContent=input.label;
+    inputLabel.classList.add('is-visible');
     nodeLayer.querySelectorAll('.node').forEach(el=>{
       el.classList.toggle('is-selected',el.dataset.id===connectedNode.id);
       el.classList.toggle('is-dimmed',el.dataset.id!==connectedNode.id);
@@ -314,6 +327,7 @@
     satelliteLayer.querySelectorAll('.satellite').forEach(el=>el.classList.add('is-dimmed'));
   }
   svg.addEventListener('mouseleave',()=>{
+    inputLabel.classList.remove('is-visible');
     nodeLayer.querySelectorAll('.node').forEach(el=>el.classList.remove('is-dimmed'));
     linkLayer.querySelectorAll('.link').forEach(el=>el.classList.remove('is-active','is-dimmed'));
     satelliteLayer.querySelectorAll('.satellite').forEach(el=>el.classList.remove('is-dimmed','is-selected'));
