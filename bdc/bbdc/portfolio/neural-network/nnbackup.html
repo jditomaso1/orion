@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orion • BBDC Neural Network</title>
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --background:#f4f7fa;--foreground:#172033;--card:#fff;--card-foreground:#334155;
+      --primary:#187aba;--primary-foreground:#fff;--muted:#eef3f7;--muted-foreground:#64748b;
+      --border:#dbe5ec;--ring:#187aba;--viz-series-1:#187aba;--viz-series-2:#0f639c;
+      --viz-series-3:#3eb661;--viz-series-4:#d97706;
+    }
+    *{box-sizing:border-box}
+    html,body{min-height:100%;margin:0}
+    body{background:var(--background);color:var(--foreground);font-family:Poppins,system-ui,-apple-system,Segoe UI,sans-serif}
+    .page-main{min-width:0;margin-left:256px;padding:18px 22px 28px}
+    .page-inner{max-width:none;margin:0}
+    .header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+    .eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#64748b}
+    .page-title{font-size:22px;line-height:1.2;margin:5px 0;color:#111827;font-weight:700}
+    .subtitle{font-size:11px;line-height:1.5;color:#64748b;margin:0}
+    .network-shell{background:#fff;border:1px solid #e2eaf0;border-radius:12px;box-shadow:0 1px 6px rgba(0,43,81,.06);padding:14px 16px 12px}
+    .network-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:#64748b;font-size:11px;margin-bottom:2px}
+    .status-dot{width:7px;height:7px;border-radius:50%;background:#3eb661}
+    .text-small{font-size:11px}.text-muted{color:var(--muted-foreground)}
+    .viz-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#eef5f9;color:#0f639c;font-size:10px;font-weight:600}
+    #bbdc-ask-orion{top:108px!important;right:24px!important}
+    @media(max-width:767px){#sidebar-placeholder{display:none}.page-main{margin-left:0;padding:14px}.network-shell{padding:10px}#bbdc-ask-orion{top:72px!important;right:14px!important}}
+  </style>
+</head>
+<body>
+  <div id="sidebar-placeholder"></div>
+  <main class="page-main">
+    <div class="page-inner">
+      <header class="header-row">
+        <div>
+          <div class="eyebrow">ORION · BBDC INTELLIGENCE</div>
+          <h1 class="page-title">BBDC — Neural Network</h1>
+          <p class="subtitle">Explore the relationships connecting source evidence, portfolio analytics, borrower underwriting, risk signals and Ask Orion.</p>
+        </div>
+        <div class="network-meta"><span class="status-dot"></span><span>Interactive intelligence map</span></div>
+      </header>
+      <section class="network-shell" aria-label="BBDC neural network">
+<div id="bbdc-neural-field">
+  <div class="node-readout text-small" aria-live="polite">
+    <span class="viz-badge" data-kind>Core</span>
+    <strong data-label>BBDC Intelligence Core</strong>
+    <span class="text-muted" data-description>Portfolio and borrower intelligence joined through shared evidence.</span>
+  </div>
+  <svg class="field" viewBox="0 0 980 620" role="img" aria-labelledby="field-title field-desc">
+    <title id="field-title">BBDC neural intelligence field</title>
+    <desc id="field-desc">A dense organic field of connected BBDC portfolio, borrower, source, risk, and analytical nodes.</desc>
+    <g data-halos></g>
+    <g data-links></g>
+    <g data-satellites></g>
+    <g data-nodes></g>
+  </svg>
+
+</div>
+
+<style>
+  #bbdc-neural-field { width: 100%; color: var(--foreground); }
+  #bbdc-neural-field .field { display: block; width: 100%; height: auto; overflow: visible; }
+  #bbdc-neural-field .link { stroke: var(--border); stroke-width: .9; opacity: .72; vector-effect: non-scaling-stroke; transition: opacity .18s ease, stroke .18s ease; }
+  #bbdc-neural-field .link.secondary { stroke: var(--muted-foreground); opacity: .24; }
+  #bbdc-neural-field .halo { fill: color-mix(in srgb, var(--viz-series-1) 9%, transparent); }
+  #bbdc-neural-field .satellite { fill: var(--muted-foreground); opacity: .62; cursor: pointer; transition: opacity .18s ease, r .16s ease; }
+  #bbdc-neural-field .satellite.accent { fill: var(--viz-series-1); opacity: .55; }
+  #bbdc-neural-field .satellite:hover,
+  #bbdc-neural-field .satellite.is-selected { opacity: 1; stroke: var(--ring); stroke-width: 2; vector-effect: non-scaling-stroke; }
+  #bbdc-neural-field .node { cursor: pointer; stroke: var(--background); stroke-width: 2.5; vector-effect: non-scaling-stroke; transition: opacity .18s ease, r .16s ease; }
+  #bbdc-neural-field .node.source { fill: var(--muted-foreground); }
+  #bbdc-neural-field .node.portfolio { fill: var(--viz-series-2); }
+  #bbdc-neural-field .node.credit { fill: var(--viz-series-3); }
+  #bbdc-neural-field .node.risk { fill: var(--viz-series-4); }
+  #bbdc-neural-field .node.core { fill: var(--viz-series-1); }
+  #bbdc-neural-field .node:hover,
+  #bbdc-neural-field .node.is-selected { stroke: var(--ring); stroke-width: 4; }
+  #bbdc-neural-field .node.is-dimmed { opacity: .32; }
+  #bbdc-neural-field .link.is-dimmed { opacity: .18; }
+  #bbdc-neural-field .satellite.is-dimmed { opacity: .24; }
+  #bbdc-neural-field .link.is-active { stroke: var(--viz-series-1); stroke-width: 1.8; opacity: .95; }
+  #bbdc-neural-field .node-label { fill: var(--foreground); font-family: Poppins, system-ui, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: .01em; pointer-events: none; }
+  #bbdc-neural-field .input-label { fill: var(--foreground); stroke: var(--background); stroke-width: 4px; paint-order: stroke; font-family: Poppins, system-ui, sans-serif; font-size: 11px; font-weight: 500; pointer-events: none; opacity: 0; transition: opacity .14s ease; }
+  #bbdc-neural-field .input-label.is-visible { opacity: 1; }
+  #bbdc-neural-field .node-readout { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; min-height: 30px; padding: 0 0 10px 2px; font-family: Poppins, system-ui, sans-serif; font-size: 12px; color: var(--foreground); }
+  #bbdc-neural-field .node-readout strong { font-size: 12px; font-weight: 500; }
+  #bbdc-neural-field .node-readout .text-muted { font-size: 11px; }
+</style>
+
+<script>
+(() => {
+  const root = document.getElementById('bbdc-neural-field');
+  const svg = root.querySelector('.field');
+  const haloLayer = root.querySelector('[data-halos]');
+  const linkLayer = root.querySelector('[data-links]');
+  const satelliteLayer = root.querySelector('[data-satellites]');
+  const nodeLayer = root.querySelector('[data-nodes]');
+  const kindOut = root.querySelector('[data-kind]');
+  const labelOut = root.querySelector('[data-label]');
+  const descriptionOut = root.querySelector('[data-description]');
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const nodes = [
+    ['b',500,305,19,'core','BBDC Core','Portfolio and borrower intelligence joined through shared evidence.'],
+    ['o',835,118,16,'core','Ask Orion','The conversational layer for questions, insights, calculations, and citations.'],
+    ['s1',150,100,14,'source','BBDC Filings','10-Qs, 10-Ks, schedules of investments, and position disclosures.'],
+    ['s2',250,155,10,'source','Borrower Filings','Financial statements, operating disclosures, and company developments.'],
+    ['s3',185,260,11,'source','Credit Agreements','Terms, collateral, guarantees, covenants, and amendments.'],
+    ['s4',300,75,8,'source','Earnings Materials','Quarterly releases, presentations, and management commentary.'],
+    ['s5',110,360,8,'source','News & Market Evidence','Market developments, catalysts, comparables, and external signals.'],
+    ['s6',285,330,9,'source','Source Manifest','Document lineage, dates, URLs, and extraction status.'],
+    ['p1',390,120,15,'portfolio','BBDC Overview','BDC financials, peers, portfolio scale, and corporate developments.'],
+    ['p2',475,145,12,'portfolio','Portfolio Positions','Company and instrument-level exposure, cost, fair value, and classification.'],
+    ['p3',570,112,10,'portfolio','Portfolio Construction','Industry, seniority, sponsor, rate type, and concentration.'],
+    ['p4',630,190,14,'portfolio','Portfolio Quality','Non-accruals, PIK, marks, risk ratings, and watchlist signals.'],
+    ['p5',665,285,10,'portfolio','Portfolio Activity','Originations, repayments, exits, restructurings, and realized results.'],
+    ['p6',610,360,13,'portfolio','Portfolio Trends','Quarter-over-quarter growth, contraction, and risk movement.'],
+    ['c1',390,430,17,'credit','Coherus','The deepest developed borrower underwriting and monitoring workspace.'],
+    ['c2',520,490,14,'credit','Ocular','Borrower-level underwriting, monitoring, sources, and portfolio exposure.'],
+    ['c3',655,455,16,'credit','Herbalife','Borrower-level underwriting, monitoring, sources, and portfolio exposure.'],
+    ['c4',320,515,9,'credit','Credit Financials','Historical performance, cash flow, balance sheet, and operating drivers.'],
+    ['c5',425,565,10,'credit','Liquidity & Runway','Cash, burn, funding capacity, maturities, and liquidity runway.'],
+    ['c6',585,565,9,'credit','Valuation & Recovery','Enterprise value, debt coverage, downside value, and recovery.'],
+    ['c7',735,510,10,'credit','Investment Memo','Integrated credit conclusion, risks, catalysts, and recommendation.'],
+    ['r1',740,220,15,'risk','Watchlist','Credits requiring attention based on combined risk signals.'],
+    ['r2',820,300,12,'risk','Monitoring & Alerts','Thresholds, triggers, status, actions, and review cadence.'],
+    ['r3',750,375,10,'risk','Shadow Rating','Internal credit assessment and rating migration.'],
+    ['r4',875,395,9,'risk','Covenant Compliance','Testing, headroom, breaches, waivers, and reporting requirements.'],
+    ['r5',720,125,8,'risk','Non-accrual & PIK','Income quality and elevated borrower stress.'],
+    ['r6',685,330,8,'risk','Fair-value Marks','Valuation deterioration and recovery expectations.'],
+    ['x1',360,235,8,'core','Normalization','Converts inconsistent source data into comparable structured fields.'],
+    ['x2',430,260,9,'core','Portfolio Aggregation','Rolls instruments into company, industry, and portfolio analysis.'],
+    ['x3',545,225,10,'core','Risk Signal Engine','Combines marks, PIK, non-accrual, liquidity, and qualitative evidence.'],
+    ['x4',530,385,9,'core','Change Detection','Identifies meaningful changes across quarters and documents.'],
+    ['x5',475,440,8,'core','Credit Underwriting','Integrates business, financial, structural, and downside analysis.'],
+    ['x6',790,455,8,'core','Citation Engine','Links analytical outputs and Orion answers to underlying evidence.']
+  ].map(([id,x,y,r,type,label,description]) => ({id,x,y,r,type,label,description}));
+
+  const byId = Object.fromEntries(nodes.map(n => [n.id,n]));
+  let seed = 41729;
+  function random() {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  }
+
+  const inputCatalog = [
+    {kind:'Filing',label:'BBDC 10-K',detail:'Annual financial statements, portfolio disclosures, risk factors and audited footnotes.'},
+    {kind:'Filing',label:'BBDC 10-Q',detail:'Quarterly financial results, portfolio changes, leverage and investment activity.'},
+    {kind:'Portfolio',label:'Schedule of Investments',detail:'Instrument-level cost, fair value, rate, maturity, seniority and classification.'},
+    {kind:'Portfolio',label:'Historical Fair-Value Marks',detail:'Quarterly cost and fair-value history used to identify deterioration and recovery.'},
+    {kind:'Portfolio',label:'Originations & Add-ons',detail:'New investments and incremental capital deployed into existing borrowers.'},
+    {kind:'Portfolio',label:'Repayments & Exits',detail:'Realizations, refinancings, repayments and exited portfolio companies.'},
+    {kind:'Portfolio',label:'Non-accrual Data',detail:'Positions with suspended cash interest and elevated loss risk.'},
+    {kind:'Portfolio',label:'Internal Risk Ratings',detail:'Reported portfolio risk classifications and quarter-over-quarter migration.'},
+    {kind:'Financial',label:'Income Statement',detail:'Revenue, expenses, profitability, interest burden and earnings quality.'},
+    {kind:'Financial',label:'Balance Sheet',detail:'Cash, debt, working capital, assets, liabilities and equity.'},
+    {kind:'Financial',label:'Cash-Flow Statement',detail:'Operating cash burn, capital expenditures, financing flows and liquidity movement.'},
+    {kind:'Financial',label:'Liquidity Schedule',detail:'Cash resources, revolver availability, maturities and projected runway.'},
+    {kind:'Financial',label:'Borrower Projections',detail:'Base, upside and downside operating and credit forecasts.'},
+    {kind:'Credit',label:'Credit Agreement',detail:'Debt structure, collateral, pricing, maturity, covenants and reporting requirements.'},
+    {kind:'Credit',label:'Credit Agreement Amendment',detail:'Changes to terms, waivers, pricing, covenants or lender protections.'},
+    {kind:'Credit',label:'Covenant Calculation',detail:'Compliance testing, headroom, thresholds and potential breach indicators.'},
+    {kind:'Credit',label:'Capital Structure',detail:'Debt priority, liens, maturity stack and structural subordination.'},
+    {kind:'Credit',label:'Organizational Chart',detail:'Borrowers, guarantors, subsidiaries, collateral ownership and structural relationships.'},
+    {kind:'Valuation',label:'Comparable Companies',detail:'Peer operating, leverage and valuation benchmarks.'},
+    {kind:'Valuation',label:'Recovery Analysis',detail:'Enterprise value, debt coverage, downside value and expected recovery.'},
+    {kind:'Company',label:'Borrower 10-K',detail:'Annual borrower performance, financial position, risks and audited disclosures.'},
+    {kind:'Company',label:'Borrower 10-Q',detail:'Quarterly borrower performance, liquidity and operating developments.'},
+    {kind:'Company',label:'Earnings Release',detail:'Current-period results, guidance and management commentary.'},
+    {kind:'Company',label:'Investor Presentation',detail:'Strategy, market position, operating metrics and forward-looking priorities.'},
+    {kind:'Internal',label:'Investment Memo',detail:'Underwriting thesis, risks, catalysts, downside analysis and recommendation.'},
+    {kind:'Internal',label:'Meeting Notes',detail:'Management, sponsor, lender or internal team discussion notes.'},
+    {kind:'Internal',label:'Analyst Notes',detail:'Credit observations, assumptions, open questions and monitoring conclusions.'},
+    {kind:'Internal',label:'Committee Decision',detail:'Approved recommendation, conditions, rationale and required follow-up.'},
+    {kind:'Monitoring',label:'Monitoring Update',detail:'New borrower, portfolio or covenant information requiring review.'},
+    {kind:'Monitoring',label:'Alert Trigger',detail:'A breached threshold or emerging signal requiring investigation or action.'},
+    {kind:'Market',label:'Company News',detail:'Relevant borrower developments, catalysts and emerging risks.'},
+    {kind:'Market',label:'Industry Research',detail:'Market growth, competition, regulation and industry-specific risk evidence.'},
+    {kind:'Market',label:'Ratings Action',detail:'External rating change, outlook revision or agency credit commentary.'},
+    {kind:'Source',label:'Source Manifest Entry',detail:'Document date, type, file location, original URL and extraction status.'}
+  ];
+
+  const satellites = [];
+  for (let i=0;i<170;i++) {
+    const t = i / 169;
+    const centerX = 95 + t * 790;
+    const centerY = 105 + t * 330 + Math.sin(t * Math.PI * 3.1) * 95;
+    const spreadX = 42 + random() * 95;
+    const spreadY = 35 + random() * 105;
+    const input = inputCatalog[i % inputCatalog.length];
+    satellites.push({
+      id:'z'+i,
+      x:Math.max(35,Math.min(945,centerX + (random()-.5)*spreadX*2)),
+      y:Math.max(35,Math.min(585,centerY + (random()-.5)*spreadY*2)),
+      r:1.4 + Math.pow(random(),2)*3.3,
+      accent:random()>.72,
+      kind:input.kind,
+      label:input.label,
+      description:input.detail
+    });
+  }
+
+  [[390,155,105],[515,315,125],[665,405,105],[805,205,80]].forEach(([cx,cy,r]) => {
+    const halo = document.createElementNS(ns,'circle');
+    halo.setAttribute('cx',cx); halo.setAttribute('cy',cy); halo.setAttribute('r',r);
+    halo.setAttribute('class','halo');
+    haloLayer.appendChild(halo);
+  });
+
+  const links = [];
+  const keys = new Set();
+  function add(a,b,secondary=false) {
+    const key=[a,b].sort().join('|');
+    if(keys.has(key)) return;
+    keys.add(key); links.push({a,b,secondary});
+  }
+  const explicit = [
+    ['s1','s2'],['s1','s4'],['s1','p1'],['s1','p2'],['s2','c1'],['s2','c2'],['s2','c3'],['s3','c1'],['s3','r4'],['s4','p1'],['s5','r1'],['s6','x6'],
+    ['p1','p2'],['p1','b'],['p2','p3'],['p2','b'],['p3','p4'],['p3','b'],['p4','r1'],['p4','b'],['p5','p6'],['p5','b'],['p6','r1'],['p6','b'],
+    ['c1','c4'],['c1','c5'],['c1','c6'],['c1','c7'],['c1','b'],['c2','b'],['c3','b'],['c4','x5'],['c5','x5'],['c6','c7'],['c7','x6'],
+    ['r1','r2'],['r1','r3'],['r1','r5'],['r1','r6'],['r1','b'],['r2','r4'],['r2','o'],['r3','o'],['r4','o'],
+    ['x1','x2'],['x1','b'],['x2','x3'],['x2','b'],['x3','x4'],['x3','r1'],['x3','b'],['x4','x5'],['x4','b'],['x5','c1'],['x5','b'],['x6','o'],
+    ['b','o'],['p1','o'],['p4','o'],['c1','o'],['c2','o'],['c3','o'],['r1','o']
+  ];
+  explicit.forEach(([a,b])=>add(a,b,false));
+  nodes.forEach(node => {
+    nodes.filter(n=>n.id!==node.id)
+      .map(n=>({id:n.id,d:Math.hypot(n.x-node.x,n.y-node.y)}))
+      .filter(v=>v.d<190)
+      .sort((a,b)=>a.d-b.d)
+      .slice(0,3)
+      .forEach(v=>add(node.id,v.id,true));
+  });
+
+  links.forEach(link => {
+    const a=byId[link.a], b=byId[link.b];
+    const line=document.createElementNS(ns,'line');
+    line.setAttribute('x1',a.x); line.setAttribute('y1',a.y); line.setAttribute('x2',b.x); line.setAttribute('y2',b.y);
+    line.setAttribute('class','link'+(link.secondary?' secondary':''));
+    line.dataset.a=link.a; line.dataset.b=link.b;
+    linkLayer.appendChild(line);
+  });
+
+  satellites.forEach(s => {
+    const c=document.createElementNS(ns,'circle');
+    c.setAttribute('cx',s.x); c.setAttribute('cy',s.y); c.setAttribute('r',s.r);
+    c.setAttribute('class','satellite'+(s.accent?' accent':''));
+    c.setAttribute('role','button');
+    c.setAttribute('aria-label',s.label+'. '+s.description);
+    c.dataset.id=s.id;
+    satelliteLayer.appendChild(c);
+    const nearest=nodes.map(n=>({n,d:Math.hypot(n.x-s.x,n.y-s.y)})).sort((a,b)=>a.d-b.d)[0];
+    if(nearest.d<110 && random()>.32) {
+      const l=document.createElementNS(ns,'line');
+      l.setAttribute('x1',s.x); l.setAttribute('y1',s.y); l.setAttribute('x2',nearest.n.x); l.setAttribute('y2',nearest.n.y);
+      l.setAttribute('class','link secondary'); l.dataset.a=s.id; l.dataset.b=nearest.n.id;
+      linkLayer.insertBefore(l,linkLayer.firstChild);
+    }
+    c.addEventListener('mouseenter',()=>focusInput(s,nearest.n));
+    c.addEventListener('click',()=>focusInput(s,nearest.n));
+  });
+
+  nodes.forEach(node => {
+    const c=document.createElementNS(ns,'circle');
+    c.setAttribute('cx',node.x); c.setAttribute('cy',node.y); c.setAttribute('r',node.r);
+    c.setAttribute('class',`node ${node.type}`); c.dataset.id=node.id;
+    c.setAttribute('role','button'); c.setAttribute('aria-label',`${node.label}. ${node.description}`);
+    nodeLayer.appendChild(c);
+    if(['b','o','c1','c2','c3','r1','p1'].includes(node.id)) {
+      const text=document.createElementNS(ns,'text');
+      const left=node.x>760;
+      text.setAttribute('x',node.x+(left?-18:18)); text.setAttribute('y',node.y-node.r-7);
+      text.setAttribute('text-anchor',left?'end':'start'); text.setAttribute('class','node-label');
+      text.textContent=node.label; nodeLayer.appendChild(text);
+    }
+    c.addEventListener('mouseenter',()=>focus(node));
+    c.addEventListener('click',()=>focus(node));
+  });
+
+  const inputLabel=document.createElementNS(ns,'text');
+  inputLabel.setAttribute('class','input-label');
+  inputLabel.setAttribute('aria-hidden','true');
+  nodeLayer.appendChild(inputLabel);
+
+  function focusInput(input,connectedNode) {
+    kindOut.textContent=input.kind;
+    labelOut.textContent=input.label;
+    descriptionOut.textContent=input.description+' Connected to: '+connectedNode.label+'.';
+    const placeLeft=input.x>800;
+    inputLabel.setAttribute('x',input.x+(placeLeft?-10:10));
+    inputLabel.setAttribute('y',input.y-8);
+    inputLabel.setAttribute('text-anchor',placeLeft?'end':'start');
+    inputLabel.textContent=input.label;
+    inputLabel.classList.add('is-visible');
+    nodeLayer.querySelectorAll('.node').forEach(el=>{
+      el.classList.toggle('is-selected',el.dataset.id===connectedNode.id);
+      el.classList.toggle('is-dimmed',el.dataset.id!==connectedNode.id);
+    });
+    satelliteLayer.querySelectorAll('.satellite').forEach(el=>{
+      el.classList.toggle('is-selected',el.dataset.id===input.id);
+      el.classList.toggle('is-dimmed',el.dataset.id!==input.id);
+    });
+    linkLayer.querySelectorAll('.link').forEach(el=>{
+      const active=el.dataset.a===input.id;
+      el.classList.toggle('is-active',active);
+      el.classList.toggle('is-dimmed',!active);
+    });
+  }
+
+  function focus(node) {
+    kindOut.textContent=node.type.charAt(0).toUpperCase()+node.type.slice(1);
+    labelOut.textContent=node.label; descriptionOut.textContent=node.description;
+    const neighbors=new Set([node.id]);
+    links.forEach(link=>{if(link.a===node.id)neighbors.add(link.b);if(link.b===node.id)neighbors.add(link.a)});
+    nodeLayer.querySelectorAll('.node').forEach(el=>{
+      el.classList.toggle('is-selected',el.dataset.id===node.id);
+      el.classList.toggle('is-dimmed',!neighbors.has(el.dataset.id));
+    });
+    linkLayer.querySelectorAll('.link').forEach(el=>{
+      const active=el.dataset.a===node.id||el.dataset.b===node.id;
+      el.classList.toggle('is-active',active); el.classList.toggle('is-dimmed',!active);
+    });
+    satelliteLayer.querySelectorAll('.satellite').forEach(el=>el.classList.add('is-dimmed'));
+  }
+  svg.addEventListener('mouseleave',()=>{
+    inputLabel.classList.remove('is-visible');
+    nodeLayer.querySelectorAll('.node').forEach(el=>el.classList.remove('is-dimmed'));
+    linkLayer.querySelectorAll('.link').forEach(el=>el.classList.remove('is-active','is-dimmed'));
+    satelliteLayer.querySelectorAll('.satellite').forEach(el=>el.classList.remove('is-dimmed','is-selected'));
+  });
+})();
+</script>
+
+      </section>
+    </div>
+  </main>
+  <div id="orion-chat-include"></div>
+  <script>
+    (async function(){
+      try{
+        const response=await fetch("/bdc/bbdc/sidebar.html",{cache:"no-store"});
+        if(!response.ok)return;
+        const holder=document.getElementById("sidebar-placeholder");
+        holder.innerHTML=await response.text();
+        window.toggleSection=function(id){
+          const section=document.getElementById(id);
+          const icon=document.getElementById("icon-"+id);
+          if(!section||!icon)return;
+          section.classList.toggle("hidden");
+          const open=!section.classList.contains("hidden");
+          icon.style.transform=open?"rotate(90deg)":"rotate(0deg)";
+          const prior=JSON.parse(localStorage.getItem("bbdc-sidebar-sections")||"[]");
+          localStorage.setItem("bbdc-sidebar-sections",JSON.stringify(open?[...new Set([...prior,id])]:prior.filter(x=>x!==id)));
+        };
+        ["bbdc-nav","portfolio-nav"].forEach(id=>{
+          const section=document.getElementById(id);
+          const icon=document.getElementById("icon-"+id);
+          if(section&&icon){section.classList.remove("hidden");icon.style.transform="rotate(90deg)"}
+        });
+        document.querySelectorAll('#sidebar-placeholder a[href]').forEach(link=>{
+          if(link.getAttribute("href")===window.location.pathname){
+            link.classList.add("bg-blue-50","text-[#187ABA]");
+            link.setAttribute("aria-current","page");
+          }
+        });
+      }catch(error){console.warn("Sidebar could not be loaded",error)}
+    })();
+  </script>
+  <script>
+    (async function loadOrionChat(){
+      try{
+        const response=await fetch("/bdc/bbdc/includes/orion-chat.html",{cache:"no-store"});
+        if(!response.ok)return;
+        const container=document.getElementById("orion-chat-include");
+        if(!container)return;
+        container.innerHTML=await response.text();
+        container.querySelectorAll("script").forEach(oldScript=>{
+          const newScript=document.createElement("script");
+          if(oldScript.src)newScript.src=oldScript.src;
+          else newScript.textContent=oldScript.textContent;
+          document.body.appendChild(newScript);
+          oldScript.remove();
+        });
+      }catch(error){
+        console.warn("Orion chat include could not be loaded:",error);
+      }
+    })();
+  </script>
+</body>
+</html>
