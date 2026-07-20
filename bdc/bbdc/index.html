@@ -47,11 +47,49 @@
       line-height:1;
       flex: 0 0 auto;
     }
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    main {
+      width: 100%;
+      min-width: 0;
+    }
+
+    main > div,
+    .grid > *,
+    .cardish {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .cardish,
+    .pill,
+    .kbd,
+    p,
+    li,
+    a {
+      overflow-wrap: anywhere;
+    }
+
+    @media (min-width: 768px) {
+      main {
+        width: calc(100% - 16rem);
+        margin-left: 16rem;
+      }
+    }
+
     @media (max-width: 767px) {
       #sidebar-placeholder { display: none; }
+      main { padding: 1rem; }
+      .cardish { padding: 1rem; }
+      .pill { max-width: 100%; white-space: normal; }
+      .btn { width: 100%; text-align: center; }
     }
-    html, body { overflow-x: hidden; }
-    main { min-width: 0; }
   </style>
 </head>
 
@@ -91,8 +129,8 @@
   </script>
 
   <!-- MAIN CONTENT -->
-  <main class="w-full p-4 md:p-8 md:ml-64">
-    <div class="max-w-[1200px] mx-auto md:mx-0 space-y-6">
+  <main class="p-4 md:p-8">
+    <div class="w-full max-w-[1200px] mx-auto space-y-6">
 
     <!-- HERO -->
     <section class="space-y-3">
