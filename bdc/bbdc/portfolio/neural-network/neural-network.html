@@ -66,8 +66,10 @@
   #bbdc-neural-field .link { stroke: var(--border); stroke-width: .9; opacity: .72; vector-effect: non-scaling-stroke; transition: opacity .18s ease, stroke .18s ease; }
   #bbdc-neural-field .link.secondary { stroke: var(--muted-foreground); opacity: .24; }
   #bbdc-neural-field .halo { fill: color-mix(in srgb, var(--viz-series-1) 9%, transparent); }
-  #bbdc-neural-field .satellite { fill: var(--muted-foreground); opacity: .62; }
+  #bbdc-neural-field .satellite { fill: var(--muted-foreground); opacity: .62; cursor: pointer; transition: opacity .18s ease, r .16s ease; }
   #bbdc-neural-field .satellite.accent { fill: var(--viz-series-1); opacity: .55; }
+  #bbdc-neural-field .satellite:hover,
+  #bbdc-neural-field .satellite.is-selected { opacity: 1; stroke: var(--ring); stroke-width: 2; vector-effect: non-scaling-stroke; }
   #bbdc-neural-field .node { cursor: pointer; stroke: var(--background); stroke-width: 2.5; vector-effect: non-scaling-stroke; transition: opacity .18s ease, r .16s ease; }
   #bbdc-neural-field .node.source { fill: var(--muted-foreground); }
   #bbdc-neural-field .node.portfolio { fill: var(--viz-series-2); }
@@ -141,6 +143,43 @@
     return seed / 4294967296;
   }
 
+  const inputCatalog = [
+    {kind:'Filing',label:'BBDC 10-K',detail:'Annual financial statements, portfolio disclosures, risk factors and audited footnotes.'},
+    {kind:'Filing',label:'BBDC 10-Q',detail:'Quarterly financial results, portfolio changes, leverage and investment activity.'},
+    {kind:'Portfolio',label:'Schedule of Investments',detail:'Instrument-level cost, fair value, rate, maturity, seniority and classification.'},
+    {kind:'Portfolio',label:'Historical Fair-Value Marks',detail:'Quarterly cost and fair-value history used to identify deterioration and recovery.'},
+    {kind:'Portfolio',label:'Originations & Add-ons',detail:'New investments and incremental capital deployed into existing borrowers.'},
+    {kind:'Portfolio',label:'Repayments & Exits',detail:'Realizations, refinancings, repayments and exited portfolio companies.'},
+    {kind:'Portfolio',label:'Non-accrual Data',detail:'Positions with suspended cash interest and elevated loss risk.'},
+    {kind:'Portfolio',label:'Internal Risk Ratings',detail:'Reported portfolio risk classifications and quarter-over-quarter migration.'},
+    {kind:'Financial',label:'Income Statement',detail:'Revenue, expenses, profitability, interest burden and earnings quality.'},
+    {kind:'Financial',label:'Balance Sheet',detail:'Cash, debt, working capital, assets, liabilities and equity.'},
+    {kind:'Financial',label:'Cash-Flow Statement',detail:'Operating cash burn, capital expenditures, financing flows and liquidity movement.'},
+    {kind:'Financial',label:'Liquidity Schedule',detail:'Cash resources, revolver availability, maturities and projected runway.'},
+    {kind:'Financial',label:'Borrower Projections',detail:'Base, upside and downside operating and credit forecasts.'},
+    {kind:'Credit',label:'Credit Agreement',detail:'Debt structure, collateral, pricing, maturity, covenants and reporting requirements.'},
+    {kind:'Credit',label:'Credit Agreement Amendment',detail:'Changes to terms, waivers, pricing, covenants or lender protections.'},
+    {kind:'Credit',label:'Covenant Calculation',detail:'Compliance testing, headroom, thresholds and potential breach indicators.'},
+    {kind:'Credit',label:'Capital Structure',detail:'Debt priority, liens, maturity stack and structural subordination.'},
+    {kind:'Credit',label:'Organizational Chart',detail:'Borrowers, guarantors, subsidiaries, collateral ownership and structural relationships.'},
+    {kind:'Valuation',label:'Comparable Companies',detail:'Peer operating, leverage and valuation benchmarks.'},
+    {kind:'Valuation',label:'Recovery Analysis',detail:'Enterprise value, debt coverage, downside value and expected recovery.'},
+    {kind:'Company',label:'Borrower 10-K',detail:'Annual borrower performance, financial position, risks and audited disclosures.'},
+    {kind:'Company',label:'Borrower 10-Q',detail:'Quarterly borrower performance, liquidity and operating developments.'},
+    {kind:'Company',label:'Earnings Release',detail:'Current-period results, guidance and management commentary.'},
+    {kind:'Company',label:'Investor Presentation',detail:'Strategy, market position, operating metrics and forward-looking priorities.'},
+    {kind:'Internal',label:'Investment Memo',detail:'Underwriting thesis, risks, catalysts, downside analysis and recommendation.'},
+    {kind:'Internal',label:'Meeting Notes',detail:'Management, sponsor, lender or internal team discussion notes.'},
+    {kind:'Internal',label:'Analyst Notes',detail:'Credit observations, assumptions, open questions and monitoring conclusions.'},
+    {kind:'Internal',label:'Committee Decision',detail:'Approved recommendation, conditions, rationale and required follow-up.'},
+    {kind:'Monitoring',label:'Monitoring Update',detail:'New borrower, portfolio or covenant information requiring review.'},
+    {kind:'Monitoring',label:'Alert Trigger',detail:'A breached threshold or emerging signal requiring investigation or action.'},
+    {kind:'Market',label:'Company News',detail:'Relevant borrower developments, catalysts and emerging risks.'},
+    {kind:'Market',label:'Industry Research',detail:'Market growth, competition, regulation and industry-specific risk evidence.'},
+    {kind:'Market',label:'Ratings Action',detail:'External rating change, outlook revision or agency credit commentary.'},
+    {kind:'Source',label:'Source Manifest Entry',detail:'Document date, type, file location, original URL and extraction status.'}
+  ];
+
   const satellites = [];
   for (let i=0;i<170;i++) {
     const t = i / 169;
@@ -148,12 +187,16 @@
     const centerY = 105 + t * 330 + Math.sin(t * Math.PI * 3.1) * 95;
     const spreadX = 42 + random() * 95;
     const spreadY = 35 + random() * 105;
+    const input = inputCatalog[i % inputCatalog.length];
     satellites.push({
       id:'z'+i,
       x:Math.max(35,Math.min(945,centerX + (random()-.5)*spreadX*2)),
       y:Math.max(35,Math.min(585,centerY + (random()-.5)*spreadY*2)),
       r:1.4 + Math.pow(random(),2)*3.3,
-      accent:random()>.72
+      accent:random()>.72,
+      kind:input.kind,
+      label:input.label,
+      description:input.detail
     });
   }
 
@@ -202,6 +245,9 @@
     const c=document.createElementNS(ns,'circle');
     c.setAttribute('cx',s.x); c.setAttribute('cy',s.y); c.setAttribute('r',s.r);
     c.setAttribute('class','satellite'+(s.accent?' accent':''));
+    c.setAttribute('role','button');
+    c.setAttribute('aria-label',s.label+'. '+s.description);
+    c.dataset.id=s.id;
     satelliteLayer.appendChild(c);
     const nearest=nodes.map(n=>({n,d:Math.hypot(n.x-s.x,n.y-s.y)})).sort((a,b)=>a.d-b.d)[0];
     if(nearest.d<110 && random()>.32) {
@@ -210,6 +256,8 @@
       l.setAttribute('class','link secondary'); l.dataset.a=s.id; l.dataset.b=nearest.n.id;
       linkLayer.insertBefore(l,linkLayer.firstChild);
     }
+    c.addEventListener('mouseenter',()=>focusInput(s,nearest.n));
+    c.addEventListener('click',()=>focusInput(s,nearest.n));
   });
 
   nodes.forEach(node => {
@@ -229,6 +277,25 @@
     c.addEventListener('click',()=>focus(node));
   });
 
+  function focusInput(input,connectedNode) {
+    kindOut.textContent=input.kind;
+    labelOut.textContent=input.label;
+    descriptionOut.textContent=input.description+' Connected to: '+connectedNode.label+'.';
+    nodeLayer.querySelectorAll('.node').forEach(el=>{
+      el.classList.toggle('is-selected',el.dataset.id===connectedNode.id);
+      el.classList.toggle('is-dimmed',el.dataset.id!==connectedNode.id);
+    });
+    satelliteLayer.querySelectorAll('.satellite').forEach(el=>{
+      el.classList.toggle('is-selected',el.dataset.id===input.id);
+      el.classList.toggle('is-dimmed',el.dataset.id!==input.id);
+    });
+    linkLayer.querySelectorAll('.link').forEach(el=>{
+      const active=el.dataset.a===input.id;
+      el.classList.toggle('is-active',active);
+      el.classList.toggle('is-dimmed',!active);
+    });
+  }
+
   function focus(node) {
     kindOut.textContent=node.type.charAt(0).toUpperCase()+node.type.slice(1);
     labelOut.textContent=node.label; descriptionOut.textContent=node.description;
@@ -247,7 +314,7 @@
   svg.addEventListener('mouseleave',()=>{
     nodeLayer.querySelectorAll('.node').forEach(el=>el.classList.remove('is-dimmed'));
     linkLayer.querySelectorAll('.link').forEach(el=>el.classList.remove('is-active','is-dimmed'));
-    satelliteLayer.querySelectorAll('.satellite').forEach(el=>el.classList.remove('is-dimmed'));
+    satelliteLayer.querySelectorAll('.satellite').forEach(el=>el.classList.remove('is-dimmed','is-selected'));
   });
 })();
 </script>
