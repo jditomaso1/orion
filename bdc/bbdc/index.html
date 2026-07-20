@@ -305,28 +305,6 @@
     </div>
   </main>
 
-  <!-- Ask Orion Bot include -->
-  <div id="orion-chat-include"></div>
-  <script>
-    async function loadOrionChat() {
-      // BBDC include path (update if you keep a shared include elsewhere)
-      const res = await fetch("/bdc/bbdc/includes/orion-chat.html");
-      const html = await res.text();
-
-      const container = document.getElementById("orion-chat-include");
-      container.innerHTML = html;
-
-      const scripts = container.querySelectorAll("script");
-      scripts.forEach(oldScript => {
-        const newScript = document.createElement("script");
-        if (oldScript.src) newScript.src = oldScript.src;
-        else newScript.textContent = oldScript.textContent;
-        document.body.appendChild(newScript);
-        oldScript.remove();
-      });
-    }
-    loadOrionChat();
-  </script>
 
 </body>
 </html>
