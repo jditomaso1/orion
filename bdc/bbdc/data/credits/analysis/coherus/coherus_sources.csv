@@ -1,0 +1,84 @@
+folder,filename,filer,doctype,filing_date,description,source_url,bytes
+01_Filings/10K,2026-03-09_CHRS_10K_EX-21-1.pdf,CHRS,EX-21.1,2026-03-09,EX-21.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465926025308/chrs-20251231xex21d1.htm,54859
+01_Filings/10K,2026-03-09_CHRS_10K_EX-23-1.pdf,CHRS,EX-23.1,2026-03-09,EX-23.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465926025308/chrs-20251231xex23d1.htm,50596
+01_Filings/10K,2026-03-09_CHRS_10K_EX-31-1.pdf,CHRS,EX-31.1,2026-03-09,EX-31.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465926025308/chrs-20251231xex31d1.htm,39870
+01_Filings/10K,2026-03-09_CHRS_10K_EX-31-2.pdf,CHRS,EX-31.2,2026-03-09,EX-31.2,https://www.sec.gov/Archives/edgar/data/1512762/000110465926025308/chrs-20251231xex31d2.htm,39423
+01_Filings/10K,2026-03-09_CHRS_10K_EX-32-1.pdf,CHRS,EX-32.1,2026-03-09,EX-32.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465926025308/chrs-20251231xex32d1.htm,47320
+01_Filings/10K,2026-03-09_CHRS_10K_FY2025.pdf,CHRS,10-K,2026-03-09,10-K,https://www.sec.gov/Archives/edgar/data/1512762/000110465926025308/chrs-20251231x10k.htm,1547003
+01_Filings/10K,2026-03-09_CHRS_10K_FY2025_EXHIBIT-INDEX.pdf,CHRS,EXHIBIT-INDEX,,Coherus FY2025 10-K Exhibit Index (filed 2026-03-09),,79549
+01_Filings/10Q,2023-11-06_CHRS_10Q_EX-10-1.pdf,CHRS,EX-10.1,2023-11-06,EX-10.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837023017779/chrs-20230930xex10d1.htm,405668
+01_Filings/10Q,2023-11-06_CHRS_10Q_EX-10-2.pdf,CHRS,EX-10.2,2023-11-06,EX-10.2,https://www.sec.gov/Archives/edgar/data/1512762/000155837023017779/chrs-20230930xex10d2.htm,71959
+01_Filings/10Q,2023-11-06_CHRS_10Q_EX-31-1.pdf,CHRS,EX-31.1,2023-11-06,EX-31.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837023017779/chrs-20230930xex31d1.htm,40128
+01_Filings/10Q,2023-11-06_CHRS_10Q_EX-31-2.pdf,CHRS,EX-31.2,2023-11-06,EX-31.2,https://www.sec.gov/Archives/edgar/data/1512762/000155837023017779/chrs-20230930xex31d2.htm,39991
+01_Filings/10Q,2023-11-06_CHRS_10Q_EX-32-1.pdf,CHRS,EX-32.1,2023-11-06,EX-32.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837023017779/chrs-20230930xex32d1.htm,47478
+01_Filings/10Q,2023-11-06_CHRS_10Q_Q3-2023.pdf,CHRS,10-Q,2023-11-06,10-Q,https://www.sec.gov/Archives/edgar/data/1512762/000155837023017779/chrs-20230930x10q.htm,1240525
+01_Filings/10Q,2024-05-09_CHRS_10Q_EX-10-2.pdf,CHRS,EX-10.2,2024-05-09,EX-10.2,https://www.sec.gov/Archives/edgar/data/1512762/000155837024007641/chrs-20240331xex10d2.htm,100198
+01_Filings/10Q,2024-05-09_CHRS_10Q_EX-31-1.pdf,CHRS,EX-31.1,2024-05-09,EX-31.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837024007641/chrs-20240331xex31d1.htm,39736
+01_Filings/10Q,2024-05-09_CHRS_10Q_EX-31-2.pdf,CHRS,EX-31.2,2024-05-09,EX-31.2,https://www.sec.gov/Archives/edgar/data/1512762/000155837024007641/chrs-20240331xex31d2.htm,39432
+01_Filings/10Q,2024-05-09_CHRS_10Q_EX-32-1.pdf,CHRS,EX-32.1,2024-05-09,EX-32.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837024007641/chrs-20240331xex32d1.htm,47384
+01_Filings/10Q,2024-05-09_CHRS_10Q_Q1-2024.pdf,CHRS,10-Q,2024-05-09,10-Q,https://www.sec.gov/Archives/edgar/data/1512762/000155837024007641/chrs-20240331x10q.htm,1135408
+01_Filings/10Q,2024-08-08_CHRS_10Q_EX-10-3.pdf,CHRS,EX-10.3,2024-08-08,EX-10.3,https://www.sec.gov/Archives/edgar/data/1512762/000155837024011629/chrs-20240630xex10d3.htm,313769
+01_Filings/10Q,2024-08-08_CHRS_10Q_EX-10-4.pdf,CHRS,EX-10.4,2024-08-08,EX-10.4,https://www.sec.gov/Archives/edgar/data/1512762/000155837024011629/chrs-20240630xex10d4.htm,168965
+01_Filings/10Q,2024-08-08_CHRS_10Q_EX-10-5.pdf,CHRS,EX-10.5,2024-08-08,EX-10.5,https://www.sec.gov/Archives/edgar/data/1512762/000155837024011629/chrs-20240630xex10d5.htm,448783
+01_Filings/10Q,2024-08-08_CHRS_10Q_EX-31-1.pdf,CHRS,EX-31.1,2024-08-08,EX-31.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837024011629/chrs-20240630xex31d1.htm,40305
+01_Filings/10Q,2024-08-08_CHRS_10Q_EX-31-2.pdf,CHRS,EX-31.2,2024-08-08,EX-31.2,https://www.sec.gov/Archives/edgar/data/1512762/000155837024011629/chrs-20240630xex31d2.htm,39731
+01_Filings/10Q,2024-08-08_CHRS_10Q_EX-32-1.pdf,CHRS,EX-32.1,2024-08-08,EX-32.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837024011629/chrs-20240630xex32d1.htm,47580
+01_Filings/10Q,2024-08-08_CHRS_10Q_Q2-2024.pdf,CHRS,10-Q,2024-08-08,10-Q,https://www.sec.gov/Archives/edgar/data/1512762/000155837024011629/chrs-20240630x10q.htm,1189692
+01_Filings/10Q,2024-11-06_CHRS_10Q_EX-31-1.pdf,CHRS,EX-31.1,2024-11-06,EX-31.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837024014648/chrs-20240930xex31d1.htm,40128
+01_Filings/10Q,2024-11-06_CHRS_10Q_EX-31-2.pdf,CHRS,EX-31.2,2024-11-06,EX-31.2,https://www.sec.gov/Archives/edgar/data/1512762/000155837024014648/chrs-20240930xex31d2.htm,39827
+01_Filings/10Q,2024-11-06_CHRS_10Q_EX-32-1.pdf,CHRS,EX-32.1,2024-11-06,EX-32.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837024014648/chrs-20240930xex32d1.htm,47388
+01_Filings/10Q,2024-11-06_CHRS_10Q_Q3-2024.pdf,CHRS,10-Q,2024-11-06,10-Q,https://www.sec.gov/Archives/edgar/data/1512762/000155837024014648/chrs-20240930x10q.htm,1193281
+01_Filings/10Q,2025-05-12_CHRS_10Q_EX-31-1.pdf,CHRS,EX-31.1,2025-05-12,EX-31.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837025007418/chrs-20250331xex31d1.htm,39623
+01_Filings/10Q,2025-05-12_CHRS_10Q_EX-31-2.pdf,CHRS,EX-31.2,2025-05-12,EX-31.2,https://www.sec.gov/Archives/edgar/data/1512762/000155837025007418/chrs-20250331xex31d2.htm,39298
+01_Filings/10Q,2025-05-12_CHRS_10Q_EX-32-1.pdf,CHRS,EX-32.1,2025-05-12,EX-32.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837025007418/chrs-20250331xex32d1.htm,47374
+01_Filings/10Q,2025-05-12_CHRS_10Q_Q1-2025.pdf,CHRS,10-Q,2025-05-12,10-Q,https://www.sec.gov/Archives/edgar/data/1512762/000155837025007418/chrs-20250331x10q.htm,1010074
+01_Filings/10Q,2025-08-07_CHRS_10Q_EX-10-1.pdf,CHRS,EX-10.1,2025-08-07,EX-10.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837025010803/chrs-20250630xex10d1.htm,175822
+01_Filings/10Q,2025-08-07_CHRS_10Q_EX-10-2.pdf,CHRS,EX-10.2,2025-08-07,EX-10.2,https://www.sec.gov/Archives/edgar/data/1512762/000155837025010803/chrs-20250630xex10d2.htm,301761
+01_Filings/10Q,2025-08-07_CHRS_10Q_EX-10-3.pdf,CHRS,EX-10.3,2025-08-07,EX-10.3,https://www.sec.gov/Archives/edgar/data/1512762/000155837025010803/chrs-20250630xex10d3.htm,160078
+01_Filings/10Q,2025-08-07_CHRS_10Q_EX-10-4.pdf,CHRS,EX-10.4,2025-08-07,EX-10.4,https://www.sec.gov/Archives/edgar/data/1512762/000155837025010803/chrs-20250630xex10d4.htm,69956
+01_Filings/10Q,2025-08-07_CHRS_10Q_EX-10-5.pdf,CHRS,EX-10.5,2025-08-07,EX-10.5,https://www.sec.gov/Archives/edgar/data/1512762/000155837025010803/chrs-20250630xex10d5.htm,267151
+01_Filings/10Q,2025-08-07_CHRS_10Q_EX-10-6.pdf,CHRS,EX-10.6,2025-08-07,EX-10.6,https://www.sec.gov/Archives/edgar/data/1512762/000155837025010803/chrs-20250630xex10d6.htm,208847
+01_Filings/10Q,2025-08-07_CHRS_10Q_EX-31-1.pdf,CHRS,EX-31.1,2025-08-07,EX-31.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837025010803/chrs-20250630xex31d1.htm,40114
+01_Filings/10Q,2025-08-07_CHRS_10Q_EX-31-2.pdf,CHRS,EX-31.2,2025-08-07,EX-31.2,https://www.sec.gov/Archives/edgar/data/1512762/000155837025010803/chrs-20250630xex31d2.htm,39674
+01_Filings/10Q,2025-08-07_CHRS_10Q_EX-32-1.pdf,CHRS,EX-32.1,2025-08-07,EX-32.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837025010803/chrs-20250630xex32d1.htm,47720
+01_Filings/10Q,2025-08-07_CHRS_10Q_Q2-2025.pdf,CHRS,10-Q,2025-08-07,10-Q,https://www.sec.gov/Archives/edgar/data/1512762/000155837025010803/chrs-20250630x10q.htm,1025924
+01_Filings/10Q,2025-11-06_CHRS_10Q_EX-31-1.pdf,CHRS,EX-31.1,2025-11-06,EX-31.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465925107852/chrs-20250930xex31d1.htm,39973
+01_Filings/10Q,2025-11-06_CHRS_10Q_EX-31-2.pdf,CHRS,EX-31.2,2025-11-06,EX-31.2,https://www.sec.gov/Archives/edgar/data/1512762/000110465925107852/chrs-20250930xex31d2.htm,39666
+01_Filings/10Q,2025-11-06_CHRS_10Q_EX-32-1.pdf,CHRS,EX-32.1,2025-11-06,EX-32.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465925107852/chrs-20250930xex32d1.htm,47717
+01_Filings/10Q,2025-11-06_CHRS_10Q_Q3-2025.pdf,CHRS,10-Q,2025-11-06,10-Q,https://www.sec.gov/Archives/edgar/data/1512762/000110465925107852/chrs-20250930x10q.htm,1008799
+01_Filings/10Q,2026-05-11_CHRS_10Q_EX-31-1.pdf,CHRS,EX-31.1,2026-05-11,EX-31.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465926058703/chrs-20260331xex31d1.htm,39503
+01_Filings/10Q,2026-05-11_CHRS_10Q_EX-31-2.pdf,CHRS,EX-31.2,2026-05-11,EX-31.2,https://www.sec.gov/Archives/edgar/data/1512762/000110465926058703/chrs-20260331xex31d2.htm,39184
+01_Filings/10Q,2026-05-11_CHRS_10Q_EX-32-1.pdf,CHRS,EX-32.1,2026-05-11,EX-32.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465926058703/chrs-20260331xex32d1.htm,47364
+01_Filings/10Q,2026-05-11_CHRS_10Q_Q1-2026.pdf,CHRS,10-Q,2026-05-11,10-Q,https://www.sec.gov/Archives/edgar/data/1512762/000110465926058703/chrs-20260331x10q.htm,935705
+01_Filings/8K,2025-04-01_CHRS_8K_EX-4-1.pdf,CHRS,EX-4.1,2025-04-01,EX-4.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837025004264/chrs-20250331xex4d1.htm,123279
+01_Filings/8K,2025-04-01_CHRS_8K_EX-99-1.pdf,CHRS,EX-99.1,2025-04-01,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837025004264/chrs-20250331xex99d1.htm,147702
+01_Filings/8K,2025-04-01_CHRS_8K_items-1-01_8-01_9-01.pdf,CHRS,8-K,2025-04-01,8-K,https://www.sec.gov/Archives/edgar/data/1512762/000155837025004264/chrs-20250331x8k.htm,88595
+01_Filings/8K,2025-04-22_CHRS_8K_items-5-02.pdf,CHRS,8-K,2025-04-22,8-K,https://www.sec.gov/Archives/edgar/data/1512762/000155837025005157/chrs-20250416x8k.htm,91765
+01_Filings/8K,2025-04-25_CHRS_8K_items-5-02.pdf,CHRS,8-K,2025-04-25,8-K,https://www.sec.gov/Archives/edgar/data/1512762/000155837025005554/chrs-20250422x8k.htm,92732
+01_Filings/8K,2026-06-15_CHRS_8K_EX-16-1.pdf,CHRS,EX-16.1,2026-06-15,EX-16.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465926074090/chrs-20260612xex16d1.htm,29141
+01_Filings/8K,2026-06-15_CHRS_8K_items-4-01_9-01.pdf,CHRS,8-K,2026-06-15,8-K,https://www.sec.gov/Archives/edgar/data/1512762/000110465926074090/chrs-20260612x8k.htm,96611
+02_Earnings/presentations,README.txt,CHRS,,,,,420
+02_Earnings/releases,2023-11-06_CHRS_ER_Q3-2023.pdf,CHRS,EX-99.1,2023-11-06,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837023017778/chrs-20231106xex99d1.htm,164999
+02_Earnings/releases,2024-01-10_CHRS_ER_Jan-Prelim-Guidance-2024.pdf,CHRS,EX-99.1,2024-01-10,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837024000166/chrs-20240110xex99d1.htm,56143
+02_Earnings/releases,2024-03-13_CHRS_ER_FY-Results-2024.pdf,CHRS,EX-99.1,2024-03-13,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837024003110/chrs-20240313xex99d1.htm,172389
+02_Earnings/releases,2024-05-09_CHRS_ER_Q1-2024.pdf,CHRS,EX-99.1,2024-05-09,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837024007622/chrs-20240509xex99d1.htm,162660
+02_Earnings/releases,2024-08-08_CHRS_ER_Q2-2024.pdf,CHRS,EX-99.1,2024-08-08,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837024011618/chrs-20240807xex99d1.htm,156832
+02_Earnings/releases,2024-11-06_CHRS_ER_Q3-2024.pdf,CHRS,EX-99.1,2024-11-06,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837024014642/chrs-20241106xex99d1.htm,162410
+02_Earnings/releases,2025-01-13_CHRS_ER_Jan-Prelim-Guidance-2025.pdf,CHRS,EX-99.1,2025-01-13,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837025000167/chrs-20250113xex99d1.htm,58531
+02_Earnings/releases,2025-03-10_CHRS_ER_FY-Results-2025.pdf,CHRS,EX-99.1,2025-03-10,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837025002595/chrs-20250310xex99d1.htm,190016
+02_Earnings/releases,2025-05-12_CHRS_ER_Q1-2025.pdf,CHRS,EX-99.1,2025-05-12,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837025007410/chrs-20250512xex99d1.htm,194915
+02_Earnings/releases,2025-08-07_CHRS_ER_Q2-2025.pdf,CHRS,EX-99.1,2025-08-07,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837025010802/chrs-20250807xex99d1.htm,194914
+02_Earnings/releases,2025-11-06_CHRS_ER_Q3-2025.pdf,CHRS,EX-99.1,2025-11-06,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465925107780/chrs-20251106xex99d1.htm,195016
+02_Earnings/releases,2026-01-13_CHRS_ER_Jan-Prelim-Guidance-2026.pdf,CHRS,EX-99.1,2026-01-13,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465926003117/chrs-20260113xex99d1.htm,60480
+02_Earnings/releases,2026-03-09_CHRS_ER_FY-Results-2026.pdf,CHRS,EX-99.1,2026-03-09,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465926025293/chrs-20260309xex99d1.htm,195414
+02_Earnings/releases,2026-05-11_CHRS_ER_Q1-2026.pdf,CHRS,EX-99.1,2026-05-11,EX-99.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465926058666/chrs-20260511xex99d1.htm,190846
+03_Credit_Docs,2020-04-17_CHRS_EX10-14_Capped-Call-Confirmation.pdf,CHRS,EX-10.14,2020-04-17,Capped Call Confirmation,https://www.sec.gov/Archives/edgar/data/1512762/000110465920048214/tm2015668d4_ex10-1.htm,294860
+03_Credit_Docs,2020-04-17_CHRS_EX4-4_Indenture-2020-Convertible-Notes.pdf,CHRS,EX-4.4,2020-04-17,Indenture 2020 Convertible Notes,https://www.sec.gov/Archives/edgar/data/1512762/000110465920048214/tm2015668d4_ex4-1.htm,726458
+03_Credit_Docs,2022-05-05_CHRS_EX4-6_Notice-of-Successor-Trustee.pdf,CHRS,EX-4.6,2022-05-05,Notice of Successor Trustee,https://www.sec.gov/Archives/edgar/data/1512762/000155837022007420/chrs-20220331xex4d5.htm,81661
+03_Credit_Docs,2024-05-21_CHRS_EX10-28_Loan-Agreement-2024-05-08.pdf,CHRS,EX-10.28,2024-05-21,Loan Agreement 2024 05 08,https://www.sec.gov/Archives/edgar/data/0001512762/000155837024008542/chrs-20240508xex10d1.htm,1095106
+03_Credit_Docs,2024-05-21_CHRS_EX10-29_Revenue-Participation-Right-PSA.pdf,CHRS,EX-10.29,2024-05-21,Revenue Participation Right PSA,https://www.sec.gov/Archives/edgar/data/0001512762/000155837024008542/chrs-20240508xex10d2.htm,485001
+03_Credit_Docs,2024-08-08_CHRS_EX10-31_Omnibus-Amendment-Transaction-Docs.pdf,CHRS,EX-10.31,2024-08-08,Omnibus Amendment Transaction Docs,https://www.sec.gov/Archives/edgar/data/0001512762/000155837024011629/chrs-20240630xex10d4.htm,168996
+03_Credit_Docs,2025-04-01_CHRS_EX4-7_First-Supplemental-Indenture-2025.pdf,CHRS,EX-4.7,2025-04-01,First Supplemental Indenture 2025,https://www.sec.gov/Archives/edgar/data/1512762/000155837025004264/chrs-20250331xex4d1.htm,123309
+04_BBDC,README.txt,CHRS,,,,,541
+05_Ratings,README.txt,CHRS,,,,,418
+06_IR_Materials,README.txt,CHRS,,,,,384
