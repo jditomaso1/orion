@@ -32,8 +32,8 @@ ul{margin:0;padding-left:19px}.sources{display:flex;flex-wrap:wrap;gap:10px;max-
 .sources a{background:#fff;border:1px solid #d8e2ea;border-radius:8px;padding:7px 10px;color:var(--navy);font-size:12px!important;font-weight:700;text-decoration:none}
 .sources a:hover{background:#f8fafc}
 main>.summary,main>.conclusion,main>.watch-table,main>.grid,main>.sources{max-width:1540px;margin-left:auto;margin-right:auto}
-main .watch-table{padding:0;overflow:hidden}
-main .watch-table table{min-width:1120px;white-space:nowrap}
+main .watch-table{padding:0;overflow-x:auto;overflow-y:hidden;max-width:1540px;width:100%;-webkit-overflow-scrolling:touch}
+main .watch-table table{min-width:1120px;width:100%;white-space:nowrap}
 main .watch-table th{font-size:11px!important;text-align:left;padding:9px 10px}
 main .watch-table td{font-size:12px!important;text-align:left;padding:10px}
 main .watch-table .company{font-size:12px!important;font-weight:600;color:var(--navy)}
