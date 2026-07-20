@@ -200,7 +200,7 @@
             <div class="flex items-start gap-3">
               <span class="checkdot">1</span>
               <div>
-                Open <span class="kbd">Portfolio</span> to view BBDC’s position-level dataset.
+                Open <span class="kbd">Portfolio Summary</span> to review BBDC’s company-level exposures.
                 <div class="text-xs muted mt-1">Start with: sector, instrument type, fair value vs. cost.</div>
               </div>
             </div>
@@ -208,7 +208,7 @@
             <div class="flex items-start gap-3">
               <span class="checkdot">2</span>
               <div>
-                Review <span class="kbd">Trends</span> to see quarter-over-quarter movement.
+                Review <span class="kbd">Portfolio Trends</span> to see quarter-over-quarter movement.
                 <div class="text-xs muted mt-1">Look for repeated markdowns and new/exit activity.</div>
               </div>
             </div>
@@ -216,20 +216,20 @@
             <div class="flex items-start gap-3">
               <span class="checkdot">3</span>
               <div>
-                Check <span class="kbd">Non-Accruals</span> for stressed names and recovery path.
+                Check <span class="kbd">Credit Quality</span> for non-accruals, risk ratings, and stressed names.
                 <div class="text-xs muted mt-1">This is the fastest “credit smell test” for a BDC.</div>
               </div>
             </div>
           </div>
 
           <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <a class="btn btn-primary" href="/bdc/bbdc/portfolio/portfolio.html">Open Portfolio</a>
-            <a class="btn btn-ghost" href="/bdc/bbdc/trends/trends.html">View Trends</a>
-            <a class="btn btn-ghost" href="/bdc/bbdc/non-accruals/non-accruals.html">Non-Accruals</a>
+            <a class="btn btn-primary" href="/bdc/bbdc/portfolio/summary/summary.html">Portfolio Summary</a>
+            <a class="btn btn-ghost" href="/bdc/bbdc/portfolio/trends/trends.html">Portfolio Trends</a>
+            <a class="btn btn-ghost" href="/bdc/bbdc/portfolio/quality/quality.html">Credit Quality</a>
           </div>
 
           <div class="mt-4 text-xs muted">
-            Tip: Use the left sidebar to explore modules (Overview, Construction, Origination & Exits, News, Comps, Neural Network, OrionGPT).
+            Tip: Use the left sidebar to move through Briefing, Overview, Portfolio, and company-level Credit Analysis.
           </div>
         </div>
 
@@ -248,12 +248,12 @@
               <div class="text-xs muted mt-1">BBDC snapshot: portfolio mix, risk flags, key metrics.</div>
             </a>
 
-            <a href="/bdc/bbdc/portfolio/portfolio.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+            <a href="/bdc/bbdc/portfolio/summary/summary.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
               <div class="font-semibold">Portfolio</div>
               <div class="text-xs muted mt-1">Every position, cleaned and structured.</div>
             </a>
 
-            <a href="/bdc/bbdc/trends/trends.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
+            <a href="/bdc/bbdc/portfolio/trends/trends.html" class="block border rounded-2xl p-4 bg-white hover:bg-gray-50">
               <div class="font-semibold">Trends</div>
               <div class="text-xs muted mt-1">Quarter-over-quarter changes: marks, adds, exits, drift.</div>
             </a>
@@ -278,11 +278,10 @@
         </div>
 
         <div class="cardish p-6">
-          <div class="text-sm font-semibold">Account</div>
-          <div class="text-xs muted mt-1">Billing and access live here.</div>
-          <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <a class="btn btn-ghost w-full text-center" href="/bdc/bbdc/pricing/pricing.html">Pricing</a>
-            <a class="btn btn-ghost w-full text-center" href="/bdc/bbdc/contact/contact.html">Contact</a>
+          <div class="text-sm font-semibold">Contact Us</div>
+          <div class="text-xs muted mt-1">Questions about the BBDC build, portfolio deployments, or Orion?</div>
+          <div class="mt-4">
+            <a class="btn btn-ghost block w-full text-center" href="/dnb/contact/contact.html">Contact Us</a>
           </div>
         </div>
 
