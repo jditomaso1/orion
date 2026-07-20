@@ -5,7 +5,7 @@ folder,filename,filer,doctype,filing_date,description,source_url,bytes
 01_Filings/10K,2026-03-09_CHRS_10K_EX-31-2.pdf,CHRS,EX-31.2,2026-03-09,EX-31.2,https://www.sec.gov/Archives/edgar/data/1512762/000110465926025308/chrs-20251231xex31d2.htm,39423
 01_Filings/10K,2026-03-09_CHRS_10K_EX-32-1.pdf,CHRS,EX-32.1,2026-03-09,EX-32.1,https://www.sec.gov/Archives/edgar/data/1512762/000110465926025308/chrs-20251231xex32d1.htm,47320
 01_Filings/10K,2026-03-09_CHRS_10K_FY2025.pdf,CHRS,10-K,2026-03-09,10-K,https://www.sec.gov/Archives/edgar/data/1512762/000110465926025308/chrs-20251231x10k.htm,1547003
-01_Filings/10K,2026-03-09_CHRS_10K_FY2025_EXHIBIT-INDEX.pdf,CHRS,EXHIBIT-INDEX,,Coherus FY2025 10-K Exhibit Index (filed 2026-03-09),,79549
+01_Filings/10K,2026-03-09_CHRS_10K_FY2025_EXHIBIT-INDEX.pdf,CHRS,EXHIBIT-INDEX,,Coherus FY2025 10-K Exhibit Index (filed 2026-03-09),https://www.sec.gov/Archives/edgar/data/1512762/000110465926025308/0001104659-26-025308-index.html,79549
 01_Filings/10Q,2023-11-06_CHRS_10Q_EX-10-1.pdf,CHRS,EX-10.1,2023-11-06,EX-10.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837023017779/chrs-20230930xex10d1.htm,405668
 01_Filings/10Q,2023-11-06_CHRS_10Q_EX-10-2.pdf,CHRS,EX-10.2,2023-11-06,EX-10.2,https://www.sec.gov/Archives/edgar/data/1512762/000155837023017779/chrs-20230930xex10d2.htm,71959
 01_Filings/10Q,2023-11-06_CHRS_10Q_EX-31-1.pdf,CHRS,EX-31.1,2023-11-06,EX-31.1,https://www.sec.gov/Archives/edgar/data/1512762/000155837023017779/chrs-20230930xex31d1.htm,40128
