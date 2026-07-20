@@ -104,5 +104,23 @@ function render(rows){
 async function loadSidebar(){try{const html=await fetch('/bdc/bbdc/sidebar.html?v=20260716-construction',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.text()});document.getElementById('sidebar').innerHTML=html;const store='bbdc-sidebar-sections';let open=[];try{open=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){};['bbdc-nav','portfolio-nav'].forEach(id=>{if(!open.includes(id))open.push(id)});const apply=(id,on)=>{const t=document.getElementById(id),icon=document.getElementById('icon-'+id);if(!t)return;t.classList.toggle('hidden',!on);if(icon)icon.style.transform=on?'rotate(90deg)':'rotate(0deg)'};window.toggleSection=id=>{let saved=[];try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}const t=document.getElementById(id);if(!t)return;const on=t.classList.contains('hidden');saved=on?[...new Set([...saved,id])]:saved.filter(x=>x!==id);localStorage.setItem(store,JSON.stringify(saved));apply(id,on)};localStorage.setItem(store,JSON.stringify(open));document.querySelectorAll('#sidebar [id$="-nav"]').forEach(el=>apply(el.id,open.includes(el.id)));document.querySelectorAll('#sidebar a').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('bg-blue-50','text-blue-700','font-semibold')})}catch(e){document.getElementById('sidebar').innerHTML='<div style="padding:24px;font-size:12px">ORION</div>'}}
 loadSidebar();Papa.parse(CSV,{download:true,header:true,skipEmptyLines:'greedy',complete:r=>{const rows=r.data.map(map).filter(x=>x.company&&Number.isFinite(x.fv));if(!rows.length){document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">No portfolio construction data was found.</div>';return}render(rows)},error:()=>{document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">The portfolio construction CSV could not be loaded.</div>'}});
 </script>
+
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat(){
+      try{
+        const r=await fetch("/bdc/bbdc/includes/orion-chat.html",{cache:"no-store"});
+        if(!r.ok)return;
+        const box=document.getElementById("orion-chat-include");
+        box.innerHTML=await r.text();
+        box.querySelectorAll("script").forEach(old=>{
+          const s=document.createElement("script");
+          if(old.src)s.src=old.src;else s.textContent=old.textContent;
+          document.body.appendChild(s);old.remove();
+        });
+      }catch(e){console.warn(e)}
+    }
+    loadOrionChat();
+  </script>
 </body>
 </html>
