@@ -75,4 +75,22 @@ function render(quality,positions){
 async function loadData(){try{const [qr,pr]=await Promise.all([fetch(QUALITY,{cache:'no-store'}),fetch(POSITIONS,{cache:'no-store'})]);if(!qr.ok||!pr.ok)throw Error('CSV unavailable');const [qt,pt]=await Promise.all([qr.text(),pr.text()]);const q=Papa.parse(qt,{header:true,skipEmptyLines:'greedy'}).data.map(r=>({date:r['Reporting Date'],type:r['Metric Type'],name:r['Risk Rating'],description:r['Description'],value:n(r['Percentage of Portfolio FV']),filing:r['Source Filing'],url:r['Source URL']})).filter(x=>x.date&&x.value!==null);const p=Papa.parse(pt,{header:true,skipEmptyLines:'greedy'}).data.map(r=>({company:r['Portfolio Company'],industry:r['Industry'],cost:n(r['Cost ($000)']),fv:n(r['Fair Value ($000)']),pik:n(r['PIK Rate (%)']),nonAccrual:String(r['Non-Accrual']||'').trim().toLowerCase()==='yes'})).filter(x=>x.company&&x.fv!==null);if(!q.length||!p.length)throw Error('No rows');render(q,p)}catch(e){console.error(e);document.getElementById('kpis').innerHTML='<div class="card status error" style="grid-column:1/-1">The portfolio quality data could not be loaded.</div>'}}
 async function loadSidebar(){try{const html=await fetch('/bdc/bbdc/sidebar.html?v=20260716-quality',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.text()});document.getElementById('sidebar').innerHTML=html;const store='bbdc-sidebar-sections';let open=[];try{open=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){};['bbdc-nav','portfolio-nav'].forEach(id=>{if(!open.includes(id))open.push(id)});const apply=(id,on)=>{const t=document.getElementById(id),icon=document.getElementById('icon-'+id);if(!t)return;t.classList.toggle('hidden',!on);if(icon)icon.style.transform=on?'rotate(90deg)':'rotate(0deg)'};window.toggleSection=id=>{let saved=[];try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}const t=document.getElementById(id);if(!t)return;const on=t.classList.contains('hidden');saved=on?[...new Set([...saved,id])]:saved.filter(x=>x!==id);localStorage.setItem(store,JSON.stringify(saved));apply(id,on)};localStorage.setItem(store,JSON.stringify(open));document.querySelectorAll('#sidebar [id$="-nav"]').forEach(el=>apply(el.id,open.includes(el.id)));document.querySelectorAll('#sidebar a').forEach(a=>{if(new URL(a.href,location.origin).pathname===location.pathname)a.classList.add('bg-blue-50','text-blue-700','font-semibold')})}catch(e){document.getElementById('sidebar').innerHTML='<div style="padding:24px;font-size:12px">ORION</div>'}}
 loadSidebar();loadData();
-</script></body></html>
+</script>
+  <div id="orion-chat-include"></div>
+  <script>
+    async function loadOrionChat(){
+      try{
+        const r=await fetch("/bdc/bbdc/includes/orion-chat.html",{cache:"no-store"});
+        if(!r.ok)return;
+        const box=document.getElementById("orion-chat-include");
+        box.innerHTML=await r.text();
+        box.querySelectorAll("script").forEach(old=>{
+          const s=document.createElement("script");
+          if(old.src)s.src=old.src;else s.textContent=old.textContent;
+          document.body.appendChild(s);old.remove();
+        });
+      }catch(e){console.warn(e)}
+    }
+    loadOrionChat();
+  </script>
+</body></html>
