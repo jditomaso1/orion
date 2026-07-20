@@ -1,0 +1,105 @@
+/* Daily Brief alignment with the shared BBDC visual system. */
+main {
+  min-width: 0;
+  padding: 22px 28px 42px !important;
+}
+
+.wrap {
+  max-width: 1500px !important;
+}
+
+.card {
+  border-radius: 16px !important;
+  box-shadow: 0 4px 14px rgba(0, 43, 81, 0.055) !important;
+}
+
+.head h1 {
+  color: #111827 !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  letter-spacing: normal !important;
+}
+
+.subtitle {
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+}
+
+/* The chat launcher occupies the upper-right space below the header. */
+.hero {
+  margin-top: 58px !important;
+  padding: 20px 22px !important;
+}
+
+.hero-title {
+  color: #172033 !important;
+  font-size: 17px !important;
+  line-height: 1.35 !important;
+}
+
+.hero-copy,
+.summary,
+.field,
+.event-note,
+.note {
+  font-size: 12px !important;
+  line-height: 1.6 !important;
+}
+
+.label,
+.tag,
+.count,
+.event-date {
+  font-size: 10px !important;
+}
+
+.window strong,
+.window span,
+.kpi-note,
+.section-sub,
+.side-sub,
+.event-name,
+.source-link,
+.evidence {
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+}
+
+.kpi {
+  padding: 16px !important;
+}
+
+.kpi-value {
+  font-size: 21px !important;
+  letter-spacing: -0.025em !important;
+}
+
+.section-title,
+.signal-title,
+.side-title {
+  color: #1e293b !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}
+
+.signal {
+  padding: 17px !important;
+}
+
+.field {
+  padding: 10px !important;
+}
+
+.side {
+  padding: 17px !important;
+}
+
+@media (max-width: 850px) {
+  main {
+    padding: 16px !important;
+  }
+
+  .hero {
+    margin-top: 50px !important;
+  }
+}
