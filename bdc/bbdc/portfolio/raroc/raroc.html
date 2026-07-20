@@ -81,7 +81,7 @@ function prepare(r){
 function fmt(v,d=1){return Number.isFinite(v)?v.toFixed(d):"—"}function money(v){return"$"+Math.round(v).toLocaleString()+"K"}
 function visible(){return positions.filter(p=>active.has(p.asset)&&p.rate>0&&p.fv>0)}
 function renderKpis(data){const fv=data.reduce((s,p)=>s+p.fv,0),w=(key)=>fv?data.reduce((s,p)=>s+p[key]*p.fv,0)/fv:0,classes=new Set(data.map(p=>p.asset)).size;document.getElementById("kpis").innerHTML=[["DEBT FAIR VALUE",money(fv),"Visible filtered instruments"],["WEIGHTED ALL-IN RATE",fmt(w("rate"))+"%","Reported contractual return"],["WEIGHTED RISK SCORE",fmt(w("risk"),2)+" / 5","Orion estimated"],["WEIGHTED RAROC",fmt(w("raroc"))+"%","Orion proxy"],["ASSET CLASSES",classes,"Currently visible"]].map(x=>'<article class="card kpi"><div class="label">'+x[0]+'</div><div class="value">'+x[1]+'</div><div class="note">'+x[2]+'</div></article>').join("")}
-function datasets(data){return Object.keys(COLORS).map(a=>({label:a,data:data.filter(p=>p.asset===a).map(p=>({x:p.risk,y:p.rate,r:sizeByFairValue?Math.max(4,Math.min(22,Math.sqrt(p.fv)/3)):8,raw:p})),backgroundColor:COLORS[a]+"aa",borderColor:COLORS[a],borderWidth:1}))}
+function datasets(data){return Object.keys(COLORS).map(a=>({label:a,data:data.filter(p=>p.asset===a).map(p=>({x:p.risk,y:p.rate,r:sizeByFairValue?Math.max(4,Math.min(22,Math.sqrt(p.fv)/3)):4,raw:p})),backgroundColor:COLORS[a]+"aa",borderColor:COLORS[a],borderWidth:1}))}
 function renderChart(data){
   if(chart) chart.destroy();
   chart=new Chart(document.getElementById("scatter"),{
