@@ -96,7 +96,10 @@ window.addEventListener('load', async () => {
     host.querySelectorAll('[id$="-nav"]').forEach(el=>apply(el.id,saved.includes(el.id)));
     host.querySelectorAll('a[href]').forEach(a=>{
       if(new URL(a.href,location.origin).pathname===location.pathname){
-        a.classList.add('bg-blue-50','text-blue-700','font-semibold');
+        a.classList.remove('bg-blue-50','text-blue-700','text-[#187ABA]');
+        a.classList.add('font-semibold');
+        a.style.backgroundColor='#f1f5f9';
+        a.style.color='#172033';
         a.setAttribute('aria-current','page');
       }
     });
