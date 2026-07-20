@@ -63,3 +63,42 @@ window.ORION_PUBLIC_CREDITS = [
     bbdcUrl: 'https://www.sec.gov/Archives/edgar/data/1379785/000137978526000022/bbdc-20260331.htm'
   }
 ];
+
+window.addEventListener('load', async () => {
+  const host=document.getElementById('sidebar');
+  if(!host)return;
+  try{
+    const response=await fetch('/bdc/bbdc/sidebar.html?v=20260720-public-credit-sidebar',{cache:'no-store'});
+    if(!response.ok)throw Error(response.status);
+    host.innerHTML=await response.text();
+    const store='bbdc-sidebar-sections';
+    const required=['bbdc-nav','credits-nav','portfolio-credit-nav'];
+    let saved=[];
+    try{saved=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}
+    required.forEach(id=>{if(!saved.includes(id))saved.push(id)});
+    const apply=(id,on)=>{
+      const section=document.getElementById(id),icon=document.getElementById('icon-'+id);
+      if(!section)return;
+      section.classList.toggle('hidden',!on);
+      if(icon)icon.style.transform=on?'rotate(90deg)':'rotate(0deg)';
+    };
+    window.toggleSection=id=>{
+      let open=[];
+      try{open=JSON.parse(localStorage.getItem(store)||'[]')}catch(e){}
+      const section=document.getElementById(id);
+      if(!section)return;
+      const on=section.classList.contains('hidden');
+      open=on?[...new Set([...open,id])]:open.filter(x=>x!==id);
+      localStorage.setItem(store,JSON.stringify(open));
+      apply(id,on);
+    };
+    localStorage.setItem(store,JSON.stringify(saved));
+    host.querySelectorAll('[id$="-nav"]').forEach(el=>apply(el.id,saved.includes(el.id)));
+    host.querySelectorAll('a[href]').forEach(a=>{
+      if(new URL(a.href,location.origin).pathname===location.pathname){
+        a.classList.add('bg-blue-50','text-blue-700','font-semibold');
+        a.setAttribute('aria-current','page');
+      }
+    });
+  }catch(error){console.warn('Sidebar could not be initialized',error)}
+});
