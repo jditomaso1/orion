@@ -45,6 +45,11 @@
       </header>
       <section class="network-shell" aria-label="BBDC neural network">
 <div id="bbdc-neural-field">
+  <div class="node-readout text-small" aria-live="polite">
+    <span class="viz-badge" data-kind>Core</span>
+    <strong data-label>BBDC Intelligence Core</strong>
+    <span class="text-muted" data-description>Portfolio and borrower intelligence joined through shared evidence.</span>
+  </div>
   <svg class="field" viewBox="0 0 980 620" role="img" aria-labelledby="field-title field-desc">
     <title id="field-title">BBDC neural intelligence field</title>
     <desc id="field-desc">A dense organic field of connected BBDC portfolio, borrower, source, risk, and analytical nodes.</desc>
@@ -53,11 +58,7 @@
     <g data-satellites></g>
     <g data-nodes></g>
   </svg>
-  <div class="node-readout text-small" aria-live="polite">
-    <span class="viz-badge" data-kind>Core</span>
-    <strong data-label>BBDC Intelligence Core</strong>
-    <span class="text-muted" data-description>Portfolio and borrower intelligence joined through shared evidence.</span>
-  </div>
+
 </div>
 
 <style>
@@ -82,9 +83,10 @@
   #bbdc-neural-field .link.is-dimmed,
   #bbdc-neural-field .satellite.is-dimmed { opacity: .06; }
   #bbdc-neural-field .link.is-active { stroke: var(--viz-series-1); stroke-width: 1.8; opacity: .95; }
-  #bbdc-neural-field .node-label { fill: var(--foreground); font-weight: 500; pointer-events: none; }
-  #bbdc-neural-field .node-readout { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; padding-top: 7px; }
-  #bbdc-neural-field .node-readout strong { font-weight: 500; }
+  #bbdc-neural-field .node-label { fill: var(--foreground); font-family: Poppins, system-ui, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: .01em; pointer-events: none; }
+  #bbdc-neural-field .node-readout { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; min-height: 30px; padding: 0 0 10px 2px; font-family: Poppins, system-ui, sans-serif; font-size: 12px; color: var(--foreground); }
+  #bbdc-neural-field .node-readout strong { font-size: 12px; font-weight: 500; }
+  #bbdc-neural-field .node-readout .text-muted { font-size: 11px; }
 </style>
 
 <script>
@@ -101,7 +103,7 @@
   const ns = 'http://www.w3.org/2000/svg';
 
   const nodes = [
-    ['b',500,305,19,'core','BBDC Intelligence Core','Portfolio and borrower intelligence joined through shared evidence.'],
+    ['b',500,305,19,'core','BBDC Core','Portfolio and borrower intelligence joined through shared evidence.'],
     ['o',835,118,16,'core','Ask Orion','The conversational layer for questions, insights, calculations, and citations.'],
     ['s1',150,100,14,'source','BBDC Filings','10-Qs, 10-Ks, schedules of investments, and position disclosures.'],
     ['s2',250,155,10,'source','Borrower Filings','Financial statements, operating disclosures, and company developments.'],
