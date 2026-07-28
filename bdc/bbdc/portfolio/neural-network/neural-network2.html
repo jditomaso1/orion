@@ -223,6 +223,28 @@
     });
   }
 
+  function addEvidenceCluster(centerId,count,startIndex){
+    const center=byId[centerId];
+    for(let i=0;i<count;i++){
+      const angle=(Math.PI*2*i/count)+(i%3)*.17;
+      const radius=30+(i%5)*9;
+      const input=inputCatalog[(startIndex+i)%inputCatalog.length];
+      satellites.push({
+        id:'z'+satellites.length,
+        x:center.x+Math.cos(angle)*radius,
+        y:center.y+Math.sin(angle)*radius*.72,
+        z:center.z+((i*37)%150)-75,
+        r:1.5+(i%4)*.48,
+        accent:false,
+        kind:input.kind,
+        label:input.label,
+        description:input.detail
+      });
+    }
+  }
+  addEvidenceCluster('c1',16,8);
+  addEvidenceCluster('c2',14,18);
+
   const halos=[
     {x:390,y:155,z:-115,r:105},
     {x:515,y:315,z:35,r:125},
