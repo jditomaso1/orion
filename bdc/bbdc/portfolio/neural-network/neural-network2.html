@@ -294,6 +294,7 @@
     linkLayer.appendChild(line);
   });
 
+  const detailLinks=[];
   satellites.forEach(s => {
     const c=document.createElementNS(ns,'circle');
     c.setAttribute('cx',s.x); c.setAttribute('cy',s.y); c.setAttribute('r',s.r);
@@ -314,6 +315,24 @@
     }
     c.addEventListener('mouseenter',()=>focusInput(s,nearest.n));
     c.addEventListener('click',()=>focusInput(s,nearest.n));
+  });
+
+  satellites.forEach((satellite,index)=>{
+    const nearby=nodes
+      .map(node=>({node,distance:Math.hypot(node.x-satellite.x,node.y-satellite.y)}))
+      .sort((a,b)=>a.distance-b.distance);
+    const candidates=[
+      {match:nearby[1],tier:1},
+      ...(index%3===0?[{match:nearby[2],tier:2}]:[])
+    ];
+    candidates.forEach(({match,tier})=>{
+      if(!match||match.distance>(tier===1?185:145))return;
+      const line=document.createElementNS(ns,'line');
+      line.setAttribute('class','link secondary detail-link');
+      line.dataset.a=satellite.id;line.dataset.b=match.node.id;
+      linkLayer.insertBefore(line,linkLayer.firstChild);
+      detailLinks.push({a:satellite,b:match.node,el:line,tier});
+    });
   });
 
   nodes.forEach(node => {
@@ -392,6 +411,14 @@
       if(s.linkEl)positionLine(s.linkEl,s,s.nearest);
     });
     links.forEach(link=>positionLine(link.el,pointById[link.a],pointById[link.b]));
+    detailLinks.forEach(detail=>{
+      positionLine(detail.el,detail.a,detail.b);
+      const threshold=detail.tier===1?1.04:1.26;
+      const reveal=Math.max(0,Math.min(1,(view.zoom-threshold)/.34));
+      const pa=project(detail.a),pb=project(detail.b);
+      const depth=Math.max(.16,Math.min(.66,(pa.scale+pb.scale)*.24));
+      detail.el.style.opacity=String(reveal*depth);
+    });
     if(activeInput)positionInputLabel(activeInput);
   }
 
