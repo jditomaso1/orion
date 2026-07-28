@@ -223,10 +223,17 @@
     });
   }
 
-  [[390,155,105],[515,315,125],[665,405,105],[805,205,80]].forEach(([cx,cy,r]) => {
+  const halos=[
+    {x:390,y:155,z:-115,r:105},
+    {x:515,y:315,z:35,r:125},
+    {x:665,y:405,z:125,r:105},
+    {x:805,y:205,z:-35,r:80}
+  ];
+  halos.forEach(haloData => {
     const halo = document.createElementNS(ns,'circle');
-    halo.setAttribute('cx',cx); halo.setAttribute('cy',cy); halo.setAttribute('r',r);
+    halo.setAttribute('cx',haloData.x); halo.setAttribute('cy',haloData.y); halo.setAttribute('r',haloData.r);
     halo.setAttribute('class','halo');
+    haloData.el=halo;
     haloLayer.appendChild(halo);
   });
 
@@ -336,6 +343,12 @@
   }
 
   function render3D(){
+    halos.forEach(halo=>{
+      const p=project(halo);
+      halo.el.setAttribute('cx',p.x);halo.el.setAttribute('cy',p.y);
+      halo.el.setAttribute('r',Math.max(34,halo.r*p.scale*view.zoom));
+      halo.el.style.opacity=String(Math.max(.42,Math.min(1,p.scale*.82)));
+    });
     nodes.forEach(node=>{
       const p=project(node);
       node.el.setAttribute('cx',p.x);node.el.setAttribute('cy',p.y);
