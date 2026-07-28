@@ -90,7 +90,7 @@
   #bbdc-neural-field .satellite.is-dimmed { opacity: .24; }
   #bbdc-neural-field .link.is-active { stroke: var(--viz-series-1); stroke-width: 1.8; opacity: .95; }
   #bbdc-neural-field .node-label { fill: var(--foreground); font-family: Poppins, system-ui, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: .01em; pointer-events: none; }
-  #bbdc-neural-field .input-label { fill: var(--foreground); stroke: var(--background); stroke-width: 4px; paint-order: stroke; font-family: Poppins, system-ui, sans-serif; font-size: 11px; font-weight: 500; pointer-events: none; opacity: 0; transition: opacity .14s ease; }
+  #bbdc-neural-field .input-label { fill: var(--muted-foreground); stroke: var(--background); stroke-width: 3px; paint-order: stroke; font-family: Poppins, system-ui, sans-serif; font-size: 9.5px; font-weight: 400; pointer-events: none; opacity: 0; transition: opacity .14s ease; }
   #bbdc-neural-field .input-label.is-visible { opacity: 1; }
   #bbdc-neural-field .node-readout { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; min-height: 30px; padding: 0 0 10px 2px; font-family: Poppins, system-ui, sans-serif; font-size: 12px; color: var(--foreground); }
   #bbdc-neural-field .node-readout strong { font-size: 12px; font-weight: 500; }
@@ -343,6 +343,7 @@
   const autoButton=root.querySelector('[data-auto-rotate]');
   const resetButton=root.querySelector('[data-reset-view]');
   const view={rotX:-0.13,rotY:0.18,zoom:1,dragging:false,lastX:0,lastY:0,auto:false,frame:0};
+  let activeInput=null;
 
   function project(point){
     const dx=point.x-490,dy=point.y-310,dz=point.z||0;
@@ -391,6 +392,7 @@
       if(s.linkEl)positionLine(s.linkEl,s,s.nearest);
     });
     links.forEach(link=>positionLine(link.el,pointById[link.a],pointById[link.b]));
+    if(activeInput)positionInputLabel(activeInput);
   }
 
   function resetView(){
@@ -433,14 +435,20 @@
   }
   render3D();
 
+  function positionInputLabel(input){
+    const p=project(input);
+    const placeLeft=p.x>800;
+    inputLabel.setAttribute('x',p.x+(placeLeft?-7:7));
+    inputLabel.setAttribute('y',p.y-6);
+    inputLabel.setAttribute('text-anchor',placeLeft?'end':'start');
+  }
+
   function focusInput(input,connectedNode) {
     kindOut.textContent=input.kind;
     labelOut.textContent=input.label;
     descriptionOut.textContent=input.description+' Connected to: '+connectedNode.label+'.';
-    const placeLeft=input.x>800;
-    inputLabel.setAttribute('x',input.x+(placeLeft?-10:10));
-    inputLabel.setAttribute('y',input.y-8);
-    inputLabel.setAttribute('text-anchor',placeLeft?'end':'start');
+    activeInput=input;
+    positionInputLabel(input);
     inputLabel.textContent=input.label;
     inputLabel.classList.add('is-visible');
     nodeLayer.querySelectorAll('.node').forEach(el=>{
@@ -474,6 +482,7 @@
     satelliteLayer.querySelectorAll('.satellite').forEach(el=>el.classList.add('is-dimmed'));
   }
   svg.addEventListener('mouseleave',()=>{
+    activeInput=null;
     inputLabel.classList.remove('is-visible');
     nodeLayer.querySelectorAll('.node').forEach(el=>el.classList.remove('is-dimmed'));
     linkLayer.querySelectorAll('.link').forEach(el=>el.classList.remove('is-active','is-dimmed'));
