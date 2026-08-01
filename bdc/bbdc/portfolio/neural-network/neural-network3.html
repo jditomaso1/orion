@@ -51,7 +51,6 @@
     <span class="text-muted" data-description>Portfolio and borrower intelligence joined through shared evidence.</span>
   </div>
   <div class="network-controls" aria-label="Neural network view controls">
-    <span class="drag-hint">Drag to rotate · Scroll to zoom</span>
     <label class="context-picker">Context
       <select data-context aria-label="Neural network context">
         <option value="default">Default Risk</option>
@@ -74,11 +73,12 @@
     <g data-satellites></g>
     <g data-nodes></g>
   </svg>
+  <span class="drag-hint">Drag to rotate · Scroll to zoom</span>
 
 </div>
 
 <style>
-  #bbdc-neural-field { width: 100%; color: var(--foreground); }
+  #bbdc-neural-field { position:relative; width:100%; color:var(--foreground); }
   #bbdc-neural-field .field { display: block; width: 100%; height: auto; overflow: visible; cursor: grab; touch-action: none; user-select: none; }
   #bbdc-neural-field .field.is-dragging { cursor: grabbing; }
   #bbdc-neural-field .link { stroke: var(--border); stroke-width: .9; opacity: .72; vector-effect: non-scaling-stroke; transition: opacity .18s ease, stroke .18s ease; }
@@ -101,24 +101,26 @@
   #bbdc-neural-field .satellite.is-dimmed { opacity: .24; }
   #bbdc-neural-field .link.is-active { stroke: var(--viz-series-1); stroke-width: 1.8; opacity: .95; }
   #bbdc-neural-field .link.is-context-strong { stroke:color-mix(in srgb, var(--viz-series-1) 68%, var(--border)); opacity:.88; }
-  #bbdc-neural-field .node-label { fill: var(--foreground); font-family: Poppins, system-ui, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: .01em; pointer-events: none; }
+  #bbdc-neural-field .node-label { fill:var(--foreground); font-family:Poppins,system-ui,sans-serif; font-size:12px; font-weight:500; letter-spacing:.01em; pointer-events:none; }
+  #bbdc-neural-field .importance-band,
+  #bbdc-neural-field .importance-score { font-size:9px; font-weight:400; letter-spacing:.015em; }
   #bbdc-neural-field .input-label { fill: var(--muted-foreground); stroke: var(--background); stroke-width: 3px; paint-order: stroke; font-family: Poppins, system-ui, sans-serif; font-size: 9.5px; font-weight: 400; pointer-events: none; opacity: 0; transition: opacity .14s ease; }
   #bbdc-neural-field .input-label.is-visible { opacity: 1; }
   #bbdc-neural-field .node-readout { display:flex; align-items:center; gap:9px; flex-wrap:wrap; min-height:32px; width:52%; padding:0 0 0 2px; font-family:Poppins,system-ui,sans-serif; font-size:12px; color:var(--foreground); }
   #bbdc-neural-field .node-readout strong { font-size: 12px; font-weight: 500; }
   #bbdc-neural-field .node-readout .text-muted { font-size: 11px; }
   #bbdc-neural-field .network-controls { display:flex; align-items:center; justify-content:flex-end; gap:7px; min-height:32px; margin:-32px 0 7px auto; position:relative; z-index:2; pointer-events:none; }
-  #bbdc-neural-field .network-controls .drag-hint { margin-right:3px; color:var(--muted-foreground); font-size:10px; }
+  #bbdc-neural-field > .drag-hint { position:absolute; right:10px; bottom:8px; z-index:3; padding:4px 8px; border:1px solid color-mix(in srgb, var(--border) 80%, transparent); border-radius:999px; background:color-mix(in srgb, #fff 88%, transparent); color:var(--muted-foreground); font-size:9px; pointer-events:none; backdrop-filter:blur(3px); }
   #bbdc-neural-field .network-controls button { pointer-events:auto; border:1px solid var(--border); border-radius:999px; background:#fff; color:#36536e; padding:5px 9px; font:500 10px Poppins,system-ui,sans-serif; cursor:pointer; }
   #bbdc-neural-field .context-picker { pointer-events:auto; display:flex; align-items:center; gap:5px; color:var(--muted-foreground); font:500 10px Poppins,system-ui,sans-serif; }
   #bbdc-neural-field .context-picker select { max-width:205px; border:1px solid var(--border); border-radius:999px; background:#fff; color:#36536e; padding:5px 26px 5px 9px; font:500 10px Poppins,system-ui,sans-serif; cursor:pointer; outline:none; }
   #bbdc-neural-field .context-picker select:focus { border-color:var(--ring); box-shadow:0 0 0 2px color-mix(in srgb, var(--ring) 18%, transparent); }
   #bbdc-neural-field .network-controls button:hover,
   #bbdc-neural-field .network-controls button[aria-pressed="true"] { border-color:var(--primary); background:#eef7fc; color:var(--primary); }
-  @media(max-width:760px){
+  @media(max-width:980px){
     #bbdc-neural-field .node-readout { width:100%; }
     #bbdc-neural-field .network-controls { margin:5px 0; justify-content:flex-start; flex-wrap:wrap; }
-    #bbdc-neural-field .network-controls .drag-hint { width:100%; }
+    #bbdc-neural-field > .drag-hint { right:6px; bottom:6px; font-size:8px; }
   }
 </style>
 
@@ -386,8 +388,8 @@
   });
 
   function importanceBand(value){
-    if(value>=1.5)return {label:'Primary',color:'#dc2626'};
-    if(value>=1.25)return {label:'High',color:'#d97706'};
+    if(value>=1.5)return {label:'Primary',color:'#d97706'};
+    if(value>=1.25)return {label:'High',color:'#dc2626'};
     if(value>=.9)return {label:'Moderate',color:'#16a34a'};
     return {label:'Supporting',color:'#187aba'};
   }
@@ -401,15 +403,17 @@
     nodeLayer.appendChild(c);
     if(['b','o','c1','c2','c3','r1','p1'].includes(node.id)) {
       const text=document.createElementNS(ns,'text');
-      const left=node.x>760;
-      text.setAttribute('x',node.x+(left?-18:18)); text.setAttribute('y',node.y-node.r-7);
-      text.setAttribute('text-anchor',left?'end':'start'); text.setAttribute('class','node-label');
+      text.setAttribute('x',node.x); text.setAttribute('y',node.y-node.r-20);
+      text.setAttribute('text-anchor','middle'); text.setAttribute('class','node-label');
       const nameSpan=document.createElementNS(ns,'tspan');
       const bandSpan=document.createElementNS(ns,'tspan');
       const scoreSpan=document.createElementNS(ns,'tspan');
       nameSpan.textContent=node.label;
+      bandSpan.setAttribute('class','importance-band');
+      bandSpan.setAttribute('x',node.x);bandSpan.setAttribute('dy','13');
+      scoreSpan.setAttribute('class','importance-score');
       text.appendChild(nameSpan);text.appendChild(bandSpan);text.appendChild(scoreSpan);
-      node.labelEl=text;node.bandEl=bandSpan;node.scoreEl=scoreSpan;nodeLayer.appendChild(text);
+      node.labelEl=text;node.nameSpan=nameSpan;node.bandEl=bandSpan;node.scoreEl=scoreSpan;nodeLayer.appendChild(text);
     }
     c.addEventListener('mouseenter',()=>focus(node));
     c.addEventListener('click',()=>focus(node));
@@ -538,10 +542,11 @@
       node.el.setAttribute('cx',p.x);node.el.setAttribute('cy',p.y);
       node.el.setAttribute('r',Math.max(4,node.r*p.scale*view.zoom));
       if(node.labelEl){
-        const left=p.x>760;
-        node.labelEl.setAttribute('x',p.x+(left?-18:18));
-        node.labelEl.setAttribute('y',p.y-Math.max(4,node.r*p.scale*view.zoom)-7);
-        node.labelEl.setAttribute('text-anchor',left?'end':'start');
+        node.labelEl.setAttribute('x',p.x);
+        node.labelEl.setAttribute('y',p.y-Math.max(4,node.r*p.scale*view.zoom)-22);
+        node.labelEl.setAttribute('text-anchor','middle');
+        node.nameSpan.setAttribute('x',p.x);
+        node.bandEl.setAttribute('x',p.x);
         node.labelEl.style.opacity=String(Math.max(.45,Math.min(1,p.scale)));
       }
     });
