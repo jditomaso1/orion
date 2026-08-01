@@ -383,6 +383,13 @@
     });
   });
 
+  function importanceBand(value){
+    if(value>=1.5)return {label:'Primary',color:'#dc2626'};
+    if(value>=1.25)return {label:'High',color:'#d97706'};
+    if(value>=.9)return {label:'Moderate',color:'#16a34a'};
+    return {label:'Supporting',color:'#187aba'};
+  }
+
   nodes.forEach(node => {
     const c=document.createElementNS(ns,'circle');
     c.setAttribute('cx',node.x); c.setAttribute('cy',node.y); c.setAttribute('r',node.r);
@@ -395,7 +402,12 @@
       const left=node.x>760;
       text.setAttribute('x',node.x+(left?-18:18)); text.setAttribute('y',node.y-node.r-7);
       text.setAttribute('text-anchor',left?'end':'start'); text.setAttribute('class','node-label');
-      text.textContent=node.label; node.labelEl=text; nodeLayer.appendChild(text);
+      const nameSpan=document.createElementNS(ns,'tspan');
+      const bandSpan=document.createElementNS(ns,'tspan');
+      const scoreSpan=document.createElementNS(ns,'tspan');
+      nameSpan.textContent=node.label;
+      text.appendChild(nameSpan);text.appendChild(bandSpan);text.appendChild(scoreSpan);
+      node.labelEl=text;node.bandEl=bandSpan;node.scoreEl=scoreSpan;nodeLayer.appendChild(text);
     }
     c.addEventListener('mouseenter',()=>focus(node));
     c.addEventListener('click',()=>focus(node));
@@ -454,7 +466,13 @@
         node.importance=start.importance+(target.importance-start.importance)*t;
         node.r=start.r+(node.baseR*(.72+target.importance*.34)-start.r)*t;
         node.el.style.opacity=String(.45+Math.min(1,node.importance)*.55);
-        if(node.labelEl)node.labelEl.textContent=node.label+' · '+Math.round(node.importance*100);
+        if(node.labelEl){
+          const band=importanceBand(node.importance);
+          node.bandEl.textContent=' · '+band.label;
+          node.bandEl.setAttribute('fill',band.color);
+          node.scoreEl.textContent=' '+Math.round(node.importance*100);
+          node.scoreEl.setAttribute('fill','var(--muted-foreground)');
+        }
       });
       satellites.forEach(satellite=>{
         const anchor=satellite.nearest;
