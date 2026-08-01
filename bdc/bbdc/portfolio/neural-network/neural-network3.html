@@ -73,7 +73,7 @@
     <g data-satellites></g>
     <g data-nodes></g>
   </svg>
-  <span class="drag-hint">Drag to rotate · Scroll to zoom</span>
+  <span class="drag-hint">Left drag to rotate · Right drag to pan · Scroll to zoom</span>
 
 </div>
 
@@ -428,7 +428,7 @@
   const autoButton=root.querySelector('[data-auto-rotate]');
   const resetButton=root.querySelector('[data-reset-view]');
   const contextSelect=root.querySelector('[data-context]');
-  const view={rotX:-0.13,rotY:0.18,zoom:1,dragging:false,lastX:0,lastY:0,auto:false,frame:0};
+  const view={rotX:-0.13,rotY:0.18,zoom:1,panX:0,panY:0,dragging:false,dragMode:null,lastX:0,lastY:0,auto:false,frame:0};
   let activeInput=null;
   let activeContext='default';
   let contextFrame=0;
@@ -519,7 +519,7 @@
     const y1=dy*cosX-z1*sinX;
     const z2=dy*sinX+z1*cosX;
     const perspective=850/(850+z2);
-    return {x:490+x1*perspective*view.zoom,y:310+y1*perspective*view.zoom,scale:perspective,z:z2};
+    return {x:490+x1*perspective*view.zoom+view.panX,y:310+y1*perspective*view.zoom+view.panY,scale:perspective,z:z2};
   }
 
   function positionLine(line,a,b){
@@ -570,24 +570,32 @@
   }
 
   function resetView(){
-    view.rotX=-0.13;view.rotY=0.18;view.zoom=1;render3D();
+    view.rotX=-0.13;view.rotY=0.18;view.zoom=1;view.panX=0;view.panY=0;render3D();
   }
 
+  svg.addEventListener('contextmenu',event=>event.preventDefault());
   svg.addEventListener('pointerdown',event=>{
-    if(event.target.closest('.node,.satellite'))return;
-    view.dragging=true;view.lastX=event.clientX;view.lastY=event.clientY;
+    if(event.button!==0&&event.button!==2)return;
+    if(event.button===0&&event.target.closest('.node,.satellite'))return;
+    view.dragging=true;view.dragMode=event.button===2?'pan':'rotate';
+    view.lastX=event.clientX;view.lastY=event.clientY;
     svg.classList.add('is-dragging');svg.setPointerCapture(event.pointerId);
   });
   svg.addEventListener('pointermove',event=>{
     if(!view.dragging)return;
     const dx=event.clientX-view.lastX,dy=event.clientY-view.lastY;
     view.lastX=event.clientX;view.lastY=event.clientY;
-    view.rotY+=dx*.008;view.rotX=Math.max(-1.35,Math.min(1.35,view.rotX-dy*.008));
+    if(view.dragMode==='pan'){
+      const unitsPerPixel=980/Math.max(1,svg.getBoundingClientRect().width);
+      view.panX+=dx*unitsPerPixel;view.panY+=dy*unitsPerPixel;
+    }else{
+      view.rotY+=dx*.008;view.rotX=Math.max(-1.35,Math.min(1.35,view.rotX-dy*.008));
+    }
     render3D();
   });
   const stopDragging=event=>{
     if(!view.dragging)return;
-    view.dragging=false;svg.classList.remove('is-dragging');
+    view.dragging=false;view.dragMode=null;svg.classList.remove('is-dragging');
     if(event.pointerId!==undefined&&svg.hasPointerCapture(event.pointerId))svg.releasePointerCapture(event.pointerId);
   };
   svg.addEventListener('pointerup',stopDragging);
