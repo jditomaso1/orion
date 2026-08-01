@@ -104,10 +104,10 @@
   #bbdc-neural-field .node-label { fill: var(--foreground); font-family: Poppins, system-ui, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: .01em; pointer-events: none; }
   #bbdc-neural-field .input-label { fill: var(--muted-foreground); stroke: var(--background); stroke-width: 3px; paint-order: stroke; font-family: Poppins, system-ui, sans-serif; font-size: 9.5px; font-weight: 400; pointer-events: none; opacity: 0; transition: opacity .14s ease; }
   #bbdc-neural-field .input-label.is-visible { opacity: 1; }
-  #bbdc-neural-field .node-readout { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; min-height: 30px; padding: 0 0 10px 2px; font-family: Poppins, system-ui, sans-serif; font-size: 12px; color: var(--foreground); }
+  #bbdc-neural-field .node-readout { display:flex; align-items:center; gap:9px; flex-wrap:wrap; min-height:32px; width:52%; padding:0 0 0 2px; font-family:Poppins,system-ui,sans-serif; font-size:12px; color:var(--foreground); }
   #bbdc-neural-field .node-readout strong { font-size: 12px; font-weight: 500; }
   #bbdc-neural-field .node-readout .text-muted { font-size: 11px; }
-  #bbdc-neural-field .network-controls { display:flex; align-items:center; justify-content:flex-end; gap:7px; min-height:32px; margin:-42px 0 7px auto; position:relative; z-index:2; pointer-events:none; }
+  #bbdc-neural-field .network-controls { display:flex; align-items:center; justify-content:flex-end; gap:7px; min-height:32px; margin:-32px 0 7px auto; position:relative; z-index:2; pointer-events:none; }
   #bbdc-neural-field .network-controls .drag-hint { margin-right:3px; color:var(--muted-foreground); font-size:10px; }
   #bbdc-neural-field .network-controls button { pointer-events:auto; border:1px solid var(--border); border-radius:999px; background:#fff; color:#36536e; padding:5px 9px; font:500 10px Poppins,system-ui,sans-serif; cursor:pointer; }
   #bbdc-neural-field .context-picker { pointer-events:auto; display:flex; align-items:center; gap:5px; color:var(--muted-foreground); font:500 10px Poppins,system-ui,sans-serif; }
@@ -116,7 +116,8 @@
   #bbdc-neural-field .network-controls button:hover,
   #bbdc-neural-field .network-controls button[aria-pressed="true"] { border-color:var(--primary); background:#eef7fc; color:var(--primary); }
   @media(max-width:760px){
-    #bbdc-neural-field .network-controls { margin:0 0 5px; justify-content:flex-start; flex-wrap:wrap; }
+    #bbdc-neural-field .node-readout { width:100%; }
+    #bbdc-neural-field .network-controls { margin:5px 0; justify-content:flex-start; flex-wrap:wrap; }
     #bbdc-neural-field .network-controls .drag-hint { width:100%; }
   }
 </style>
@@ -298,6 +299,7 @@
     {x:665,y:405,z:125,r:105},
     {x:805,y:205,z:-35,r:80}
   ];
+  halos.forEach(halo=>{halo.baseX=halo.x;halo.baseY=halo.y;halo.baseR=halo.r;});
   halos.forEach(haloData => {
     const halo = document.createElementNS(ns,'circle');
     halo.setAttribute('cx',haloData.x); halo.setAttribute('cy',haloData.y); halo.setAttribute('r',haloData.r);
@@ -449,6 +451,13 @@
     const profile=contextProfiles[key]||contextProfiles.default;
     const targets=contextTargets(profile);
     const starts=Object.fromEntries(nodes.map(node=>[node.id,{x:node.x,y:node.y,r:node.r,importance:node.importance}]));
+    const haloStarts=halos.map(halo=>({x:halo.x,y:halo.y,r:halo.r}));
+    const groupCenter=profile.groups.reduce((center,group)=>({x:center.x+group.x/profile.groups.length,y:center.y+group.y/profile.groups.length}),{x:0,y:0});
+    const haloTargets=halos.map((halo,index)=>{
+      const group=profile.groups[index];
+      if(group)return {x:group.x,y:group.y,r:72+group.weight*24};
+      return {x:groupCenter.x,y:groupCenter.y,r:78};
+    });
     activeContext=key;
     kindOut.textContent='Context';
     labelOut.textContent=profile.label;
@@ -473,6 +482,12 @@
           node.scoreEl.textContent=' '+Math.round(node.importance*100);
           node.scoreEl.setAttribute('fill','var(--muted-foreground)');
         }
+      });
+      halos.forEach((halo,index)=>{
+        const start=haloStarts[index],target=haloTargets[index];
+        halo.x=start.x+(target.x-start.x)*t;
+        halo.y=start.y+(target.y-start.y)*t;
+        halo.r=start.r+(target.r-start.r)*t;
       });
       satellites.forEach(satellite=>{
         const anchor=satellite.nearest;
