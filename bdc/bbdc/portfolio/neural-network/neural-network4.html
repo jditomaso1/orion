@@ -653,6 +653,11 @@
     time.playing=playing;
     timePlayButton.textContent=playing?'Pause':'Play';
     timePlayButton.setAttribute('aria-label',playing?'Pause timeline':'Play timeline');
+    if(!playing&&time.frame){
+      cancelAnimationFrame(time.frame);
+      time.frame=0;
+      time.lastTick=0;
+    }
     if(playing&&!time.frame){time.lastTick=0;time.frame=requestAnimationFrame(animateTime)}
   }
   function animateTime(now){
