@@ -136,12 +136,12 @@
   #bbdc-neural-field .context-picker select:focus { border-color:var(--ring); box-shadow:0 0 0 2px color-mix(in srgb, var(--ring) 18%, transparent); }
   #bbdc-neural-field .network-controls button:hover,
   #bbdc-neural-field .network-controls button[aria-pressed="true"] { border-color:var(--primary); background:#eef7fc; color:var(--primary); }
-  #bbdc-neural-field .time-trail { fill:none; stroke:var(--viz-series-1); stroke-width:1.35; stroke-linecap:round; stroke-linejoin:round; opacity:0; vector-effect:non-scaling-stroke; transition:opacity .2s ease; pointer-events:none; }
-  #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail { opacity:.30; }
+  #bbdc-neural-field .time-trail { fill:none; stroke:var(--viz-series-1); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; opacity:0; vector-effect:non-scaling-stroke; filter:drop-shadow(0 0 2px color-mix(in srgb, var(--viz-series-1) 48%, transparent)); transition:opacity .2s ease; pointer-events:none; }
+  #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail { opacity:.62; }
   #bbdc-neural-field .time-trail.credit { stroke:var(--viz-series-3); opacity:0; }
   #bbdc-neural-field .time-trail.risk { stroke:var(--viz-series-4); opacity:0; }
   #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail.credit,
-  #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail.risk { opacity:.48; }
+  #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail.risk { opacity:.82; }
   #bbdc-neural-field.is-time-mode .node { filter:drop-shadow(0 0 3px color-mix(in srgb, var(--primary) 28%, transparent)); }
   #bbdc-neural-field .time-panel { margin:5px 2px 0; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:linear-gradient(135deg,#f8fbfd,#eef6fa); box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
   #bbdc-neural-field .time-panel[hidden] { display:none; }
