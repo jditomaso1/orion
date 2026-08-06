@@ -73,6 +73,7 @@
     <g data-halos></g>
     <g data-time-trails></g>
     <g data-links></g>
+    <g data-projections></g>
     <g data-satellites></g>
     <g data-nodes></g>
   </svg>
@@ -83,7 +84,15 @@
         <strong data-time-label>Q3 2023 · Portfolio baseline</strong>
       </div>
       <div class="time-panel__actions">
+        <label class="projection-picker" data-projection-controls hidden>Scenario
+          <select data-projection-scenario aria-label="Projection scenario">
+            <option value="base">Base case</option>
+            <option value="improving">Improving</option>
+            <option value="deteriorating">Deteriorating</option>
+          </select>
+        </label>
         <button type="button" data-time-paths aria-pressed="false" aria-label="Show historical paths">Show paths</button>
+        <button type="button" data-time-projections aria-pressed="false" aria-label="Show projected trajectories">Projections</button>
         <button type="button" data-time-play aria-label="Play timeline">Play</button>
       </div>
     </div>
@@ -152,6 +161,17 @@
   #bbdc-neural-field .time-footprint.risk { fill:var(--viz-series-4); }
   #bbdc-neural-field .time-footprint.core { fill:var(--viz-series-1); }
   #bbdc-neural-field.is-time-mode.is-paths-visible .time-footprint { opacity:var(--footprint-opacity,.35); }
+  #bbdc-neural-field .projection-path { fill:none; stroke:var(--viz-series-1); stroke-width:2.4; stroke-linecap:round; stroke-dasharray:7 6; opacity:0; vector-effect:non-scaling-stroke; pointer-events:none; }
+  #bbdc-neural-field .projection-path.credit { stroke:var(--viz-series-3); }
+  #bbdc-neural-field .projection-path.risk { stroke:var(--viz-series-4); }
+  #bbdc-neural-field .projection-dot { fill:#fff; stroke:var(--viz-series-1); stroke-width:2.4; opacity:0; vector-effect:non-scaling-stroke; pointer-events:none; }
+  #bbdc-neural-field .projection-dot.credit { stroke:var(--viz-series-3); }
+  #bbdc-neural-field .projection-dot.risk { stroke:var(--viz-series-4); }
+  #bbdc-neural-field .projection-dot.portfolio { stroke:var(--viz-series-2); }
+  #bbdc-neural-field .projection-dot.source { stroke:var(--muted-foreground); }
+  #bbdc-neural-field.is-time-mode.is-projections-visible .projection-path { opacity:.58; animation:projection-flow 1.6s linear infinite; }
+  #bbdc-neural-field.is-time-mode.is-projections-visible .projection-dot { opacity:var(--projection-opacity,.45); }
+  @keyframes projection-flow { to { stroke-dashoffset:-26; } }
   #bbdc-neural-field.is-time-mode .node { filter:drop-shadow(0 0 3px color-mix(in srgb, var(--primary) 28%, transparent)); }
   #bbdc-neural-field .time-panel { margin:5px 2px 0; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:linear-gradient(135deg,#f8fbfd,#eef6fa); box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
   #bbdc-neural-field .time-panel[hidden] { display:none; }
@@ -159,7 +179,10 @@
   #bbdc-neural-field .time-panel__header > div { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
   #bbdc-neural-field .time-panel__eyebrow { color:var(--primary); font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
   #bbdc-neural-field .time-panel__header strong { color:var(--foreground); font-size:11px; font-weight:600; }
-  #bbdc-neural-field .time-panel__actions { display:flex; align-items:center; gap:6px; }
+  #bbdc-neural-field .time-panel__actions { display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+  #bbdc-neural-field .projection-picker { display:flex; align-items:center; gap:5px; color:var(--muted-foreground); font:500 9px Poppins,system-ui,sans-serif; }
+  #bbdc-neural-field .projection-picker[hidden] { display:none; }
+  #bbdc-neural-field .projection-picker select { border:1px solid var(--border); border-radius:999px; background:#fff; color:#36536e; padding:4px 24px 4px 8px; font:500 9px Poppins,system-ui,sans-serif; outline:none; }
   #bbdc-neural-field .time-panel button { border:1px solid var(--primary); border-radius:999px; background:#fff; color:var(--primary); padding:4px 12px; font:600 10px Poppins,system-ui,sans-serif; cursor:pointer; }
   #bbdc-neural-field .time-panel button:hover,
   #bbdc-neural-field .time-panel button[aria-pressed="true"] { background:var(--primary); color:var(--primary-foreground); }
@@ -180,6 +203,7 @@
   const haloLayer = root.querySelector('[data-halos]');
   const timeTrailLayer = root.querySelector('[data-time-trails]');
   const linkLayer = root.querySelector('[data-links]');
+  const projectionLayer = root.querySelector('[data-projections]');
   const satelliteLayer = root.querySelector('[data-satellites]');
   const nodeLayer = root.querySelector('[data-nodes]');
   const kindOut = root.querySelector('[data-kind]');
@@ -483,6 +507,9 @@
   const timePanel=root.querySelector('[data-time-panel]');
   const timePlayButton=root.querySelector('[data-time-play]');
   const timePathsButton=root.querySelector('[data-time-paths]');
+  const timeProjectionsButton=root.querySelector('[data-time-projections]');
+  const projectionControls=root.querySelector('[data-projection-controls]');
+  const projectionSelect=root.querySelector('[data-projection-scenario]');
   const timeSlider=root.querySelector('[data-time-slider]');
   const timeLabel=root.querySelector('[data-time-label]');
   const timeSource=root.querySelector('[data-time-source]');
@@ -505,7 +532,18 @@
     {date:'Q4 2025',source:'Risk review',event:'Rating migration, watchlist signals and recovery views update the risk topology.',impact:'risk'},
     {date:'Q2 2026',source:'Current evidence',event:'The latest combined evidence produces the network’s current positions.',impact:'combined'}
   ];
-  const time={enabled:false,playing:false,paths:false,index:0,frame:0,lastTick:0};
+  const time={enabled:false,playing:false,paths:false,projections:false,scenario:'base',index:0,frame:0,lastTick:0};
+  const projectionSteps=[
+    {date:'Q3 2026',confidence:78},
+    {date:'Q4 2026',confidence:66},
+    {date:'Q1 2027',confidence:54},
+    {date:'Q2 2027',confidence:42}
+  ];
+  const projectionScenarioCopy={
+    base:'Recent direction, momentum and linked-node movement are extended with moderate decay.',
+    improving:'Favorable evidence pulls risk inward while preserving recent directional momentum.',
+    deteriorating:'Adverse evidence amplifies dispersion, risk migration and recent directional momentum.'
+  };
   const impactAffinity={
     baseline:{core:.1,source:.1,portfolio:.1,credit:.1,risk:.1},
     financials:{core:.7,source:.55,portfolio:.9,credit:1.35,risk:.95},
@@ -533,8 +571,32 @@
     }
     return {x,y};
   }
+  function projectionPosition(node,horizon,scenario){
+    const last=timeSteps.length-1;
+    const current=temporalOffset(node,last);
+    const prior=temporalOffset(node,last-1);
+    const earlier=temporalOffset(node,last-2);
+    const velocity={
+      x:(current.x-prior.x)*.72+(prior.x-earlier.x)*.28,
+      y:(current.y-prior.y)*.72+(prior.y-earlier.y)*.28
+    };
+    const radialLength=Math.max(1,Math.hypot(node.contextX-490,node.contextY-310));
+    const radial={x:(node.contextX-490)/radialLength,y:(node.contextY-310)/radialLength};
+    const scenarioBias=scenario==='improving'?-1:scenario==='deteriorating'?1:0;
+    const momentumScale=scenario==='deteriorating'?1.18:scenario==='improving'?.86:1;
+    const uncertaintyScale=scenario==='deteriorating'?4.8:scenario==='improving'?2.8:3.5;
+    const angle=timeHash(node.id+'-projection-'+horizon)*Math.PI*2;
+    const decay=Math.pow(.86,horizon-1);
+    return {
+      x:node.contextX+current.x+velocity.x*horizon*.9*momentumScale*decay+radial.x*scenarioBias*horizon*8+Math.cos(angle)*uncertaintyScale*Math.pow(horizon,1.2),
+      y:node.contextY+current.y+velocity.y*horizon*.9*momentumScale*decay+radial.y*scenarioBias*horizon*8+Math.sin(angle)*uncertaintyScale*Math.pow(horizon,1.2),
+      z:node.z
+    };
+  }
   const timeTrails=new Map();
   const timeFootprints=new Map();
+  const projectionTrails=new Map();
+  const projectionDots=new Map();
   nodes.forEach(node=>{
     const trail=document.createElementNS(ns,'polyline');
     trail.setAttribute('class','time-trail '+node.type);
@@ -550,6 +612,19 @@
       return footprint;
     });
     timeFootprints.set(node.id,footprints);
+    const projectionTrail=document.createElementNS(ns,'polyline');
+    projectionTrail.setAttribute('class','projection-path '+node.type);
+    projectionTrail.setAttribute('aria-hidden','true');
+    projectionLayer.appendChild(projectionTrail);
+    projectionTrails.set(node.id,projectionTrail);
+    const futureDots=projectionSteps.map(()=>{
+      const dot=document.createElementNS(ns,'circle');
+      dot.setAttribute('class','projection-dot '+node.type);
+      dot.setAttribute('aria-hidden','true');
+      projectionLayer.appendChild(dot);
+      return dot;
+    });
+    projectionDots.set(node.id,futureDots);
   });
   function updateTemporalSatellites(){
     satellites.forEach(satellite=>{
@@ -709,6 +784,21 @@
         footprint.style.setProperty('--footprint-opacity',String(.16+recency*.46));
       });
     });
+    projectionTrails.forEach((trail,nodeId)=>{
+      const node=byId[nodeId];
+      const currentOffset=temporalOffset(node,timeSteps.length-1);
+      const currentPoint=project({x:node.contextX+currentOffset.x,y:node.contextY+currentOffset.y,z:node.z});
+      const futurePoints=projectionSteps.map((step,index)=>project(projectionPosition(node,index+1,time.scenario)));
+      trail.setAttribute('points',[currentPoint,...futurePoints].map(point=>point.x+','+point.y).join(' '));
+      const dots=projectionDots.get(nodeId);
+      futurePoints.forEach((point,index)=>{
+        const dot=dots[index];
+        dot.setAttribute('cx',point.x);
+        dot.setAttribute('cy',point.y);
+        dot.setAttribute('r',Math.max(3,node.r*point.scale*view.zoom*(.82-index*.07)));
+        dot.style.setProperty('--projection-opacity',String(.68-index*.11));
+      });
+    });
     halos.forEach(halo=>{
       const p=project(halo);
       halo.el.setAttribute('cx',p.x);halo.el.setAttribute('cy',p.y);
@@ -800,6 +890,28 @@
     setTimePlaying(false);
     applyTimeIndex(time.enabled?time.index:0);
   });
+  function updateProjectionReadout(){
+    const scenarioLabel=projectionSelect.options[projectionSelect.selectedIndex].text;
+    timeSource.textContent='Projection · '+scenarioLabel;
+    timeEvent.textContent=projectionScenarioCopy[time.scenario]+' Confidence declines from 78% to 42% through Q2 2027.';
+  }
+  function setProjections(enabled){
+    time.projections=enabled;
+    root.classList.toggle('is-projections-visible',enabled);
+    timeProjectionsButton.setAttribute('aria-pressed',String(enabled));
+    timeProjectionsButton.setAttribute('aria-label',enabled?'Hide projected trajectories':'Show projected trajectories');
+    timeProjectionsButton.textContent=enabled?'Hide projections':'Projections';
+    projectionControls.hidden=!enabled;
+    timeSlider.disabled=enabled;
+    if(enabled){
+      setTimePlaying(false);
+      applyTimeIndex(timeSteps.length-1);
+      updateProjectionReadout();
+    }else{
+      applyTimeIndex(time.index);
+    }
+    render3D();
+  }
   timeSlider.addEventListener('input',()=>{setTimePlaying(false);applyTimeIndex(timeSlider.value)});
   timePathsButton.addEventListener('click',()=>{
     time.paths=!time.paths;
@@ -809,7 +921,14 @@
     timePathsButton.textContent=time.paths?'Hide paths':'Show paths';
     render3D();
   });
+  timeProjectionsButton.addEventListener('click',()=>setProjections(!time.projections));
+  projectionSelect.addEventListener('change',()=>{
+    time.scenario=projectionSelect.value;
+    updateProjectionReadout();
+    render3D();
+  });
   timePlayButton.addEventListener('click',()=>{
+    if(time.projections)setProjections(false);
     if(time.index>=timeSteps.length-1)applyTimeIndex(0);
     setTimePlaying(!time.playing);
   });
