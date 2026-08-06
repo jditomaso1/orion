@@ -674,6 +674,9 @@
         return project({x:node.contextX+offset.x,y:node.contextY+offset.y,z:node.z});
       });
       trail.setAttribute('points',points.map(point=>point.x+','+point.y).join(' '));
+      const currentProjection=project(node);
+      const representedDotRadius=Math.max(4,node.r*currentProjection.scale*view.zoom);
+      trail.setAttribute('stroke-width',representedDotRadius*2);
     });
     halos.forEach(halo=>{
       const p=project(halo);
