@@ -136,12 +136,19 @@
   #bbdc-neural-field .context-picker select:focus { border-color:var(--ring); box-shadow:0 0 0 2px color-mix(in srgb, var(--ring) 18%, transparent); }
   #bbdc-neural-field .network-controls button:hover,
   #bbdc-neural-field .network-controls button[aria-pressed="true"] { border-color:var(--primary); background:#eef7fc; color:var(--primary); }
-  #bbdc-neural-field .time-trail { fill:none; stroke:var(--viz-series-1); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; opacity:0; filter:drop-shadow(0 0 2px color-mix(in srgb, var(--viz-series-1) 48%, transparent)); transition:opacity .2s ease; pointer-events:none; }
-  #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail { opacity:.62; }
+  #bbdc-neural-field .time-trail { fill:none; stroke:var(--viz-series-1); stroke-width:2.8; stroke-linecap:round; stroke-linejoin:round; opacity:0; vector-effect:non-scaling-stroke; filter:drop-shadow(0 0 1.5px color-mix(in srgb, var(--viz-series-1) 38%, transparent)); transition:opacity .2s ease; pointer-events:none; }
+  #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail { opacity:.48; }
   #bbdc-neural-field .time-trail.credit { stroke:var(--viz-series-3); opacity:0; }
   #bbdc-neural-field .time-trail.risk { stroke:var(--viz-series-4); opacity:0; }
   #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail.credit,
-  #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail.risk { opacity:.82; }
+  #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail.risk { opacity:.66; }
+  #bbdc-neural-field .time-footprint { opacity:0; stroke:#fff; stroke-width:2; vector-effect:non-scaling-stroke; pointer-events:none; transition:opacity .2s ease; }
+  #bbdc-neural-field .time-footprint.source { fill:var(--muted-foreground); }
+  #bbdc-neural-field .time-footprint.portfolio { fill:var(--viz-series-2); }
+  #bbdc-neural-field .time-footprint.credit { fill:var(--viz-series-3); }
+  #bbdc-neural-field .time-footprint.risk { fill:var(--viz-series-4); }
+  #bbdc-neural-field .time-footprint.core { fill:var(--viz-series-1); }
+  #bbdc-neural-field.is-time-mode.is-paths-visible .time-footprint { opacity:var(--footprint-opacity,.35); }
   #bbdc-neural-field.is-time-mode .node { filter:drop-shadow(0 0 3px color-mix(in srgb, var(--primary) 28%, transparent)); }
   #bbdc-neural-field .time-panel { margin:5px 2px 0; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:linear-gradient(135deg,#f8fbfd,#eef6fa); box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
   #bbdc-neural-field .time-panel[hidden] { display:none; }
@@ -523,12 +530,22 @@
     return {x,y};
   }
   const timeTrails=new Map();
+  const timeFootprints=new Map();
   nodes.forEach(node=>{
     const trail=document.createElementNS(ns,'polyline');
     trail.setAttribute('class','time-trail '+node.type);
     trail.setAttribute('aria-hidden','true');
     timeTrailLayer.appendChild(trail);
     timeTrails.set(node.id,trail);
+    const footprints=timeSteps.map(()=>{
+      const footprint=document.createElementNS(ns,'circle');
+      footprint.setAttribute('class','time-footprint '+node.type);
+      footprint.setAttribute('aria-hidden','true');
+      footprint.style.display='none';
+      timeTrailLayer.appendChild(footprint);
+      return footprint;
+    });
+    timeFootprints.set(node.id,footprints);
   });
   function updateTemporalSatellites(){
     satellites.forEach(satellite=>{
@@ -674,9 +691,19 @@
         return project({x:node.contextX+offset.x,y:node.contextY+offset.y,z:node.z});
       });
       trail.setAttribute('points',points.map(point=>point.x+','+point.y).join(' '));
-      const currentProjection=project(node);
-      const representedDotRadius=Math.max(4,node.r*currentProjection.scale*view.zoom);
-      trail.style.strokeWidth=String(representedDotRadius*2);
+      const footprints=timeFootprints.get(nodeId);
+      footprints.forEach((footprint,index)=>{
+        const visible=time.enabled&&index<time.index;
+        footprint.style.display=visible?'':'none';
+        if(!visible)return;
+        const offset=temporalOffset(node,index);
+        const point=project({x:node.contextX+offset.x,y:node.contextY+offset.y,z:node.z});
+        footprint.setAttribute('cx',point.x);
+        footprint.setAttribute('cy',point.y);
+        footprint.setAttribute('r',Math.max(4,node.r*point.scale*view.zoom));
+        const recency=(index+1)/Math.max(1,time.index);
+        footprint.style.setProperty('--footprint-opacity',String(.16+recency*.46));
+      });
     });
     halos.forEach(halo=>{
       const p=project(halo);
