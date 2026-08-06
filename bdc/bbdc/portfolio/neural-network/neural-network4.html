@@ -62,6 +62,7 @@
         <option value="action">Portfolio Action</option>
       </select>
     </label>
+    <button type="button" data-fibers-toggle aria-pressed="false">Hide fibers</button>
     <button type="button" data-time-toggle aria-pressed="false">Time</button>
     <button type="button" data-auto-rotate aria-pressed="false">Auto rotate</button>
     <button type="button" data-reset-view>Reset view</button>
@@ -120,6 +121,8 @@
   #bbdc-neural-field .satellite.is-dimmed { opacity: .24; }
   #bbdc-neural-field .link.is-active { stroke: var(--viz-series-1); stroke-width: 1.8; opacity: .95; }
   #bbdc-neural-field .link.is-context-strong { stroke:color-mix(in srgb, var(--viz-series-1) 68%, var(--border)); opacity:.88; }
+  #bbdc-neural-field [data-links] { transition:opacity .24s ease; }
+  #bbdc-neural-field.is-fibers-hidden [data-links] { opacity:0; pointer-events:none; }
   #bbdc-neural-field .node-label { fill:var(--foreground); font-family:Poppins,system-ui,sans-serif; font-size:12px; font-weight:500; letter-spacing:.01em; pointer-events:none; }
   #bbdc-neural-field .importance-band,
   #bbdc-neural-field .importance-score { font-size:9px; font-weight:400; letter-spacing:.015em; }
@@ -473,6 +476,7 @@
 
   const pointById={...byId,...Object.fromEntries(satellites.map(s=>[s.id,s]))};
   const autoButton=root.querySelector('[data-auto-rotate]');
+  const fibersButton=root.querySelector('[data-fibers-toggle]');
   const resetButton=root.querySelector('[data-reset-view]');
   const contextSelect=root.querySelector('[data-context]');
   const timeButton=root.querySelector('[data-time-toggle]');
@@ -781,6 +785,12 @@
   },{passive:false});
   resetButton.addEventListener('click',resetView);
   contextSelect.addEventListener('change',()=>applyContext(contextSelect.value));
+  fibersButton.addEventListener('click',()=>{
+    const hidden=root.classList.toggle('is-fibers-hidden');
+    fibersButton.setAttribute('aria-pressed',String(hidden));
+    fibersButton.setAttribute('aria-label',hidden?'Show neural fibers':'Hide neural fibers');
+    fibersButton.textContent=hidden?'Show fibers':'Hide fibers';
+  });
   timeButton.addEventListener('click',()=>{
     time.enabled=!time.enabled;
     root.classList.toggle('is-time-mode',time.enabled);
