@@ -81,7 +81,10 @@
         <span class="time-panel__eyebrow">Evidence timeline</span>
         <strong data-time-label>Q3 2023 · Portfolio baseline</strong>
       </div>
-      <button type="button" data-time-play aria-label="Play timeline">Play</button>
+      <div class="time-panel__actions">
+        <button type="button" data-time-paths aria-pressed="false" aria-label="Show historical paths">Show paths</button>
+        <button type="button" data-time-play aria-label="Play timeline">Play</button>
+      </div>
     </div>
     <input data-time-slider type="range" min="0" max="10" step="1" value="0" aria-label="Evidence date" />
     <div class="time-panel__detail">
@@ -134,11 +137,11 @@
   #bbdc-neural-field .network-controls button:hover,
   #bbdc-neural-field .network-controls button[aria-pressed="true"] { border-color:var(--primary); background:#eef7fc; color:var(--primary); }
   #bbdc-neural-field .time-trail { fill:none; stroke:var(--viz-series-1); stroke-width:1.35; stroke-linecap:round; stroke-linejoin:round; opacity:0; vector-effect:non-scaling-stroke; transition:opacity .2s ease; pointer-events:none; }
-  #bbdc-neural-field.is-time-mode .time-trail { opacity:.30; }
+  #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail { opacity:.30; }
   #bbdc-neural-field .time-trail.credit { stroke:var(--viz-series-3); opacity:0; }
   #bbdc-neural-field .time-trail.risk { stroke:var(--viz-series-4); opacity:0; }
-  #bbdc-neural-field.is-time-mode .time-trail.credit,
-  #bbdc-neural-field.is-time-mode .time-trail.risk { opacity:.48; }
+  #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail.credit,
+  #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail.risk { opacity:.48; }
   #bbdc-neural-field.is-time-mode .node { filter:drop-shadow(0 0 3px color-mix(in srgb, var(--primary) 28%, transparent)); }
   #bbdc-neural-field .time-panel { margin:5px 2px 0; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:linear-gradient(135deg,#f8fbfd,#eef6fa); box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
   #bbdc-neural-field .time-panel[hidden] { display:none; }
@@ -146,7 +149,10 @@
   #bbdc-neural-field .time-panel__header > div { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
   #bbdc-neural-field .time-panel__eyebrow { color:var(--primary); font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
   #bbdc-neural-field .time-panel__header strong { color:var(--foreground); font-size:11px; font-weight:600; }
+  #bbdc-neural-field .time-panel__actions { display:flex; align-items:center; gap:6px; }
   #bbdc-neural-field .time-panel button { border:1px solid var(--primary); border-radius:999px; background:#fff; color:var(--primary); padding:4px 12px; font:600 10px Poppins,system-ui,sans-serif; cursor:pointer; }
+  #bbdc-neural-field .time-panel button:hover,
+  #bbdc-neural-field .time-panel button[aria-pressed="true"] { background:var(--primary); color:var(--primary-foreground); }
   #bbdc-neural-field .time-panel input[type="range"] { width:100%; height:4px; margin:10px 0 7px; accent-color:var(--primary); cursor:pointer; }
   #bbdc-neural-field .time-panel__detail { display:flex; gap:8px; align-items:flex-start; color:var(--muted-foreground); font-size:9.5px; line-height:1.45; }
   #bbdc-neural-field .time-panel__source { flex:0 0 auto; padding:2px 6px; border-radius:999px; background:#fff; border:1px solid var(--border); color:#36536e; font-weight:600; }
@@ -465,6 +471,7 @@
   const timeButton=root.querySelector('[data-time-toggle]');
   const timePanel=root.querySelector('[data-time-panel]');
   const timePlayButton=root.querySelector('[data-time-play]');
+  const timePathsButton=root.querySelector('[data-time-paths]');
   const timeSlider=root.querySelector('[data-time-slider]');
   const timeLabel=root.querySelector('[data-time-label]');
   const timeSource=root.querySelector('[data-time-source]');
@@ -487,7 +494,7 @@
     {date:'Q4 2025',source:'Risk review',event:'Rating migration, watchlist signals and recovery views update the risk topology.',impact:'risk'},
     {date:'Q2 2026',source:'Current evidence',event:'The latest combined evidence produces the network’s current positions.',impact:'combined'}
   ];
-  const time={enabled:false,playing:false,index:0,frame:0,lastTick:0};
+  const time={enabled:false,playing:false,paths:false,index:0,frame:0,lastTick:0};
   const impactAffinity={
     baseline:{core:.1,source:.1,portfolio:.1,credit:.1,risk:.1},
     financials:{core:.7,source:.55,portfolio:.9,credit:1.35,risk:.95},
@@ -754,6 +761,14 @@
     applyTimeIndex(time.enabled?time.index:0);
   });
   timeSlider.addEventListener('input',()=>{setTimePlaying(false);applyTimeIndex(timeSlider.value)});
+  timePathsButton.addEventListener('click',()=>{
+    time.paths=!time.paths;
+    root.classList.toggle('is-paths-visible',time.paths);
+    timePathsButton.setAttribute('aria-pressed',String(time.paths));
+    timePathsButton.setAttribute('aria-label',time.paths?'Hide historical paths':'Show historical paths');
+    timePathsButton.textContent=time.paths?'Hide paths':'Show paths';
+    render3D();
+  });
   timePlayButton.addEventListener('click',()=>{
     if(time.index>=timeSteps.length-1)applyTimeIndex(0);
     setTimePlaying(!time.playing);
