@@ -136,7 +136,7 @@
   #bbdc-neural-field .context-picker select:focus { border-color:var(--ring); box-shadow:0 0 0 2px color-mix(in srgb, var(--ring) 18%, transparent); }
   #bbdc-neural-field .network-controls button:hover,
   #bbdc-neural-field .network-controls button[aria-pressed="true"] { border-color:var(--primary); background:#eef7fc; color:var(--primary); }
-  #bbdc-neural-field .time-trail { fill:none; stroke:var(--viz-series-1); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; opacity:0; vector-effect:non-scaling-stroke; filter:drop-shadow(0 0 2px color-mix(in srgb, var(--viz-series-1) 48%, transparent)); transition:opacity .2s ease; pointer-events:none; }
+  #bbdc-neural-field .time-trail { fill:none; stroke:var(--viz-series-1); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; opacity:0; filter:drop-shadow(0 0 2px color-mix(in srgb, var(--viz-series-1) 48%, transparent)); transition:opacity .2s ease; pointer-events:none; }
   #bbdc-neural-field.is-time-mode.is-paths-visible .time-trail { opacity:.62; }
   #bbdc-neural-field .time-trail.credit { stroke:var(--viz-series-3); opacity:0; }
   #bbdc-neural-field .time-trail.risk { stroke:var(--viz-series-4); opacity:0; }
@@ -676,7 +676,7 @@
       trail.setAttribute('points',points.map(point=>point.x+','+point.y).join(' '));
       const currentProjection=project(node);
       const representedDotRadius=Math.max(4,node.r*currentProjection.scale*view.zoom);
-      trail.setAttribute('stroke-width',representedDotRadius*2);
+      trail.style.strokeWidth=String(representedDotRadius*2);
     });
     halos.forEach(halo=>{
       const p=project(halo);
