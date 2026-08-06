@@ -62,6 +62,7 @@
         <option value="action">Portfolio Action</option>
       </select>
     </label>
+    <button type="button" data-time-toggle aria-pressed="false">Time</button>
     <button type="button" data-auto-rotate aria-pressed="false">Auto rotate</button>
     <button type="button" data-reset-view>Reset view</button>
   </div>
@@ -69,10 +70,25 @@
     <title id="field-title">BBDC neural intelligence field</title>
     <desc id="field-desc">A dense organic field of connected BBDC portfolio, borrower, source, risk, and analytical nodes.</desc>
     <g data-halos></g>
+    <g data-time-trails></g>
     <g data-links></g>
     <g data-satellites></g>
     <g data-nodes></g>
   </svg>
+  <div class="time-panel" data-time-panel hidden aria-label="Neural network timeline">
+    <div class="time-panel__header">
+      <div>
+        <span class="time-panel__eyebrow">Evidence timeline</span>
+        <strong data-time-label>Q1 2024 · Baseline</strong>
+      </div>
+      <button type="button" data-time-play aria-label="Play timeline">Play</button>
+    </div>
+    <input data-time-slider type="range" min="0" max="8" step="1" value="0" aria-label="Evidence date" />
+    <div class="time-panel__detail">
+      <span class="time-panel__source" data-time-source>Portfolio baseline</span>
+      <span data-time-event>Starting positions establish the evidence-space baseline.</span>
+    </div>
+  </div>
   <span class="drag-hint">Left drag to rotate · Right drag to pan · Scroll to zoom</span>
 
 </div>
@@ -117,6 +133,23 @@
   #bbdc-neural-field .context-picker select:focus { border-color:var(--ring); box-shadow:0 0 0 2px color-mix(in srgb, var(--ring) 18%, transparent); }
   #bbdc-neural-field .network-controls button:hover,
   #bbdc-neural-field .network-controls button[aria-pressed="true"] { border-color:var(--primary); background:#eef7fc; color:var(--primary); }
+  #bbdc-neural-field .time-trail { fill:none; stroke:var(--viz-series-1); stroke-width:1.15; stroke-linecap:round; stroke-linejoin:round; opacity:0; vector-effect:non-scaling-stroke; transition:opacity .2s ease; pointer-events:none; }
+  #bbdc-neural-field.is-time-mode .time-trail { opacity:.22; }
+  #bbdc-neural-field .time-trail.credit { stroke:var(--viz-series-3); opacity:0; }
+  #bbdc-neural-field .time-trail.risk { stroke:var(--viz-series-4); opacity:0; }
+  #bbdc-neural-field.is-time-mode .time-trail.credit,
+  #bbdc-neural-field.is-time-mode .time-trail.risk { opacity:.38; }
+  #bbdc-neural-field.is-time-mode .node { filter:drop-shadow(0 0 3px color-mix(in srgb, var(--primary) 28%, transparent)); }
+  #bbdc-neural-field .time-panel { margin:5px 2px 0; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:linear-gradient(135deg,#f8fbfd,#eef6fa); box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
+  #bbdc-neural-field .time-panel[hidden] { display:none; }
+  #bbdc-neural-field .time-panel__header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  #bbdc-neural-field .time-panel__header > div { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+  #bbdc-neural-field .time-panel__eyebrow { color:var(--primary); font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+  #bbdc-neural-field .time-panel__header strong { color:var(--foreground); font-size:11px; font-weight:600; }
+  #bbdc-neural-field .time-panel button { border:1px solid var(--primary); border-radius:999px; background:#fff; color:var(--primary); padding:4px 12px; font:600 10px Poppins,system-ui,sans-serif; cursor:pointer; }
+  #bbdc-neural-field .time-panel input[type="range"] { width:100%; height:4px; margin:10px 0 7px; accent-color:var(--primary); cursor:pointer; }
+  #bbdc-neural-field .time-panel__detail { display:flex; gap:8px; align-items:flex-start; color:var(--muted-foreground); font-size:9.5px; line-height:1.45; }
+  #bbdc-neural-field .time-panel__source { flex:0 0 auto; padding:2px 6px; border-radius:999px; background:#fff; border:1px solid var(--border); color:#36536e; font-weight:600; }
   @media(max-width:980px){
     #bbdc-neural-field .node-readout { width:100%; }
     #bbdc-neural-field .network-controls { margin:5px 0; justify-content:flex-start; flex-wrap:wrap; }
@@ -129,6 +162,7 @@
   const root = document.getElementById('bbdc-neural-field');
   const svg = root.querySelector('.field');
   const haloLayer = root.querySelector('[data-halos]');
+  const timeTrailLayer = root.querySelector('[data-time-trails]');
   const linkLayer = root.querySelector('[data-links]');
   const satelliteLayer = root.querySelector('[data-satellites]');
   const nodeLayer = root.querySelector('[data-nodes]');
@@ -176,7 +210,7 @@
     z:((index*79)%280)-140
   }));
 
-  nodes.forEach(node=>{node.baseX=node.x;node.baseY=node.y;node.baseR=node.r;node.importance=1;});
+  nodes.forEach(node=>{node.baseX=node.x;node.baseY=node.y;node.contextX=node.x;node.contextY=node.y;node.baseR=node.r;node.importance=1;});
   const byId = Object.fromEntries(nodes.map(n => [n.id,n]));
   const contextProfiles = {
     default:{label:'Default Risk',metric:'Probability of deterioration · loss severity · watchlist urgency',groups:[
@@ -428,10 +462,104 @@
   const autoButton=root.querySelector('[data-auto-rotate]');
   const resetButton=root.querySelector('[data-reset-view]');
   const contextSelect=root.querySelector('[data-context]');
+  const timeButton=root.querySelector('[data-time-toggle]');
+  const timePanel=root.querySelector('[data-time-panel]');
+  const timePlayButton=root.querySelector('[data-time-play]');
+  const timeSlider=root.querySelector('[data-time-slider]');
+  const timeLabel=root.querySelector('[data-time-label]');
+  const timeSource=root.querySelector('[data-time-source]');
+  const timeEvent=root.querySelector('[data-time-event]');
   const view={rotX:-0.13,rotY:0.18,zoom:1,panX:0,panY:0,dragging:false,dragMode:null,lastX:0,lastY:0,auto:false,frame:0};
   let activeInput=null;
   let activeContext='default';
   let contextFrame=0;
+
+  const timeSteps=[
+    {date:'Q1 2024',source:'Portfolio baseline',event:'Starting positions establish the evidence-space baseline.',impact:'baseline'},
+    {date:'Q2 2024',source:'Quarterly financials',event:'Revenue, EBITDA, leverage and liquidity updates perturb borrower and portfolio vectors.',impact:'financials'},
+    {date:'Q3 2024',source:'Secondary trading',event:'Observed price and spread changes alter market-implied risk and recovery relationships.',impact:'trading'},
+    {date:'Q4 2024',source:'Covenant compliance',event:'Compliance tests and changing headroom move structural-risk and monitoring vectors.',impact:'covenants'},
+    {date:'Q1 2025',source:'News & filings',event:'New operating developments and disclosures propagate through connected evidence nodes.',impact:'news'},
+    {date:'Q2 2025',source:'Quarterly financials',event:'Updated performance and cash generation continue each credit’s directional trend.',impact:'financials'},
+    {date:'Q3 2025',source:'Portfolio activity',event:'Originations, repayments, amendments and marks reshape portfolio-level centers of gravity.',impact:'portfolio'},
+    {date:'Q4 2025',source:'Risk review',event:'Rating migration, watchlist signals and recovery views update the risk topology.',impact:'risk'},
+    {date:'Q2 2026',source:'Current evidence',event:'The latest combined evidence produces the network’s current positions.',impact:'combined'}
+  ];
+  const time={enabled:false,playing:false,index:0,frame:0,lastTick:0};
+  const impactAffinity={
+    baseline:{core:.1,source:.1,portfolio:.1,credit:.1,risk:.1},
+    financials:{core:.7,source:.55,portfolio:.9,credit:1.35,risk:.95},
+    trading:{core:.65,source:.8,portfolio:1.05,credit:1.15,risk:1.25},
+    covenants:{core:.7,source:.85,portfolio:.8,credit:1.1,risk:1.45},
+    news:{core:.8,source:1.35,portfolio:.75,credit:1.05,risk:.9},
+    portfolio:{core:.95,source:.6,portfolio:1.4,credit:.9,risk:.8},
+    risk:{core:1.05,source:.65,portfolio:1.05,credit:1.2,risk:1.5},
+    combined:{core:1.15,source:.9,portfolio:1.2,credit:1.25,risk:1.3}
+  };
+  function timeHash(text){
+    let value=2166136261;
+    for(let i=0;i<text.length;i++){value^=text.charCodeAt(i);value=Math.imul(value,16777619)}
+    return (value>>>0)/4294967295;
+  }
+  function temporalOffset(node,index){
+    let x=0,y=0;
+    for(let step=1;step<=index;step++){
+      const affinity=impactAffinity[timeSteps[step].impact][node.type]||.65;
+      const angle=timeHash(node.id+'-'+step)*Math.PI*2;
+      const trendAngle=timeHash(node.id+'-trend')*Math.PI*2;
+      const pulse=3.2+timeHash(node.id+'-magnitude-'+step)*5.8;
+      x+=(Math.cos(angle)*pulse+Math.cos(trendAngle)*2.2)*affinity;
+      y+=(Math.sin(angle)*pulse+Math.sin(trendAngle)*2.2)*affinity;
+    }
+    return {x,y};
+  }
+  const timeTrails=new Map();
+  nodes.forEach(node=>{
+    const trail=document.createElementNS(ns,'polyline');
+    trail.setAttribute('class','time-trail '+node.type);
+    trail.setAttribute('aria-hidden','true');
+    timeTrailLayer.appendChild(trail);
+    timeTrails.set(node.id,trail);
+  });
+  function updateTemporalSatellites(){
+    satellites.forEach(satellite=>{
+      const anchor=satellite.nearest;
+      const compression=.58+anchor.importance*.1;
+      satellite.x=anchor.x+satellite.offsetX*compression;
+      satellite.y=anchor.y+satellite.offsetY*compression;
+    });
+  }
+  function applyTimeIndex(index){
+    time.index=Math.max(0,Math.min(timeSteps.length-1,Number(index)));
+    nodes.forEach(node=>{
+      const offset=time.enabled?temporalOffset(node,time.index):{x:0,y:0};
+      node.x=node.contextX+offset.x;
+      node.y=node.contextY+offset.y;
+    });
+    updateTemporalSatellites();
+    const step=timeSteps[time.index];
+    timeSlider.value=String(time.index);
+    timeLabel.textContent=step.date+' · '+step.source;
+    timeSource.textContent=step.source;
+    timeEvent.textContent=step.event;
+    render3D();
+  }
+  function setTimePlaying(playing){
+    time.playing=playing;
+    timePlayButton.textContent=playing?'Pause':'Play';
+    timePlayButton.setAttribute('aria-label',playing?'Pause timeline':'Play timeline');
+    if(playing&&!time.frame){time.lastTick=0;time.frame=requestAnimationFrame(animateTime)}
+  }
+  function animateTime(now){
+    if(!time.playing){time.frame=0;return}
+    if(!time.lastTick)time.lastTick=now;
+    if(now-time.lastTick>950){
+      time.lastTick=now;
+      if(time.index>=timeSteps.length-1){setTimePlaying(false);return}
+      applyTimeIndex(time.index+1);
+    }
+    time.frame=requestAnimationFrame(animateTime);
+  }
 
   function contextTargets(profile){
     const membership={};
@@ -454,7 +582,7 @@
   function applyContext(key,animate=true){
     const profile=contextProfiles[key]||contextProfiles.default;
     const targets=contextTargets(profile);
-    const starts=Object.fromEntries(nodes.map(node=>[node.id,{x:node.x,y:node.y,r:node.r,importance:node.importance}]));
+    const starts=Object.fromEntries(nodes.map(node=>[node.id,{x:node.contextX,y:node.contextY,r:node.r,importance:node.importance}]));
     const haloStarts=halos.map(halo=>({x:halo.x,y:halo.y,r:halo.r}));
     const groupCenter=profile.groups.reduce((center,group)=>({x:center.x+group.x/profile.groups.length,y:center.y+group.y/profile.groups.length}),{x:0,y:0});
     const haloTargets=halos.map((halo,index)=>{
@@ -474,8 +602,11 @@
       const t=1-Math.pow(1-raw,3);
       nodes.forEach(node=>{
         const target=targets[node.id],start=starts[node.id];
-        node.x=start.x+(target.x-start.x)*t;
-        node.y=start.y+(target.y-start.y)*t;
+        node.contextX=start.x+(target.x-start.x)*t;
+        node.contextY=start.y+(target.y-start.y)*t;
+        const timeOffset=time.enabled?temporalOffset(node,time.index):{x:0,y:0};
+        node.x=node.contextX+timeOffset.x;
+        node.y=node.contextY+timeOffset.y;
         node.importance=start.importance+(target.importance-start.importance)*t;
         node.r=start.r+(node.baseR*(.72+target.importance*.34)-start.r)*t;
         node.el.style.opacity=String(.45+Math.min(1,node.importance)*.55);
@@ -493,12 +624,7 @@
         halo.y=start.y+(target.y-start.y)*t;
         halo.r=start.r+(target.r-start.r)*t;
       });
-      satellites.forEach(satellite=>{
-        const anchor=satellite.nearest;
-        const compression=.58+anchor.importance*.1;
-        satellite.x=anchor.x+satellite.offsetX*compression;
-        satellite.y=anchor.y+satellite.offsetY*compression;
-      });
+      updateTemporalSatellites();
       links.forEach(link=>{
         const strength=(byId[link.a].importance+byId[link.b].importance)/2;
         link.el.style.strokeWidth=String(Math.max(.65,strength*(link.secondary?.72:1.18)));
@@ -531,6 +657,15 @@
   }
 
   function render3D(){
+    timeTrails.forEach((trail,nodeId)=>{
+      const node=byId[nodeId];
+      const visibleSteps=time.enabled?timeSteps.slice(0,time.index+1):[];
+      const points=visibleSteps.map((step,index)=>{
+        const offset=temporalOffset(node,index);
+        return project({x:node.contextX+offset.x,y:node.contextY+offset.y,z:node.z});
+      });
+      trail.setAttribute('points',points.map(point=>point.x+','+point.y).join(' '));
+    });
     halos.forEach(halo=>{
       const p=project(halo);
       halo.el.setAttribute('cx',p.x);halo.el.setAttribute('cy',p.y);
@@ -607,6 +742,20 @@
   },{passive:false});
   resetButton.addEventListener('click',resetView);
   contextSelect.addEventListener('change',()=>applyContext(contextSelect.value));
+  timeButton.addEventListener('click',()=>{
+    time.enabled=!time.enabled;
+    root.classList.toggle('is-time-mode',time.enabled);
+    timePanel.hidden=!time.enabled;
+    timeButton.setAttribute('aria-pressed',String(time.enabled));
+    timeButton.textContent=time.enabled?'Exit time':'Time';
+    setTimePlaying(false);
+    applyTimeIndex(time.enabled?time.index:0);
+  });
+  timeSlider.addEventListener('input',()=>{setTimePlaying(false);applyTimeIndex(timeSlider.value)});
+  timePlayButton.addEventListener('click',()=>{
+    if(time.index>=timeSteps.length-1)applyTimeIndex(0);
+    setTimePlaying(!time.playing);
+  });
   autoButton.addEventListener('click',()=>{
     view.auto=!view.auto;autoButton.setAttribute('aria-pressed',String(view.auto));
     autoButton.textContent=view.auto?'Pause rotation':'Auto rotate';
