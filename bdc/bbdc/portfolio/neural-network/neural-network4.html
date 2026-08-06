@@ -658,7 +658,7 @@
   function animateTime(now){
     if(!time.playing){time.frame=0;return}
     if(!time.lastTick)time.lastTick=now;
-    if(now-time.lastTick>950){
+    if(now-time.lastTick>700){
       time.lastTick=now;
       if(time.index>=timeSteps.length-1){setTimePlaying(false);return}
       applyTimeIndex(time.index+1);
