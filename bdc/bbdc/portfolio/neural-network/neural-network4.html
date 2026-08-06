@@ -79,11 +79,11 @@
     <div class="time-panel__header">
       <div>
         <span class="time-panel__eyebrow">Evidence timeline</span>
-        <strong data-time-label>Q1 2024 · Baseline</strong>
+        <strong data-time-label>Q3 2023 · Portfolio baseline</strong>
       </div>
       <button type="button" data-time-play aria-label="Play timeline">Play</button>
     </div>
-    <input data-time-slider type="range" min="0" max="8" step="1" value="0" aria-label="Evidence date" />
+    <input data-time-slider type="range" min="0" max="10" step="1" value="0" aria-label="Evidence date" />
     <div class="time-panel__detail">
       <span class="time-panel__source" data-time-source>Portfolio baseline</span>
       <span data-time-event>Starting positions establish the evidence-space baseline.</span>
@@ -475,7 +475,9 @@
   let contextFrame=0;
 
   const timeSteps=[
-    {date:'Q1 2024',source:'Portfolio baseline',event:'Starting positions establish the evidence-space baseline.',impact:'baseline'},
+    {date:'Q3 2023',source:'Portfolio baseline',event:'Starting positions establish the evidence-space baseline.',impact:'baseline'},
+    {date:'Q4 2023',source:'Year-end financials',event:'Year-end operating results, leverage and liquidity establish the first directional movement.',impact:'financials'},
+    {date:'Q1 2024',source:'Market repricing',event:'Early secondary-market prices and spread observations perturb market-implied risk relationships.',impact:'trading'},
     {date:'Q2 2024',source:'Quarterly financials',event:'Revenue, EBITDA, leverage and liquidity updates perturb borrower and portfolio vectors.',impact:'financials'},
     {date:'Q3 2024',source:'Secondary trading',event:'Observed price and spread changes alter market-implied risk and recovery relationships.',impact:'trading'},
     {date:'Q4 2024',source:'Covenant compliance',event:'Compliance tests and changing headroom move structural-risk and monitoring vectors.',impact:'covenants'},
