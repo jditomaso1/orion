@@ -4,391 +4,117 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Neural Network — Orion</title>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png"
-        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6GY4CQ6ZFH"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-6GY4CQ6ZFH', {
-      app_name: 'orion',
-      page_title: 'Neural Network — Orion',
-      page_path: '/capmarkets/neural-network/neural-network.html'
-    });
-  </script>
-
-  <!-- Fonts -->
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/capmarkets/js/guard.js"></script>
-
-  <!-- Plotly -->
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
-
-  <!-- Base Styles -->
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f5f6f8;
-    }
+    *{box-sizing:border-box}body{font-family:Poppins,sans-serif;background:#f5f6f8;margin:0;color:#172033}.mainwrap{margin-left:256px;padding:27px 28px 44px}.content{max-width:1450px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:18px}.header h1{font-size:26px;line-height:1.2;font-weight:650;letter-spacing:-.025em;margin:0 0 6px}.subtitle{font-size:12.5px;color:#64748b;margin:0;max-width:760px}.live{display:inline-flex;align-items:center;gap:7px;border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:999px;padding:6px 10px;font-size:10px;font-weight:650;white-space:nowrap}.live i{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.12)}
+    .stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}.stat{background:#fff;border:1px solid #e5e9ef;border-radius:12px;padding:13px 14px;box-shadow:0 1px 4px rgba(0,43,81,.035)}.stat .k{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;font-weight:650}.stat .v{font:650 22px/1.25 Poppins;margin-top:4px}.stat .note{font-size:9px;color:#94a3b8;margin-top:2px}
+    .toolbar{display:flex;align-items:end;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid #e5e9ef;border-radius:13px;padding:12px 14px;margin-bottom:14px}.control{min-width:190px}.control label{display:block;font-size:9px;font-weight:650;text-transform:uppercase;letter-spacing:.06em;color:#64748b;margin-bottom:5px}.control select{width:100%;border:1px solid #dbe2ea;border-radius:8px;background:#fff;padding:8px 30px 8px 9px;font:11px Poppins,sans-serif;color:#263449}.toolbar .spacer{flex:1}.refresh{border:0;border-radius:8px;padding:9px 13px;background:#2563eb;color:#fff;font:650 10.5px Poppins;cursor:pointer}.refresh:disabled{opacity:.6;cursor:wait}.check{display:flex;align-items:center;gap:6px;font-size:10px;color:#52657d;white-space:nowrap;padding-bottom:8px}.check input{accent-color:#2563eb}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px}.panel{background:#fff;border:1px solid #e5e9ef;border-radius:14px;box-shadow:0 1px 4px rgba(0,43,81,.035)}.map-panel{padding:14px}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:9px}.panel-head h2{font-size:14px;font-weight:700;margin:0}.panel-head p{font-size:10px;color:#64748b;margin:3px 0 0}.status{font-size:9.5px;color:#64748b;text-align:right}.plot-shell{position:relative;border:1px solid #e9edf2;border-radius:11px;background:#fbfcfe;overflow:hidden}.plot-shell::before{content:"";position:absolute;inset:0;background-image:linear-gradient(#eef2f7 1px,transparent 1px),linear-gradient(90deg,#eef2f7 1px,transparent 1px);background-size:44px 44px;opacity:.48;pointer-events:none}#plot{width:100%;height:680px;position:relative}.plot-message{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;color:#64748b;font-size:12px;z-index:3}.plot-message.show{display:flex}
+    .legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:9.5px;color:#52657d}.legend-item{display:flex;align-items:center;gap:5px}.legend-dot{width:8px;height:8px;border-radius:50%}
+    .side{display:flex;flex-direction:column;gap:14px}.side .panel{padding:15px}.side h3{font-size:12px;font-weight:700;margin:0 0 9px}.placeholder{font-size:10.5px;color:#64748b;line-height:1.6}.detail-title{font-size:12px;font-weight:650;margin-bottom:2px}.detail-sub{font-size:9.5px;color:#64748b;word-break:break-word}.kv{display:grid;grid-template-columns:82px 1fr;gap:7px 9px;margin-top:12px;font-size:9.5px}.kv .k{color:#94a3b8}.kv .v{color:#334155;word-break:break-word}.preview{margin-top:12px;padding:10px;border-radius:9px;background:#f8fafc;border:1px solid #eef2f7;font-size:9.5px;line-height:1.55;color:#475569;max-height:150px;overflow:auto}.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}.tag{padding:3px 6px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:8.5px;font-weight:600}
+    .deal-list{display:flex;flex-direction:column;gap:8px}.deal{border-left:3px solid var(--deal-color);padding:7px 8px;background:#fafbfc;border-radius:0 8px 8px 0}.deal-name{font-size:10.5px;font-weight:650}.deal-meta{font-size:9px;color:#64748b;margin-top:3px}.source-note{font-size:9.5px;color:#64748b;line-height:1.6}.source-note strong{color:#334155}.method{margin-top:14px;padding:11px 13px;background:#fff;border:1px solid #e5e9ef;border-radius:12px;color:#64748b;font-size:9.5px;line-height:1.55}.error{color:#b91c1c}
+    @media(max-width:1050px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(3,1fr)}#plot{height:560px}}
+    @media(max-width:850px){#sidebar-placeholder{display:none}.mainwrap{margin-left:0;padding:18px}.header{display:block}.live{margin-top:10px}.stats{grid-template-columns:repeat(2,1fr)}.side{grid-template-columns:1fr}.control{width:100%}.toolbar .spacer{display:none}#plot{height:500px}}
   </style>
 </head>
-
-<body class="flex">
-
-  <!-- SIDEBAR -->
+<body>
   <div id="sidebar-placeholder"></div>
   <script>
-    async function injectSidebar() {
-      const res = await fetch("/capmarkets/sidebar.html");
-      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
-
-      window.toggleSection = function(id) {
-        const section = document.getElementById(id);
-        const icon = document.getElementById("icon-" + id);
-        if (!section || !icon) return;
-
-        section.classList.toggle("hidden");
-        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
-      };
-    }
-    injectSidebar();
+    (async function(){try{const response=await fetch("/capmarkets/sidebar.html");document.getElementById("sidebar-placeholder").innerHTML=await response.text();window.toggleSection=function(id){const section=document.getElementById(id),icon=document.getElementById("icon-"+id);if(!section||!icon)return;section.classList.toggle("hidden");icon.style.transform=section.classList.contains("hidden")?"rotate(0deg)":"rotate(90deg)"}}catch(error){console.error("Navigation unavailable",error)}})();
   </script>
 
-  <!-- MAIN CONTENT -->
-  <main class="flex-1 ml-64 p-8 flex flex-col">
+  <main class="mainwrap"><div class="content">
+    <header class="header">
+      <div><h1>Semantic Neural Network</h1><p class="subtitle">Live relationships among embedded credit-agreement chunks. Each point is stored in Render PostgreSQL and linked to its Pinecone file vector.</p></div>
+      <span class="live"><i></i>LIVE DATA</span>
+    </header>
 
-    <!-- Neural Map (REAL DATA from FastAPI) -->
-    <section class="card neural" aria-labelledby="neural-title">
-      <style>
-        .card.neural{
-          border:1px solid #e6e6e6;border-radius:14px;padding:16px;background:#fff;
-          max-width:1100px;margin-top:24px
-        }
-        .card.neural h2{margin:0 0 8px;font:700 18px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial}
-        .card.neural p{margin:0 0 14px;color:#666;font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial}
-
-        /* Plot wrapper (keeps your light UI, but gives Plotly a clean canvas) */
-        .plotWrap{
-          border:1px solid #eee;border-radius:12px;
-          background: radial-gradient(circle at 50% 35%, #ffffff 0%, #fbfbfb 55%, #f7f7f7 100%);
-          padding:10px;
-        }
-        #status{font:500 12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#666;margin-bottom:8px}
-        #plot{width:100%; height:72vh;}
-        .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
-      </style>
-
-      <div class="flex items-center justify-between gap-4">
-        <div>
-          <h2 id="neural-title">Orion Neural Map</h2>
-          <p>Live map from FastAPI (<span class="mono">GET /neural-map</span>) · hover points for metadata · optional nearest-neighbor fibers</p>
-        </div>
-
-        <div class="text-xs text-gray-500">
-          Data: <span class="mono">http://localhost:8000/neural-map</span>
-        </div>
-      </div>
-
-      <div class="plotWrap">
-        <div id="status">Loading…</div>
-        <div id="plot"></div>
-      </div>
+    <section class="stats" aria-label="Network summary">
+      <div class="stat"><div class="k">Deals</div><div class="v" id="statDeals">—</div><div class="note">ingested documents</div></div>
+      <div class="stat"><div class="k">Nodes</div><div class="v" id="statNodes">—</div><div class="note">embedded chunks shown</div></div>
+      <div class="stat"><div class="k">Relationships</div><div class="v" id="statEdges">—</div><div class="note">semantic neighbors</div></div>
+      <div class="stat"><div class="k">Dimensions</div><div class="v" id="statDimensions">—</div><div class="note">per source embedding</div></div>
+      <div class="stat"><div class="k">Pinecone Files</div><div class="v" id="statPinecone">—</div><div class="note">mapped vectors</div></div>
     </section>
 
-  </main>
+    <section class="toolbar" aria-label="Network controls">
+      <div class="control"><label for="dealFilter">Deal</label><select id="dealFilter"><option value="all">All deals</option></select></div>
+      <div class="control"><label for="tagFilter">Document tag</label><select id="tagFilter"><option value="all">All tags</option></select></div>
+      <div class="spacer"></div>
+      <label class="check"><input id="autoRefresh" type="checkbox" checked> Refresh every 60 seconds</label>
+      <button class="refresh" id="refreshBtn" type="button">Refresh network</button>
+    </section>
 
-  <!-- Chat Logic (your existing simple UI; unchanged) -->
+    <div class="layout">
+      <section class="panel map-panel">
+        <div class="panel-head"><div><h2>Embedding relationship map</h2><p>Lines connect the strongest approximate semantic neighbors—not merely the closest points on screen.</p></div><div class="status" id="status">Loading live network…</div></div>
+        <div class="plot-shell"><div id="plot"></div><div id="plotMessage" class="plot-message"></div></div>
+        <div class="legend" id="legend"></div>
+      </section>
+
+      <aside class="side">
+        <section class="panel"><h3>Selected node</h3><div id="nodeDetail" class="placeholder">Select a point to inspect its deal, document tags, vector reference and source-text preview.</div></section>
+        <section class="panel"><h3>Deals in view</h3><div class="deal-list" id="dealList"><div class="placeholder">Loading deals…</div></div></section>
+        <section class="panel"><h3>Live source</h3><div class="source-note" id="sourceNote"><strong>Render PostgreSQL</strong><br>Waiting for the protected API…</div></section>
+      </aside>
+    </div>
+
+    <div class="method" id="methodNote">The map is a two-dimensional analytical projection of the complete embeddings. It is useful for inspecting clusters and similarity, but it is not literal neural anatomy and distances are approximate.</div>
+  </div></main>
+
   <script>
-    const input = document.getElementById("chatInput");
-    const btn = document.getElementById("sendBtn");
-    const windowEl = document.getElementById("chatWindow");
+    const API_BASE="https://api.private-credit.ai";
+    const DATA_URL=`${API_BASE}/capmarkets/neural-map?max_points=500&neighbors=3`;
+    const PALETTE=["#2563eb","#db2777","#d97706","#0891b2","#64748b"];
+    let network=null,dealFilter="all",tagFilter="all",refreshTimer=null;
+    const esc=value=>String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    const compact=value=>Number(value||0).toLocaleString();
+    const documentColor=(fileId)=>{const index=(network?.documents||[]).findIndex(document=>document.file_id===fileId);return PALETTE[(index<0?PALETTE.length-1:index)%PALETTE.length]};
 
-    function sendMessage() {
-      const text = input.value.trim();
-      if (!text) return;
-
-      const msg = document.createElement("div");
-      msg.className = "flex items-start gap-3";
-
-      msg.innerHTML = `
-        <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">J</div>
-        <div>
-          <div class="font-semibold text-gray-800">You <span class="text-gray-400 text-xs ml-2">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
-          <div class="bg-blue-50 p-3 rounded-lg text-sm text-gray-800 max-w-xl border border-blue-200">
-            ${text}
-          </div>
-        </div>
-      `;
-
-      windowEl.appendChild(msg);
-      windowEl.scrollTop = windowEl.scrollHeight;
-
-      input.value = "";
+    function populateFilters(){
+      const deal=document.getElementById("dealFilter"),tag=document.getElementById("tagFilter");
+      deal.innerHTML=`<option value="all">All deals</option>`+(network.documents||[]).map(document=>`<option value="${esc(document.file_id)}">${esc(document.company_name||document.deal_title||document.file_id)}</option>`).join("");
+      tag.innerHTML=`<option value="all">All tags</option>`+(network.tags||[]).map(value=>`<option value="${esc(value)}">${esc(value.replaceAll("_"," "))}</option>`).join("");
+      deal.value=(network.documents||[]).some(document=>document.file_id===dealFilter)?dealFilter:"all";dealFilter=deal.value;
+      tag.value=(network.tags||[]).includes(tagFilter)?tagFilter:"all";tagFilter=tag.value;
     }
-
-    if (btn) btn.onclick = sendMessage;
-    if (input) {
-      input.addEventListener("keypress", e => {
-        if (e.key === "Enter") sendMessage();
-      });
+    function renderStats(){const stats=network.stats||{};document.getElementById("statDeals").textContent=compact(stats.documents);document.getElementById("statNodes").textContent=compact(stats.nodes);document.getElementById("statEdges").textContent=compact(stats.edges);document.getElementById("statDimensions").textContent=compact(stats.embedding_dimensions);document.getElementById("statPinecone").textContent=compact(stats.pinecone_mappings)}
+    function nodesInView(){return (network.nodes||[]).filter(node=>(dealFilter==="all"||node.file_id===dealFilter)&&(tagFilter==="all"||(node.tags||[]).includes(tagFilter)))}
+    function renderDeals(nodes){
+      const visible=new Set(nodes.map(node=>node.file_id));const documents=(network.documents||[]).filter(document=>visible.has(document.file_id));
+      document.getElementById("dealList").innerHTML=documents.length?documents.map(document=>`<div class="deal" style="--deal-color:${documentColor(document.file_id)}"><div class="deal-name">${esc(document.company_name||document.deal_title||document.file_id)}</div><div class="deal-meta">${esc(document.security||"Credit agreement")} · ${compact(document.chunk_count)} stored chunks</div><div class="deal-meta mono">${esc(document.file_vector_id||"Pinecone mapping pending")}</div></div>`).join(""):`<div class="placeholder">No deals match the selected filters.</div>`;
     }
+    function nodeHover(node){const metadata=node.metadata||{};const rows=[["Deal",metadata.deal_title],["Company",metadata.company_name],["Industry",metadata.industry],["Security",metadata.security],["Tags",(node.tags||[]).join(", ")],["Dimensions",node.embedding_dimensions]];return `<b>${esc(node.label)}</b><br>`+rows.filter(([,value])=>value!==null&&value!==undefined&&String(value).trim()).map(([label,value])=>`${label}: ${esc(value)}`).join("<br>")}
+    function renderDetail(node){
+      const metadata=node.metadata||{};document.getElementById("nodeDetail").innerHTML=`<div class="detail-title">${esc(node.label)}</div><div class="detail-sub mono">${esc(node.id)}</div><div class="kv"><div class="k">Company</div><div class="v">${esc(metadata.company_name||"—")}</div><div class="k">Deal</div><div class="v">${esc(metadata.deal_title||"—")}</div><div class="k">Industry</div><div class="v">${esc(metadata.industry||"—")}</div><div class="k">Security</div><div class="v">${esc(metadata.security||"—")}</div><div class="k">Vector</div><div class="v mono">${esc(node.vector_id||"—")}</div><div class="k">Dimensions</div><div class="v mono">${compact(node.embedding_dimensions)}</div></div><div class="tags">${(node.tags||[]).map(tag=>`<span class="tag">${esc(tag.replaceAll("_"," "))}</span>`).join("")}</div><div class="preview">${esc(node.text_preview||"No preview available.")}</div>`;
+    }
+    function renderNetwork(){
+      const nodes=nodesInView(),visibleIds=new Set(nodes.map(node=>node.id)),edges=(network.edges||[]).filter(edge=>visibleIds.has(edge.source)&&visibleIds.has(edge.target)),byId=new Map(nodes.map(node=>[node.id,node]));
+      renderDeals(nodes);const message=document.getElementById("plotMessage");
+      if(!nodes.length){Plotly.purge("plot");message.textContent="No embedded chunks match these filters.";message.classList.add("show");document.getElementById("status").textContent="0 nodes in view";document.getElementById("legend").innerHTML="";return}
+      message.classList.remove("show");const edgeX=[],edgeY=[];edges.forEach(edge=>{const source=byId.get(edge.source),target=byId.get(edge.target);if(source&&target){edgeX.push(source.x,target.x,null);edgeY.push(source.y,target.y,null)}});
+      const traces=[{type:"scattergl",mode:"lines",x:edgeX,y:edgeY,hoverinfo:"skip",line:{width:1,color:"rgba(71,85,105,.20)"},name:"Semantic relationships"}];
+      const groups=[...new Set(nodes.map(node=>node.file_id))];groups.forEach(fileId=>{const group=nodes.filter(node=>node.file_id===fileId),document=(network.documents||[]).find(item=>item.file_id===fileId);traces.push({type:"scattergl",mode:"markers",name:document?.company_name||fileId,x:group.map(node=>node.x),y:group.map(node=>node.y),customdata:group.map(node=>node.id),hovertext:group.map(node=>nodeHover(node)),hovertemplate:"%{hovertext}<extra></extra>",marker:{size:10,color:documentColor(fileId),opacity:.9,line:{width:1,color:"#fff"}}})});
+      const layout={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",margin:{l:18,r:18,t:18,b:18},showlegend:false,hovermode:"closest",dragmode:"pan",uirevision:"orion-live-map",xaxis:{visible:false,fixedrange:false},yaxis:{visible:false,fixedrange:false,scaleanchor:"x",scaleratio:1},hoverlabel:{bgcolor:"#172033",bordercolor:"#334155",font:{family:"Poppins",color:"#fff",size:11}}};
+      Plotly.react("plot",traces,layout,{responsive:true,displaylogo:false,modeBarButtonsToRemove:["select2d","lasso2d"]});
+      const plot=document.getElementById("plot");plot.removeAllListeners?.("plotly_click");plot.on("plotly_click",event=>{const id=event.points?.[0]?.customdata;if(id)renderDetail(byId.get(id))});
+      document.getElementById("status").textContent=`${compact(nodes.length)} nodes · ${compact(edges.length)} relationships · refreshed ${new Date(network.generated_at).toLocaleTimeString()}`;
+      document.getElementById("legend").innerHTML=groups.map(fileId=>{const document=(network.documents||[]).find(item=>item.file_id===fileId);return `<span class="legend-item"><i class="legend-dot" style="background:${documentColor(fileId)}"></i>${esc(document?.company_name||fileId)}</span>`}).join("");
+    }
+    async function loadNetwork(){
+      const button=document.getElementById("refreshBtn"),status=document.getElementById("status");button.disabled=true;status.textContent="Loading live embeddings…";
+      try{const response=await fetch(DATA_URL,{credentials:"include",cache:"no-store",headers:{Accept:"application/json"}});if(response.status===401||response.status===403){location.replace(`/capmarkets/signin/signin.html?next=${encodeURIComponent(location.pathname)}`);return}if(!response.ok)throw new Error(`Network API returned ${response.status}`);network=await response.json();renderStats();populateFilters();renderNetwork();const projection=network.projection||{},source=network.source||{};document.getElementById("sourceNote").innerHTML=`<strong>${esc(source.database||"Render PostgreSQL")}</strong><br>${esc((source.tables||[]).join(" · "))}<br>${esc(source.pinecone||"")}`;document.getElementById("methodNote").textContent=`${projection.position_note||"Positions are an analytical projection."} ${projection.similarity_note||""} Source: ${compact(projection.source_dimensions)} dimensions → ${compact(projection.working_dimensions)}-dimensional working space → 2D display.`}
+      catch(error){console.error(error);status.innerHTML=`<span class="error">${esc(error.message)}. Render may be waking up; try Refresh network.</span>`;const message=document.getElementById("plotMessage");message.textContent="The live semantic network is temporarily unavailable.";message.classList.add("show")}
+      finally{button.disabled=false}
+    }
+    function configureTimer(){window.clearInterval(refreshTimer);refreshTimer=null;if(document.getElementById("autoRefresh").checked)refreshTimer=window.setInterval(loadNetwork,60000)}
+    document.getElementById("dealFilter").addEventListener("change",event=>{dealFilter=event.target.value;renderNetwork()});document.getElementById("tagFilter").addEventListener("change",event=>{tagFilter=event.target.value;renderNetwork()});document.getElementById("refreshBtn").addEventListener("click",loadNetwork);document.getElementById("autoRefresh").addEventListener("change",configureTimer);
+    configureTimer();loadNetwork();
   </script>
-
-  <!-- Ask Orion Bot include (unchanged) -->
-  <div id="orion-chat-include"></div>
-  <script>
-    async function loadOrionChat() {
-      const res = await fetch("/private-credit/includes/orion-chat.html");
-      const html = await res.text();
-
-      const container = document.getElementById("orion-chat-include");
-      container.innerHTML = html;
-
-      const scripts = container.querySelectorAll("script");
-      scripts.forEach(oldScript => {
-        const newScript = document.createElement("script");
-        if (oldScript.src) newScript.src = oldScript.src;
-        else newScript.textContent = oldScript.textContent;
-        document.body.appendChild(newScript);
-        oldScript.remove();
-      });
-    }
-    loadOrionChat();
-  </script>
-
-  <!-- NEURAL MAP LOGIC (from your second file) -->
-  <script>
-    // ----- CONFIG -----
-    const DATA_URL = "http://localhost:8000/neural-map"; // absolute to avoid origin confusion
-    const K_NEIGHBORS = 2;
-    const MAX_POINTS_FOR_EDGES = 700;
-    const MAX_EDGES = 2500;
-
-    async function fetchPoints() {
-      const res = await fetch(DATA_URL, { headers: { "Accept": "application/json" }});
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      return res.json();
-    }
-
-    function safe(v) {
-      return (v === null || v === undefined) ? "" : String(v);
-    }
-
-    function buildEdges(points, k = 2, maxEdges = 2000) {
-      const edges = [];
-      const n = points.length;
-
-      for (let i = 0; i < n; i++) {
-        const ai = points[i];
-        const dists = [];
-
-        for (let j = 0; j < n; j++) {
-          if (i === j) continue;
-          const bj = points[j];
-          const dx = ai.x - bj.x;
-          const dy = ai.y - bj.y;
-          const d2 = dx*dx + dy*dy;
-          dists.push([d2, j]);
-        }
-
-        dists.sort((a, b) => a[0] - b[0]);
-
-        for (let t = 0; t < Math.min(k, dists.length); t++) {
-          edges.push({ source: i, target: dists[t][1], w: dists[t][0] });
-          if (edges.length >= maxEdges) return edges;
-        }
-      }
-      return edges;
-    }
-
-    function buildEdgeTrace(points, edges) {
-      if (!Array.isArray(edges) || edges.length === 0) return null;
-
-      const xs = [];
-      const ys = [];
-
-      for (const e of edges) {
-        const a = points[e.source];
-        const b = points[e.target];
-        if (!a || !b) continue;
-        xs.push(a.x, b.x, null);
-        ys.push(a.y, b.y, null);
-      }
-
-      return {
-        type: "scattergl",
-        mode: "lines",
-        x: xs,
-        y: ys,
-        hoverinfo: "skip",
-        line: { width: 1, color: "rgba(0,0,0,0.14)" },
-        name: "fibers"
-      };
-    }
-
-    function render(points) {
-      const status = document.getElementById("status");
-
-      const customdata = points.map(p => {
-        const md = p.metadata || {};
-        return ([
-          safe(p.label),         // 0
-          safe(p.id),            // 1
-          safe(p.group),         // 2
-          (typeof p.x === "number" ? p.x.toFixed(4) : safe(p.x)), // 3
-          (typeof p.y === "number" ? p.y.toFixed(4) : safe(p.y)), // 4
-
-          safe(md.file_name),        // 5
-          safe(md.file_id),          // 6
-          safe(md.company_name),     // 7
-          safe(md.ticker),           // 8
-          safe(md.doc_type),         // 9
-          safe(md.period_end),       // 10
-          safe(md.cik),              // 11
-
-          safe(md.deal_title),       // 12
-          safe(md.sponsor),          // 13
-          safe(md.industry),         // 14
-          safe(md.security),         // 15
-          safe(md.ownership),        // 16
-          safe(md.structure),        // 17
-          safe(md.use_of_proceeds),  // 18
-
-          safe(md.debt_amount_mm),   // 19
-          safe(md.revenue_ltm_mm),   // 20
-          safe(md.ebitda_ltm_mm),    // 21
-          safe(md.ebitda_margin_pct),// 22
-          safe(md.leverage_gross),   // 23
-          safe(md.leverage_net),     // 24
-          safe(md.term_years),       // 25
-
-          safe(md.key_strengths),    // 26
-          safe(md.key_risk_factors)  // 27
-        ]);
-      });
-
-      const nodeTrace = {
-        type: "scattergl",
-        mode: "markers",
-        x: points.map(p => p.x),
-        y: points.map(p => p.y),
-        customdata,
-        marker: { size: 9, color: "rgba(53, 208, 186, 0.95)" },
-        hovertext: customdata.map(d => {
-          const rows = [];
-          const add = (label, val) => {
-            if (val === null || val === undefined) return;
-            const s = String(val).trim();
-            if (!s) return;
-            rows.push(`${label}: ${s}`);
-          };
-
-          const title = (d[0] || "").trim() || (d[1] || "").trim() || "point";
-
-          add("id", d[1]);
-          add("group", d[2]);
-          add("x", d[3]);
-          add("y", d[4]);
-
-          add("file", d[5]);
-          add("file_id", d[6]);
-          add("company", d[7]);
-          add("ticker", d[8]);
-          add("doc", d[9]);
-          add("period_end", d[10]);
-          add("cik", d[11]);
-
-          add("deal_title", d[12]);
-          add("sponsor", d[13]);
-          add("industry", d[14]);
-          add("security", d[15]);
-          add("ownership", d[16]);
-          add("structure", d[17]);
-          add("use_of_proceeds", d[18]);
-
-          add("debt ($mm)", d[19]);
-          add("revenue LTM ($mm)", d[20]);
-          add("EBITDA LTM ($mm)", d[21]);
-          add("EBITDA margin (%)", d[22]);
-          add("leverage gross", d[23]);
-          add("leverage net", d[24]);
-          add("term (yrs)", d[25]);
-
-          add("key_strengths", d[26]);
-          add("key_risks", d[27]);
-
-          return `<b>${title}</b><br>` + rows.join("<br>");
-        }),
-        hovertemplate: "%{hovertext}<extra></extra>",
-        name: "vectors"
-      };
-
-      let edgeTrace = null;
-      let edgesDrawn = 0;
-
-      if (points.length <= MAX_POINTS_FOR_EDGES) {
-        const edges = buildEdges(points, K_NEIGHBORS, MAX_EDGES);
-        edgesDrawn = edges.length;
-        edgeTrace = buildEdgeTrace(points, edges);
-      }
-
-      status.textContent =
-        `Loaded ${points.length} vectors` +
-        (edgeTrace ? ` · ${edgesDrawn} fibers (k=${K_NEIGHBORS})` : ` · fibers skipped (too many points)`);
-
-      const layout = {
-        paper_bgcolor: "rgba(0,0,0,0)",
-        plot_bgcolor: "rgba(0,0,0,0)",
-        margin: { l: 10, r: 10, t: 10, b: 10 },
-        showlegend: false,
-        xaxis: { visible: false },
-        yaxis: { visible: false },
-        hoverlabel: {
-          bgcolor: "rgba(20,20,25,0.95)",
-          bordercolor: "rgba(255,255,255,0.15)",
-          font: { color: "#fff", size: 12 }
-        }
-      };
-
-      const traces = [];
-      if (edgeTrace) traces.push(edgeTrace);
-      traces.push(nodeTrace);
-
-      Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
-    }
-
-    (async () => {
-      const status = document.getElementById("status");
-      try {
-        const points = await fetchPoints();
-
-        if (!Array.isArray(points)) {
-          status.textContent = "Expected /neural-map to return an array, but got something else.";
-          return;
-        }
-
-        const filtered = points.filter(p => typeof p.x === "number" && typeof p.y === "number");
-        if (!filtered.length) {
-          status.textContent = "No points with numeric x/y found.";
-          return;
-        }
-
-        render(filtered);
-      } catch (err) {
-        console.error(err);
-        status.textContent = `Error: ${err.message}`;
-      }
-    })();
-  </script>
-
 </body>
 </html>
