@@ -51,6 +51,8 @@
     .pill i{ width:7px; height:7px; border-radius:50%; }
     .pill.off{ background:#fff7ed; color:#a34c0a; border:1px solid #fed7aa; }
     .pill.off i{ background:#f59e0b; }
+    .pill.on{ background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; }
+    .pill.on i{ background:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,.12); }
     .spacer{ flex:1 1 auto; }
 
     .stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px; max-width:1200px; }
@@ -63,9 +65,11 @@
     .panel .desc{ margin:0 0 12px; color:#64748b; font-size:11.5px; }
 
     .table-wrap{ overflow:auto; border:1px solid #eee; border-radius:12px; }
-    table{ width:100%; border-collapse:separate; border-spacing:0; }
+    table{ width:100%; min-width:100%; border-collapse:separate; border-spacing:0; }
+    #documentsTable{ width:max-content; }
+    #chunksTable{ min-width:1180px; }
     thead th{ background:#fafafa; text-align:left; padding:8px 10px; border-bottom:1px solid #eee; font-size:10px; font-weight:700; color:#333; white-space:normal; vertical-align:bottom; line-height:1.25; }
-    tbody td{ padding:9px 10px; border-bottom:1px solid #f2f2f2; font-size:12px; vertical-align:top; }
+    tbody td{ padding:9px 10px; border-bottom:1px solid #f2f2f2; font-size:12px; vertical-align:top; max-width:340px; }
     tbody tr:last-child td{ border-bottom:0; }
     .file{ font-weight:600; }
     .co{ display:block; color:#64748b; font-size:10.5px; margin-top:1px; }
@@ -85,6 +89,31 @@
     .callout b{ color:#7c2d12; }
     .muted{ color:#64748b; }
     .sample-banner{ display:inline-block; background:#fff7ed; color:#a34c0a; border:1px solid #fed7aa; border-radius:8px; padding:8px 12px; font-size:12px; font-weight:600; margin-bottom:16px; }
+    .sample-banner.live{ background:#ecfdf5; color:#047857; border-color:#a7f3d0; }
+    .sample-banner.error{ background:#fef2f2; color:#b91c1c; border-color:#fecaca; }
+    .toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; max-width:1200px; }
+    .refresh{ margin-left:auto; border:1px solid #dbe3ec; background:#fff; color:#17324d; border-radius:9px; padding:8px 12px; font:600 11px 'Poppins',sans-serif; cursor:pointer; }
+    .refresh:hover{ background:#f8fafc; }
+    .refresh:disabled{ cursor:wait; opacity:.55; }
+    .access-gate{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; max-width:1200px; margin:0 0 16px; padding:12px 14px; background:#fff; border:1px solid #e6e6e6; border-radius:12px; box-shadow:0 1px 4px rgba(0,43,81,.04); }
+    .access-copy{ margin-right:auto; }
+    .access-title{ font-size:12px; font-weight:700; color:#17324d; }
+    .access-note{ margin-top:2px; color:#64748b; font-size:10.5px; }
+    .access-input{ min-width:250px; border:1px solid #dbe3ec; background:#f8fafc; border-radius:9px; padding:8px 10px; font:11px ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; color:#17324d; outline:none; }
+    .access-input:focus{ border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.12); }
+    .connect-btn{ border:0; background:#1f5fbf; color:#fff; border-radius:9px; padding:9px 13px; font:600 11px 'Poppins',sans-serif; cursor:pointer; }
+    .connect-btn:hover{ background:#174d9d; }
+    .schema-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:10px; }
+    .schema-card{ border:1px solid #e8edf2; border-radius:10px; padding:12px; background:#fbfcfd; }
+    .schema-head{ display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:8px; }
+    .schema-count{ color:#64748b; font-size:10px; }
+    .column-row{ display:flex; justify-content:space-between; gap:12px; padding:4px 0; border-top:1px solid #edf1f5; font-size:10.5px; }
+    .column-type{ color:#64748b; text-align:right; }
+    details{ min-width:130px; }
+    details summary{ color:#1d4ed8; cursor:pointer; font-size:10.5px; font-weight:600; }
+    .json{ margin:7px 0 0; max-width:420px; max-height:210px; overflow:auto; white-space:pre-wrap; word-break:break-word; font:10px/1.45 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; color:#334155; }
+    .nowrap{ white-space:nowrap; }
+    .empty{ padding:24px 12px; text-align:center; color:#64748b; }
   </style>
 </head>
 
@@ -117,15 +146,26 @@
 
     <h1>Extracted Data</h1>
     <p class="sub">
-      Documents processed by the Orion extraction pipeline — each turned into a summary + embedding and stored in
-      <span class="mono">orion-data-db</span> (Render PostgreSQL). This view reads those records through the backend API.
+      A live, read-only snapshot of the structured summaries, chunk records, embeddings, and Pinecone mappings written by the Orion extraction pipeline.
     </p>
-    <div class="sample-banner" id="sampleBanner">Loading…</div>
+    <div class="toolbar">
+      <div class="sample-banner" id="dataBanner">Connecting to the Render API…</div>
+      <button class="refresh" id="refreshData" type="button">Refresh data</button>
+    </div>
+    <div class="access-gate" id="accessGate">
+      <div class="access-copy">
+        <div class="access-title">Secure extracted-data access</div>
+        <div class="access-note" id="accessNote">Enter the private access key. It is kept only for this browser session.</div>
+      </div>
+      <input class="access-input" id="dataAccessKey" type="password" autocomplete="off" spellcheck="false" placeholder="Access key" aria-label="Extracted data access key" />
+      <button class="connect-btn" id="connectData" type="button">Connect</button>
+      <button class="refresh" id="forgetData" type="button" hidden>Forget key</button>
+    </div>
 
     <!-- DB STATUS STRIP -->
     <div class="dbstrip">
       <div>
-        <div class="dbname mono">orion-data-db</div>
+        <div class="dbname mono" id="databaseName">Render PostgreSQL</div>
         <div class="dbmeta" id="dbmeta">Render · PostgreSQL</div>
       </div>
       <div class="spacer"></div>
@@ -137,15 +177,24 @@
 
     <!-- RECORDS -->
     <section class="panel">
-      <h2>Extracted records</h2>
-      <p class="desc">Latest documents written by the extraction run. <span class="muted">Placeholder rows — live rows come from <span class="mono">orion-data-db</span> once the backend is wired.</span></p>
+      <h2>Extracted documents</h2>
+      <p class="desc" id="recordsMeta">Loading the database’s real extracted fields…</p>
       <div class="table-wrap">
-        <table id="recTable">
+        <table id="documentsTable">
+          <thead><tr><th>Loading fields…</th></tr></thead>
+          <tbody><tr><td class="muted">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CHUNKS -->
+    <section class="panel">
+      <h2>Stored chunks</h2>
+      <p class="desc" id="chunksMeta">Chunk text, tags, metadata, vector references, and embedding dimensions. Full 1,536-value arrays remain server-side.</p>
+      <div class="table-wrap">
+        <table id="chunksTable">
           <thead>
-            <tr>
-              <th>Document</th><th>Doc type</th><th>Asset class</th>
-              <th>Vector</th><th>Status</th><th>Extracted</th><th>Summary</th>
-            </tr>
+            <tr><th>ID</th><th>File ID</th><th>Text preview</th><th>Tags</th><th>Metadata</th><th>Vector ID</th><th>Embedding</th></tr>
           </thead>
           <tbody><tr><td class="muted" colspan="7">Loading…</td></tr></tbody>
         </table>
@@ -154,87 +203,204 @@
 
     <!-- DATABASE -->
     <section class="panel">
-      <h2>Database</h2>
-      <p class="desc">Connection details for the extraction datastore.</p>
+      <h2>Database schema</h2>
+      <p class="desc">The live tables and columns currently present in the Orion Render database.</p>
       <div class="kv" id="dbkv"></div>
       <div style="margin-top:14px">
-        <div class="desc" style="margin-bottom:4px">Tables</div>
-        <div id="dbtables"></div>
+        <div id="dbtables" class="schema-grid"></div>
       </div>
       <div class="callout">
-        <b>How this connects:</b> the extraction program/script writes to <span class="mono">orion-data-db</span> on Render.
-        This page reads those rows through a backend API (e.g. <span class="mono">/data/records</span> on the Orion API) that
-        holds the connection string as a server-side secret. The browser never queries PostgreSQL directly.
+        <b>Connection boundary:</b> the browser calls the read-only <span class="mono">/data/snapshot</span> endpoint on the Render API.
+        PostgreSQL credentials remain on Render and are never sent to this page. Chunk text is capped at a short preview and full embedding arrays are not transmitted.
       </div>
     </section>
 
   </main>
 
   <script>
-    const DATA_URL = "/orion/data/extracted.json";
+    const API_BASE = "https://orion-api-v2.onrender.com";
+    const DATA_URL = `${API_BASE}/data/snapshot`;
+    const ACCESS_KEY_STORAGE = "orion-extracted-data-session-key";
     function esc(s){ return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
-    function renderStats(recs){
-      const total = recs.length;
-      const indexed = recs.filter(r=>r.status==="indexed").length;
-      const processing = recs.filter(r=>r.status==="processing").length;
-      const failed = recs.filter(r=>r.status==="failed").length;
+    function savedAccessKey(){ return sessionStorage.getItem(ACCESS_KEY_STORAGE) || ""; }
+
+    function renderAccessState(connected, message){
+      document.getElementById("dataAccessKey").hidden = connected;
+      document.getElementById("connectData").hidden = connected;
+      document.getElementById("forgetData").hidden = !connected;
+      document.getElementById("accessNote").textContent = message;
+    }
+
+    function renderStats(stats){
       const cards = [
-        ["Records", total],
-        ["Indexed", indexed],
-        ["Processing", processing],
-        ["Failed", failed],
+        ["Documents", stats.documents],
+        ["Summary rows", stats.summaries],
+        ["Chunks", stats.chunks],
+        ["Embedded chunks", stats.embedded_chunks],
+        ["Pinecone mappings", stats.vector_mappings],
+        ["Dimensions", stats.embedding_dimensions],
       ];
       document.getElementById("stats").innerHTML = cards.map(([k,v])=>
-        `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+        `<div class="stat"><div class="k">${esc(k)}</div><div class="v">${Number(v||0).toLocaleString()}</div></div>`).join("");
     }
 
-    function renderRecords(recs){
-      const tb = document.querySelector("#recTable tbody");
-      if(!recs.length){ tb.innerHTML = `<tr><td class="muted" colspan="7">No records.</td></tr>`; return; }
-      tb.innerHTML = recs.map(r=>`
-        <tr>
-          <td><span class="file">${esc(r.file_name)}</span><span class="co">${esc(r.company)}</span></td>
-          <td><span class="tag">${esc(r.doc_type)}</span></td>
-          <td>${esc(r.asset_class)}</td>
-          <td class="mono">${esc(r.vector_id)}<span class="co">${esc(r.dims)}d</span></td>
-          <td><span class="st ${esc(r.status)}">${esc(r.status)}</span></td>
-          <td class="mono">${esc(r.extracted_at)}</td>
-          <td class="sm">${esc(r.summary)}</td>
-        </tr>`).join("");
+    function renderValue(value){
+      if(value === null || value === undefined || value === "") return `<span class="muted">—</span>`;
+      const isObject = typeof value === "object";
+      const text = isObject ? JSON.stringify(value, null, 2) : String(value);
+      if(isObject || text.length > 120){
+        const label = isObject
+          ? (Array.isArray(value) ? `${value.length} item${value.length===1?"":"s"}` : `${Object.keys(value).length} field${Object.keys(value).length===1?"":"s"}`)
+          : `${text.slice(0, 72)}…`;
+        return `<details><summary>${esc(label)}</summary><pre class="json">${esc(text)}</pre></details>`;
+      }
+      return esc(text);
     }
 
-    function renderDb(db){
+    function orderedSummaryFields(fields){
+      const preferred = [
+        "Company Name", "Deal Title", "Deal Status", "Industry", "Security", "Structure", "Ownership",
+        "Interest Rate / Pricing", "Term (Years)", "Use of Proceeds", "Covenants", "Key Strengths",
+        "Key Risk Factors", "Notes / Commentary"
+      ];
+      const present = new Set(fields || []);
+      return [...preferred.filter(field=>present.has(field)), ...(fields||[]).filter(field=>!preferred.includes(field))];
+    }
+
+    function renderDocuments(documents, fields){
+      const table = document.getElementById("documentsTable");
+      const summaryFields = orderedSummaryFields(fields);
+      const systemFields = ["Chunks", "Embedded", "Dimensions", "Pinecone Vector", "Vector Updated", "File ID"];
+      table.querySelector("thead").innerHTML = `<tr>${[...summaryFields, ...systemFields].map(field=>`<th>${esc(field)}</th>`).join("")}</tr>`;
+      const tbody = table.querySelector("tbody");
+      if(!documents.length){
+        tbody.innerHTML = `<tr><td class="empty" colspan="${summaryFields.length + systemFields.length}">No extracted documents are stored yet.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = documents.map(doc=>{
+        const summary = doc.summary || {};
+        const summaryCells = summaryFields.map(field=>`<td>${renderValue(summary[field])}</td>`).join("");
+        const updated = doc.updated_at ? new Date(doc.updated_at).toLocaleString() : "—";
+        return `<tr>
+          ${summaryCells}
+          <td class="mono nowrap">${Number(doc.chunk_count||0).toLocaleString()}</td>
+          <td class="mono nowrap">${Number(doc.embedded_chunks||0).toLocaleString()}</td>
+          <td class="mono nowrap">${Number(doc.embedding_dimensions||0).toLocaleString()}</td>
+          <td class="mono">${renderValue(doc.vector_id)}</td>
+          <td class="mono nowrap">${esc(updated)}</td>
+          <td class="mono">${esc(doc.file_id)}</td>
+        </tr>`;
+      }).join("");
+      document.getElementById("recordsMeta").textContent = `${documents.length.toLocaleString()} document${documents.length===1?"":"s"} · ${summaryFields.length.toLocaleString()} extracted fields · live from deal_summaries_json.`;
+    }
+
+    function renderChunks(chunks){
+      const tbody = document.querySelector("#chunksTable tbody");
+      if(!chunks.length){ tbody.innerHTML = `<tr><td class="empty" colspan="7">No chunk records are stored yet.</td></tr>`; return; }
+      tbody.innerHTML = chunks.map(chunk=>`<tr>
+        <td class="mono">${esc(chunk.id)}</td>
+        <td class="mono">${esc(chunk.file_id)}</td>
+        <td class="sm">${renderValue(chunk.text_preview)}</td>
+        <td>${renderValue(chunk.tags)}</td>
+        <td>${renderValue(chunk.metadata)}</td>
+        <td class="mono">${renderValue(chunk.vector_id)}</td>
+        <td class="mono nowrap">${Number(chunk.embedding_dimensions||0).toLocaleString()}d</td>
+      </tr>`).join("");
+      document.getElementById("chunksMeta").textContent = `${chunks.length.toLocaleString()} stored chunk${chunks.length===1?"":"s"} shown · full embeddings remain server-side.`;
+    }
+
+    function renderDb(db, tables){
+      document.getElementById("databaseName").textContent = db.name || "Render PostgreSQL";
       document.getElementById("dbkv").innerHTML = [
         ["Name", `<span class="mono">${esc(db.name)}</span>`],
         ["Provider", esc(db.provider)],
         ["Engine", esc(db.engine)],
-        ["Region", esc(db.region)],
-        ["Status", `<span class="pill off"><i></i>${esc((db.status||"").replace("_"," "))}</span>`],
-        ["Connection", `<span class="mono">${esc(db.connection_masked)}</span>`],
+        ["Schema", `<span class="mono">${esc(db.schema)}</span>`],
+        ["Status", `<span class="pill on"><i></i>${esc(db.status)}</span>`],
+        ["Access", esc(db.access)],
       ].map(([k,v])=>`<div class="k">${k}</div><div class="v">${v}</div>`).join("");
       document.getElementById("dbtables").innerHTML =
-        (db.tables||[]).map(t=>`<span class="tbl-chip mono">${esc(t)}</span>`).join("");
-      document.getElementById("dbmeta").textContent = `${db.provider||"Render"} · ${db.engine||"PostgreSQL"}`;
+        (tables||[]).map(table=>`<div class="schema-card">
+          <div class="schema-head"><span class="mono">${esc(table.name)}</span><span class="schema-count">${Number(table.row_count||0).toLocaleString()} rows</span></div>
+          ${(table.columns||[]).map(column=>`<div class="column-row"><span class="mono">${esc(column.name)}</span><span class="column-type">${esc(column.type)}</span></div>`).join("")}
+        </div>`).join("");
+      document.getElementById("dbmeta").textContent = `${db.provider||"Render"} · ${db.engine||"PostgreSQL"} · ${db.schema||"public"}`;
     }
 
-    (async function(){
-      const banner = document.getElementById("sampleBanner");
+    async function loadData(){
+      const banner = document.getElementById("dataBanner");
+      const button = document.getElementById("refreshData");
+      const accessKey = savedAccessKey();
+      if(!accessKey){
+        banner.className = "sample-banner";
+        banner.textContent = "PRIVATE DATA · access key required";
+        button.disabled = false;
+        renderAccessState(false, "Enter the private access key. It is kept only for this browser session.");
+        return;
+      }
+      button.disabled = true;
+      banner.className = "sample-banner";
+      banner.textContent = "Connecting to the Render API…";
       try{
-        const res = await fetch(DATA_URL, { cache:"no-store" });
+        const res = await fetch(DATA_URL, {
+          cache:"no-store",
+          headers:{ "X-Orion-Data-Key": accessKey }
+        });
+        if(res.status === 401){
+          sessionStorage.removeItem(ACCESS_KEY_STORAGE);
+          throw new Error("access-key");
+        }
         if(!res.ok) throw new Error(`fetch ${res.status}`);
         const data = await res.json();
-        const recs = data.records || [];
-        banner.textContent = (data.meta && data.meta.sample)
-          ? "SAMPLE DATA — placeholder rows for layout preview. Live rows come from orion-data-db once the backend is wired."
-          : "Live data";
-        renderStats(recs);
-        renderRecords(recs);
-        renderDb(data.database || {});
+        banner.className = "sample-banner live";
+        banner.textContent = `LIVE DATA · refreshed ${new Date().toLocaleTimeString()}`;
+        const pill = document.getElementById("dbpill");
+        pill.className = "pill on";
+        pill.innerHTML = "<i></i>Connected";
+        renderAccessState(true, "Authenticated for this browser session. Database credentials remain on Render.");
+        renderStats(data.stats || {});
+        renderDocuments(data.documents || [], data.summary_fields || []);
+        renderChunks(data.chunks || []);
+        renderDb(data.database || {}, data.tables || []);
       }catch(e){
-        banner.textContent = "Failed to load extracted data: " + e.message;
+        banner.className = "sample-banner error";
+        banner.textContent = e.message === "access-key"
+          ? "ACCESS DENIED · enter the correct private key"
+          : "Unable to reach the live database snapshot. The Render service may be waking up; use Refresh data in a moment.";
+        const pill = document.getElementById("dbpill");
+        pill.className = "pill off";
+        pill.innerHTML = "<i></i>Not connected";
+        if(e.message === "access-key"){
+          renderAccessState(false, "That key was not accepted. Please try again.");
+          document.getElementById("dataAccessKey").focus();
+        }
+        console.error("Extracted data snapshot failed", e);
+      }finally{
+        button.disabled = false;
       }
-    })();
+    }
+
+    document.getElementById("refreshData").addEventListener("click", loadData);
+    document.getElementById("connectData").addEventListener("click", ()=>{
+      const input = document.getElementById("dataAccessKey");
+      const key = input.value.trim();
+      if(!key){ input.focus(); return; }
+      sessionStorage.setItem(ACCESS_KEY_STORAGE, key);
+      input.value = "";
+      loadData();
+    });
+    document.getElementById("dataAccessKey").addEventListener("keydown", event=>{
+      if(event.key === "Enter") document.getElementById("connectData").click();
+    });
+    document.getElementById("forgetData").addEventListener("click", ()=>{
+      sessionStorage.removeItem(ACCESS_KEY_STORAGE);
+      const pill = document.getElementById("dbpill");
+      pill.className = "pill off";
+      pill.innerHTML = "<i></i>Not connected";
+      loadData();
+    });
+    loadData();
   </script>
 
 </body>
