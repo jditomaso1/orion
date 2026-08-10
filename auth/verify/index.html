@@ -12,7 +12,10 @@
     const API_BASE = "https://api.private-credit.ai";
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
-    const next = params.get("next") || "/dnb/detailed-financials/detailed-financials1.html";
+    const requestedNext = params.get("next") || "/dnb/detailed-financials/detailed-financials1.html";
+    const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//")
+      ? requestedNext
+      : "/dnb/detailed-financials/detailed-financials1.html";
 
     if (!token) {
       document.body.innerText = "Missing token.";

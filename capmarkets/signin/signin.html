@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in — Orion Capital Markets</title>
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body{font-family:Poppins,sans-serif;background:#f5f6f8}@media(max-width:850px){#sidebar-placeholder{display:none}main{margin-left:0!important}}</style>
+</head>
+<body class="min-h-screen">
+  <div id="sidebar-placeholder"></div>
+  <script>(async()=>{try{const response=await fetch("/capmarkets/sidebar.html");document.getElementById("sidebar-placeholder").innerHTML=await response.text()}catch(error){}})();</script>
+  <main class="ml-64 min-h-screen p-8 flex items-center justify-center">
+    <div class="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+      <div class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">ORION CAPITAL MARKETS</div>
+      <h1 class="mt-4 text-2xl font-semibold text-gray-900">Sign in with your email</h1>
+      <p class="text-sm text-gray-600 mt-2">We’ll email you a secure sign-in link. New accounts remain pending until an Orion administrator approves access.</p>
+      <div id="accessMessage" class="hidden mt-5 rounded-xl border p-3 text-sm"></div>
+      <label for="email" class="block mt-6 text-sm font-medium text-gray-700">Email</label>
+      <input id="email" type="email" autocomplete="email" placeholder="you@firm.com" class="mt-2 w-full rounded-xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <button id="btn" class="mt-4 w-full rounded-xl bg-blue-600 text-white py-2.5 font-semibold hover:bg-blue-700 disabled:bg-blue-400">Email me a sign-in link</button>
+      <div id="msg" class="mt-4 text-sm" role="status" aria-live="polite"></div>
+    </div>
+  </main>
+  <script>
+    const API_BASE="https://api.private-credit.ai";
+    function requestedNext(){const value=new URLSearchParams(location.search).get("next");return value&&value.startsWith("/capmarkets/")&&!value.startsWith("//")?value:"/capmarkets/index.html"}
+    function showState(state){
+      if(!state)return;const box=document.getElementById("accessMessage");box.classList.remove("hidden");
+      if(state==="suspended"){box.className="mt-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700";box.textContent="This account’s Capital Markets access is suspended. Contact the Orion administrator."}
+      else{box.className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800";box.textContent="Your email has been recorded and is waiting for administrator approval."}
+    }
+    showState(new URLSearchParams(location.search).get("state"));
+    (async()=>{try{const response=await fetch(`${API_BASE}/access/check?area=capmarkets`,{credentials:"include",cache:"no-store"});if(response.ok)location.replace(requestedNext())}catch(error){}})();
+    document.getElementById("btn").addEventListener("click",async()=>{
+      const email=document.getElementById("email").value.trim(),message=document.getElementById("msg"),button=document.getElementById("btn");message.className="mt-4 text-sm";
+      if(!email||!email.includes("@")){message.textContent="Enter a valid email.";message.classList.add("text-red-600");return}
+      button.disabled=true;message.textContent="Sending your secure link…";message.classList.add("text-gray-600");
+      try{const response=await fetch(`${API_BASE}/auth/request-link`,{method:"POST",headers:{"Content-Type":"application/json"},credentials:"include",body:JSON.stringify({email,next:requestedNext()})});if(!response.ok)throw new Error();message.textContent="Check your email for the sign-in link. If this is a new account, an administrator must also approve it.";message.className="mt-4 text-sm text-green-700"}
+      catch(error){message.textContent="Orion could not send the link. Please try again in a minute.";message.className="mt-4 text-sm text-red-600"}
+      finally{button.disabled=false}
+    });
+  </script>
+</body>
+</html>
