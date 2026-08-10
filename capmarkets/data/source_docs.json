@@ -1,145 +1,104 @@
 {
   "documents": [
     {
-      "tag": "LEGAL",
-      "name": "Credit_Agreement__Dave & Buster's Entertainment, Inc._pdf",
-      "period": "Credit Agreement",
-      "description": "Senior secured credit agreement (terms, covenants, defaults, baskets, definitions).",
-      "sourceLabel": "SEC EDGAR",
-      "url": "https://drive.google.com/file/d/13MghCjeTqVFrfvrbc8P3Vr_YauW5_biJ/view"
-    },
-
-    {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2022-05-01(1Q).pdf",
-      "period": "Q1 2022 (filed 2022-05-01)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1TT-SrFvMbqh_OU8PQWxSj_1eHhY5Q-kO/view"
+      "company": "Uber Technologies, Inc.",
+      "ticker": "NYSE: UBER",
+      "agreement": "Term Loan Credit Agreement",
+      "dated": "Aug 6, 2026 · filed Aug 7",
+      "facility": "Term loan — Tranche A & Tranche B",
+      "admin_agent": "Morgan Stanley Senior Funding, Inc.",
+      "agreement_url": "https://www.sec.gov/Archives/edgar/data/1543151/000155278126000414/e26328_ex10-1.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1543151/000155278126000414/"
     },
     {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2022-07-31(2Q).pdf",
-      "period": "Q2 2022 (filed 2022-07-31)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1s0Q_oCSbuF5-7Vg-B71Ma8q05xMi0Gqv/view"
+      "company": "QVC Group, Inc.",
+      "ticker": "QVCGQ",
+      "agreement": "Senior Secured Credit Agreement",
+      "dated": "Aug 6, 2026 · filed Aug 7",
+      "facility": "First-lien term loan — $84.6M",
+      "admin_agent": "Acquiom Agency Services / Seaport Loan Products",
+      "agreement_url": "https://www.sec.gov/Archives/edgar/data/1254699/000110465926092407/tm2622253d2_ex10-1.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1254699/000110465926092407/"
     },
     {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2022-10-30(3Q).pdf",
-      "period": "Q3 2022 (filed 2022-10-30)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1FMAACsr1yZz26-wMuYUmosZ2jUOvzcIC/view"
-    },
-
-    {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2023-04-30(1Q).pdf",
-      "period": "Q1 2023 (filed 2023-04-30)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1acFtDfMQCraIBOXnDWBCGecH4Ke_9Opz/view"
+      "company": "Yum China Holdings, Inc.",
+      "ticker": "NYSE: YUMC",
+      "agreement": "Bridge Credit Agreement",
+      "dated": "Jul 31, 2026 · filed Aug 6",
+      "facility": "Senior unsecured delayed-draw term — CNH 8.4bn",
+      "admin_agent": "HSBC Bank USA, N.A.",
+      "agreement_url": "https://www.sec.gov/Archives/edgar/data/1673358/000119312526336485/yumc-ex10_1.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1673358/000119312526336485/"
     },
     {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2023-07-30(2Q).pdf",
-      "period": "Q2 2023 (filed 2023-07-30)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1Gli0V46DbuoI4L8FgPtf60txrXaRKlGL/view"
+      "company": "Enterprise Products Operating LLC",
+      "ticker": "NYSE: EPD",
+      "agreement": "Revolving Credit Agreement",
+      "dated": "Jul 28, 2026 · filed Jul 30",
+      "facility": "Revolver — $1.0bn",
+      "admin_agent": "Citibank, N.A.",
+      "agreement_url": "https://www.sec.gov/Archives/edgar/data/1061219/000106121926000017/epd-20260730xex101.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1061219/000106121926000017/"
     },
     {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2023-10-29(3Q).pdf",
-      "period": "Q3 2023 (filed 2023-10-29)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1fuDqBfeW2rBveLQowTCV_TI76Qcna2eD/view"
-    },
-
-    {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2024-05-04(1Q).pdf",
-      "period": "Q1 2024 (filed 2024-05-04)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1HiePj4IhvNmfP5RVSN-zbcO1Q2sOziFH/view"
+      "company": "TXNM Energy / Public Service Co. of New Mexico",
+      "ticker": "NYSE: TXNM",
+      "agreement": "Term Loan Agreement",
+      "dated": "Jul 21, 2026 · filed Jul 21",
+      "facility": "Term loan — $195M",
+      "admin_agent": "Canadian Imperial Bank of Commerce, NY Branch",
+      "agreement_url": "https://www.sec.gov/Archives/edgar/data/1108426/000110842626000044/txnm07212026ex101.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1108426/000110842626000044/"
     },
     {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2024-08-06(2Q).pdf",
-      "period": "Q2 2024 (filed 2024-08-06)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1GbFsGVKL7j5B5d4JebYfZ5zZyrlPEEum/view"
+      "company": "Acme United Corporation",
+      "ticker": "NYSE American: ACU",
+      "agreement": "Credit Agreement",
+      "dated": "Jul 15, 2026 · filed Jul 21",
+      "facility": "Revolving credit facility",
+      "admin_agent": "HSBC Bank USA, N.A.",
+      "agreement_url": "https://www.sec.gov/Archives/edgar/data/2098/000119312526310329/acu-ex10_1.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/2098/000119312526310329/"
     },
     {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2024-11-05(3Q).pdf",
-      "period": "Q3 2024 (filed 2024-11-05)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1V2uYobjzEjyqt9Y6G0yZRJxXuGPNz_Mg/view"
-    },
-
-    {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2025-05-06(1Q).pdf",
-      "period": "Q1 2025 (filed 2025-05-06)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1AvxijaWHN5B-jdhJsLvRG940P1YX-gm5/view"
+      "company": "Universal Electronics Inc.",
+      "ticker": "NASDAQ: UEIC",
+      "agreement": "Line of Credit Agreement (Gemstar Yangzhou subsidiary)",
+      "dated": "Jul 15, 2026 · filed Jul 20",
+      "facility": "Revolving line — RMB 130M",
+      "admin_agent": "Bank of China Limited, Baoying Sub-branch",
+      "agreement_url": "https://www.sec.gov/Archives/edgar/data/101984/000010198426000102/exhibit101-lineofcreditagr.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/101984/000010198426000102/"
     },
     {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2025-08-05(2Q).pdf",
-      "period": "Q2 2025 (filed 2025-08-05)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1f1rEtkC3fnm9aSjoV1fwhoXLH3uUOl0E/view"
+      "company": "Stanley Black & Decker, Inc.",
+      "ticker": "NYSE: SWK",
+      "agreement": "364-Day Credit Agreement",
+      "dated": "Jun 18, 2026 · filed Jun 24",
+      "facility": "364-day revolver — $1.0bn",
+      "admin_agent": "Citibank, N.A.",
+      "agreement_url": "https://www.sec.gov/Archives/edgar/data/93556/000119312526281077/d49687dex101.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/93556/000119312526281077/"
     },
     {
-      "tag": "SEC",
-      "name": "PLAY-10Q-2025-11-04(3Q).pdf",
-      "period": "Q3 2025 (filed 2025-11-04)",
-      "description": "Form 10-Q filing (interim financials, MD&A, liquidity).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/10brhmUeb4oRsC9kuVWjAmXYfmrBT03B4/view"
-    },
-
-    {
-      "tag": "SEC",
-      "name": "PLAY-10K-2022-03-29.pdf",
-      "period": "Form 10-K (filed 2022-03-29)",
-      "description": "Form 10-K filing (audited annual financials, MD&A, risk factors, footnotes).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1C_6QwJlVzJ3rQIAO4uTPY2tihtErGhqr/view"
+      "company": "Healthcare Realty Trust Inc.",
+      "ticker": "NYSE: HR",
+      "agreement": "Term Loan Agreement",
+      "dated": "May 15, 2026 · filed May 19",
+      "facility": "Senior unsecured delayed-draw term — $400M",
+      "admin_agent": "Wells Fargo Bank, N.A.",
+      "agreement_url": "https://www.sec.gov/Archives/edgar/data/1360604/000136060426000049/exhibit101-wfxhrxtermloana.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1360604/000136060426000049/"
     },
     {
-      "tag": "SEC",
-      "name": "PLAY-10K-2023-03-28.pdf",
-      "period": "Form 10-K (filed 2023-03-28)",
-      "description": "Form 10-K filing (audited annual financials, MD&A, risk factors, footnotes).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1uCrQJayi0iehvLaFM9vqheamCqgj34_-/view"
-    },
-    {
-      "tag": "SEC",
-      "name": "PLAY-10K-2024-04-02.pdf",
-      "period": "Form 10-K (filed 2024-04-02)",
-      "description": "Form 10-K filing (audited annual financials, MD&A, risk factors, footnotes).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1ie4CJ-7jaT3gbmnBaFdjmafWh_TCP2DK/view"
-    },
-    {
-      "tag": "SEC",
-      "name": "PLAY-10K-2025-04-07.pdf",
-      "period": "Form 10-K (filed 2025-04-07)",
-      "description": "Form 10-K filing (audited annual financials, MD&A, risk factors, footnotes).",
-      "sourceLabel": "Google Drive",
-      "url": "https://drive.google.com/file/d/1gnjiw485nzbcs6mmkNLC61LGbAd5RUCR/view"
+      "company": "Mohawk Industries, Inc.",
+      "ticker": "NYSE: MHK",
+      "agreement": "Credit Agreement",
+      "dated": "May 12, 2026 · filed May 13",
+      "facility": "Revolving credit facility — $1.5bn",
+      "admin_agent": "JPMorgan Chase Bank, N.A. / J.P. Morgan SE",
+      "agreement_url": "https://www.sec.gov/Archives/edgar/data/851968/000110465926060295/tm2614381d1_ex10-1.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/851968/000110465926060295/"
     }
   ]
 }
