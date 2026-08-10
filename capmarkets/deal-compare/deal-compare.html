@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deal Compare — Orion</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6GY4CQ6ZFH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6GY4CQ6ZFH', {
+      app_name: 'orion',
+      page_title: 'Deal Compare — Orion',
+      page_path: '/capmarkets/deal-compare/deal-compare.html'
+    });
+  </script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind (used by the injected sidebar) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base + responsive layout (pure CSS — reflows as the window moves) -->
+  <style>
+    body { font-family:'Poppins', sans-serif; background:#f5f6f8; margin:0; color:#172033; }
+    .mainwrap { margin-left:256px; padding:28px 28px 48px; }
+    @media (max-width: 850px){
+      #sidebar-placeholder { display:none; }
+      .mainwrap { margin-left:0; padding:16px; }
+    }
+
+    h1{ font-size:24px; margin:0 0 4px; font-weight:600; letter-spacing:-.01em; }
+    .sub{ color:#64748b; font-size:13px; margin:0 0 14px; max-width:760px; }
+    .sample-banner{
+      display:inline-block; background:#fff7ed; color:#a34c0a; border:1px solid #fed7aa;
+      border-radius:8px; padding:8px 12px; font-size:12px; font-weight:600; margin-bottom:20px;
+    }
+
+    .panel{
+      background:#fff; border:1px solid #e6e6e6; border-radius:14px; padding:16px 18px;
+      margin:0 0 16px; box-shadow:0 1px 4px rgba(0,43,81,.04); max-width:1200px;
+    }
+    .panel h2{ margin:0 0 4px; font-size:15px; font-weight:700; }
+    .panel .desc{ margin:0 0 12px; color:#64748b; font-size:11.5px; }
+
+    .table-wrap{ overflow:auto; border:1px solid #eee; border-radius:12px; }
+    table{ width:100%; border-collapse:separate; border-spacing:0; }
+    thead th{
+      background:#fafafa; text-align:left; padding:10px 12px; border-bottom:1px solid #eee;
+      font-size:11px; font-weight:700; color:#333; white-space:nowrap; cursor:pointer; user-select:none;
+    }
+    thead th.no-sort{ cursor:default; }
+    tbody td{ padding:10px 12px; border-bottom:1px solid #f2f2f2; font-size:12.5px; vertical-align:middle; }
+    tbody tr:last-child td{ border-bottom:0; }
+    .co{ font-weight:600; }
+    .tk{ display:block; color:#64748b; font-size:10.5px; margin-top:1px; }
+    .tag{ display:inline-block; padding:2px 8px; border-radius:999px; background:#eef2f7; color:#52657d; font-size:10.5px; font-weight:600; white-space:nowrap; }
+    .tag.sec{ background:#eef5ff; color:#1f5fbf; }
+    .tag.uns{ background:#f1f5f9; color:#52657d; }
+    .num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+    th.num{ text-align:right; }
+
+    /* score cell */
+    .scorewrap{ display:flex; align-items:center; gap:8px; justify-content:flex-end; }
+    .scorebar{ width:56px; height:6px; border-radius:999px; background:#eef2f7; overflow:hidden; }
+    .scorebar > i{ display:block; height:100%; background:#1f5fbf; }
+    .scoreval{ font-weight:700; font-variant-numeric:tabular-nums; min-width:26px; text-align:right; }
+
+    /* heatmap */
+    .heat td, .heat th{ text-align:center; font-size:11px; padding:7px 8px; white-space:nowrap; }
+    .heat th{ background:#fafafa; font-weight:700; }
+    .heat td.rowlabel, .heat th.rowlabel{ text-align:left; position:sticky; left:0; background:#fff; z-index:1; font-weight:700; }
+    .heat th.rowlabel{ background:#fafafa; }
+    .heat td.cell{ border-radius:4px; }
+
+    /* side-by-side */
+    .picker{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+    .picker label{
+      display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border:1px solid #e2e8f0;
+      border-radius:999px; font-size:11.5px; cursor:pointer; background:#fff;
+    }
+    .picker label.on{ background:#eef5ff; border-color:#bcd4f5; color:#1f5fbf; font-weight:600; }
+    .side-dim{ font-weight:700; color:#36536e; background:#f8fafc; }
+
+    /* holes */
+    .holes{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; }
+    .hole{ border:1px solid #eef2f7; border-radius:10px; padding:11px 13px; background:#f9fbfd; }
+    .hole .k{ font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:#64748b; font-weight:700; }
+    .hole .v{ margin-top:4px; font-size:12.5px; line-height:1.5; color:#37475a; }
+    .hole.warn{ background:#fff7ed; border-color:#fed7aa; }
+    .hole.warn .k{ color:#a34c0a; }
+
+    .link{ color:#1f5fbf; text-decoration:none; font-weight:600; font-size:11.5px; }
+    .link:hover{ text-decoration:underline; }
+    .muted{ color:#64748b; }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/capmarkets/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+      };
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN -->
+  <main class="mainwrap">
+
+    <h1>Deal Compare</h1>
+    <p class="sub">
+      Compare credit agreements side by side, rank them, and spot gaps across the book.
+      Scores, similarity, and portfolio holes are derived from the extracted deal metrics.
+    </p>
+    <div class="sample-banner" id="sampleBanner">Loading…</div>
+
+    <!-- RANKING SCORECARD -->
+    <section class="panel">
+      <h2>Ranking scorecard</h2>
+      <p class="desc">Composite score normalizes each dimension across the book (higher size / spread / covenant tightness = better; lower leverage = better). Click a column to sort.</p>
+      <div class="table-wrap">
+        <table id="scoreTable"><thead></thead><tbody></tbody></table>
+      </div>
+    </section>
+
+    <!-- SIMILARITY MATRIX -->
+    <section class="panel">
+      <h2>Similarity matrix</h2>
+      <p class="desc">How alike each pair of deals is across normalized features. Darker = more similar. <span class="muted">(Placeholder derived from the sample metrics; the live version will use the actual embedding vectors.)</span></p>
+      <div class="table-wrap">
+        <table class="heat" id="heatTable"></table>
+      </div>
+    </section>
+
+    <!-- SIDE BY SIDE -->
+    <section class="panel">
+      <h2>Side-by-side compare</h2>
+      <p class="desc">Pick deals to line their terms up in columns.</p>
+      <div class="picker" id="picker"></div>
+      <div class="table-wrap">
+        <table id="sideTable"><tbody></tbody></table>
+      </div>
+    </section>
+
+    <!-- PORTFOLIO HOLES -->
+    <section class="panel">
+      <h2>Portfolio holes</h2>
+      <p class="desc">Auto-derived concentration &amp; gap observations across the book.</p>
+      <div class="holes" id="holes"></div>
+    </section>
+
+  </main>
+
+  <script>
+    const MANIFEST_URL = "/capmarkets/data/deal_compare.json";
+
+    // Numeric dimensions used for scoring + similarity. better: 'high' | 'low' | null (excluded from score)
+    const NUM_DIMS = [
+      { key:"size_mm",         label:"Size ($mm)",   better:"high", fmt:v=>"$"+num(v) },
+      { key:"spread_bps",      label:"Spread (bps)", better:"high", fmt:v=>num(v) },
+      { key:"leverage_gross",  label:"Gross Lev",    better:"low",  fmt:v=>v.toFixed(1)+"x" },
+      { key:"leverage_net",    label:"Net Lev",      better:"low",  fmt:v=>v.toFixed(1)+"x" },
+      { key:"tenor_years",     label:"Tenor",        better:null,   fmt:v=>v+"y" },
+      { key:"covenant_score",  label:"Covenant",     better:"high", fmt:v=>String(v) },
+    ];
+    const TEXT_DIMS = [
+      { key:"facility", label:"Facility" },
+      { key:"security", label:"Security" },
+    ];
+
+    let DEALS = [];
+    let RANGES = {};          // per-dim {min,max}
+    let sortKey = "score", sortDir = -1;
+    let selected = new Set(); // ids selected for side-by-side
+
+    function num(n){ return Number(n).toLocaleString("en-US"); }
+    function esc(s){ return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+    function shortTicker(t){ const s=String(t||""); const i=s.indexOf(":"); return (i>=0? s.slice(i+1): s).trim(); }
+
+    function computeRanges(){
+      RANGES = {};
+      NUM_DIMS.forEach(d=>{
+        const vals = DEALS.map(x=>Number(x[d.key])).filter(v=>!isNaN(v));
+        RANGES[d.key] = { min: Math.min(...vals), max: Math.max(...vals) };
+      });
+    }
+    function norm(key, v){
+      const r = RANGES[key]; if(!r) return 0.5;
+      if(r.max === r.min) return 0.5;
+      return (Number(v) - r.min) / (r.max - r.min);
+    }
+    function scoreOf(d){
+      const scored = NUM_DIMS.filter(x=>x.better);
+      let sum=0;
+      scored.forEach(x=>{
+        const n = norm(x.key, d[x.key]);
+        sum += (x.better==="high") ? n : (1-n);
+      });
+      return Math.round((sum/scored.length)*100);
+    }
+    function featureVec(d){ return NUM_DIMS.map(x=>norm(x.key, d[x.key])); }
+    function similarity(a,b){
+      const va=featureVec(a), vb=featureVec(b);
+      let sq=0; for(let i=0;i<va.length;i++){ const diff=va[i]-vb[i]; sq+=diff*diff; }
+      const dist=Math.sqrt(sq), maxDist=Math.sqrt(va.length);
+      return Math.max(0, Math.min(1, 1 - dist/maxDist));
+    }
+    function heatStyle(s){
+      const a = (0.10 + 0.90*s).toFixed(3);
+      const fg = s>0.62 ? "#fff" : "#1b2a3a";
+      return `background:rgba(24,122,186,${a});color:${fg}`;
+    }
+
+    /* ---------- RENDER: SCORECARD ---------- */
+    function renderScorecard(){
+      const cols = [
+        { key:"company", label:"Company", num:false },
+        ...TEXT_DIMS.map(d=>({ key:d.key, label:d.label, num:false })),
+        ...NUM_DIMS.map(d=>({ key:d.key, label:d.label, num:true })),
+        { key:"score", label:"Score", num:true },
+      ];
+      const thead = document.querySelector("#scoreTable thead");
+      thead.innerHTML = "<tr>" + cols.map(c=>{
+        const arrow = sortKey===c.key ? (sortDir<0?" ▾":" ▴") : "";
+        return `<th data-key="${c.key}" class="${c.num?'num':''}">${esc(c.label)}${arrow}</th>`;
+      }).join("") + "</tr>";
+      thead.querySelectorAll("th").forEach(th=>{
+        th.addEventListener("click", ()=>{
+          const k = th.getAttribute("data-key");
+          if(sortKey===k){ sortDir *= -1; } else { sortKey=k; sortDir = (k==="company")?1:-1; }
+          renderScorecard();
+        });
+      });
+
+      const rows = [...DEALS].sort((a,b)=>{
+        let av=a[sortKey], bv=b[sortKey];
+        if(typeof av==="string"){ return sortDir*av.localeCompare(bv); }
+        return sortDir*((av||0)-(bv||0));
+      });
+
+      const tbody = document.querySelector("#scoreTable tbody");
+      tbody.innerHTML = rows.map(d=>{
+        const secClass = /unsec/i.test(d.security) ? "uns" : "sec";
+        const numCells = NUM_DIMS.map(x=>`<td class="num">${x.fmt(Number(d[x.key]))}</td>`).join("");
+        return `<tr>
+          <td><span class="co">${esc(d.company)}</span><span class="tk">${esc(d.ticker)}</span></td>
+          <td><span class="tag">${esc(d.facility)}</span></td>
+          <td><span class="tag ${secClass}">${esc(d.security)}</span></td>
+          ${numCells}
+          <td class="num"><span class="scorewrap"><span class="scorebar"><i style="width:${d.score}%"></i></span><span class="scoreval">${d.score}</span></span></td>
+        </tr>`;
+      }).join("");
+    }
+
+    /* ---------- RENDER: HEATMAP ---------- */
+    function renderHeat(){
+      const t = document.getElementById("heatTable");
+      const head = "<tr><th class='rowlabel'>&nbsp;</th>" +
+        DEALS.map(d=>`<th title="${esc(d.company)}">${esc(shortTicker(d.ticker))}</th>`).join("") + "</tr>";
+      const body = DEALS.map(a=>{
+        const cells = DEALS.map(b=>{
+          const s = a.id===b.id ? 1 : similarity(a,b);
+          return `<td class="cell" style="${heatStyle(s)}" title="${esc(shortTicker(a.ticker))} vs ${esc(shortTicker(b.ticker))}: ${s.toFixed(2)}">${s.toFixed(2)}</td>`;
+        }).join("");
+        return `<tr><td class="rowlabel" title="${esc(a.company)}">${esc(shortTicker(a.ticker))}</td>${cells}</tr>`;
+      }).join("");
+      t.innerHTML = "<thead>"+head+"</thead><tbody>"+body+"</tbody>";
+    }
+
+    /* ---------- RENDER: SIDE BY SIDE ---------- */
+    function renderPicker(){
+      const p = document.getElementById("picker");
+      p.innerHTML = DEALS.map(d=>{
+        const on = selected.has(d.id) ? "on" : "";
+        return `<label class="${on}" data-id="${d.id}">
+          <input type="checkbox" ${selected.has(d.id)?"checked":""} style="accent-color:#1f5fbf"> ${esc(shortTicker(d.ticker))}
+        </label>`;
+      }).join("");
+      p.querySelectorAll("label").forEach(l=>{
+        l.addEventListener("click", (e)=>{
+          if(e.target.tagName!=="INPUT"){ const cb=l.querySelector("input"); cb.checked=!cb.checked; }
+          const id=l.getAttribute("data-id");
+          if(l.querySelector("input").checked) selected.add(id); else selected.delete(id);
+          renderPicker(); renderSide();
+        });
+      });
+    }
+    function renderSide(){
+      const chosen = DEALS.filter(d=>selected.has(d.id));
+      const tbody = document.querySelector("#sideTable tbody");
+      if(!chosen.length){ tbody.innerHTML = `<tr><td class="muted" style="padding:14px">Select one or more deals above.</td></tr>`; return; }
+
+      const rowsDef = [
+        { label:"Ticker", get:d=>esc(d.ticker) },
+        ...TEXT_DIMS.map(x=>({ label:x.label, get:d=>esc(d[x.key]) })),
+        ...NUM_DIMS.map(x=>({ label:x.label, get:d=>x.fmt(Number(d[x.key])) })),
+        { label:"Score", get:d=>`<strong>${d.score}</strong>` },
+        { label:"Summary", get:d=>`<span class="muted">${esc(d.summary||"—")}</span>` },
+        { label:"Source", get:d=> d.agreement_url ? `<a class="link" href="${esc(d.agreement_url)}" target="_blank" rel="noopener">Agreement ↗</a>` : "—" },
+      ];
+      const header = `<tr><th class="side-dim" style="padding:10px 12px;text-align:left">&nbsp;</th>` +
+        chosen.map(d=>`<th style="padding:10px 12px;text-align:left;font-size:12px;font-weight:700">${esc(d.company)}</th>`).join("") + `</tr>`;
+      const body = rowsDef.map(r=>{
+        return `<tr><td class="side-dim">${esc(r.label)}</td>` +
+          chosen.map(d=>`<td>${r.get(d)}</td>`).join("") + `</tr>`;
+      }).join("");
+      document.querySelector("#sideTable").innerHTML = "<thead>"+header+"</thead><tbody>"+body+"</tbody>";
+    }
+
+    /* ---------- RENDER: HOLES ---------- */
+    function renderHoles(){
+      const el = document.getElementById("holes");
+      const n = DEALS.length;
+      const pct = c => Math.round((c/n)*100);
+      const countBy = key => DEALS.reduce((m,d)=>{ const k=d[key]; m[k]=(m[k]||0)+1; return m; },{});
+
+      const fac = countBy("facility");
+      const sec = countBy("security");
+      const sizes = DEALS.map(d=>Number(d.size_mm));
+      const small = sizes.filter(v=>v<250).length;
+      const mid   = sizes.filter(v=>v>=250 && v<=1000).length;
+      const large = sizes.filter(v=>v>1000).length;
+      const maxLev = Math.max(...DEALS.map(d=>Number(d.leverage_gross)));
+      const topFac = Object.entries(fac).sort((a,b)=>b[1]-a[1])[0];
+
+      const cards = [];
+      cards.push({ warn: topFac[1]/n>=0.4, k:"Facility mix", v: Object.entries(fac).map(([k,c])=>`${esc(k)} ${c} (${pct(c)}%)`).join(" · ") });
+      cards.push({ warn: Math.max(sec.Secured||0, sec.Unsecured||0)/n>=0.6, k:"Security mix", v: Object.entries(sec).map(([k,c])=>`${esc(k)} ${c} (${pct(c)}%)`).join(" · ") });
+      cards.push({ warn: large/n>=0.5, k:"Size distribution", v:`<$250M: ${small} · $250M–$1B: ${mid} · >$1B: ${large}` });
+      if(small===0) cards.push({ warn:true, k:"Gap", v:"No sub-$250M deals — thin on small-cap exposure." });
+      if(!fac["Unitranche"]) cards.push({ warn:true, k:"Gap", v:"No unitranche structures in the book." });
+      cards.push({ warn:false, k:"Leverage range", v:`Gross leverage spans ${Math.min(...DEALS.map(d=>Number(d.leverage_gross))).toFixed(1)}x–${maxLev.toFixed(1)}x across the book.` });
+
+      el.innerHTML = cards.map(c=>`<div class="hole ${c.warn?'warn':''}"><div class="k">${esc(c.k)}</div><div class="v">${c.v}</div></div>`).join("");
+    }
+
+    /* ---------- LOAD ---------- */
+    (async function(){
+      const banner = document.getElementById("sampleBanner");
+      try{
+        const res = await fetch(MANIFEST_URL, { cache:"no-store" });
+        if(!res.ok) throw new Error(`Manifest fetch failed: ${res.status}`);
+        const data = await res.json();
+        DEALS = Array.isArray(data?.deals) ? data.deals : [];
+        if(!DEALS.length){ banner.textContent = "No deals found in manifest."; return; }
+
+        computeRanges();
+        DEALS.forEach(d=> d.score = scoreOf(d));
+
+        // default: select the top 3 by score for side-by-side
+        [...DEALS].sort((a,b)=>b.score-a.score).slice(0,3).forEach(d=>selected.add(d.id));
+
+        banner.textContent = (data.meta && data.meta.sample)
+          ? "SAMPLE DATA — placeholder metrics for layout preview. Replace /capmarkets/data/deal_compare.json with pipeline output."
+          : "Live data";
+
+        renderScorecard();
+        renderHeat();
+        renderPicker();
+        renderSide();
+        renderHoles();
+      }catch(e){
+        banner.textContent = "Failed to load deal data: " + e.message;
+      }
+    })();
+  </script>
+
+</body>
+</html>
