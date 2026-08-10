@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Extracted Data — Orion</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6GY4CQ6ZFH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6GY4CQ6ZFH', {
+      app_name: 'orion',
+      page_title: 'Extracted Data — Orion',
+      page_path: '/orion/extracted-data.html'
+    });
+  </script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind (used by the injected sidebar) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base + responsive layout (pure CSS) -->
+  <style>
+    body { font-family:'Poppins', sans-serif; background:#f5f6f8; margin:0; color:#172033; }
+    .mainwrap { margin-left:256px; padding:28px 28px 48px; }
+    @media (max-width: 850px){
+      #sidebar-placeholder { display:none; }
+      .mainwrap { margin-left:0; padding:16px; }
+    }
+
+    h1{ font-size:24px; margin:0 0 4px; font-weight:600; letter-spacing:-.01em; }
+    .sub{ color:#64748b; font-size:13px; margin:0 0 16px; max-width:800px; }
+
+    .dbstrip{
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+      background:#fff; border:1px solid #e6e6e6; border-radius:12px; padding:12px 14px;
+      margin-bottom:16px; max-width:1200px; box-shadow:0 1px 4px rgba(0,43,81,.04);
+    }
+    .dbname{ font-weight:700; font-size:13px; }
+    .dbmeta{ font-size:11.5px; color:#64748b; }
+    .pill{ display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px; font-size:11px; font-weight:600; }
+    .pill i{ width:7px; height:7px; border-radius:50%; }
+    .pill.off{ background:#fff7ed; color:#a34c0a; border:1px solid #fed7aa; }
+    .pill.off i{ background:#f59e0b; }
+    .spacer{ flex:1 1 auto; }
+
+    .stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px; max-width:1200px; }
+    .stat{ background:#fff; border:1px solid #e6e6e6; border-radius:12px; padding:13px 15px; box-shadow:0 1px 4px rgba(0,43,81,.04); }
+    .stat .k{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; font-weight:700; }
+    .stat .v{ margin-top:6px; font-size:22px; font-weight:700; color:#06345b; }
+
+    .panel{ background:#fff; border:1px solid #e6e6e6; border-radius:14px; padding:16px 18px; margin:0 0 16px; box-shadow:0 1px 4px rgba(0,43,81,.04); max-width:1200px; }
+    .panel h2{ margin:0 0 4px; font-size:15px; font-weight:700; }
+    .panel .desc{ margin:0 0 12px; color:#64748b; font-size:11.5px; }
+
+    .table-wrap{ overflow:auto; border:1px solid #eee; border-radius:12px; }
+    table{ width:100%; border-collapse:separate; border-spacing:0; }
+    thead th{ background:#fafafa; text-align:left; padding:8px 10px; border-bottom:1px solid #eee; font-size:10px; font-weight:700; color:#333; white-space:normal; vertical-align:bottom; line-height:1.25; }
+    tbody td{ padding:9px 10px; border-bottom:1px solid #f2f2f2; font-size:12px; vertical-align:top; }
+    tbody tr:last-child td{ border-bottom:0; }
+    .file{ font-weight:600; }
+    .co{ display:block; color:#64748b; font-size:10.5px; margin-top:1px; }
+    .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; font-size:11px; }
+    .tag{ display:inline-block; padding:2px 7px; border-radius:999px; background:#eef2f7; color:#52657d; font-size:10px; font-weight:600; white-space:nowrap; }
+    .st{ display:inline-block; padding:2px 8px; border-radius:999px; font-size:10px; font-weight:600; }
+    .st.indexed{ background:#f0fdf4; color:#166534; }
+    .st.processing{ background:#eff6ff; color:#1d4ed8; }
+    .st.failed{ background:#fef2f2; color:#b91c1c; }
+    .sm{ color:#4b5f75; font-size:11.5px; line-height:1.5; max-width:340px; }
+
+    .kv{ display:grid; grid-template-columns:180px 1fr; gap:8px 16px; font-size:12.5px; }
+    .kv .k{ color:#64748b; }
+    .kv .v{ color:#17324d; font-weight:500; word-break:break-all; }
+    .tbl-chip{ display:inline-block; margin:4px 6px 0 0; padding:3px 9px; border-radius:8px; background:#eef2f7; color:#36536e; font-size:11px; font-weight:600; }
+    .callout{ margin-top:14px; padding:12px 14px; border-radius:10px; background:#fff7ed; border:1px solid #fed7aa; color:#7c3a06; font-size:11.5px; line-height:1.6; }
+    .callout b{ color:#7c2d12; }
+    .muted{ color:#64748b; }
+    .sample-banner{ display:inline-block; background:#fff7ed; color:#a34c0a; border:1px solid #fed7aa; border-radius:8px; padding:8px 12px; font-size:12px; font-weight:600; margin-bottom:16px; }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/orion/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+      };
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN -->
+  <main class="mainwrap">
+
+    <h1>Extracted Data</h1>
+    <p class="sub">
+      Documents processed by the Orion extraction pipeline — each turned into a summary + embedding and stored in
+      <span class="mono">orion-data-db</span> (Render PostgreSQL). This view reads those records through the backend API.
+    </p>
+    <div class="sample-banner" id="sampleBanner">Loading…</div>
+
+    <!-- DB STATUS STRIP -->
+    <div class="dbstrip">
+      <div>
+        <div class="dbname mono">orion-data-db</div>
+        <div class="dbmeta" id="dbmeta">Render · PostgreSQL</div>
+      </div>
+      <div class="spacer"></div>
+      <span class="pill off" id="dbpill"><i></i>Not connected</span>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats" id="stats"></div>
+
+    <!-- RECORDS -->
+    <section class="panel">
+      <h2>Extracted records</h2>
+      <p class="desc">Latest documents written by the extraction run. <span class="muted">Placeholder rows — live rows come from <span class="mono">orion-data-db</span> once the backend is wired.</span></p>
+      <div class="table-wrap">
+        <table id="recTable">
+          <thead>
+            <tr>
+              <th>Document</th><th>Doc type</th><th>Asset class</th>
+              <th>Vector</th><th>Status</th><th>Extracted</th><th>Summary</th>
+            </tr>
+          </thead>
+          <tbody><tr><td class="muted" colspan="7">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- DATABASE -->
+    <section class="panel">
+      <h2>Database</h2>
+      <p class="desc">Connection details for the extraction datastore.</p>
+      <div class="kv" id="dbkv"></div>
+      <div style="margin-top:14px">
+        <div class="desc" style="margin-bottom:4px">Tables</div>
+        <div id="dbtables"></div>
+      </div>
+      <div class="callout">
+        <b>How this connects:</b> the extraction program/script writes to <span class="mono">orion-data-db</span> on Render.
+        This page reads those rows through a backend API (e.g. <span class="mono">/data/records</span> on the Orion API) that
+        holds the connection string as a server-side secret. The browser never queries PostgreSQL directly.
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const DATA_URL = "/orion/data/extracted.json";
+    function esc(s){ return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+    function renderStats(recs){
+      const total = recs.length;
+      const indexed = recs.filter(r=>r.status==="indexed").length;
+      const processing = recs.filter(r=>r.status==="processing").length;
+      const failed = recs.filter(r=>r.status==="failed").length;
+      const cards = [
+        ["Records", total],
+        ["Indexed", indexed],
+        ["Processing", processing],
+        ["Failed", failed],
+      ];
+      document.getElementById("stats").innerHTML = cards.map(([k,v])=>
+        `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+    }
+
+    function renderRecords(recs){
+      const tb = document.querySelector("#recTable tbody");
+      if(!recs.length){ tb.innerHTML = `<tr><td class="muted" colspan="7">No records.</td></tr>`; return; }
+      tb.innerHTML = recs.map(r=>`
+        <tr>
+          <td><span class="file">${esc(r.file_name)}</span><span class="co">${esc(r.company)}</span></td>
+          <td><span class="tag">${esc(r.doc_type)}</span></td>
+          <td>${esc(r.asset_class)}</td>
+          <td class="mono">${esc(r.vector_id)}<span class="co">${esc(r.dims)}d</span></td>
+          <td><span class="st ${esc(r.status)}">${esc(r.status)}</span></td>
+          <td class="mono">${esc(r.extracted_at)}</td>
+          <td class="sm">${esc(r.summary)}</td>
+        </tr>`).join("");
+    }
+
+    function renderDb(db){
+      document.getElementById("dbkv").innerHTML = [
+        ["Name", `<span class="mono">${esc(db.name)}</span>`],
+        ["Provider", esc(db.provider)],
+        ["Engine", esc(db.engine)],
+        ["Region", esc(db.region)],
+        ["Status", `<span class="pill off"><i></i>${esc((db.status||"").replace("_"," "))}</span>`],
+        ["Connection", `<span class="mono">${esc(db.connection_masked)}</span>`],
+      ].map(([k,v])=>`<div class="k">${k}</div><div class="v">${v}</div>`).join("");
+      document.getElementById("dbtables").innerHTML =
+        (db.tables||[]).map(t=>`<span class="tbl-chip mono">${esc(t)}</span>`).join("");
+      document.getElementById("dbmeta").textContent = `${db.provider||"Render"} · ${db.engine||"PostgreSQL"}`;
+    }
+
+    (async function(){
+      const banner = document.getElementById("sampleBanner");
+      try{
+        const res = await fetch(DATA_URL, { cache:"no-store" });
+        if(!res.ok) throw new Error(`fetch ${res.status}`);
+        const data = await res.json();
+        const recs = data.records || [];
+        banner.textContent = (data.meta && data.meta.sample)
+          ? "SAMPLE DATA — placeholder rows for layout preview. Live rows come from orion-data-db once the backend is wired."
+          : "Live data";
+        renderStats(recs);
+        renderRecords(recs);
+        renderDb(data.database || {});
+      }catch(e){
+        banner.textContent = "Failed to load extracted data: " + e.message;
+      }
+    })();
+  </script>
+
+</body>
+</html>
