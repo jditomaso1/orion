@@ -95,14 +95,6 @@
     .refresh{ margin-left:auto; border:1px solid #dbe3ec; background:#fff; color:#17324d; border-radius:9px; padding:8px 12px; font:600 11px 'Poppins',sans-serif; cursor:pointer; }
     .refresh:hover{ background:#f8fafc; }
     .refresh:disabled{ cursor:wait; opacity:.55; }
-    .access-gate{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; max-width:1200px; margin:0 0 16px; padding:12px 14px; background:#fff; border:1px solid #e6e6e6; border-radius:12px; box-shadow:0 1px 4px rgba(0,43,81,.04); }
-    .access-copy{ margin-right:auto; }
-    .access-title{ font-size:12px; font-weight:700; color:#17324d; }
-    .access-note{ margin-top:2px; color:#64748b; font-size:10.5px; }
-    .access-input{ min-width:250px; border:1px solid #dbe3ec; background:#f8fafc; border-radius:9px; padding:8px 10px; font:11px ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; color:#17324d; outline:none; }
-    .access-input:focus{ border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.12); }
-    .connect-btn{ border:0; background:#1f5fbf; color:#fff; border-radius:9px; padding:9px 13px; font:600 11px 'Poppins',sans-serif; cursor:pointer; }
-    .connect-btn:hover{ background:#174d9d; }
     .schema-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:10px; }
     .schema-card{ border:1px solid #e8edf2; border-radius:10px; padding:12px; background:#fbfcfd; }
     .schema-head{ display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:8px; }
@@ -151,15 +143,6 @@
     <div class="toolbar">
       <div class="sample-banner" id="dataBanner">Connecting to the Render API…</div>
       <button class="refresh" id="refreshData" type="button">Refresh data</button>
-    </div>
-    <div class="access-gate" id="accessGate">
-      <div class="access-copy">
-        <div class="access-title">Secure extracted-data access</div>
-        <div class="access-note" id="accessNote">Enter the private access key. It is kept only for this browser session.</div>
-      </div>
-      <input class="access-input" id="dataAccessKey" type="password" autocomplete="off" spellcheck="false" placeholder="Access key" aria-label="Extracted data access key" />
-      <button class="connect-btn" id="connectData" type="button">Connect</button>
-      <button class="refresh" id="forgetData" type="button" hidden>Forget key</button>
     </div>
 
     <!-- DB STATUS STRIP -->
@@ -210,27 +193,20 @@
         <div id="dbtables" class="schema-grid"></div>
       </div>
       <div class="callout">
-        <b>Connection boundary:</b> the browser calls the read-only <span class="mono">/data/snapshot</span> endpoint on the Render API.
-        PostgreSQL credentials remain on Render and are never sent to this page. Chunk text is capped at a short preview and full embedding arrays are not transmitted.
+        <b>Connection boundary:</b> the page uses the same email sign-in as the Dave &amp; Buster’s Orion area, backed by
+        <span class="mono">orion-auth-db</span>. After authentication, the API opens a separate read-only connection to
+        <span class="mono">orion_app_v2</span>. PostgreSQL credentials, full chunk bodies, and embedding arrays are never sent to this page.
       </div>
     </section>
 
   </main>
 
   <script>
-    const API_BASE = "https://orion-api-v2.onrender.com";
+    const API_BASE = "https://api.private-credit.ai";
     const DATA_URL = `${API_BASE}/data/snapshot`;
-    const ACCESS_KEY_STORAGE = "orion-extracted-data-session-key";
+    const SIGNIN_URL = `/dnb/signin/signin.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+    const PRICING_URL = "/dnb/pricing/pricing.html";
     function esc(s){ return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-
-    function savedAccessKey(){ return sessionStorage.getItem(ACCESS_KEY_STORAGE) || ""; }
-
-    function renderAccessState(connected, message){
-      document.getElementById("dataAccessKey").hidden = connected;
-      document.getElementById("connectData").hidden = connected;
-      document.getElementById("forgetData").hidden = !connected;
-      document.getElementById("accessNote").textContent = message;
-    }
 
     function renderStats(stats){
       const cards = [
@@ -331,50 +307,42 @@
     async function loadData(){
       const banner = document.getElementById("dataBanner");
       const button = document.getElementById("refreshData");
-      const accessKey = savedAccessKey();
-      if(!accessKey){
-        banner.className = "sample-banner";
-        banner.textContent = "PRIVATE DATA · access key required";
-        button.disabled = false;
-        renderAccessState(false, "Enter the private access key. It is kept only for this browser session.");
-        return;
-      }
       button.disabled = true;
       banner.className = "sample-banner";
-      banner.textContent = "Connecting to the Render API…";
+      banner.textContent = "Checking Orion email sign-in…";
       try{
+        const session = await fetch(`${API_BASE}/me`, {
+          credentials:"include",
+          cache:"no-store"
+        });
+        if(session.status === 401){ window.location.replace(SIGNIN_URL); return; }
+        if(session.status === 402){ window.location.replace(PRICING_URL); return; }
+        if(!session.ok) throw new Error(`session ${session.status}`);
+        const account = await session.json();
+
         const res = await fetch(DATA_URL, {
           cache:"no-store",
-          headers:{ "X-Orion-Data-Key": accessKey }
+          credentials:"include"
         });
-        if(res.status === 401){
-          sessionStorage.removeItem(ACCESS_KEY_STORAGE);
-          throw new Error("access-key");
-        }
+        if(res.status === 401){ window.location.replace(SIGNIN_URL); return; }
+        if(res.status === 402){ window.location.replace(PRICING_URL); return; }
         if(!res.ok) throw new Error(`fetch ${res.status}`);
         const data = await res.json();
         banner.className = "sample-banner live";
-        banner.textContent = `LIVE DATA · refreshed ${new Date().toLocaleTimeString()}`;
+        banner.textContent = `LIVE DATA · ${account.email || "signed in"} · refreshed ${new Date().toLocaleTimeString()}`;
         const pill = document.getElementById("dbpill");
         pill.className = "pill on";
         pill.innerHTML = "<i></i>Connected";
-        renderAccessState(true, "Authenticated for this browser session. Database credentials remain on Render.");
         renderStats(data.stats || {});
         renderDocuments(data.documents || [], data.summary_fields || []);
         renderChunks(data.chunks || []);
         renderDb(data.database || {}, data.tables || []);
       }catch(e){
         banner.className = "sample-banner error";
-        banner.textContent = e.message === "access-key"
-          ? "ACCESS DENIED · enter the correct private key"
-          : "Unable to reach the live database snapshot. The Render service may be waking up; use Refresh data in a moment.";
+        banner.textContent = "Unable to reach the live database snapshot. The Render service may be waking up; use Refresh data in a moment.";
         const pill = document.getElementById("dbpill");
         pill.className = "pill off";
         pill.innerHTML = "<i></i>Not connected";
-        if(e.message === "access-key"){
-          renderAccessState(false, "That key was not accepted. Please try again.");
-          document.getElementById("dataAccessKey").focus();
-        }
         console.error("Extracted data snapshot failed", e);
       }finally{
         button.disabled = false;
@@ -382,24 +350,6 @@
     }
 
     document.getElementById("refreshData").addEventListener("click", loadData);
-    document.getElementById("connectData").addEventListener("click", ()=>{
-      const input = document.getElementById("dataAccessKey");
-      const key = input.value.trim();
-      if(!key){ input.focus(); return; }
-      sessionStorage.setItem(ACCESS_KEY_STORAGE, key);
-      input.value = "";
-      loadData();
-    });
-    document.getElementById("dataAccessKey").addEventListener("keydown", event=>{
-      if(event.key === "Enter") document.getElementById("connectData").click();
-    });
-    document.getElementById("forgetData").addEventListener("click", ()=>{
-      sessionStorage.removeItem(ACCESS_KEY_STORAGE);
-      const pill = document.getElementById("dbpill");
-      pill.className = "pill off";
-      pill.innerHTML = "<i></i>Not connected";
-      loadData();
-    });
     loadData();
   </script>
 
