@@ -193,7 +193,7 @@
         <div id="dbtables" class="schema-grid"></div>
       </div>
       <div class="callout">
-        <b>Connection boundary:</b> the page uses the same email sign-in as the Dave &amp; Buster’s Orion area, backed by
+        <b>Connection boundary:</b> the page uses Orion's email sign-in infrastructure, backed by
         <span class="mono">orion-auth-db</span>. After authentication, the API opens a separate read-only connection to
         <span class="mono">orion_app_v2</span>. PostgreSQL credentials, full chunk bodies, and embedding arrays are never sent to this page.
       </div>
@@ -204,8 +204,8 @@
   <script>
     const API_BASE = "https://api.private-credit.ai";
     const DATA_URL = `${API_BASE}/data/snapshot`;
-    const SIGNIN_URL = `/dnb/signin/signin.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
-    const PRICING_URL = "/dnb/pricing/pricing.html";
+    const SIGNIN_URL = `/orion/signin/signin.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+    const PRICING_URL = "/orion/access.html";
     function esc(s){ return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
     function renderStats(stats){
