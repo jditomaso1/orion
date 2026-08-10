@@ -93,7 +93,7 @@
         </div>
 
         <div class="text-xs text-gray-500">
-          Data: <span class="mono">http://localhost:8000/neural-map</span>
+          Data: <span class="mono">Orion read-only API</span>
         </div>
       </div>
 
@@ -167,7 +167,8 @@
   <!-- NEURAL MAP LOGIC (from your second file) -->
   <script>
     // ----- CONFIG -----
-    const DATA_URL = "http://localhost:8000/neural-map"; // absolute to avoid origin confusion
+    const ORION_READER_API_BASE = "https://orion-reader-api.onrender.com";
+    const DATA_URL = `${ORION_READER_API_BASE}/neural-map`;
     const K_NEIGHBORS = 2;
     const MAX_POINTS_FOR_EDGES = 700;
     const MAX_EDGES = 2500;
