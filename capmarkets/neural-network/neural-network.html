@@ -102,7 +102,7 @@
       renderDeals(nodes);const message=document.getElementById("plotMessage");
       if(!nodes.length){Plotly.purge("plot");message.textContent="No embedded chunks match these filters.";message.classList.add("show");document.getElementById("status").textContent="0 nodes in view";document.getElementById("legend").innerHTML="";return}
       message.classList.remove("show");const edgeX=[],edgeY=[],edgeZ=[];edges.forEach(edge=>{const source=byId.get(edge.source),target=byId.get(edge.target);if(source&&target){edgeX.push(source.x,target.x,null);edgeY.push(source.y,target.y,null);edgeZ.push(source.z??0,target.z??0,null)}});
-      const traces=[{type:"scatter3d",mode:"lines",x:edgeX,y:edgeY,z:edgeZ,visible:showFibers,hoverinfo:"skip",line:{width:1,color:"rgba(71,85,105,.20)"},name:"Semantic relationships"}];
+      const traces=[{type:"scatter3d",mode:"lines",x:edgeX,y:edgeY,z:edgeZ,visible:showFibers,opacity:.58,hoverinfo:"skip",line:{width:2,color:"#64748b"},name:"Semantic relationships"}];
       const groups=[...new Set(nodes.map(node=>node.file_id))];groups.forEach(fileId=>{const group=nodes.filter(node=>node.file_id===fileId),document=(network.documents||[]).find(item=>item.file_id===fileId);traces.push({type:"scatter3d",mode:"markers",name:document?.company_name||fileId,x:group.map(node=>node.x),y:group.map(node=>node.y),z:group.map(node=>node.z??0),customdata:group.map(node=>node.id),hovertext:group.map(node=>nodeHover(node)),hovertemplate:"%{hovertext}<extra></extra>",marker:{size:5.5,color:documentColor(fileId),opacity:.92,line:{width:.5,color:"#fff"}}})});
       const quietAxis={visible:false,showgrid:false,zeroline:false,showbackground:false};
       const layout={paper_bgcolor:"rgba(0,0,0,0)",margin:{l:0,r:0,t:0,b:0},showlegend:false,hovermode:"closest",uirevision:"orion-live-map-3d",scene:{dragmode:"orbit",camera:currentCamera,aspectmode:"cube",bgcolor:"rgba(0,0,0,0)",xaxis:quietAxis,yaxis:quietAxis,zaxis:quietAxis},hoverlabel:{bgcolor:"#172033",bordercolor:"#334155",font:{family:"Poppins",color:"#fff",size:11}}};
@@ -143,7 +143,7 @@
     }
     function configureTimer(){window.clearInterval(refreshTimer);refreshTimer=null;if(document.getElementById("autoRefresh").checked)refreshTimer=window.setInterval(loadNetwork,60000)}
     document.getElementById("dealFilter").addEventListener("change",event=>{dealFilter=event.target.value;renderNetwork()});document.getElementById("tagFilter").addEventListener("change",event=>{tagFilter=event.target.value;renderNetwork()});document.getElementById("refreshBtn").addEventListener("click",loadNetwork);document.getElementById("autoRefresh").addEventListener("change",configureTimer);
-    document.getElementById("fibersBtn").addEventListener("click",()=>{showFibers=!showFibers;updateFiberControl();if(network)renderNetwork()});
+    document.getElementById("fibersBtn").addEventListener("click",()=>{showFibers=!showFibers;updateFiberControl();if(network){Plotly.restyle("plot",{visible:showFibers},[0]);const status=document.getElementById("status");status.textContent=status.textContent.replace(/fibers (on|off)/,`fibers ${showFibers?"on":"off"}`)}});
     document.getElementById("rotateBtn").addEventListener("click",()=>{autoRotate=!autoRotate;updateRotateControl();if(autoRotate&&!animationFrame)animationFrame=requestAnimationFrame(animateCamera)});
     document.getElementById("resetBtn").addEventListener("click",()=>{currentCamera=structuredClone(DEFAULT_CAMERA);Plotly.relayout("plot",{"scene.camera":currentCamera})});
     updateFiberControl();updateRotateControl();
