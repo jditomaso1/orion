@@ -40,12 +40,32 @@
 
 <body class="flex">
 
+  <!-- MOBILE TOP BAR (small screens only) -->
+  <div class="md:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b z-40 flex items-center gap-3 px-4">
+    <button id="menuBtn" aria-label="Open menu" class="p-2 -ml-2 text-gray-700">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+      </svg>
+    </button>
+    <span class="text-[18px] font-semibold text-gray-900 tracking-tight">ORION</span>
+  </div>
+
+  <!-- MOBILE BACKDROP -->
+  <div id="backdrop" class="md:hidden fixed inset-0 bg-black/30 z-40 hidden"></div>
+
   <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
   <script>
     async function injectSidebar() {
+      const holder = document.getElementById("sidebar-placeholder");
       const res = await fetch("/capmarkets/sidebar.html");
-      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+      holder.innerHTML = await res.text();
+
+      // Make the injected sidebar a slide-in drawer on small screens
+      const aside = holder.querySelector("aside");
+      if (aside) {
+        aside.classList.add("transition-transform", "duration-200", "-translate-x-full", "md:translate-x-0");
+      }
 
       window.toggleSection = function(id) {
         const section = document.getElementById(id);
@@ -55,18 +75,29 @@
         section.classList.toggle("hidden");
         icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
       };
+
+      // Mobile drawer open/close
+      const menuBtn = document.getElementById("menuBtn");
+      const backdrop = document.getElementById("backdrop");
+      const openDrawer = () => { if (aside) aside.classList.remove("-translate-x-full"); if (backdrop) backdrop.classList.remove("hidden"); };
+      const closeDrawer = () => { if (aside) aside.classList.add("-translate-x-full"); if (backdrop) backdrop.classList.add("hidden"); };
+
+      if (menuBtn) menuBtn.addEventListener("click", openDrawer);
+      if (backdrop) backdrop.addEventListener("click", closeDrawer);
+      // Close the drawer after tapping a nav link
+      if (aside) aside.addEventListener("click", (e) => { if (e.target.closest("a")) closeDrawer(); });
     }
     injectSidebar();
   </script>
 
   <!-- MAIN CONTENT -->
-  <main class="flex-1 ml-64 p-8 flex flex-col">
+  <main class="flex-1 ml-0 md:ml-64 p-4 md:p-8 pt-20 md:pt-8 flex flex-col">
 
     <section class="card sources" aria-labelledby="sources-title">
       <style>
         .card.sources{
           border:1px solid #e6e6e6;border-radius:14px;padding:16px;background:#fff;
-          max-width:1160px;margin-top:24px
+          max-width:1160px;margin-top:8px
         }
         .card.sources h2{
           margin:0 0 10px;
@@ -101,6 +132,25 @@
           border:1px solid #eee;border-radius:6px;padding:4px 9px;display:inline-block;margin:0 6px 4px 0;font-size:12px
         }
         .link:hover{background:#eef3fb}
+
+        /* ---- SMALL SCREENS: turn the table into stacked cards ---- */
+        @media (max-width: 767px){
+          .table-wrap{overflow:visible;border:0;border-radius:0}
+          table{min-width:0}
+          thead{display:none}
+          tbody, tbody tr, tbody td{display:block;width:100%}
+          tbody tr{
+            border:1px solid #eee;border-radius:12px;background:#fff;
+            padding:6px 4px;margin:0 0 12px
+          }
+          tbody td{border-bottom:0;padding:8px 12px}
+          tbody td[data-label]::before{
+            content:attr(data-label);display:block;color:#666;font-size:10.5px;
+            text-transform:uppercase;letter-spacing:.03em;font-weight:600;margin-bottom:3px
+          }
+          .row-head{padding-top:10px}
+          .link{font-size:13px;padding:6px 11px}
+        }
       </style>
 
       <h2 id="sources-title">New Credit Agreements — U.S. Public Companies</h2>
@@ -167,16 +217,16 @@
 
           return `
             <tr>
-              <td>
+              <td class="row-head">
                 <span class="co-name">${company}</span>
                 ${ticker ? `<span class="ticker">${ticker}</span>` : ""}
                 <span class="chip">New facility</span>
               </td>
-              <td>${agreement}</td>
-              <td>${facility}</td>
-              <td>${agent}</td>
-              <td>${dated}</td>
-              <td>${linksCell}</td>
+              <td data-label="Agreement">${agreement}</td>
+              <td data-label="Facility">${facility}</td>
+              <td data-label="Admin Agent">${agent}</td>
+              <td data-label="Dated">${dated}</td>
+              <td data-label="Documents">${linksCell}</td>
             </tr>
           `;
         }
