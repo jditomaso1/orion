@@ -76,11 +76,11 @@ injectSidebar();
   <!-- Header -->
   <div class="px-6 py-4 border-b bg-white flex justify-between items-center">
     <div>
-      <div class="text-sm font-semibold">Orion — Ask the Deal Stack</div>
-      <!-- <div class="text-xs text-neutral-500">Live Pinecone + Postgres</div> -->
+      <div class="text-sm font-semibold">OrionGPT — Ask the Deal Stack</div>
+      <div class="text-xs text-neutral-500">Grounded in your authorized Capital Markets documents</div>
     </div>
     <span class="text-[10px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-      Connected to /ask-orion
+      CAPITAL MARKETS RAG
     </span>
   </div>
 
@@ -111,16 +111,28 @@ injectSidebar();
 <!-- ================= CHAT LOGIC ================= -->
 <script>
 /* CONFIG */
-const ORION_API_BASE = "http://127.0.0.1:8000";
+const ORION_API_BASE = "https://api.private-credit.ai";
 
 /* API */
 async function askOrionBackend(question, topK = 5) {
-  const res = await fetch(`${ORION_API_BASE}/ask-orion`, {
+  const res = await fetch(`${ORION_API_BASE}/capmarkets/ask-orion`, {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question, top_k: topK })
   });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (res.status === 401 || res.status === 403) {
+    location.replace(`/capmarkets/signin/signin.html?next=${encodeURIComponent(location.pathname)}`);
+    throw new Error("Capital Markets access required");
+  }
+  if (!res.ok) {
+    let message = `HTTP ${res.status}`;
+    try {
+      const payload = await res.json();
+      message = typeof payload.detail === "string" ? payload.detail : message;
+    } catch (_) {}
+    throw new Error(message);
+  }
   return res.json();
 }
 
@@ -130,9 +142,12 @@ const stream = $("#chatStream");
 const input = $("#chatInput");
 const sendBtn = $("#sendBtn");
 
+function escapeHtml(text) {
+  return String(text || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
 function md(text) {
-  return (text || "")
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+  return escapeHtml(text)
     .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
     .replace(/\n/g,"<br/>");
 }
@@ -158,15 +173,8 @@ function addBubble(role, html, typing=false) {
   return bubble;
 }
 
-function normalizeSourceName(fileName) {
-  const name = fileName || "";
-  if (name.includes("Dave & Buster") && name.includes("SEC Filing")) {
-    return "Dave & Buster’s — Credit Agreement & Amendments";
-  }
-  return name;
-}
 /* INIT */
-addBubble("assistant", md("**Joe — Orion is live.**"));
+addBubble("assistant", md("**OrionGPT is live.** Ask a question about the ingested Capital Markets credit agreements and deal materials."));
 
 /* SEND */
 async function handleSend() {
@@ -180,27 +188,27 @@ async function handleSend() {
   const thinking = addBubble("assistant", md("_Checking Orion…_"), true);
 
   try {
-    const data = await askOrionBackend(q, 20);
+    const data = await askOrionBackend(q, 8);
     const answer = data.answer || "No answer returned.";
     const matches = data.matches || [];
 
     const sources = matches.length
       ? "<br/><br/><em>Sources:</em><br/>" +
-        matches.map(m => {
-          const rawName = (m.metadata?.file_name || m.id);
-          const pretty = normalizeSourceName(rawName);
+        matches.map((m, index) => {
+          const pretty = escapeHtml(m.metadata?.company_name || m.metadata?.deal_title || m.metadata?.file_name || m.id);
+          const chunk = m.metadata?.chunk_id ? ` — chunk ${m.metadata.chunk_id}` : "";
 
           const fid = m.metadata?.file_id;
           if (fid) {
-            const url = `https://drive.google.com/file/d/${fid}/view`;
-            return `• <a href="${url}" target="_blank" class="text-blue-600 underline">${pretty}</a>`;
+            const url = `https://drive.google.com/file/d/${encodeURIComponent(fid)}/view`;
+            return `• [Source ${index + 1}] <a href="${url}" target="_blank" rel="noopener" class="text-blue-600 underline">${pretty}</a>${chunk}`;
           }
-          return `• ${pretty}`;
+          return `• [Source ${index + 1}] ${pretty}${chunk}`;
         }).join("<br/>")
       : "";
 
     thinking.classList.remove("typing-cursor");
-    thinking.innerHTML = md(`**Orion:** ${answer}`) + sources;
+    thinking.innerHTML = md(`**OrionGPT:** ${answer}`) + sources;
 
   } catch (e) {
     thinking.classList.remove("typing-cursor");
