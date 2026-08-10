@@ -40,6 +40,19 @@
       line-height: 1.1;
       box-sizing: border-box; /* padding counted inside the box */
     }
+    .vector-genome-stage {
+      background:
+        radial-gradient(circle at 25% 20%, rgba(37, 99, 235, 0.24), transparent 38%),
+        radial-gradient(circle at 78% 72%, rgba(16, 185, 129, 0.16), transparent 42%),
+        linear-gradient(145deg, #07111f 0%, #020617 58%, #071a18 100%);
+    }
+    .vector-genome-stage canvas {
+      cursor: grab;
+      touch-action: none;
+    }
+    .vector-genome-stage canvas:active {
+      cursor: grabbing;
+    }
     /* larger dna block */
     /* .asciiBlock {
       background: #020;
@@ -118,8 +131,10 @@
       Choose an asset class, company folder, and one or more files to summarize.
     </p>
 
+    <div class="grid max-w-[1500px] grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(360px,480px)_minmax(520px,1fr)]">
+
     <!-- SELECTION BOX -->
-    <div class="bg-white p-6 rounded-xl shadow-sm border max-w-xl">
+    <div class="bg-white p-6 rounded-xl shadow-sm border w-full min-w-0">
 
       <!-- ASSET CLASS DROPDOWN -->
       <label class="block text-gray-700 font-medium mb-2">Asset Class</label>
@@ -222,6 +237,79 @@
           class="mt-4 inline-block bg-black text-green-400 font-mono p-4 rounded-lg"
         ></div>
       </div>
+
+    </div>
+
+    <!-- VECTOR GENOME -->
+    <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-labelledby="vectorGenomeTitle">
+      <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
+        <div>
+          <div class="mb-2 flex items-center gap-2">
+            <span class="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-700">Live embedding</span>
+            <span id="vectorGenomeDimensions" class="text-xs text-slate-400">1,536 positions</span>
+          </div>
+          <h2 id="vectorGenomeTitle" class="text-xl font-semibold tracking-tight text-slate-900">Vector Genome</h2>
+          <p id="vectorGenomeFile" class="mt-1 max-w-xl truncate text-xs text-slate-500">Select an ingested document to map its embedding.</p>
+        </div>
+        <div class="flex flex-wrap items-end gap-2">
+          <label class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+            Projection
+            <select id="vectorGenomeMode" class="mt-1 block rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium normal-case tracking-normal text-slate-700 outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="helix">Protein Helix</option>
+              <option value="sphere">Neural Globe</option>
+              <option value="terrain">Matrix Terrain</option>
+            </select>
+          </label>
+          <label class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+            Coordinate slice
+            <select id="vectorGenomeSlice" class="mt-1 block rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium normal-case tracking-normal text-slate-700 outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="all">All · 1–1,536</option>
+              <option value="0:256">Slice 01 · 1–256</option>
+              <option value="256:512">Slice 02 · 257–512</option>
+              <option value="512:768">Slice 03 · 513–768</option>
+              <option value="768:1024">Slice 04 · 769–1,024</option>
+              <option value="1024:1280">Slice 05 · 1,025–1,280</option>
+              <option value="1280:1536">Slice 06 · 1,281–1,536</option>
+            </select>
+          </label>
+          <button id="vectorGenomeMotion" type="button" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50" aria-pressed="true">Pause motion</button>
+          <button id="vectorGenomeReset" type="button" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50">Reset view</button>
+        </div>
+      </div>
+
+      <div class="p-4 sm:p-5">
+        <div class="vector-genome-stage relative min-h-[430px] overflow-hidden rounded-xl border border-slate-800 shadow-inner">
+          <canvas id="vectorGenomeCanvas" class="absolute inset-0 h-full w-full" aria-label="Interactive three-dimensional projection of all document embedding coordinates"></canvas>
+          <div id="vectorGenomeEmpty" class="pointer-events-none absolute inset-0 flex items-center justify-center px-8 text-center">
+            <div>
+              <div class="mx-auto mb-4 h-12 w-12 rounded-full border border-blue-400/30 bg-blue-400/10 shadow-[0_0_40px_rgba(59,130,246,0.25)]"></div>
+              <p class="text-sm font-medium text-slate-200">No vector selected</p>
+              <p class="mt-2 max-w-sm text-xs leading-5 text-slate-400">Load the company files and select an ingested document. Its complete 1,536-coordinate embedding will appear here.</p>
+            </div>
+          </div>
+          <div id="vectorGenomeTooltip" class="pointer-events-none absolute hidden rounded-md border border-white/10 bg-slate-950/90 px-2.5 py-2 font-mono text-[10px] text-slate-200 shadow-xl"></div>
+          <div class="pointer-events-none absolute bottom-3 left-3 flex items-center gap-3 rounded-full border border-white/10 bg-slate-950/65 px-3 py-1.5 text-[10px] text-slate-300 backdrop-blur">
+            <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-cyan-400"></span>Negative</span>
+            <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-fuchsia-400"></span>Positive</span>
+            <span class="text-slate-500">Drag to rotate · scroll to zoom</span>
+          </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div class="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2.5"><p class="text-[10px] uppercase tracking-wider text-slate-400">Coordinates</p><p id="vectorStatCoordinates" class="mt-1 font-mono text-sm font-semibold text-slate-800">—</p></div>
+          <div class="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2.5"><p class="text-[10px] uppercase tracking-wider text-slate-400">Mean</p><p id="vectorStatMean" class="mt-1 font-mono text-sm font-semibold text-slate-800">—</p></div>
+          <div class="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2.5"><p class="text-[10px] uppercase tracking-wider text-slate-400">Peak |value|</p><p id="vectorStatPeak" class="mt-1 font-mono text-sm font-semibold text-slate-800">—</p></div>
+          <div class="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2.5"><p class="text-[10px] uppercase tracking-wider text-slate-400">Vector norm</p><p id="vectorStatNorm" class="mt-1 font-mono text-sm font-semibold text-slate-800">—</p></div>
+        </div>
+
+        <div class="mt-4 rounded-lg border border-slate-100 bg-slate-50 p-3">
+          <div class="mb-2 flex items-center justify-between text-[10px] uppercase tracking-wider text-slate-400"><span>Dimension signal</span><span id="vectorGenomeRange">1–1,536</span></div>
+          <canvas id="vectorGenomeStrip" class="h-12 w-full" aria-label="Complete embedding coordinate signal strip"></canvas>
+        </div>
+
+        <p class="mt-3 text-[11px] leading-5 text-slate-400">A deterministic 3D projection of the actual embedding—not a biological molecule. Position, radius, height, and color encode coordinate index, magnitude, and sign while preserving every dimension.</p>
+      </div>
+    </section>
 
     </div>
 
@@ -392,6 +480,19 @@
             cb.type = "checkbox";
             cb.name = "fileCheckbox";
             cb.value = f.id;
+            cb.dataset.fileName = f.name;
+            cb.addEventListener("change", () => {
+              if (cb.checked) {
+                window.loadVectorGenome(f.id, f.name);
+                return;
+              }
+              const remaining = document.querySelector('input[name="fileCheckbox"]:checked');
+              if (remaining) {
+                window.loadVectorGenome(remaining.value, remaining.dataset.fileName || "Selected document");
+              } else {
+                window.clearVectorGenome();
+              }
+            });
 
             const span = document.createElement("span");
             span.textContent = f.name;
@@ -402,6 +503,9 @@
           });
 
           fileListDiv.appendChild(list);
+          if (files.length === 1) {
+            window.loadVectorGenome(files[0].id, files[0].name);
+          }
 
         } catch (err) {
           console.error("Error loading files:", err);
@@ -415,6 +519,11 @@
         const checked = e.target.checked;
         const boxes = document.querySelectorAll('input[name="fileCheckbox"]');
         boxes.forEach(cb => cb.checked = checked);
+        if (checked && boxes[0]) {
+          window.loadVectorGenome(boxes[0].value, boxes[0].dataset.fileName || "Selected document");
+        } else if (!checked) {
+          window.clearVectorGenome();
+        }
       };
 
       // 4) Summarize selected files
@@ -500,6 +609,9 @@
           if (asciiEl) {
             asciiEl.textContent = vid ? vectorIdToAsciiBlock(vid) : "";
           }
+          if (results[0]) {
+            await window.loadVectorGenome(results[0].file_id, results[0].file_name);
+          }
         } catch (err) {
           clearInterval(loader);
           console.error("Error:", err);
@@ -508,6 +620,455 @@
         }
       };
     });
+  </script>
+
+  <script>
+    const vectorGenomeState = {
+      values: [],
+      fileName: "",
+      vectorId: "",
+      rotationX: -0.28,
+      rotationY: 0.52,
+      zoom: 1,
+      dragging: false,
+      pointerX: 0,
+      pointerY: 0,
+      motion: true,
+      animationFrame: null,
+      lastFrame: 0,
+      screenPoints: [],
+      requestEpoch: 0
+    };
+
+    function vectorGenomeElements() {
+      return {
+        canvas: document.getElementById("vectorGenomeCanvas"),
+        strip: document.getElementById("vectorGenomeStrip"),
+        empty: document.getElementById("vectorGenomeEmpty"),
+        tooltip: document.getElementById("vectorGenomeTooltip"),
+        mode: document.getElementById("vectorGenomeMode"),
+        slice: document.getElementById("vectorGenomeSlice")
+      };
+    }
+
+    function setVectorGenomeEmpty(title, message) {
+      const { empty } = vectorGenomeElements();
+      if (!empty) return;
+      empty.classList.remove("hidden");
+      const paragraphs = empty.querySelectorAll("p");
+      if (paragraphs[0]) paragraphs[0].textContent = title;
+      if (paragraphs[1]) paragraphs[1].textContent = message;
+    }
+
+    function clearVectorGenome() {
+      vectorGenomeState.values = [];
+      vectorGenomeState.fileName = "";
+      vectorGenomeState.vectorId = "";
+      vectorGenomeState.screenPoints = [];
+      document.getElementById("vectorGenomeFile").textContent = "Select an ingested document to map its embedding.";
+      document.getElementById("vectorGenomeDimensions").textContent = "1,536 positions";
+      ["vectorStatCoordinates", "vectorStatMean", "vectorStatPeak", "vectorStatNorm"].forEach(id => {
+        document.getElementById(id).textContent = "—";
+      });
+      setVectorGenomeEmpty(
+        "No vector selected",
+        "Load the company files and select an ingested document. Its complete 1,536-coordinate embedding will appear here."
+      );
+      drawVectorGenome();
+      drawVectorGenomeStrip();
+    }
+    window.clearVectorGenome = clearVectorGenome;
+
+    async function loadVectorGenome(fileId, fileName) {
+      const requestEpoch = ++vectorGenomeState.requestEpoch;
+      document.getElementById("vectorGenomeFile").textContent = fileName || "Selected document";
+      setVectorGenomeEmpty("Loading vector genome…", "Retrieving all stored embedding coordinates from Pinecone.");
+
+      try {
+        const response = await window.orionApiFetch(`/vector-visualization/${encodeURIComponent(fileId)}`, {
+          cache: "no-store"
+        });
+        if (requestEpoch !== vectorGenomeState.requestEpoch) return;
+        if (response.status === 404) {
+          vectorGenomeState.values = [];
+          setVectorGenomeEmpty(
+            "No stored vector yet",
+            "This document will appear here after its first successful ingestion."
+          );
+          drawVectorGenome();
+          drawVectorGenomeStrip();
+          return;
+        }
+        if (!response.ok) throw new Error(`Vector endpoint returned ${response.status}`);
+
+        const payload = await response.json();
+        const values = Array.isArray(payload.values)
+          ? payload.values.map(Number).filter(Number.isFinite)
+          : [];
+        if (!values.length || values.length !== payload.dimensions) {
+          throw new Error("The stored vector is incomplete.");
+        }
+
+        vectorGenomeState.values = values;
+        vectorGenomeState.fileName = payload.file_name || fileName || "Selected document";
+        vectorGenomeState.vectorId = payload.vector_id || "";
+        document.getElementById("vectorGenomeFile").textContent = vectorGenomeState.fileName;
+        document.getElementById("vectorGenomeDimensions").textContent = `${values.length.toLocaleString()} positions`;
+        document.getElementById("vectorGenomeEmpty").classList.add("hidden");
+        resetVectorGenomeView();
+        updateVectorGenomeStats();
+        drawVectorGenomeStrip();
+        startVectorGenomeAnimation();
+      } catch (error) {
+        console.error("Vector genome failed:", error);
+        vectorGenomeState.values = [];
+        setVectorGenomeEmpty(
+          "Vector unavailable",
+          "Keep Orion Ingestor running, then select the document again."
+        );
+        drawVectorGenome();
+        drawVectorGenomeStrip();
+      }
+    }
+    window.loadVectorGenome = loadVectorGenome;
+
+    function currentVectorGenomeRange() {
+      const values = vectorGenomeState.values;
+      const sliceValue = document.getElementById("vectorGenomeSlice")?.value || "all";
+      if (sliceValue === "all" || !values.length) return [0, values.length];
+      const [start, end] = sliceValue.split(":").map(Number);
+      return [Math.max(0, start), Math.min(values.length, end)];
+    }
+
+    function updateVectorGenomeStats() {
+      const values = vectorGenomeState.values;
+      if (!values.length) return;
+      const [start, end] = currentVectorGenomeRange();
+      const active = values.slice(start, end);
+      const sum = active.reduce((total, value) => total + value, 0);
+      const peak = active.reduce((maximum, value) => Math.max(maximum, Math.abs(value)), 0);
+      const norm = Math.sqrt(active.reduce((total, value) => total + value * value, 0));
+      document.getElementById("vectorStatCoordinates").textContent = `${active.length.toLocaleString()} / ${values.length.toLocaleString()}`;
+      document.getElementById("vectorStatMean").textContent = (sum / active.length).toFixed(6);
+      document.getElementById("vectorStatPeak").textContent = peak.toFixed(6);
+      document.getElementById("vectorStatNorm").textContent = norm.toFixed(6);
+      document.getElementById("vectorGenomeRange").textContent = `${(start + 1).toLocaleString()}–${end.toLocaleString()}`;
+    }
+
+    function genomeColor(value, maxAbs, alpha = 1) {
+      const strength = Math.min(1, Math.abs(value) / (maxAbs || 1));
+      if (value >= 0) {
+        return `hsla(${304 + strength * 18}, ${74 + strength * 18}%, ${62 + strength * 12}%, ${alpha})`;
+      }
+      return `hsla(${190 - strength * 12}, ${76 + strength * 18}%, ${58 + strength * 15}%, ${alpha})`;
+    }
+
+    function buildVectorGenomePoints() {
+      const values = vectorGenomeState.values;
+      const [start, end] = currentVectorGenomeRange();
+      const active = values.slice(start, end);
+      const count = active.length;
+      if (!count) return { points: [], cols: 0 };
+      const maxAbs = values.reduce((maximum, value) => Math.max(maximum, Math.abs(value)), 0) || 1;
+      const mode = document.getElementById("vectorGenomeMode")?.value || "helix";
+      const points = [];
+      const terrainCols = count > 512 ? 48 : 16;
+      const terrainRows = Math.ceil(count / terrainCols);
+      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+
+      active.forEach((value, localIndex) => {
+        const index = start + localIndex;
+        const magnitude = Math.abs(value) / maxAbs;
+        let x;
+        let y;
+        let z;
+
+        if (mode === "sphere") {
+          const normalizedIndex = (localIndex + 0.5) / count;
+          const polar = Math.acos(1 - 2 * normalizedIndex);
+          const azimuth = index * goldenAngle;
+          const radius = 3.15 + magnitude * 1.35 + (value >= 0 ? 0.12 : -0.08);
+          x = radius * Math.sin(polar) * Math.cos(azimuth);
+          y = radius * Math.cos(polar);
+          z = radius * Math.sin(polar) * Math.sin(azimuth);
+        } else if (mode === "terrain") {
+          const col = localIndex % terrainCols;
+          const row = Math.floor(localIndex / terrainCols);
+          x = (col - (terrainCols - 1) / 2) * (count > 512 ? 0.245 : 0.46);
+          y = ((terrainRows - 1) / 2 - row) * (count > 512 ? 0.245 : 0.46);
+          z = (value / maxAbs) * 3.4;
+        } else {
+          const progress = count > 1 ? localIndex / (count - 1) : 0;
+          const angle = index * 0.205;
+          const radius = 1.55 + magnitude * 2.15;
+          x = (progress - 0.5) * 10.8;
+          y = Math.cos(angle) * radius;
+          z = Math.sin(angle) * radius;
+        }
+
+        points.push({ x, y, z, value, index, localIndex, maxAbs });
+      });
+      return { points, cols: terrainCols };
+    }
+
+    function resizeVectorCanvas(canvas) {
+      if (!canvas) return null;
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return null;
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      const width = Math.round(rect.width * pixelRatio);
+      const height = Math.round(rect.height * pixelRatio);
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+      const context = canvas.getContext("2d");
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      return { context, width: rect.width, height: rect.height };
+    }
+
+    function projectVectorGenomePoint(point, width, height) {
+      const cosY = Math.cos(vectorGenomeState.rotationY);
+      const sinY = Math.sin(vectorGenomeState.rotationY);
+      const cosX = Math.cos(vectorGenomeState.rotationX);
+      const sinX = Math.sin(vectorGenomeState.rotationX);
+      const rotatedX = point.x * cosY - point.z * sinY;
+      const intermediateZ = point.x * sinY + point.z * cosY;
+      const rotatedY = point.y * cosX - intermediateZ * sinX;
+      const rotatedZ = point.y * sinX + intermediateZ * cosX;
+      const camera = 12;
+      const perspective = camera / Math.max(4, camera - rotatedZ);
+      const scale = Math.min(width / 13.5, height / 10.5) * vectorGenomeState.zoom;
+      return {
+        ...point,
+        screenX: width / 2 + rotatedX * scale * perspective,
+        screenY: height / 2 - rotatedY * scale * perspective,
+        depth: rotatedZ,
+        perspective
+      };
+    }
+
+    function drawGenomeConnection(context, a, b, alpha = 0.18) {
+      const average = (a.value + b.value) / 2;
+      const maxAbs = Math.max(a.maxAbs, b.maxAbs);
+      context.strokeStyle = genomeColor(average, maxAbs, alpha);
+      context.beginPath();
+      context.moveTo(a.screenX, a.screenY);
+      context.lineTo(b.screenX, b.screenY);
+      context.stroke();
+    }
+
+    function drawVectorGenome() {
+      const { canvas } = vectorGenomeElements();
+      const resized = resizeVectorCanvas(canvas);
+      if (!resized) return;
+      const { context, width, height } = resized;
+      context.clearRect(0, 0, width, height);
+
+      context.save();
+      context.strokeStyle = "rgba(148, 163, 184, 0.055)";
+      context.lineWidth = 1;
+      for (let x = 0; x < width; x += 42) {
+        context.beginPath();
+        context.moveTo(x, 0);
+        context.lineTo(x, height);
+        context.stroke();
+      }
+      for (let y = 0; y < height; y += 42) {
+        context.beginPath();
+        context.moveTo(0, y);
+        context.lineTo(width, y);
+        context.stroke();
+      }
+      context.restore();
+
+      const { points, cols } = buildVectorGenomePoints();
+      if (!points.length) {
+        vectorGenomeState.screenPoints = [];
+        return;
+      }
+
+      const projected = points.map(point => projectVectorGenomePoint(point, width, height));
+      const mode = document.getElementById("vectorGenomeMode")?.value || "helix";
+      context.lineWidth = mode === "terrain" ? 0.55 : 0.75;
+
+      if (mode === "terrain") {
+        projected.forEach((point, index) => {
+          const nextCol = projected[index + 1];
+          const nextRow = projected[index + cols];
+          if (nextCol && point.localIndex % cols !== cols - 1) {
+            drawGenomeConnection(context, point, nextCol, 0.13);
+          }
+          if (nextRow) drawGenomeConnection(context, point, nextRow, 0.1);
+        });
+      } else if (mode === "sphere") {
+        const stride = Math.max(5, Math.floor(Math.sqrt(projected.length)));
+        projected.forEach((point, index) => {
+          if (projected[index + 1]) drawGenomeConnection(context, point, projected[index + 1], 0.09);
+          if (projected[index + stride] && index % 2 === 0) {
+            drawGenomeConnection(context, point, projected[index + stride], 0.11);
+          }
+        });
+      } else {
+        for (let index = 1; index < projected.length; index += 1) {
+          drawGenomeConnection(context, projected[index - 1], projected[index], 0.28);
+        }
+      }
+
+      const sorted = [...projected].sort((a, b) => a.depth - b.depth);
+      sorted.forEach(point => {
+        const magnitude = Math.abs(point.value) / point.maxAbs;
+        const radius = (0.9 + magnitude * 2.4) * Math.max(0.7, point.perspective);
+        context.shadowBlur = 4 + magnitude * 10;
+        context.shadowColor = genomeColor(point.value, point.maxAbs, 0.5);
+        context.fillStyle = genomeColor(point.value, point.maxAbs, 0.55 + magnitude * 0.4);
+        context.beginPath();
+        context.arc(point.screenX, point.screenY, radius, 0, Math.PI * 2);
+        context.fill();
+      });
+      context.shadowBlur = 0;
+      vectorGenomeState.screenPoints = projected;
+    }
+
+    function drawVectorGenomeStrip() {
+      const { strip } = vectorGenomeElements();
+      const resized = resizeVectorCanvas(strip);
+      if (!resized) return;
+      const { context, width, height } = resized;
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = "#f8fafc";
+      context.fillRect(0, 0, width, height);
+      const values = vectorGenomeState.values;
+      if (!values.length) return;
+      const maxAbs = values.reduce((maximum, value) => Math.max(maximum, Math.abs(value)), 0) || 1;
+      const center = height / 2;
+      context.fillStyle = "rgba(148, 163, 184, 0.35)";
+      context.fillRect(0, center, width, 1);
+      values.forEach((value, index) => {
+        const x = (index / values.length) * width;
+        const barHeight = (Math.abs(value) / maxAbs) * (height * 0.43);
+        context.fillStyle = genomeColor(value, maxAbs, 0.78);
+        context.fillRect(x, value >= 0 ? center - barHeight : center, Math.max(0.7, width / values.length + 0.35), barHeight);
+      });
+      const [start, end] = currentVectorGenomeRange();
+      if (end - start < values.length) {
+        const highlightX = (start / values.length) * width;
+        const highlightWidth = ((end - start) / values.length) * width;
+        context.strokeStyle = "rgba(37, 99, 235, 0.85)";
+        context.lineWidth = 2;
+        context.strokeRect(highlightX + 1, 1, Math.max(1, highlightWidth - 2), height - 2);
+      }
+    }
+
+    function resetVectorGenomeView() {
+      const mode = document.getElementById("vectorGenomeMode")?.value || "helix";
+      vectorGenomeState.rotationX = mode === "terrain" ? -0.72 : -0.28;
+      vectorGenomeState.rotationY = mode === "terrain" ? 0.36 : 0.52;
+      vectorGenomeState.zoom = 1;
+      drawVectorGenome();
+    }
+
+    function startVectorGenomeAnimation() {
+      if (vectorGenomeState.animationFrame) return;
+      const animate = timestamp => {
+        if (timestamp - vectorGenomeState.lastFrame > 33) {
+          const mode = document.getElementById("vectorGenomeMode")?.value || "helix";
+          if (vectorGenomeState.values.length && vectorGenomeState.motion && !vectorGenomeState.dragging && mode !== "terrain") {
+            vectorGenomeState.rotationY += 0.0024;
+          }
+          drawVectorGenome();
+          vectorGenomeState.lastFrame = timestamp;
+        }
+        vectorGenomeState.animationFrame = requestAnimationFrame(animate);
+      };
+      vectorGenomeState.animationFrame = requestAnimationFrame(animate);
+    }
+
+    function initializeVectorGenome() {
+      const { canvas, mode, slice, tooltip } = vectorGenomeElements();
+      if (!canvas) return;
+
+      mode.addEventListener("change", () => {
+        resetVectorGenomeView();
+        drawVectorGenomeStrip();
+      });
+      slice.addEventListener("change", () => {
+        updateVectorGenomeStats();
+        drawVectorGenome();
+        drawVectorGenomeStrip();
+      });
+      document.getElementById("vectorGenomeReset").addEventListener("click", resetVectorGenomeView);
+      document.getElementById("vectorGenomeMotion").addEventListener("click", event => {
+        vectorGenomeState.motion = !vectorGenomeState.motion;
+        event.currentTarget.textContent = vectorGenomeState.motion ? "Pause motion" : "Resume motion";
+        event.currentTarget.setAttribute("aria-pressed", String(vectorGenomeState.motion));
+      });
+
+      canvas.addEventListener("pointerdown", event => {
+        vectorGenomeState.dragging = true;
+        vectorGenomeState.pointerX = event.clientX;
+        vectorGenomeState.pointerY = event.clientY;
+        canvas.setPointerCapture(event.pointerId);
+        tooltip.classList.add("hidden");
+      });
+      canvas.addEventListener("pointermove", event => {
+        if (vectorGenomeState.dragging) {
+          const dx = event.clientX - vectorGenomeState.pointerX;
+          const dy = event.clientY - vectorGenomeState.pointerY;
+          vectorGenomeState.rotationY += dx * 0.008;
+          vectorGenomeState.rotationX += dy * 0.008;
+          vectorGenomeState.pointerX = event.clientX;
+          vectorGenomeState.pointerY = event.clientY;
+          drawVectorGenome();
+          return;
+        }
+        if (!vectorGenomeState.screenPoints.length) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        let closest = null;
+        let closestDistance = 81;
+        vectorGenomeState.screenPoints.forEach(point => {
+          const distance = (point.screenX - x) ** 2 + (point.screenY - y) ** 2;
+          if (distance < closestDistance) {
+            closest = point;
+            closestDistance = distance;
+          }
+        });
+        if (!closest) {
+          tooltip.classList.add("hidden");
+          return;
+        }
+        tooltip.innerHTML = `<span class="text-slate-400">dimension</span> ${closest.index + 1}<br><span class="text-slate-400">value</span> ${closest.value.toFixed(9)}`;
+        tooltip.style.left = `${Math.min(rect.width - 140, x + 12)}px`;
+        tooltip.style.top = `${Math.max(8, y - 42)}px`;
+        tooltip.classList.remove("hidden");
+      });
+      canvas.addEventListener("pointerup", event => {
+        vectorGenomeState.dragging = false;
+        canvas.releasePointerCapture(event.pointerId);
+      });
+      canvas.addEventListener("pointercancel", () => {
+        vectorGenomeState.dragging = false;
+      });
+      canvas.addEventListener("pointerleave", () => {
+        if (!vectorGenomeState.dragging) tooltip.classList.add("hidden");
+      });
+      canvas.addEventListener("wheel", event => {
+        event.preventDefault();
+        vectorGenomeState.zoom = Math.min(2.2, Math.max(0.55, vectorGenomeState.zoom * Math.exp(-event.deltaY * 0.001)));
+        drawVectorGenome();
+      }, { passive: false });
+
+      new ResizeObserver(() => {
+        drawVectorGenome();
+        drawVectorGenomeStrip();
+      }).observe(canvas.parentElement);
+      clearVectorGenome();
+      startVectorGenomeAnimation();
+    }
+
+    document.addEventListener("DOMContentLoaded", initializeVectorGenome);
   </script>
 
   <script>
