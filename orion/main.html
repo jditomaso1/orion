@@ -65,7 +65,8 @@
 <body class="flex">
 
   <script>
-    window.ORION_API_BASE = "https://orion-api-v2.onrender.com";
+    // Private desktop-only writer. The original API remains on port 8000.
+    window.ORION_API_BASE = "http://127.0.0.1:8010";
     window.orionApiFetch = function (path, options = {}) {
       const token = sessionStorage.getItem("orion_access_token");
       const headers = new Headers(options.headers || {});
@@ -356,33 +357,60 @@
     }
 
     let googleSignInInitialized = false;
+    let googleSignInInitialization = null;
+
+    async function fetchWithRetry(url, options = {}, attempts = 3) {
+      let lastError;
+      for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        try {
+          return await fetch(url, options);
+        } catch (error) {
+          lastError = error;
+          if (attempt < attempts) {
+            await new Promise(resolve => setTimeout(resolve, 750 * attempt));
+          }
+        }
+      }
+      throw lastError;
+    }
+
     async function initializeGoogleSignIn() {
       if (googleSignInInitialized) return;
+      if (googleSignInInitialization) return googleSignInInitialization;
 
-      try {
-        setAuthStatus("Preparing secure sign-in…");
-        const [configResponse] = await Promise.all([
-          fetch(`${API_BASE}/auth/config`),
-          waitForGoogleIdentity()
-        ]);
-        if (!configResponse.ok) throw new Error("Google sign-in is not configured yet.");
+      googleSignInInitialization = (async () => {
+        try {
+          setAuthStatus("Connecting to the private desktop ingestor…");
+          const [configResponse] = await Promise.all([
+            fetchWithRetry(`${API_BASE}/auth/config`, { cache: "no-store" }),
+            waitForGoogleIdentity()
+          ]);
+          if (!configResponse.ok) throw new Error("Desktop ingestor sign-in is not configured.");
 
-        const config = await configResponse.json();
-        window.google.accounts.id.initialize({
-          client_id: config.google_client_id,
-          callback: handleGoogleCredential,
-          ux_mode: "popup"
-        });
-        window.google.accounts.id.renderButton(
-          document.getElementById("google-sign-in-button"),
-          { theme: "outline", size: "large", text: "signin_with", width: 300 }
-        );
-        googleSignInInitialized = true;
-        setAuthStatus("Only approved Google accounts can enter.");
-      } catch (error) {
-        console.error("Google sign-in setup failed:", error);
-        setAuthStatus(error.message || "Google sign-in is unavailable.", true);
-      }
+          const config = await configResponse.json();
+          window.google.accounts.id.initialize({
+            client_id: config.google_client_id,
+            callback: handleGoogleCredential,
+            ux_mode: "popup"
+          });
+          window.google.accounts.id.renderButton(
+            document.getElementById("google-sign-in-button"),
+            { theme: "outline", size: "large", text: "signin_with", width: 300 }
+          );
+          googleSignInInitialized = true;
+          setAuthStatus("Only approved Google accounts can control ingestion.");
+        } catch (error) {
+          console.error("Google sign-in setup failed:", error);
+          setAuthStatus(
+            "The desktop ingestor is offline. Start Orion Ingestor on this computer, then refresh this page.",
+            true
+          );
+        } finally {
+          if (!googleSignInInitialized) googleSignInInitialization = null;
+        }
+      })();
+
+      return googleSignInInitialization;
     }
 
     async function handleGoogleCredential(googleResponse) {
@@ -544,80 +572,54 @@
           outputEl.textContent = "Running summaries" + ".".repeat(dots);
         }, 400);
         if (embeddingEl) embeddingEl.textContent = "";
-      
+
         const results = [];
-      
+
         try {
-          // --- Call FastAPI once per selected file ---
+          // Use the proven desktop main.py pipeline once per selected file.
           for (const cb of selectedBoxes) {
             const fileId = cb.value;
-            const fileName = cb.nextSibling.textContent || "";
-      
-            const res = await window.orionApiFetch("/summarize-file", {
+            const fileName = cb.nextElementSibling?.textContent || "";
+
+            const response = await window.orionApiFetch("/summarize-file", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                file_id: fileId,
-                prompt_type: promptType
-              })
+              body: JSON.stringify({ file_id: fileId, prompt_type: promptType })
             });
-            if (!res.ok) throw new Error(`API returned ${res.status}`);
-      
-            const data = await res.json();
-            results.push({
-              file_id: fileId,
-              file_name: fileName,
-              ...data
-            });
+            if (!response.ok) {
+              const detail = await response.text();
+              throw new Error(`Desktop ingestor returned ${response.status}: ${detail}`);
+            }
+
+            const data = await response.json();
+            results.push({ file_id: fileId, file_name: fileName, ...data });
           }
-      
+
           clearInterval(loader);
-      
-          // --- Strip embeddings from summary section ---
-          const summaryOnly = results.map(r => {
-            const { embedding_preview, ...rest } = r;
-            return rest;
-          });
-      
-          // --- Embedding payload ---
-          const embeddingOnly = results.map(r => ({
-            file_id: r.file_id,
-            file_name: r.file_name,
-            embedding_preview: r.embedding_preview
+
+          const summaryOnly = results.map(({ embedding_preview, ...rest }) => rest);
+          const embeddingOnly = results.map(result => ({
+            file_id: result.file_id,
+            file_name: result.file_name,
+            embedding_preview: result.embedding_preview
           }));
-      
+
           outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
-      
-          // embeddings + drift
+
           if (embeddingEl) {
             let text = JSON.stringify(embeddingOnly, null, 2);
-      
-            if (
-              embeddingOnly.length >= 2 &&
-              embeddingOnly[0].embedding_preview &&
-              embeddingOnly[1].embedding_preview &&
-              Array.isArray(embeddingOnly[0].embedding_preview.first_50_values) &&
-              Array.isArray(embeddingOnly[1].embedding_preview.first_50_values)
-            ) {
-              const v1 = embeddingOnly[0].embedding_preview.first_50_values;
-              const v2 = embeddingOnly[1].embedding_preview.first_50_values;
-              const cos = cosineSimilarity(v1, v2);
-      
-              if (cos !== null) {
-                text =
-                  "Drift (cosine similarity of first 50 dims): " +
-                  cos.toFixed(4) +
-                  "\n\n" +
-                  text;
+            const firstVector = embeddingOnly[0]?.embedding_preview?.first_50_values;
+            const secondVector = embeddingOnly[1]?.embedding_preview?.first_50_values;
+            if (Array.isArray(firstVector) && Array.isArray(secondVector)) {
+              const similarity = cosineSimilarity(firstVector, secondVector);
+              if (similarity !== null) {
+                text = `Drift (cosine similarity of first 50 dims): ${similarity.toFixed(4)}\n\n${text}`;
               }
             }
-      
             embeddingEl.textContent = text;
           }
-      
-          // --- Matrix + ASCII fingerprint ---
-          const first = embeddingOnly[0];
-          const vid = first?.embedding_preview?.vector_id;
+
+          const vid = embeddingOnly[0]?.embedding_preview?.vector_id;
       
           if (matrixEl) {
             matrixEl.innerHTML = vid ? vectorIdToMatrix(vid) : "";
@@ -629,7 +631,7 @@
         } catch (err) {
           clearInterval(loader);
           console.error("Error:", err);
-          outputEl.textContent = "Error summarizing files. Check console.";
+          outputEl.textContent = `Ingestion failed: ${err.message || err}`;
           if (embeddingEl) embeddingEl.textContent = "";
         }
       };
