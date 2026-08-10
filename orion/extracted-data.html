@@ -103,6 +103,11 @@
         section.classList.toggle("hidden");
         icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
       };
+
+      // Keep the ORION section expanded on this page (don't collapse on navigation)
+      const oSec = document.getElementById("orion");
+      const oIc = document.getElementById("icon-orion");
+      if (oSec) { oSec.classList.remove("hidden"); if (oIc) oIc.style.transform = "rotate(90deg)"; }
     }
     injectSidebar();
   </script>

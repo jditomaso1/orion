@@ -99,15 +99,10 @@
         localStorage.setItem("sidebar-open-section", id);
       };
 
-      const last = localStorage.getItem("sidebar-open-section");
-      if (last) {
-        const section = document.getElementById(last);
-        const icon = document.getElementById("icon-" + last);
-        if (section && icon) {
-          section.classList.remove("hidden");
-          icon.style.transform = "rotate(90deg)";
-        }
-      }
+      // Keep the ORION section expanded on this page (don't collapse on navigation)
+      const oSec = document.getElementById("orion");
+      const oIc = document.getElementById("icon-orion");
+      if (oSec) { oSec.classList.remove("hidden"); if (oIc) oIc.style.transform = "rotate(90deg)"; }
     }
     injectSidebar();
   </script>
