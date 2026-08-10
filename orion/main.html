@@ -565,37 +565,61 @@
         const asciiEl = document.getElementById("asciiBlock");
       
         // --- Animated loading text ---
-        outputEl.textContent = "Submitting ingestion job…";
+        let dots = 0;
+        outputEl.textContent = "Running summaries";
+        const loader = setInterval(() => {
+          dots = (dots + 1) % 4;
+          outputEl.textContent = "Running summaries" + ".".repeat(dots);
+        }, 400);
         if (embeddingEl) embeddingEl.textContent = "";
 
+        const results = [];
+
         try {
-          const fileIds = selectedBoxes.map(cb => cb.value);
-          const response = await window.orionApiFetch("/ingestions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ file_ids: fileIds, prompt_type: promptType })
-          });
-          if (!response.ok) throw new Error(`Ingestor returned ${response.status}`);
+          // Use the proven desktop main.py pipeline once per selected file.
+          for (const cb of selectedBoxes) {
+            const fileId = cb.value;
+            const fileName = cb.nextElementSibling?.textContent || "";
 
-          let job = await response.json();
-          while (job.status === "queued" || job.status === "running") {
-            outputEl.textContent = `Ingestion active\n\nStage: ${job.stage}\nJob: ${job.id}`;
-            await new Promise(resolve => setTimeout(resolve, 1250));
-            const statusResponse = await window.orionApiFetch(`/ingestions/${job.id}`, {
-              cache: "no-store"
+            const response = await window.orionApiFetch("/summarize-file", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ file_id: fileId, prompt_type: promptType })
             });
-            if (!statusResponse.ok) throw new Error(`Job status returned ${statusResponse.status}`);
-            job = await statusResponse.json();
+            if (!response.ok) {
+              const detail = await response.text();
+              throw new Error(`Desktop ingestor returned ${response.status}: ${detail}`);
+            }
+
+            const data = await response.json();
+            results.push({ file_id: fileId, file_name: fileName, ...data });
           }
 
-          if (job.status !== "completed") {
-            throw new Error(job.error || "Ingestion job failed");
+          clearInterval(loader);
+
+          const summaryOnly = results.map(({ embedding_preview, ...rest }) => rest);
+          const embeddingOnly = results.map(result => ({
+            file_id: result.file_id,
+            file_name: result.file_name,
+            embedding_preview: result.embedding_preview
+          }));
+
+          outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
+
+          if (embeddingEl) {
+            let text = JSON.stringify(embeddingOnly, null, 2);
+            const firstVector = embeddingOnly[0]?.embedding_preview?.first_50_values;
+            const secondVector = embeddingOnly[1]?.embedding_preview?.first_50_values;
+            if (Array.isArray(firstVector) && Array.isArray(secondVector)) {
+              const similarity = cosineSimilarity(firstVector, secondVector);
+              if (similarity !== null) {
+                text = `Drift (cosine similarity of first 50 dims): ${similarity.toFixed(4)}\n\n${text}`;
+              }
+            }
+            embeddingEl.textContent = text;
           }
 
-          outputEl.textContent = JSON.stringify(job.results, null, 2);
-          if (embeddingEl) embeddingEl.textContent = `Completed ${job.results.length} file(s).`;
-
-          const vid = job.results[0]?.vector_id;
+          const vid = embeddingOnly[0]?.embedding_preview?.vector_id;
       
           if (matrixEl) {
             matrixEl.innerHTML = vid ? vectorIdToMatrix(vid) : "";
@@ -605,6 +629,7 @@
             asciiEl.textContent = vid ? vectorIdToAsciiBlock(vid) : "";
           }
         } catch (err) {
+          clearInterval(loader);
           console.error("Error:", err);
           outputEl.textContent = `Ingestion failed: ${err.message || err}`;
           if (embeddingEl) embeddingEl.textContent = "";
