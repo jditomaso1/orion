@@ -64,19 +64,7 @@ async function injectSidebar() {
       ? "rotate(0deg)"
       : "rotate(90deg)";
 
-    localStorage.setItem("sidebar-open-section", id);
   };
-
-  // Restore last open section
-  const last = localStorage.getItem("sidebar-open-section");
-  if (last) {
-    const section = document.getElementById(last);
-    const icon = document.getElementById("icon-" + last);
-    if (section && icon) {
-      section.classList.remove("hidden");
-      icon.style.transform = "rotate(90deg)";
-    }
-  }
 }
 injectSidebar();
 </script>
