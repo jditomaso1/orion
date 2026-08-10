@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Access Control — Orion</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+        href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6GY4CQ6ZFH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6GY4CQ6ZFH', {
+      app_name: 'orion',
+      page_title: 'Access Control — Orion',
+      page_path: '/orion/access.html'
+    });
+  </script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind (used by the injected sidebar) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Base + responsive layout (pure CSS) -->
+  <style>
+    body { font-family:'Poppins', sans-serif; background:#f5f6f8; margin:0; color:#172033; }
+    .mainwrap { margin-left:256px; padding:28px 28px 48px; }
+    @media (max-width: 850px){
+      #sidebar-placeholder { display:none; }
+      .mainwrap { margin-left:0; padding:16px; }
+    }
+
+    h1{ font-size:24px; margin:0 0 4px; font-weight:600; letter-spacing:-.01em; }
+    .sub{ color:#64748b; font-size:13px; margin:0 0 16px; max-width:780px; }
+
+    /* DB status strip */
+    .dbstrip{
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+      background:#fff; border:1px solid #e6e6e6; border-radius:12px; padding:12px 14px;
+      margin-bottom:16px; max-width:1200px; box-shadow:0 1px 4px rgba(0,43,81,.04);
+    }
+    .dbname{ font-weight:700; font-size:13px; }
+    .dbmeta{ font-size:11.5px; color:#64748b; }
+    .pill{ display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px; font-size:11px; font-weight:600; }
+    .pill i{ width:7px; height:7px; border-radius:50%; }
+    .pill.off{ background:#fff7ed; color:#a34c0a; border:1px solid #fed7aa; }
+    .pill.off i{ background:#f59e0b; }
+    .pill.on{ background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+    .pill.on i{ background:#22c55e; }
+    .spacer{ flex:1 1 auto; }
+
+    /* tabs */
+    .tabs{
+      display:flex; gap:5px; margin:0 0 16px; padding:6px; background:#fff;
+      border:1px solid #e6e6e6; border-radius:13px; overflow:auto; max-width:1200px;
+      box-shadow:0 1px 4px rgba(0,43,81,.04);
+    }
+    .tab{ border:0; background:transparent; color:#52657d; border-radius:9px; padding:9px 15px;
+      font:600 11.5px Poppins,sans-serif; letter-spacing:.02em; white-space:nowrap; cursor:pointer; }
+    .tab:hover{ color:#1f5fbf; }
+    .tab.active{ background:#1f5fbf; color:#fff; }
+    .view{ display:none; }
+    .view.active{ display:block; }
+
+    .panel{ background:#fff; border:1px solid #e6e6e6; border-radius:14px; padding:16px 18px; margin:0 0 16px; box-shadow:0 1px 4px rgba(0,43,81,.04); max-width:1200px; }
+    .panel h2{ margin:0 0 4px; font-size:15px; font-weight:700; }
+    .panel .desc{ margin:0 0 12px; color:#64748b; font-size:11.5px; }
+
+    .table-wrap{ overflow:auto; border:1px solid #eee; border-radius:12px; }
+    table{ width:100%; border-collapse:separate; border-spacing:0; }
+    thead th{ background:#fafafa; text-align:left; padding:8px 10px; border-bottom:1px solid #eee; font-size:10px; font-weight:700; color:#333; white-space:normal; vertical-align:bottom; line-height:1.25; }
+    tbody td{ padding:9px 10px; border-bottom:1px solid #f2f2f2; font-size:12px; vertical-align:middle; }
+    tbody tr:last-child td{ border-bottom:0; }
+    .cl-name{ font-weight:600; }
+    .cl-mail{ display:block; color:#64748b; font-size:10.5px; margin-top:1px; }
+    th.center, td.center{ text-align:center; }
+    .matrix td:first-child, .matrix th:first-child{ position:sticky; left:0; background:#fff; z-index:1; min-width:170px; }
+    .matrix thead th:first-child{ background:#fafafa; }
+
+    .badge{ display:inline-block; padding:2px 8px; border-radius:999px; font-size:10px; font-weight:600; }
+    .badge.active{ background:#f0fdf4; color:#166534; }
+    .badge.trial{ background:#eff6ff; color:#1d4ed8; }
+    .badge.suspended{ background:#fef2f2; color:#b91c1c; }
+    .plan{ font-size:11.5px; color:#52657d; }
+
+    /* switch */
+    .sw{ position:relative; display:inline-block; width:34px; height:18px; vertical-align:middle; }
+    .sw input{ opacity:0; width:0; height:0; }
+    .sw .slider{ position:absolute; inset:0; background:#d7dee7; border-radius:999px; transition:.15s; cursor:pointer; }
+    .sw .slider:before{ content:""; position:absolute; width:14px; height:14px; left:2px; top:2px; background:#fff; border-radius:50%; transition:.15s; box-shadow:0 1px 2px rgba(0,0,0,.2); }
+    .sw input:checked + .slider{ background:#1f5fbf; }
+    .sw input:checked + .slider:before{ transform:translateX(16px); }
+
+    .savebar{ display:flex; align-items:center; gap:12px; margin-top:14px; }
+    .savebar .status{ font-size:12px; color:#64748b; }
+    .btn{ border:0; border-radius:9px; padding:9px 15px; font:600 12px Poppins,sans-serif; cursor:pointer; }
+    .btn.primary{ background:#1f5fbf; color:#fff; }
+    .btn.primary:disabled{ background:#cbd5e1; cursor:not-allowed; }
+    .btn.ghost{ background:#fff; border:1px solid #e2e8f0; color:#52657d; }
+
+    /* database tab */
+    .kv{ display:grid; grid-template-columns:180px 1fr; gap:8px 16px; font-size:12.5px; }
+    .kv .k{ color:#64748b; }
+    .kv .v{ color:#17324d; font-weight:500; word-break:break-all; }
+    .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; font-size:11.5px; }
+    .tbl-chip{ display:inline-block; margin:4px 6px 0 0; padding:3px 9px; border-radius:8px; background:#eef2f7; color:#36536e; font-size:11px; font-weight:600; }
+    .callout{ margin-top:14px; padding:12px 14px; border-radius:10px; background:#fff7ed; border:1px solid #fed7aa; color:#7c3a06; font-size:11.5px; line-height:1.6; }
+    .callout b{ color:#7c2d12; }
+    .muted{ color:#64748b; }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-placeholder"></div>
+  <script>
+    async function injectSidebar() {
+      const res = await fetch("/orion/sidebar.html");
+      document.getElementById("sidebar-placeholder").innerHTML = await res.text();
+      window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        const icon = document.getElementById("icon-" + id);
+        if (!section || !icon) return;
+        section.classList.toggle("hidden");
+        icon.style.transform = section.classList.contains("hidden") ? "rotate(0deg)" : "rotate(90deg)";
+      };
+    }
+    injectSidebar();
+  </script>
+
+  <!-- MAIN -->
+  <main class="mainwrap">
+
+    <h1>Access Control</h1>
+    <p class="sub">
+      Control which clients can reach each part of Orion. Grants are stored in
+      <span class="mono">orion-auth-db</span> (Render PostgreSQL) and enforced by the backend on each request.
+    </p>
+
+    <!-- DB STATUS STRIP -->
+    <div class="dbstrip">
+      <div>
+        <div class="dbname mono">orion-auth-db</div>
+        <div class="dbmeta" id="dbmeta">Render · PostgreSQL</div>
+      </div>
+      <div class="spacer"></div>
+      <span class="pill off" id="dbpill"><i></i>Not connected</span>
+    </div>
+
+    <!-- TAB BAR -->
+    <nav class="tabs" aria-label="Access views">
+      <button class="tab active" data-view="v-matrix">ACCESS MATRIX</button>
+      <button class="tab" data-view="v-clients">CLIENTS</button>
+      <button class="tab" data-view="v-db">DATABASE</button>
+    </nav>
+
+    <!-- VIEW: ACCESS MATRIX -->
+    <section id="v-matrix" class="view active">
+      <div class="panel">
+        <h2>Access matrix</h2>
+        <p class="desc">Toggle access per client, per area. <span class="muted">Placeholder — changes are held locally and not yet written to <span class="mono">orion-auth-db</span>.</span></p>
+        <div class="table-wrap">
+          <table class="matrix" id="matrixTable"><thead></thead><tbody></tbody></table>
+        </div>
+        <div class="savebar">
+          <button class="btn primary" id="saveBtn" disabled>Save to orion-auth-db</button>
+          <button class="btn ghost" id="resetBtn">Reset</button>
+          <span class="status" id="saveStatus">No changes</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: CLIENTS -->
+    <section id="v-clients" class="view">
+      <div class="panel">
+        <h2>Clients</h2>
+        <p class="desc">Accounts provisioned in <span class="mono">orion-auth-db</span>.</p>
+        <div class="table-wrap">
+          <table id="clientsTable"><thead>
+            <tr><th>Client</th><th>Plan</th><th>Status</th><th class="center">Areas enabled</th></tr>
+          </thead><tbody></tbody></table>
+        </div>
+        <div class="savebar">
+          <button class="btn primary" disabled>+ Add client</button>
+          <span class="status">Client management connects once the backend + database are wired.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: DATABASE -->
+    <section id="v-db" class="view">
+      <div class="panel">
+        <h2>Database</h2>
+        <p class="desc">Connection details for the access-control datastore.</p>
+        <div class="kv" id="dbkv"></div>
+        <div style="margin-top:14px">
+          <div class="desc" style="margin-bottom:4px">Tables</div>
+          <div id="dbtables"></div>
+        </div>
+        <div class="callout">
+          <b>How this connects:</b> the browser never talks to PostgreSQL directly. This dashboard will call a backend
+          API (e.g. <span class="mono">/access/*</span> on the Orion API), which holds the <span class="mono">orion-auth-db</span>
+          connection string as a server-side secret and reads/writes the tables above. This admin page should itself be
+          restricted to admins once auth is live.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const DATA_URL = "/orion/data/access.json";
+    let DATA = null, AREAS = [], CLIENTS = [];
+    let state = {};   // clientId -> { areaKey: bool }  (working copy)
+    let dirty = new Set();
+
+    function esc(s){ return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+    /* ---------- TABS ---------- */
+    function initTabs(){
+      document.querySelectorAll(".tab").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+          document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+          btn.classList.add("active");
+          const v = document.getElementById(btn.dataset.view);
+          if(v) v.classList.add("active");
+        });
+      });
+    }
+
+    /* ---------- MATRIX ---------- */
+    function renderMatrix(){
+      const thead = document.querySelector("#matrixTable thead");
+      thead.innerHTML = "<tr><th>Client</th>" +
+        AREAS.map(a=>`<th class="center">${esc(a.label)}</th>`).join("") + "</tr>";
+
+      const tbody = document.querySelector("#matrixTable tbody");
+      tbody.innerHTML = CLIENTS.map(c=>{
+        const cells = AREAS.map(a=>{
+          const on = !!state[c.id][a.key];
+          return `<td class="center">
+            <label class="sw"><input type="checkbox" data-cid="${c.id}" data-akey="${a.key}" ${on?"checked":""}><span class="slider"></span></label>
+          </td>`;
+        }).join("");
+        return `<tr><td><span class="cl-name">${esc(c.name)}</span><span class="cl-mail">${esc(c.contact)}</span></td>${cells}</tr>`;
+      }).join("");
+
+      tbody.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+        cb.addEventListener("change", ()=>{
+          const cid = cb.getAttribute("data-cid"), akey = cb.getAttribute("data-akey");
+          state[cid][akey] = cb.checked;
+          const orig = !!DATA_ACCESS[cid][akey];
+          const key = cid+"::"+akey;
+          if(cb.checked !== orig) dirty.add(key); else dirty.delete(key);
+          updateSaveBar();
+        });
+      });
+    }
+    let DATA_ACCESS = {};
+    function updateSaveBar(){
+      const n = dirty.size;
+      document.getElementById("saveBtn").disabled = (n===0);
+      document.getElementById("saveStatus").textContent =
+        n===0 ? "No changes" : `${n} unsaved change${n>1?"s":""} · not yet written to orion-auth-db`;
+    }
+
+    /* ---------- CLIENTS ---------- */
+    function renderClients(){
+      const tbody = document.querySelector("#clientsTable tbody");
+      tbody.innerHTML = CLIENTS.map(c=>{
+        const enabled = AREAS.filter(a=>state[c.id][a.key]).length;
+        return `<tr>
+          <td><span class="cl-name">${esc(c.name)}</span><span class="cl-mail">${esc(c.contact)}</span></td>
+          <td class="plan">${esc(c.plan)}</td>
+          <td><span class="badge ${esc(c.status)}">${esc(c.status)}</span></td>
+          <td class="center">${enabled} / ${AREAS.length}</td>
+        </tr>`;
+      }).join("");
+    }
+
+    /* ---------- DATABASE ---------- */
+    function renderDb(){
+      const db = DATA.database || {};
+      document.getElementById("dbkv").innerHTML = [
+        ["Name", `<span class="mono">${esc(db.name)}</span>`],
+        ["Provider", esc(db.provider)],
+        ["Engine", esc(db.engine)],
+        ["Region", esc(db.region)],
+        ["Status", `<span class="pill off"><i></i>${esc((db.status||"").replace("_"," "))}</span>`],
+        ["Connection", `<span class="mono">${esc(db.connection_masked)}</span>`],
+      ].map(([k,v])=>`<div class="k">${k}</div><div class="v">${v}</div>`).join("");
+      document.getElementById("dbtables").innerHTML =
+        (db.tables||[]).map(t=>`<span class="tbl-chip mono">${esc(t)}</span>`).join("");
+      document.getElementById("dbmeta").textContent = `${db.provider||"Render"} · ${db.engine||"PostgreSQL"}`;
+    }
+
+    /* ---------- RESET ---------- */
+    document.getElementById("resetBtn").addEventListener("click", ()=>{
+      CLIENTS.forEach(c=> state[c.id] = { ...DATA_ACCESS[c.id] });
+      dirty.clear();
+      renderMatrix(); renderClients(); updateSaveBar();
+    });
+    document.getElementById("saveBtn").addEventListener("click", ()=>{
+      document.getElementById("saveStatus").textContent =
+        "Connect orion-auth-db (backend API) to persist these changes.";
+    });
+
+    /* ---------- LOAD ---------- */
+    (async function(){
+      initTabs();
+      try{
+        const res = await fetch(DATA_URL, { cache:"no-store" });
+        if(!res.ok) throw new Error(`fetch ${res.status}`);
+        DATA = await res.json();
+        AREAS = DATA.areas || [];
+        CLIENTS = DATA.clients || [];
+        DATA_ACCESS = {};
+        CLIENTS.forEach(c=>{ DATA_ACCESS[c.id] = { ...(c.access||{}) }; state[c.id] = { ...(c.access||{}) }; });
+
+        renderMatrix();
+        renderClients();
+        renderDb();
+        updateSaveBar();
+      }catch(e){
+        document.querySelector("#v-matrix .panel").insertAdjacentHTML("beforeend",
+          `<p class="muted" style="margin-top:10px">Failed to load access data: ${esc(e.message)}</p>`);
+      }
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "sample": true,
+    "note": "SAMPLE / PLACEHOLDER access data. In production this is served by a backend API that reads/writes the 'orion-auth-db' Render PostgreSQL database. The browser never connects to Postgres directly."
+  },
+  "database": {
+    "name": "orion-auth-db",
+    "provider": "Render",
+    "engine": "PostgreSQL 16",
+    "region": "Oregon (US West)",
+    "status": "not_connected",
+    "connection_masked": "postgresql://orion_auth:••••••••@dpg-xxxxxxxx.oregon-postgres.render.com/orion_auth_db",
+    "tables": ["clients", "site_areas", "access_grants", "audit_log"]
+  },
+  "areas": [
+    { "key": "capmarkets",       "label": "Capital Markets" },
+    { "key": "distiller",        "label": "Distiller" },
+    { "key": "oriongpt",         "label": "OrionGPT" },
+    { "key": "source_documents", "label": "Source Documents" },
+    { "key": "neural_network",   "label": "Neural Network" },
+    { "key": "deal_compare",     "label": "Deal Compare" },
+    { "key": "bdc",              "label": "BDC" },
+    { "key": "private_credit",   "label": "Private Credit" }
+  ],
+  "clients": [
+    {
+      "id": "acme",
+      "name": "Acme Capital Partners",
+      "contact": "j.reyes@acmecap.com",
+      "plan": "Enterprise",
+      "status": "active",
+      "access": { "capmarkets": true, "distiller": true, "oriongpt": true, "source_documents": true, "neural_network": true, "deal_compare": true, "bdc": false, "private_credit": true }
+    },
+    {
+      "id": "blueharbor",
+      "name": "Blue Harbor Credit",
+      "contact": "ops@blueharborcredit.com",
+      "plan": "Team",
+      "status": "active",
+      "access": { "capmarkets": true, "distiller": true, "oriongpt": true, "source_documents": true, "neural_network": false, "deal_compare": false, "bdc": false, "private_credit": true }
+    },
+    {
+      "id": "crestline",
+      "name": "Crestline Investors",
+      "contact": "data@crestline.com",
+      "plan": "Enterprise",
+      "status": "active",
+      "access": { "capmarkets": true, "distiller": true, "oriongpt": true, "source_documents": true, "neural_network": true, "deal_compare": true, "bdc": true, "private_credit": true }
+    },
+    {
+      "id": "meridian",
+      "name": "Meridian Asset Mgmt",
+      "contact": "it@meridianam.com",
+      "plan": "Team",
+      "status": "trial",
+      "access": { "capmarkets": true, "distiller": true, "oriongpt": false, "source_documents": true, "neural_network": false, "deal_compare": false, "bdc": false, "private_credit": false }
+    },
+    {
+      "id": "northwind",
+      "name": "Northwind LP",
+      "contact": "admin@northwind.lp",
+      "plan": "Starter",
+      "status": "suspended",
+      "access": { "capmarkets": false, "distiller": false, "oriongpt": false, "source_documents": false, "neural_network": false, "deal_compare": false, "bdc": false, "private_credit": false }
+    }
+  ]
+}
