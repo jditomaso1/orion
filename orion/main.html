@@ -14,7 +14,6 @@
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
     body {
@@ -68,49 +67,19 @@
     // Private desktop-only writer. The original API remains on port 8000.
     window.ORION_API_BASE = "http://127.0.0.1:8010";
     window.orionApiFetch = function (path, options = {}) {
-      const token = sessionStorage.getItem("orion_access_token");
-      const headers = new Headers(options.headers || {});
-      if (token) headers.set("Authorization", `Bearer ${token}`);
-
       return fetch(`${window.ORION_API_BASE}${path}`, {
-        ...options,
-        headers
-      }).then((response) => {
-        if (response.status === 401 && window.requireOrionSignIn) {
-          window.requireOrionSignIn();
-        }
-        return response;
+        ...options
       });
     };
   </script>
 
   <div
-    id="orion-auth-overlay"
-    class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="orion-auth-title"
+    id="orion-local-status"
+    class="fixed right-24 top-4 z-40 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs text-amber-700 shadow-sm"
+    role="status"
   >
-    <div class="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-2xl">
-      <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-xl font-semibold text-white">
-        O
-      </div>
-      <h2 id="orion-auth-title" class="text-2xl font-semibold text-gray-900">Sign in to Orion</h2>
-      <p class="mt-2 text-sm leading-6 text-gray-500">
-        Use an approved Google account to access the Capital Markets workspace.
-      </p>
-      <div id="google-sign-in-button" class="mt-6 flex min-h-10 justify-center"></div>
-      <p id="orion-auth-status" class="mt-4 text-sm text-gray-500">Preparing secure sign-in…</p>
-    </div>
+    Desktop ingestor: checking…
   </div>
-
-  <button
-    id="orion-sign-out"
-    type="button"
-    class="fixed right-24 top-4 z-40 hidden rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-600 shadow-sm hover:bg-gray-50"
-  >
-    Sign out
-  </button>
 
   <!-- SIDEBAR -->
   <div id="sidebar-placeholder"></div>
@@ -318,47 +287,6 @@
       // others can fall back to syndicated
     };
 
-    function setAuthStatus(message, isError = false) {
-      const status = document.getElementById("orion-auth-status");
-      if (!status) return;
-      status.textContent = message;
-      status.className = `mt-4 text-sm ${isError ? "text-red-600" : "text-gray-500"}`;
-    }
-
-    function showAuthenticatedState(email) {
-      document.getElementById("orion-auth-overlay").classList.add("hidden");
-      const signOut = document.getElementById("orion-sign-out");
-      signOut.textContent = email ? `Sign out (${email})` : "Sign out";
-      signOut.classList.remove("hidden");
-    }
-
-    function requireOrionSignIn(message = "Please sign in to continue.") {
-      sessionStorage.removeItem("orion_access_token");
-      document.getElementById("orion-sign-out").classList.add("hidden");
-      document.getElementById("orion-auth-overlay").classList.remove("hidden");
-      setAuthStatus(message);
-      initializeGoogleSignIn();
-    }
-    window.requireOrionSignIn = requireOrionSignIn;
-
-    function waitForGoogleIdentity(timeoutMs = 10000) {
-      return new Promise((resolve, reject) => {
-        const startedAt = Date.now();
-        const timer = setInterval(() => {
-          if (window.google?.accounts?.id) {
-            clearInterval(timer);
-            resolve();
-          } else if (Date.now() - startedAt > timeoutMs) {
-            clearInterval(timer);
-            reject(new Error("Google sign-in did not load."));
-          }
-        }, 100);
-      });
-    }
-
-    let googleSignInInitialized = false;
-    let googleSignInInitialization = null;
-
     async function fetchWithRetry(url, options = {}, attempts = 3) {
       let lastError;
       for (let attempt = 1; attempt <= attempts; attempt += 1) {
@@ -374,63 +302,16 @@
       throw lastError;
     }
 
-    async function initializeGoogleSignIn() {
-      if (googleSignInInitialized) return;
-      if (googleSignInInitialization) return googleSignInInitialization;
-
-      googleSignInInitialization = (async () => {
-        try {
-          setAuthStatus("Connecting to the private desktop ingestor…");
-          const [configResponse] = await Promise.all([
-            fetchWithRetry(`${API_BASE}/auth/config`, { cache: "no-store" }),
-            waitForGoogleIdentity()
-          ]);
-          if (!configResponse.ok) throw new Error("Desktop ingestor sign-in is not configured.");
-
-          const config = await configResponse.json();
-          window.google.accounts.id.initialize({
-            client_id: config.google_client_id,
-            callback: handleGoogleCredential,
-            ux_mode: "popup"
-          });
-          window.google.accounts.id.renderButton(
-            document.getElementById("google-sign-in-button"),
-            { theme: "outline", size: "large", text: "signin_with", width: 300 }
-          );
-          googleSignInInitialized = true;
-          setAuthStatus("Only approved Google accounts can control ingestion.");
-        } catch (error) {
-          console.error("Google sign-in setup failed:", error);
-          setAuthStatus(
-            "The desktop ingestor is offline. Start Orion Ingestor on this computer, then refresh this page.",
-            true
-          );
-        } finally {
-          if (!googleSignInInitialized) googleSignInInitialization = null;
-        }
-      })();
-
-      return googleSignInInitialization;
-    }
-
-    async function handleGoogleCredential(googleResponse) {
-      try {
-        setAuthStatus("Verifying your account…");
-        const response = await fetch(`${API_BASE}/auth/google`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ credential: googleResponse.credential })
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.detail || "Sign-in was not approved.");
-
-        sessionStorage.setItem("orion_access_token", data.access_token);
-        showAuthenticatedState(data.email);
-        await loadCompanies();
-      } catch (error) {
-        console.error("Orion sign-in failed:", error);
-        setAuthStatus(error.message || "Sign-in failed.", true);
-      }
+    function setIngestorStatus(message, state = "checking") {
+      const status = document.getElementById("orion-local-status");
+      if (!status) return;
+      status.textContent = message;
+      const styles = {
+        ready: "border-emerald-200 bg-emerald-50 text-emerald-700",
+        offline: "border-red-200 bg-red-50 text-red-700",
+        checking: "border-amber-200 bg-amber-50 text-amber-700"
+      };
+      status.className = `fixed right-24 top-4 z-40 rounded-full border px-3 py-1 text-xs shadow-sm ${styles[state]}`;
     }
 
     async function loadCompanies() {
@@ -450,36 +331,32 @@
         });
       } catch (err) {
         console.error("Error loading companies:", err);
-        alert("Error loading companies from API.");
         const select = document.getElementById("companyFolder");
         select.innerHTML = '<option value="">Error loading companies</option>';
+        throw err;
       }
     }
 
     async function startOrion() {
-      const token = sessionStorage.getItem("orion_access_token");
-      if (!token) {
-        requireOrionSignIn();
-        return;
-      }
-
+      setIngestorStatus("Desktop ingestor: checking…", "checking");
       try {
-        const response = await window.orionApiFetch("/auth/session");
-        if (!response.ok) throw new Error("Session expired");
-        const session = await response.json();
-        showAuthenticatedState(session.email);
+        const response = await fetchWithRetry(`${API_BASE}/health`, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Health check returned ${response.status}`);
+        const health = await response.json();
+        if (health.access_mode !== "local_owner") {
+          throw new Error("The desktop API is not in local-owner mode.");
+        }
+        setIngestorStatus("Desktop ingestor: ready", "ready");
         await loadCompanies();
       } catch (error) {
-        requireOrionSignIn("Your session has expired. Please sign in again.");
+        console.error("Desktop ingestor unavailable:", error);
+        setIngestorStatus("Desktop ingestor: offline — start Orion Ingestor", "offline");
+        const select = document.getElementById("companyFolder");
+        select.innerHTML = '<option value="">Start the desktop ingestor first</option>';
       }
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("orion-sign-out").addEventListener("click", () => {
-        sessionStorage.removeItem("orion_access_token");
-        if (window.google?.accounts?.id) window.google.accounts.id.disableAutoSelect();
-        window.location.reload();
-      });
       startOrion();
     });
 
