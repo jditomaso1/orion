@@ -115,7 +115,7 @@
     }
     function updateMethodNote(payload=null){
       const projection=network?.projection||{};
-      document.getElementById("methodNote").textContent=positionMode&&payload?`${payload.position_note||"Each point is one coordinate from this stored embedding."} Position, radius and color encode coordinate index, magnitude and sign; this is not a network of document chunks.`:`${projection.position_note||"Positions are an analytical projection."} ${projection.similarity_note||""} Source: ${compact(projection.source_dimensions)} dimensions → ${compact(projection.working_dimensions)}-dimensional working space → ${compact(projection.display_dimensions||3)}D display.`;
+      document.getElementById("methodNote").textContent=positionMode&&payload?`${payload.position_note||"Each point is one coordinate from this stored embedding."} Position, radius and color encode coordinate index, magnitude and sign. The thin fiber follows adjacent dimensions in coordinate order; it does not represent semantic similarity between positions.`:`${projection.position_note||"Positions are an analytical projection."} ${projection.similarity_note||""} Source: ${compact(projection.source_dimensions)} dimensions → ${compact(projection.working_dimensions)}-dimensional working space → ${compact(projection.display_dimensions||3)}D display.`;
     }
     function buildPositionPoints(values){
       const maxAbs=Math.max(...values.map(value=>Math.abs(value)),1e-12),goldenAngle=Math.PI*(3-Math.sqrt(5));
@@ -123,13 +123,14 @@
     }
     function renderVectorPositions(payload,node){
       const values=(payload.values||[]).map(Number).filter(Number.isFinite),points=buildPositionPoints(values),positive=points.filter(point=>point.value>=0),negative=points.filter(point=>point.value<0);
-      document.getElementById("mapTitle").textContent="Embedding coordinate map";document.getElementById("mapSubtitle").textContent="Every dot is one coordinate from the selected chunk’s complete stored embedding.";
+      document.getElementById("mapTitle").textContent="Embedding coordinate map";document.getElementById("mapSubtitle").textContent="Every dot is one coordinate; the connecting fiber follows the complete embedding in dimension order.";
       const trace=(items,name,color,symbol)=>({type:"scatter3d",mode:"markers",name,x:items.map(point=>point.x),y:items.map(point=>point.y),z:items.map(point=>point.z),customdata:items.map(point=>[point.index+1,point.value]),hovertemplate:"Dimension %{customdata[0]}<br>Value %{customdata[1]:.9f}<extra></extra>",marker:{size:items.map(point=>2.4+point.magnitude*5.4),color,opacity:.86,symbol,line:{width:.2,color:"#fff"}}});
+      const fiber={type:"scatter3d",mode:"lines",name:"Coordinate sequence",x:points.map(point=>point.x),y:points.map(point=>point.y),z:points.map(point=>point.z),visible:showFibers,opacity:.46,hoverinfo:"skip",line:{width:1.6,color:"#94a3b8"}};
       const quietAxis={visible:false,showgrid:false,zeroline:false,showbackground:false},layout={paper_bgcolor:"rgba(0,0,0,0)",margin:{l:0,r:0,t:0,b:0},showlegend:false,hovermode:"closest",uirevision:"orion-vector-positions",scene:{dragmode:"orbit",camera:currentCamera,aspectmode:"cube",bgcolor:"rgba(0,0,0,0)",xaxis:quietAxis,yaxis:quietAxis,zaxis:quietAxis},hoverlabel:{bgcolor:"#172033",bordercolor:"#334155",font:{family:"Poppins",color:"#fff",size:11}}};
-      Plotly.react("plot",[trace(negative,"Negative coordinates","#0891b2","diamond"),trace(positive,"Positive coordinates","#db2777","circle")],layout,{responsive:true,displaylogo:false,scrollZoom:true,modeBarButtonsToRemove:["toImage","sendDataToCloud"]});
+      Plotly.react("plot",[fiber,trace(negative,"Negative coordinates","#0891b2","diamond"),trace(positive,"Positive coordinates","#db2777","circle")],layout,{responsive:true,displaylogo:false,scrollZoom:true,modeBarButtonsToRemove:["toImage","sendDataToCloud"]});
       const plot=document.getElementById("plot");plot.removeAllListeners?.("plotly_click");plot.removeAllListeners?.("plotly_relayout");plot.on("plotly_relayout",event=>{if(event["scene.camera"])currentCamera=event["scene.camera"]});setupPlotInteractions(plot);
-      document.getElementById("status").textContent=`${compact(values.length)} coordinate positions · ${node.label}`;
-      document.getElementById("legend").innerHTML=`<span class="legend-item"><i class="legend-dot" style="background:#0891b2"></i>Negative</span><span class="legend-item"><i class="legend-dot" style="background:#db2777"></i>Positive</span>`;
+      document.getElementById("status").textContent=`${compact(values.length)} coordinate positions · fibers ${showFibers?"on":"off"} · ${node.label}`;
+      document.getElementById("legend").innerHTML=`<span class="legend-item"><i class="legend-dot" style="background:#94a3b8"></i>Dimension sequence</span><span class="legend-item"><i class="legend-dot" style="background:#0891b2"></i>Negative</span><span class="legend-item"><i class="legend-dot" style="background:#db2777"></i>Positive</span>`;
       updateMethodNote(payload);
     }
     async function loadVectorPositions(){
@@ -160,7 +161,7 @@
       const stop=event=>{if(rightDrag&&event.pointerId===rightDrag.pointerId){event.preventDefault();event.stopPropagation();plot.releasePointerCapture?.(event.pointerId);rightDrag=null}userInteracting=false};
       plot.addEventListener("pointerup",stop,true);plot.addEventListener("pointercancel",stop,true);plot.addEventListener("pointerleave",event=>{if(!rightDrag)userInteracting=false},true);
     }
-    function updateFiberControl(){const button=document.getElementById("fibersBtn");button.disabled=positionMode;button.setAttribute("aria-pressed",String(showFibers));button.textContent=`Fibers: ${showFibers?"On":"Off"}`}
+    function updateFiberControl(){const button=document.getElementById("fibersBtn");button.disabled=false;button.setAttribute("aria-pressed",String(showFibers));button.textContent=`Fibers: ${showFibers?"On":"Off"}`}
     function updatePositionControl(){const button=document.getElementById("positionsBtn");button.setAttribute("aria-pressed",String(positionMode));button.textContent=`1,536 Positions: ${positionMode?"On":"Off"}`}
     function updateRotateControl(){const button=document.getElementById("rotateBtn");button.setAttribute("aria-pressed",String(autoRotate));button.textContent=`Auto-rotate: ${autoRotate?"On":"Off"}`}
     function animateCamera(time){
