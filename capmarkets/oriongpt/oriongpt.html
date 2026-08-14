@@ -41,6 +41,13 @@
       animation: blink 0.7s steps(1) infinite;
     }
     @keyframes blink { 50% { opacity: 0; } }
+    .orion-waiting { display:inline-flex; align-items:center; gap:9px; color:#64748b; }
+    .orion-waiting-dots { display:inline-flex; align-items:center; gap:4px; }
+    .orion-waiting-dots i { width:6px; height:6px; border-radius:50%; background:#187ABA; animation:orionPulse 1.1s ease-in-out infinite; }
+    .orion-waiting-dots i:nth-child(2) { animation-delay:.16s; }
+    .orion-waiting-dots i:nth-child(3) { animation-delay:.32s; }
+    @keyframes orionPulse { 0%,60%,100%{transform:translateY(0);opacity:.3} 30%{transform:translateY(-4px);opacity:1} }
+    @media (prefers-reduced-motion: reduce) { .orion-waiting-dots i { animation:none; opacity:.7; } }
   </style>
 </head>
 
@@ -86,7 +93,8 @@ injectSidebar();
 
   <!-- Chat Stream -->
   <div id="chatStream"
-       class="flex-1 overflow-auto thin-scrollbar px-6 py-4 space-y-4 bg-[#f5f6f8]">
+       class="flex-1 overflow-auto thin-scrollbar px-6 py-4 space-y-4 bg-[#f5f6f8]"
+       aria-live="polite" aria-busy="false">
   </div>
 
   <!-- Input -->
@@ -152,6 +160,27 @@ function md(text) {
     .replace(/\n/g,"<br/>");
 }
 
+function waitingMarkup() {
+  return '<span class="orion-waiting" role="status"><span>Orion is reviewing the deal stack</span><span class="orion-waiting-dots" aria-hidden="true"><i></i><i></i><i></i></span></span>';
+}
+
+function pause(ms) {
+  return new Promise(resolve => window.setTimeout(resolve, ms));
+}
+
+async function typeResponse(bubble, text) {
+  const value = String(text || "");
+  const step = Math.max(1, Math.ceil(value.length / 260));
+  bubble.classList.add("typing-cursor");
+  for (let index = step; index < value.length; index += step) {
+    bubble.innerHTML = md(value.slice(0, index));
+    stream.scrollTop = stream.scrollHeight;
+    await pause(16);
+  }
+  bubble.innerHTML = md(value);
+  bubble.classList.remove("typing-cursor");
+}
+
 function addBubble(role, html, typing=false) {
   const row = document.createElement("div");
   row.className = role === "user" ? "text-right" : "text-left";
@@ -184,8 +213,10 @@ async function handleSend() {
   addBubble("user", md(q));
   input.value = "";
   sendBtn.disabled = true;
+  sendBtn.textContent = "Thinking…";
+  stream.setAttribute("aria-busy", "true");
 
-  const thinking = addBubble("assistant", md("_Checking Orion…_"), true);
+  const thinking = addBubble("assistant", waitingMarkup());
 
   try {
     const data = await askOrionBackend(q, 8);
@@ -207,14 +238,18 @@ async function handleSend() {
         }).join("<br/>")
       : "";
 
-    thinking.classList.remove("typing-cursor");
-    thinking.innerHTML = md(`**OrionGPT:** ${answer}`) + sources;
+    await typeResponse(thinking, "**OrionGPT:** " + answer);
+    thinking.innerHTML += sources;
+    stream.scrollTop = stream.scrollHeight;
 
   } catch (e) {
     thinking.classList.remove("typing-cursor");
     thinking.innerHTML = md("**Error:** " + e.message);
   } finally {
     sendBtn.disabled = false;
+    sendBtn.textContent = "Ask";
+    stream.setAttribute("aria-busy", "false");
+    input.focus();
   }
 }
 
