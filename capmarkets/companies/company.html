@@ -179,21 +179,21 @@
       const keys=[].concat(preferred.filter(function(k){return Object.prototype.hasOwnProperty.call(merged,k)}),Object.keys(merged).filter(function(k){return !preferred.includes(k)}));
       document.getElementById("overviewGrid").innerHTML=keys.length?keys.map(function(key){
         return '<div class="field"><div class="k">'+esc(key)+'</div><div class="v">'+valueHtml(merged[key])+'</div></div>';
-      }).join(""):'<div class="empty">No "+esc(DISPLAY_NAME)+" records were found in the current extracted-data snapshot.</div>';
+      }).join(""):'<div class="empty">No '+esc(DISPLAY_NAME)+' records were found in the current extracted-data snapshot.</div>';
 
       document.getElementById("documentsBody").innerHTML=docs.length?docs.map(function(doc,index){
         const summary=doc.summary||{},updated=doc.updated_at?new Date(doc.updated_at).toLocaleString():"—";
         return "<tr><td><strong>"+esc(companyName(doc)||DISPLAY_NAME+" record "+(index+1))+"</strong></td><td>"+valueHtml(summary["Deal Title"]||summary.deal_title)+"</td><td>"+Number(doc.chunk_count||0).toLocaleString()+"</td><td>"+Number(doc.embedded_chunks||0).toLocaleString()+"</td><td>"+esc(updated)+"</td><td class=\"mono\">"+esc(doc.file_id)+"</td></tr>";
-      }).join(""):'<tr><td colspan="6" class="empty">No "+esc(DISPLAY_NAME)+" source records found.</td></tr>';
+      }).join(""):'<tr><td colspan="6" class="empty">No '+esc(DISPLAY_NAME)+' source records found.</td></tr>';
 
       document.getElementById("extractedRecords").innerHTML=docs.length?docs.map(function(doc,index){
         const fields=Object.entries(doc.summary||{});
         return '<div class="panel" style="box-shadow:none;margin-top:12px"><h2>' + esc((doc.summary||{})["Deal Title"]||DISPLAY_NAME+" source "+(index+1)) + '</h2><p class="desc mono">'+esc(doc.file_id)+'</p><div class="summary-grid">'+fields.map(function(entry){return '<div class="field"><div class="k">'+esc(entry[0])+'</div><div class="v">'+valueHtml(entry[1])+'</div></div>'}).join("")+'</div></div>';
-      }).join(""):'<div class="empty">No "+esc(DISPLAY_NAME)+" extracted fields found.</div>';
+      }).join(""):'<div class="empty">No '+esc(DISPLAY_NAME)+' extracted fields found.</div>';
 
       document.getElementById("chunksBody").innerHTML=chunks.length?chunks.map(function(chunk){
         return '<tr><td style="max-width:520px">'+valueHtml(chunk.text_preview)+'</td><td>'+renderTags(chunk.tags)+'</td><td class="mono">'+valueHtml(chunk.vector_id)+'</td><td class="mono">'+esc(chunk.file_id)+'</td></tr>';
-      }).join(""):'<tr><td colspan="4" class="empty">No "+esc(DISPLAY_NAME)+" chunks found.</td></tr>';
+      }).join(""):'<tr><td colspan="4" class="empty">No '+esc(DISPLAY_NAME)+' chunks found.</td></tr>';
     }
     async function load(){
       const status=document.getElementById("status"),button=document.getElementById("refresh");
