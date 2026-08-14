@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Uber — Company Profile — Orion</title>
+  <title>Company Profile — Orion</title>
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -57,10 +57,10 @@
   <main class="mainwrap">
     <section class="hero">
       <div class="hero-row">
-        <div class="company-mark">U</div>
+        <div class="company-mark" id="companyMark">—</div>
         <div>
           <div class="eyebrow">Company profile</div>
-          <h1>Uber</h1>
+          <h1 id="companyTitle">Company</h1>
           <p class="sub">A consolidated view of the source materials and extracted credit information associated with this company.</p>
         </div>
         <div class="spacer"></div>
@@ -76,7 +76,7 @@
       <div class="stat"><div class="k">Latest update</div><div class="v" id="latestUpdate" style="font-size:14px">—</div></div>
     </div>
 
-    <div class="tabs" role="tablist" aria-label="Uber company information">
+    <div class="tabs" role="tablist" aria-label="Company information">
       <button class="tab active" data-view="overview" type="button">Overview</button>
       <button class="tab" data-view="documents" type="button">Source materials</button>
       <button class="tab" data-view="extracted" type="button">Extracted data</button>
@@ -84,18 +84,18 @@
     </div>
 
     <section id="overview" class="view">
-      <div class="callout">This first company profile is assembled automatically from records whose extracted company name matches Uber. The same page structure can later serve every ingested company.</div>
+      <div class="callout" id="profileNote">This company profile is assembled automatically from matching ingested records.</div>
       <div class="panel">
         <h2>Credit overview</h2>
-        <p class="desc">The latest available extracted fields across Uber’s ingested materials.</p>
-        <div id="overviewGrid" class="summary-grid"><div class="empty">Loading Uber data…</div></div>
+        <p class="desc" id="overviewDesc">The latest available extracted fields across this company’s ingested materials.</p>
+        <div id="overviewGrid" class="summary-grid"><div class="empty">Loading company data…</div></div>
       </div>
     </section>
 
     <section id="documents" class="view hidden-view">
       <div class="panel">
         <h2>Source materials</h2>
-        <p class="desc">Every stored source record associated with Uber, with ingestion and vector status.</p>
+        <p class="desc" id="documentsDesc">Every stored source record associated with this company, with ingestion and vector status.</p>
         <div class="table-wrap"><table><thead><tr><th>Record</th><th>Deal title</th><th>Chunks</th><th>Embedded</th><th>Updated</th><th>File ID</th></tr></thead><tbody id="documentsBody"></tbody></table></div>
       </div>
     </section>
@@ -111,7 +111,7 @@
     <section id="chunks" class="view hidden-view">
       <div class="panel">
         <h2>Stored chunks</h2>
-        <p class="desc">Text previews, tags, metadata, and vector references linked to Uber’s source records.</p>
+        <p class="desc" id="chunksDesc">Text previews, tags, metadata, and vector references linked to this company’s source records.</p>
         <div class="table-wrap"><table><thead><tr><th>Text preview</th><th>Tags</th><th>Vector</th><th>File ID</th></tr></thead><tbody id="chunksBody"></tbody></table></div>
       </div>
     </section>
@@ -119,14 +119,35 @@
 
   <script>
     const API_BASE="https://api.private-credit.ai";
-    const COMPANY="uber";
+    const COMPANY_KEY=(new URLSearchParams(location.search).get("company")||"uber").toLowerCase();
+    const COMPANY_CONFIGS={
+      uber:{name:"Uber",aliases:["uber"]},
+      acme:{name:"ACME",aliases:["acme"]},
+      qvc:{name:"QVC",aliases:["qvc"]},
+      "dave-busters":{name:"Dave & Busters",aliases:["dave and busters","dave busters","dave and buster's","dave & busters"]},
+      epo:{name:"EPO",aliases:["epo"]}
+    };
+    const COMPANY_CONFIG=COMPANY_CONFIGS[COMPANY_KEY]||{name:COMPANY_KEY.replace(/[-_]+/g," ").replace(/\b\w/g,function(letter){return letter.toUpperCase()}),aliases:[COMPANY_KEY]};
+    const DISPLAY_NAME=COMPANY_CONFIG.name;
+    document.title=DISPLAY_NAME+" — Company Profile — Orion";
+    document.getElementById("companyMark").textContent=DISPLAY_NAME.charAt(0).toUpperCase();
+    document.getElementById("companyTitle").textContent=DISPLAY_NAME;
+    document.querySelector(".tabs").setAttribute("aria-label",DISPLAY_NAME+" company information");
+    document.getElementById("profileNote").textContent="This company profile is assembled automatically from records whose extracted company name matches "+DISPLAY_NAME+".";
+    document.getElementById("overviewDesc").textContent="The latest available extracted fields across "+DISPLAY_NAME+"’s ingested materials.";
+    document.getElementById("documentsDesc").textContent="Every stored source record associated with "+DISPLAY_NAME+", with ingestion and vector status.";
+    document.getElementById("chunksDesc").textContent="Text previews, tags, metadata, and vector references linked to "+DISPLAY_NAME+"’s source records.";
     const SIGNIN_URL="/capmarkets/signin/signin.html?next="+encodeURIComponent(location.pathname+location.search);
     function esc(value){return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
     function companyName(doc){
       const summary=doc.summary||{};
       return summary["Company Name"]||summary.company_name||summary.company||doc.company_name||"";
     }
-    function matchesCompany(doc){return companyName(doc).toLowerCase().includes(COMPANY)}
+    function normalizeCompany(value){return String(value||"").toLowerCase().replace(/&/g," and ").replace(/[’']/g,"").replace(/[^a-z0-9]+/g," ").trim()}
+    function matchesCompany(doc){
+      const name=normalizeCompany(companyName(doc));
+      return COMPANY_CONFIG.aliases.some(function(alias){return name.includes(normalizeCompany(alias))});
+    }
     function valueHtml(value){
       if(value===null||value===undefined||value==="")return '<span class="muted">—</span>';
       if(typeof value==="object")return esc(JSON.stringify(value,null,2));
@@ -158,21 +179,21 @@
       const keys=[].concat(preferred.filter(function(k){return Object.prototype.hasOwnProperty.call(merged,k)}),Object.keys(merged).filter(function(k){return !preferred.includes(k)}));
       document.getElementById("overviewGrid").innerHTML=keys.length?keys.map(function(key){
         return '<div class="field"><div class="k">'+esc(key)+'</div><div class="v">'+valueHtml(merged[key])+'</div></div>';
-      }).join(""):'<div class="empty">No Uber records were found in the current extracted-data snapshot.</div>';
+      }).join(""):'<div class="empty">No "+esc(DISPLAY_NAME)+" records were found in the current extracted-data snapshot.</div>';
 
       document.getElementById("documentsBody").innerHTML=docs.length?docs.map(function(doc,index){
         const summary=doc.summary||{},updated=doc.updated_at?new Date(doc.updated_at).toLocaleString():"—";
-        return "<tr><td><strong>"+esc(companyName(doc)||"Uber record "+(index+1))+"</strong></td><td>"+valueHtml(summary["Deal Title"]||summary.deal_title)+"</td><td>"+Number(doc.chunk_count||0).toLocaleString()+"</td><td>"+Number(doc.embedded_chunks||0).toLocaleString()+"</td><td>"+esc(updated)+"</td><td class=\"mono\">"+esc(doc.file_id)+"</td></tr>";
-      }).join(""):'<tr><td colspan="6" class="empty">No Uber source records found.</td></tr>';
+        return "<tr><td><strong>"+esc(companyName(doc)||DISPLAY_NAME+" record "+(index+1))+"</strong></td><td>"+valueHtml(summary["Deal Title"]||summary.deal_title)+"</td><td>"+Number(doc.chunk_count||0).toLocaleString()+"</td><td>"+Number(doc.embedded_chunks||0).toLocaleString()+"</td><td>"+esc(updated)+"</td><td class=\"mono\">"+esc(doc.file_id)+"</td></tr>";
+      }).join(""):'<tr><td colspan="6" class="empty">No "+esc(DISPLAY_NAME)+" source records found.</td></tr>';
 
       document.getElementById("extractedRecords").innerHTML=docs.length?docs.map(function(doc,index){
         const fields=Object.entries(doc.summary||{});
-        return '<div class="panel" style="box-shadow:none;margin-top:12px"><h2>' + esc((doc.summary||{})["Deal Title"]||"Uber source "+(index+1)) + '</h2><p class="desc mono">'+esc(doc.file_id)+'</p><div class="summary-grid">'+fields.map(function(entry){return '<div class="field"><div class="k">'+esc(entry[0])+'</div><div class="v">'+valueHtml(entry[1])+'</div></div>'}).join("")+'</div></div>';
-      }).join(""):'<div class="empty">No Uber extracted fields found.</div>';
+        return '<div class="panel" style="box-shadow:none;margin-top:12px"><h2>' + esc((doc.summary||{})["Deal Title"]||DISPLAY_NAME+" source "+(index+1)) + '</h2><p class="desc mono">'+esc(doc.file_id)+'</p><div class="summary-grid">'+fields.map(function(entry){return '<div class="field"><div class="k">'+esc(entry[0])+'</div><div class="v">'+valueHtml(entry[1])+'</div></div>'}).join("")+'</div></div>';
+      }).join(""):'<div class="empty">No "+esc(DISPLAY_NAME)+" extracted fields found.</div>';
 
       document.getElementById("chunksBody").innerHTML=chunks.length?chunks.map(function(chunk){
         return '<tr><td style="max-width:520px">'+valueHtml(chunk.text_preview)+'</td><td>'+renderTags(chunk.tags)+'</td><td class="mono">'+valueHtml(chunk.vector_id)+'</td><td class="mono">'+esc(chunk.file_id)+'</td></tr>';
-      }).join(""):'<tr><td colspan="4" class="empty">No Uber chunks found.</td></tr>';
+      }).join(""):'<tr><td colspan="4" class="empty">No "+esc(DISPLAY_NAME)+" chunks found.</td></tr>';
     }
     async function load(){
       const status=document.getElementById("status"),button=document.getElementById("refresh");
