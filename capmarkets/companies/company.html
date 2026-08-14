@@ -141,13 +141,24 @@
     function esc(value){return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
     function companyName(doc){
       const summary=doc.summary||{};
-      return summary["Company Name"]||summary.company_name||summary.company||doc.company_name||"";
+      return summary["Company Name"]
+        ||summary["Borrower / Issuer"]
+        ||summary.Borrower
+        ||summary.Issuer
+        ||summary["Borrower Name"]
+        ||summary["Issuer Name"]
+        ||summary.company_name
+        ||summary.company
+        ||doc.company_name
+        ||"";
     }
     function normalizeCompany(value){return String(value||"").toLowerCase().replace(/&/g," and ").replace(/[’']/g,"").replace(/[^a-z0-9]+/g," ").trim()}
-    function matchesCompany(doc){
-      const name=normalizeCompany(companyName(doc));
+    function matchesName(value){
+      const name=normalizeCompany(value);
       return COMPANY_CONFIG.aliases.some(function(alias){return name.includes(normalizeCompany(alias))});
     }
+    function matchesCompany(doc){return matchesName(companyName(doc))}
+    function matchesNetworkDocument(doc){return matchesName(doc.company_name)||matchesName(doc.deal_title)}
     function valueHtml(value){
       if(value===null||value===undefined||value==="")return '<span class="muted">—</span>';
       if(typeof value==="object")return esc(JSON.stringify(value,null,2));
@@ -157,10 +168,50 @@
       const tags=Array.isArray(value)?value:(value?[value]:[]);
       return tags.length?tags.map(function(tag){return '<span class="tag">'+esc(tag)+'</span>'}).join(""):'<span class="muted">—</span>';
     }
-    function render(data){
-      const docs=(data.documents||[]).filter(matchesCompany);
+    function render(data, network){
+      const networkDocuments=(network.documents||[]).filter(matchesNetworkDocument);
+      const networkById=new Map(networkDocuments.map(function(doc){return [String(doc.file_id),doc]}));
+      const connectedIds=new Set(networkById.keys());
+      let docs=(data.documents||[]).filter(function(doc){
+        return matchesCompany(doc)||connectedIds.has(String(doc.file_id));
+      });
+      const existingIds=new Set(docs.map(function(doc){return String(doc.file_id)}));
+      networkDocuments.forEach(function(networkDoc){
+        const fileId=String(networkDoc.file_id);
+        if(existingIds.has(fileId))return;
+        docs.push({
+          file_id:fileId,
+          summary:{
+            "Borrower / Issuer":networkDoc.company_name,
+            "Deal Title":networkDoc.deal_title,
+            "Industry":networkDoc.industry,
+            "Security":networkDoc.security
+          },
+          vector_id:networkDoc.file_vector_id,
+          updated_at:networkDoc.vector_updated_at,
+          chunk_count:networkDoc.chunk_count,
+          embedded_chunks:networkDoc.chunk_count,
+          embedding_dimensions:(network.stats||{}).embedding_dimensions
+        });
+        existingIds.add(fileId);
+      });
       const ids=new Set(docs.map(function(doc){return String(doc.file_id)}));
-      const chunks=(data.chunks||[]).filter(function(chunk){return ids.has(String(chunk.file_id))});
+      const snapshotChunks=(data.chunks||[]).filter(function(chunk){return ids.has(String(chunk.file_id))});
+      const snapshotChunkIds=new Set(snapshotChunks.map(function(chunk){return String(chunk.id)}));
+      const networkChunks=(network.nodes||[]).filter(function(node){
+        return ids.has(String(node.file_id))&&!snapshotChunkIds.has(String(node.chunk_id));
+      }).map(function(node){
+        return {
+          id:node.chunk_id,
+          file_id:node.file_id,
+          text_preview:node.text_preview,
+          tags:node.tags,
+          metadata:node.metadata,
+          vector_id:node.vector_id,
+          embedding_dimensions:node.embedding_dimensions
+        };
+      });
+      const chunks=snapshotChunks.concat(networkChunks);
       const embedded=docs.reduce(function(total,doc){return total+Number(doc.embedded_chunks||0)},0);
       const dates=docs.map(function(doc){return doc.updated_at?new Date(doc.updated_at):null}).filter(Boolean).sort(function(a,b){return b-a});
       document.getElementById("documentCount").textContent=docs.length.toLocaleString();
@@ -202,11 +253,16 @@
         const session=await fetch(API_BASE+"/me",{credentials:"include",cache:"no-store"});
         if(session.status===401||session.status===403){location.replace(SIGNIN_URL);return}
         if(!session.ok)throw new Error("Session check returned "+session.status);
-        const response=await fetch(API_BASE+"/data/snapshot",{credentials:"include",cache:"no-store",headers:{Accept:"application/json"}});
-        if(response.status===401||response.status===403){location.replace(SIGNIN_URL);return}
-        if(!response.ok)throw new Error("Data API returned "+response.status);
-        render(await response.json());
-        status.className="status live";status.innerHTML='<i class="dot"></i>Live company data';
+        const responses=await Promise.all([
+          fetch(API_BASE+"/data/snapshot",{credentials:"include",cache:"no-store",headers:{Accept:"application/json"}}),
+          fetch(API_BASE+"/capmarkets/neural-map-3d?max_points=500&neighbors=3",{credentials:"include",cache:"no-store",headers:{Accept:"application/json"}})
+        ]);
+        const snapshotResponse=responses[0],networkResponse=responses[1];
+        if(snapshotResponse.status===401||snapshotResponse.status===403||networkResponse.status===401||networkResponse.status===403){location.replace(SIGNIN_URL);return}
+        if(!snapshotResponse.ok)throw new Error("Data API returned "+snapshotResponse.status);
+        if(!networkResponse.ok)throw new Error("Network API returned "+networkResponse.status);
+        render(await snapshotResponse.json(),await networkResponse.json());
+        status.className="status live";status.innerHTML='<i class="dot"></i>Live connected data';
       }catch(error){
         console.error(error);status.className="status error";status.innerHTML='<i class="dot"></i>Unable to load data';
         document.getElementById("overviewGrid").innerHTML='<div class="empty">The live data service may be waking up. Select Refresh in a moment.</div>';
