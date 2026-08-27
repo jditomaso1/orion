@@ -1,0 +1,104 @@
+<style>
+  .bb-sidebar{
+    position:fixed;inset:0 auto 0 0;z-index:50;width:232px;display:flex;flex-direction:column;
+    overflow:hidden;background:#050505;color:#d8d8d8;border-right:1px solid #4a4a4a;
+    font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace;font-size:12px;
+  }
+  .bb-sidebar *{box-sizing:border-box}
+  .bb-brand{display:block;padding:13px 14px 11px;background:#f2a000;color:#050505;text-decoration:none;border-bottom:1px solid #ffcf53}
+  .bb-brand-line{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .bb-brand-name{font-size:20px;font-weight:700;letter-spacing:.06em}
+  .bb-brand-code{font-size:10px;font-weight:700;letter-spacing:.08em}
+  .bb-security{padding:10px 12px 9px;border-bottom:1px solid #3a3a3a;background:#101010}
+  .bb-security-label{color:#8c8c8c;font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+  .bb-security-line{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+  .bb-security-name{color:#fff;font-weight:700;letter-spacing:.04em}
+  .bb-go{padding:2px 5px;background:#167d43;color:#fff;font-size:10px;font-weight:700}
+  .bb-nav{flex:1;overflow-y:auto;padding:8px 0 12px;scrollbar-color:#555 #111;scrollbar-width:thin}
+  .bb-nav-group{border-bottom:1px solid #222}
+  .bb-nav-head{width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;border:0;background:#0b0b0b;color:#f2a000;font:700 10px/1.2 "IBM Plex Mono","Roboto Mono",Consolas,monospace;letter-spacing:.11em;text-transform:uppercase;cursor:pointer;text-align:left}
+  .bb-nav-head:hover{background:#1b1b1b;color:#ffd16b}
+  .bb-caret{color:#777;font-size:10px;transition:transform .12s ease}
+  .bb-nav-list{padding:3px 0 6px}
+  .bb-nav-list.is-collapsed{display:none}
+  .bb-nav a{display:grid;grid-template-columns:28px 1fr;gap:4px;align-items:center;padding:5px 10px;color:#c9c9c9;text-decoration:none;border-left:3px solid transparent;line-height:1.25}
+  .bb-nav a:hover{background:#202020;color:#fff;border-left-color:#f2a000}
+  .bb-nav a[aria-current="page"]{background:#f2a000;color:#050505;border-left-color:#ffe4a3;font-weight:700}
+  .bb-key{color:#777;font-size:9px;font-weight:700}
+  .bb-nav a[aria-current="page"] .bb-key{color:#543500}
+  .bb-divider{height:1px;margin:5px 10px;background:#282828}
+  .bb-sidebar-foot{border-top:1px solid #3f3f3f;background:#0b0b0b}
+  .bb-mode-link{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;color:#8fd4ff;text-decoration:none;border-bottom:1px solid #282828}
+  .bb-mode-link:hover{background:#182029;color:#fff}
+  .bb-function-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#333}
+  .bb-function-strip span{padding:6px 3px;background:#121212;color:#8b8b8b;text-align:center;font-size:8px;line-height:1.2}
+  .bb-function-strip b{display:block;color:#f2a000;font-size:9px}
+  @media(max-width:767px){.bb-sidebar{display:none}}
+</style>
+
+<aside class="bb-sidebar" aria-label="BBDC terminal navigation">
+  <a class="bb-brand" href="/bdc/bbdc/index.html">
+    <span class="bb-brand-line"><span class="bb-brand-name">ORION</span><span class="bb-brand-code">TERMINAL VIEW</span></span>
+  </a>
+
+  <div class="bb-security">
+    <div class="bb-security-label">Active security</div>
+    <div class="bb-security-line"><span class="bb-security-name">BBDC US EQUITY</span><span class="bb-go">GO</span></div>
+  </div>
+
+  <nav class="bb-nav">
+    <section class="bb-nav-group">
+      <button class="bb-nav-head" type="button" data-bb-target="bb-monitor"><span>Monitor</span><span class="bb-caret">▼</span></button>
+      <div id="bb-monitor" class="bb-nav-list">
+        <a href="/bdc/bbdc/briefing/daily-brief.html"><span class="bb-key">01</span><span>Daily Brief</span></a>
+        <a href="/bdc/bbdc/briefing/ask-orion.html"><span class="bb-key">02</span><span>Ask Orion</span></a>
+      </div>
+    </section>
+
+    <section class="bb-nav-group">
+      <button class="bb-nav-head" type="button" data-bb-target="bb-overview"><span>Fund Analysis</span><span class="bb-caret">▼</span></button>
+      <div id="bb-overview" class="bb-nav-list">
+        <a href="/bdc/bbdc/overview/overview-bloomberg.html" aria-current="page"><span class="bb-key">OV</span><span>Overview</span></a>
+        <a href="/bdc/bbdc/overview/financials.html"><span class="bb-key">FA</span><span>Financials</span></a>
+        <a href="/bdc/bbdc/overview/comparables.html"><span class="bb-key">RV</span><span>Comparables</span></a>
+        <a href="/bdc/bbdc/overview/news.html"><span class="bb-key">CN</span><span>News</span></a>
+      </div>
+    </section>
+
+    <section class="bb-nav-group">
+      <button class="bb-nav-head" type="button" data-bb-target="bb-portfolio"><span>Portfolio</span><span class="bb-caret">▼</span></button>
+      <div id="bb-portfolio" class="bb-nav-list">
+        <a href="/bdc/bbdc/portfolio/summary/summary.html"><span class="bb-key">PS</span><span>Summary</span></a>
+        <a href="/bdc/bbdc/portfolio/positions/positions.html"><span class="bb-key">POS</span><span>Positions</span></a>
+        <a href="/bdc/bbdc/portfolio/construction/construction.html"><span class="bb-key">PC</span><span>Construction</span></a>
+        <a href="/bdc/bbdc/portfolio/raroc/raroc.html"><span class="bb-key">RR</span><span>RAROC</span></a>
+        <a href="/bdc/bbdc/portfolio/quality/quality.html"><span class="bb-key">PQ</span><span>Quality</span></a>
+        <a href="/bdc/bbdc/portfolio/activity/activity.html"><span class="bb-key">PA</span><span>Activity</span></a>
+        <a href="/bdc/bbdc/portfolio/trends/trends.html"><span class="bb-key">TR</span><span>Trends</span></a>
+        <a href="/bdc/bbdc/portfolio/neural-network/neural-network.html"><span class="bb-key">NN</span><span>Neural Network</span></a>
+      </div>
+    </section>
+
+    <section class="bb-nav-group">
+      <button class="bb-nav-head" type="button" data-bb-target="bb-credit"><span>Credit Intelligence</span><span class="bb-caret">▼</span></button>
+      <div id="bb-credit" class="bb-nav-list">
+        <a href="/bdc/bbdc/credit-intelligence/index.html"><span class="bb-key">CD</span><span>Credit Dashboard</span></a>
+        <a href="/bdc/bbdc/credit-intelligence/portfolio-companies.html"><span class="bb-key">CO</span><span>All Companies</span></a>
+        <a href="/bdc/bbdc/credit-intelligence/credit-watchlist.html"><span class="bb-key">WL</span><span>Watchlist</span></a>
+        <a href="/bdc/bbdc/credit-intelligence/shadow-ratings.html"><span class="bb-key">SR</span><span>Shadow Ratings</span></a>
+        <a href="/bdc/bbdc/credit-intelligence/monitoring-alerts.html"><span class="bb-key">AL</span><span>Monitoring &amp; Alerts</span></a>
+        <div class="bb-divider"></div>
+        <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/index.html"><span class="bb-key">CHRS</span><span>Coherus Oncology</span></a>
+        <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/index.html"><span class="bb-key">OCUL</span><span>Ocular Therapeutix</span></a>
+        <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/index.html"><span class="bb-key">HLF</span><span>Herbalife</span></a>
+      </div>
+    </section>
+  </nav>
+
+  <div class="bb-sidebar-foot">
+    <a class="bb-mode-link" href="/bdc/bbdc/overview/overview.html"><span>Classic Orion view</span><span>↗</span></a>
+    <div class="bb-function-strip" aria-hidden="true">
+      <span><b>F1</b>HELP</span><span><b>F2</b>MENU</span><span><b>F10</b>EXIT</span>
+    </div>
+  </div>
+</aside>
