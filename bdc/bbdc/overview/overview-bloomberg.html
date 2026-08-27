@@ -3,74 +3,139 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Orion • BBDC Overview</title>
+  <title>Orion Terminal • BBDC Overview</title>
 
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jditomaso1/private-credit-marketing/main/img/favicon.png?v=2">
-  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    :root{--blue:#187aba;--navy:#002b51;--navy-soft:#335574;--jade:#3eb661;--red:#dc2626;--amber:#d97706;--bg:#f4f7fa;--surface:#fff;--border:#e2eaf0;--muted:#64748b}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;overflow-x:hidden;background:var(--bg);color:var(--navy);font-family:Poppins,system-ui,sans-serif}main{min-width:0;margin-left:256px;padding:22px}.inner{max-width:1500px;margin:0 auto}.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 4px 14px rgba(0,43,81,.055)}.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--border);border-radius:999px;background:#f8fafc;color:var(--navy-soft);font-size:11px;font-weight:600;white-space:nowrap}.dot{width:7px;height:7px;border-radius:50%;background:var(--jade)}.eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#64748b}.page-title{font-size:22px;line-height:1.2;margin:5px 0;color:#111827;font-weight:700}.subtitle{font-size:11px;color:#64748b;margin:0}
-    .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-top:16px}.kpi{padding:16px}.kpi-label{color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.055em;text-transform:uppercase}.kpi-value{margin-top:7px;color:var(--navy);font-size:21px;font-weight:700;letter-spacing:-.025em}.kpi-detail{margin-top:3px;color:var(--muted);font-size:10px}.negative{color:var(--red)!important}.positive{color:#16803d!important}
-    .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px;align-items:stretch}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}.panel{padding:18px}.panel-title{font-size:13px;font-weight:600;color:#1e293b}.panel-sub{margin-top:2px;color:var(--muted);font-size:10px}.chart-box{position:relative;height:270px;margin-top:14px}.chart-box.short{height:230px}.industry-panel .chart-box{height:460px}
-    .table-wrap{width:100%;overflow:auto;margin-top:12px}table{width:100%;border-collapse:separate;border-spacing:0}th{padding:9px 8px;border-bottom:1px solid var(--border);background:#f7fafc;color:var(--navy-soft);font-size:10px;font-weight:700;letter-spacing:.04em;text-align:left;text-transform:uppercase;white-space:nowrap}th.num,td.num{text-align:right}td{padding:9px 8px;border-bottom:1px solid #edf2f6;color:#334155;font-size:10px;vertical-align:middle}tbody tr:hover td{background:#f8fbfd}.strong{color:var(--navy);font-weight:600}.chip{display:inline-block;padding:3px 7px;border:1px solid #d1e4f1;border-radius:999px;background:#f1f7fb;color:#0f639c;font-size:10px;white-space:nowrap}.source-note{margin-top:14px;padding:14px 16px;color:var(--muted);font-size:10px;line-height:1.6}.error{display:none;margin-top:14px;padding:12px 14px;border:1px solid #fecaca;border-radius:12px;background:#fff1f2;color:#991b1b;font-size:12px}
-    @media(max-width:1200px){.kpis{grid-template-columns:repeat(3,1fr)}.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}}@media(max-width:767px){#sidebar-placeholder{display:none}main{margin-left:0;padding:14px}.kpis{grid-template-columns:repeat(2,1fr)}}
+    :root{
+      --black:#050505;--panel:#0c0c0c;--panel-2:#121212;--panel-3:#181818;--line:#363636;
+      --line-soft:#242424;--amber:#f2a000;--amber-2:#ffc24a;--yellow:#ffe100;--white:#f2f2f2;
+      --text:#d7d7d7;--muted:#858585;--green:#18c26e;--red:#ff5050;--cyan:#5ecbff;--blue:#2878ff;
+    }
+    *{box-sizing:border-box}
+    html{background:var(--black)}
+    body{margin:0;min-height:100vh;overflow-x:hidden;background:var(--black);color:var(--text);font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace;font-size:12px}
+    button,input,select{font:inherit}
+    main{min-width:0;margin-left:232px;padding:0 12px 32px}
+    .terminal{max-width:1700px;margin:0 auto}
+    .top-strip{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:30px;margin:0 -12px;padding:0 12px;background:#050505;border-bottom:1px solid #4a4a4a;color:#aaa;font-size:10px;letter-spacing:.04em}
+    .command-line{display:flex;align-items:center;gap:8px;min-width:0}
+    .command-security{color:#fff;font-weight:700}.command-code{background:#f2a000;color:#050505;padding:3px 6px;font-weight:700}.command-hint{color:#777;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .top-meta{display:flex;align-items:center;gap:14px;white-space:nowrap}.live{color:var(--green)}.clock{color:var(--amber-2)}
+    .title-bar{display:flex;align-items:stretch;justify-content:space-between;gap:1px;margin-top:10px;background:#3a3a3a;border:1px solid #4b4b4b}
+    .title-main{flex:1;min-width:0;padding:10px 12px;background:var(--amber);color:#050505}
+    .title-kicker{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+    h1{margin:2px 0 0;font-size:20px;line-height:1.15;letter-spacing:.02em;text-transform:uppercase}
+    .title-meta{min-width:255px;padding:8px 11px;background:#111;color:#bdbdbd;text-align:right;font-size:10px;line-height:1.55}
+    .title-meta strong{color:#fff}.title-meta .as-of{color:var(--amber-2)}
+    .function-bar{display:flex;align-items:center;gap:1px;margin-top:1px;background:#3a3a3a;border:1px solid #3a3a3a}
+    .function-tab{padding:5px 9px;background:#111;color:#929292;font-size:9px;text-transform:uppercase;letter-spacing:.05em}
+    .function-tab b{margin-right:5px;color:var(--amber)}.function-tab.active{background:#2b2b2b;color:#fff}
+    .status-line{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;padding:5px 8px;border:1px solid var(--line);background:#0b0b0b;color:#969696;font-size:10px}
+    .status-left,.status-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.status-dot{display:inline-block;width:6px;height:6px;margin-right:5px;background:var(--green)}
+    .ticker{color:var(--amber-2);font-weight:700}.unit{color:var(--cyan)}
+    .error{display:none;margin-top:8px;padding:9px 10px;border:1px solid #873434;background:#260e0e;color:#ff9090}
+    .section-label{display:flex;align-items:center;gap:8px;margin-top:10px;padding:4px 7px;background:#242424;border-left:4px solid var(--amber);color:#f4f4f4;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+    .section-label span{color:#747474;font-weight:400}
+    .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;margin-top:1px;background:#383838;border:1px solid #383838}
+    .kpi{min-width:0;padding:10px 10px 9px;background:var(--panel)}
+    .kpi:hover{background:#151515}.kpi-label{min-height:26px;color:#aaa;font-size:9px;font-weight:600;line-height:1.3;letter-spacing:.055em;text-transform:uppercase}
+    .kpi-value{margin-top:5px;color:var(--white);font-size:20px;font-weight:600;letter-spacing:-.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .kpi-detail{margin-top:4px;color:#707070;font-size:9px;line-height:1.35}.kpi-index{float:right;color:#4d4d4d;font-size:8px}
+    .negative{color:var(--red)!important}.positive{color:var(--green)!important}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin-top:1px;background:#363636;border:1px solid #363636}
+    .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin-top:1px;background:#363636;border:1px solid #363636;align-items:stretch}
+    .panel{min-width:0;padding:0;background:var(--panel)}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:30px;padding:6px 9px;background:#171717;border-bottom:1px solid var(--line)}
+    .panel-title{color:var(--amber-2);font-size:10px;font-weight:700;letter-spacing:.055em;text-transform:uppercase}.panel-sub{color:#717171;font-size:9px;text-align:right}
+    .panel-body{padding:9px}.chart-box{position:relative;height:260px}.chart-box.short{height:220px}.industry-panel .chart-box{height:430px}
+    .terminal-bars{display:grid;gap:14px;padding:5px 1px}.bar-line{display:grid;grid-template-columns:minmax(110px,1fr) auto;gap:10px;margin-bottom:5px;font-size:10px}
+    .bar-label{color:#c9c9c9}.bar-detail{color:#8d8d8d}.bar-track{height:7px;background:#252525;border:1px solid #333}.bar-fill{height:100%}
+    .mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin-top:2px;background:#333;border:1px solid #333}.mini-stat{padding:9px;background:#111}.mini-label{color:#6f6f6f;font-size:8px;text-transform:uppercase}.mini-value{margin-top:4px;color:#fff;font-size:13px;font-weight:600}
+    .table-wrap{width:100%;overflow:auto;scrollbar-color:#555 #111;scrollbar-width:thin}
+    table{width:100%;border-collapse:collapse;font-size:10px;font-variant-numeric:tabular-nums}
+    th{position:relative;padding:6px 7px;border-right:1px solid #353535;border-bottom:1px solid #535353;background:#202020;color:#b5b5b5;font-size:9px;font-weight:600;letter-spacing:.04em;text-align:left;text-transform:uppercase;white-space:nowrap}
+    th:last-child,td:last-child{border-right:0}th.num,td.num{text-align:right}
+    td{padding:6px 7px;border-right:1px solid #262626;border-bottom:1px solid #242424;color:#c5c5c5;vertical-align:middle;white-space:nowrap}
+    tbody tr:nth-child(even) td{background:#0f0f0f}tbody tr:hover td{background:#27220e;color:#fff}.strong{color:#fff;font-weight:600}.chip{display:inline-block;padding:2px 5px;border:1px solid #305c70;background:#10222b;color:#77d5ff;font-size:9px;white-space:nowrap}
+    .scroll-table{max-height:382px;overflow:auto}.top-table{margin-top:1px;border:1px solid #363636;background:#0c0c0c}.top-table .panel-body{padding:0}
+    .source-note{margin-top:1px;padding:8px 10px;border:1px solid #353535;background:#0b0b0b;color:#666;font-size:9px;line-height:1.5}.source-note strong{color:#999}
+    .terminal-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:5px 8px;border-top:1px solid #333;color:#555;font-size:8px;text-transform:uppercase}.terminal-footer span:last-child{color:#85600e}
+    @media(max-width:1280px){.kpis{grid-template-columns:repeat(3,1fr)}.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}.chart-box.short{height:245px}}
+    @media(max-width:767px){main{margin-left:0;padding:0 8px 24px}.title-bar{display:block}.title-meta{text-align:left;min-width:0}.kpis{grid-template-columns:repeat(2,1fr)}.top-strip{margin:0 -8px;padding:0 8px}.top-meta .clock,.command-hint{display:none}.function-bar{overflow:auto}.function-tab{white-space:nowrap}}
   </style>
-<style id="orion-readability-standard">main .card-subtitle,main .panel-sub,main .kpi-detail,main .kpi-note,main .source-note,main .note,main .footer-note{font-size:12px!important;line-height:1.55!important}main .panel-title,main .card-title{font-size:14px!important}main table{font-size:12px!important}main th{font-size:11px!important}main td{font-size:12px!important}main button,main select,main input,main .control,main .download,main .action{font-size:12px!important}</style>
 </head>
 
 <body>
   <div id="sidebar-placeholder"></div>
   <main>
-    <div class="inner">
-      <header class="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <div class="eyebrow">ORION · BDC INTELLIGENCE</div>
-          <h1 class="page-title">Barings BDC Overview</h1>
-          <p id="as-of" class="subtitle">Loading portfolio overview…</p>
+    <div class="terminal">
+      <div class="top-strip">
+        <div class="command-line"><span class="command-security">BBDC US EQUITY</span><span class="command-code">OV</span><span class="command-hint">BARINGS BDC CORP / PORTFOLIO INTELLIGENCE</span></div>
+        <div class="top-meta"><span class="live">● SYSTEM ONLINE</span><span id="terminal-clock" class="clock">--:--:-- AST</span></div>
+      </div>
+
+      <header class="title-bar">
+        <div class="title-main">
+          <div class="title-kicker">Orion Private Credit Analytics</div>
+          <h1>Barings BDC Corp — Portfolio Overview</h1>
         </div>
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="pill"><span class="dot"></span><span id="status">Loading data…</span></span>
-          <span class="pill">NYSE • BBDC</span>
-        </div>
+        <div class="title-meta"><div><strong>NYSE: BBDC</strong> · BUSINESS DEVELOPMENT CO.</div><div id="as-of" class="as-of">LOADING PORTFOLIO SNAPSHOT...</div></div>
       </header>
 
+      <div class="function-bar" aria-label="Terminal function menu">
+        <span class="function-tab active"><b>1</b>Overview</span><span class="function-tab"><b>2</b>Composition</span><span class="function-tab"><b>3</b>Industries</span><span class="function-tab"><b>4</b>Exposures</span><span class="function-tab"><b>5</b>Methodology</span>
+      </div>
+
+      <div class="status-line">
+        <div class="status-left"><span><span class="status-dot"></span><span id="status">LOADING DATA...</span></span><span class="ticker">BBDC</span><span class="unit">USD $MM</span></div>
+        <div class="status-right"><span>SOURCE: 10-Q</span><span>REFRESH: ON LOAD</span></div>
+      </div>
       <div id="error" class="error"></div>
 
+      <div class="section-label">01 // Key Portfolio Metrics <span>Snapshot</span></div>
       <section class="kpis">
-        <article class="card kpi"><div class="kpi-label">Portfolio Fair Value</div><div id="fv" class="kpi-value">—</div><div class="kpi-detail">Total investments</div></article>
-        <article class="card kpi"><div class="kpi-label">Portfolio Cost</div><div id="cost" class="kpi-value">—</div><div class="kpi-detail">Total investments</div></article>
-        <article class="card kpi"><div class="kpi-label">Unrealized Gain / (Loss)</div><div id="unrealized" class="kpi-value">—</div><div id="unrealized-sub" class="kpi-detail">Fair value less cost</div></article>
-        <article class="card kpi"><div class="kpi-label">Portfolio Companies</div><div id="companies" class="kpi-value">—</div><div id="instruments" class="kpi-detail">— investment instruments</div></article>
-        <article class="card kpi"><div class="kpi-label">Weighted Cash Coupon</div><div id="coupon" class="kpi-value">—</div><div class="kpi-detail">Debt weighted by fair value</div></article>
-        <article class="card kpi"><div class="kpi-label">Largest Exposure</div><div id="largest" class="kpi-value">—</div><div id="largest-pct" class="kpi-detail">— of portfolio fair value</div></article>
+        <article class="kpi"><span class="kpi-index">01</span><div class="kpi-label">Portfolio Fair Value</div><div id="fv" class="kpi-value">—</div><div class="kpi-detail">TOTAL INVESTMENTS</div></article>
+        <article class="kpi"><span class="kpi-index">02</span><div class="kpi-label">Portfolio Cost</div><div id="cost" class="kpi-value">—</div><div class="kpi-detail">TOTAL INVESTMENTS</div></article>
+        <article class="kpi"><span class="kpi-index">03</span><div class="kpi-label">Unrealized Gain / (Loss)</div><div id="unrealized" class="kpi-value">—</div><div id="unrealized-sub" class="kpi-detail">FAIR VALUE LESS COST</div></article>
+        <article class="kpi"><span class="kpi-index">04</span><div class="kpi-label">Portfolio Companies</div><div id="companies" class="kpi-value">—</div><div id="instruments" class="kpi-detail">— INVESTMENT INSTRUMENTS</div></article>
+        <article class="kpi"><span class="kpi-index">05</span><div class="kpi-label">Weighted Cash Coupon</div><div id="coupon" class="kpi-value">—</div><div class="kpi-detail">DEBT WEIGHTED BY FAIR VALUE</div></article>
+        <article class="kpi"><span class="kpi-index">06</span><div class="kpi-label">Largest Exposure</div><div id="largest" class="kpi-value">—</div><div id="largest-pct" class="kpi-detail">— OF PORTFOLIO FAIR VALUE</div></article>
       </section>
 
+      <div class="section-label">02 // Portfolio Composition <span>Fair Value Analysis</span></div>
       <section class="grid-3">
-        <article class="card panel"><div class="panel-title">Portfolio by asset type</div><div class="panel-sub">Fair value allocation</div><div class="chart-box short"><canvas id="asset-chart"></canvas></div></article>
-        <article class="card panel"><div class="panel-title">Portfolio by classification</div><div class="panel-sub">Control, affiliate and non-affiliate exposure</div><div class="chart-box short"><canvas id="class-chart"></canvas></div></article>
-        <article class="card panel"><div class="panel-title">Credit profile</div><div class="panel-sub">Selected portfolio indicators</div><div id="credit-profile" class="mt-5 space-y-4"></div></article>
+        <article class="panel"><div class="panel-head"><div class="panel-title">Asset Type</div><div class="panel-sub">FAIR VALUE ALLOCATION</div></div><div class="panel-body"><div class="chart-box short"><canvas id="asset-chart"></canvas></div></div></article>
+        <article class="panel"><div class="panel-head"><div class="panel-title">Classification</div><div class="panel-sub">CONTROL / AFFILIATE / NON-AFFILIATE</div></div><div class="panel-body"><div class="chart-box short"><canvas id="class-chart"></canvas></div></div></article>
+        <article class="panel"><div class="panel-head"><div class="panel-title">Credit Profile</div><div class="panel-sub">SELECTED INDICATORS</div></div><div class="panel-body"><div id="credit-profile" class="terminal-bars"></div></div></article>
       </section>
 
+      <div class="section-label">03 // Allocation Detail <span>Portfolio Concentration</span></div>
       <section class="grid-2">
-        <article class="card panel industry-panel"><div class="panel-title">Industry allocation</div><div class="panel-sub">Top industries by portfolio fair value</div><div class="chart-box"><canvas id="industry-chart"></canvas></div></article>
-        <article class="card panel"><div class="panel-title">Investment types</div><div class="panel-sub">Largest instrument categories by fair value</div><div class="table-wrap"><table><thead><tr><th>Investment type</th><th class="num">Fair value</th><th class="num">% portfolio</th><th class="num">Instruments</th></tr></thead><tbody id="types-body"></tbody></table></div></article>
+        <article class="panel industry-panel"><div class="panel-head"><div class="panel-title">Industry Allocation</div><div class="panel-sub">TOP INDUSTRIES BY FAIR VALUE</div></div><div class="panel-body"><div class="chart-box"><canvas id="industry-chart"></canvas></div></div></article>
+        <article class="panel"><div class="panel-head"><div class="panel-title">Investment Types</div><div class="panel-sub">INSTRUMENT CATEGORIES</div></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Investment Type</th><th class="num">Fair Value</th><th class="num">% Port.</th><th class="num">Instruments</th></tr></thead><tbody id="types-body"></tbody></table></div></div></article>
       </section>
 
-      <section class="card panel mt-[14px]">
-        <div class="panel-title">Top 10 portfolio companies</div><div class="panel-sub">Largest company exposures by fair value</div>
-        <div class="table-wrap"><table><thead><tr><th>Portfolio company</th><th>Industry</th><th>Classification</th><th class="num">Cost</th><th class="num">Fair value</th><th class="num">% portfolio</th><th class="num">FV / cost</th></tr></thead><tbody id="top-body"></tbody></table></div>
+      <div class="section-label">04 // Largest Positions <span>Company-Level Exposure</span></div>
+      <section class="panel top-table">
+        <div class="panel-head"><div class="panel-title">Top 10 Portfolio Companies</div><div class="panel-sub">RANKED BY FAIR VALUE</div></div>
+        <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Portfolio Company</th><th>Industry</th><th>Classification</th><th class="num">Cost</th><th class="num">Fair Value</th><th class="num">% Port.</th><th class="num">FV / Cost</th></tr></thead><tbody id="top-body"></tbody></table></div></div>
       </section>
 
+      <div class="section-label">05 // Supporting Detail <span>Full Breakdown</span></div>
       <section class="grid-2">
-        <article class="card panel"><div class="panel-title">Industry detail</div><div class="panel-sub">Complete company-level industry allocation</div><div class="table-wrap max-h-[390px]"><table><thead class="sticky top-0"><tr><th>Industry</th><th class="num">Cost</th><th class="num">Fair value</th><th class="num">% portfolio</th><th class="num">Companies</th></tr></thead><tbody id="industry-body"></tbody></table></div></article>
-        <article class="card panel"><div class="panel-title">Hedges and other instruments</div><div class="panel-sub">Excluded from Schedule of Investments totals</div><div class="table-wrap"><table><thead><tr><th>Instrument</th><th class="num">Notional</th><th class="num">Value / unrealized</th><th>Note</th></tr></thead><tbody id="hedges-body"></tbody></table></div></article>
+        <article class="panel"><div class="panel-head"><div class="panel-title">Industry Detail</div><div class="panel-sub">COMPLETE COMPANY-LEVEL ALLOCATION</div></div><div class="panel-body"><div class="table-wrap scroll-table"><table><thead><tr><th>Industry</th><th class="num">Cost</th><th class="num">Fair Value</th><th class="num">% Port.</th><th class="num">Companies</th></tr></thead><tbody id="industry-body"></tbody></table></div></div></article>
+        <article class="panel"><div class="panel-head"><div class="panel-title">Hedges &amp; Other Instruments</div><div class="panel-sub">EXCLUDED FROM SOI TOTALS</div></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Instrument</th><th class="num">Notional</th><th class="num">Value / Unreal.</th><th>Note</th></tr></thead><tbody id="hedges-body"></tbody></table></div></div></article>
       </section>
 
-      <footer class="card source-note"><strong class="text-slate-700">Source and methodology:</strong> <span id="notes">Loading source notes…</span></footer>
+      <footer class="source-note"><strong>SOURCE &amp; METHODOLOGY //</strong> <span id="notes">LOADING SOURCE NOTES...</span></footer>
+      <div class="terminal-footer"><span>ORION PRIVATE CREDIT ANALYTICS // BBDC OVERVIEW</span><span>TERMINAL DISPLAY MODE</span></div>
     </div>
   </main>
 
@@ -78,72 +143,77 @@
 
   <script>
     const CSV_URL="/bdc/bbdc/data/bbdc_overview.csv",$=id=>document.getElementById(id);
-    const COLORS=["#187aba","#3eb661","#0a6f7a","#4ccacd","#d97706","#7c3aed","#64748b","#ef4444","#94a3b8","#335574"];
+    const COLORS=["#f2a000","#18c26e","#5ecbff","#ffe100","#ff5050","#2878ff","#b67cff","#91a3b0","#f46fba","#c4ff4d"];
+    const FONT='IBM Plex Mono';
     let rows=[];
+
+    function updateClock(){
+      const now=new Date();
+      $("terminal-clock").textContent=new Intl.DateTimeFormat("en-US",{timeZone:"America/Puerto_Rico",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(now)+" AST";
+    }
 
     async function loadSidebar(){
       try{
-        const r=await fetch("/bdc/bbdc/sidebar.html",{cache:"no-store"});
+        const r=await fetch("/bdc/bbdc/sidebar-bloomberg.html",{cache:"no-store"});
         if(!r.ok)throw new Error(r.status);
         $("sidebar-placeholder").innerHTML=await r.text();
-
-        window.toggleSection=id=>{
-          const s=document.getElementById(id),i=document.getElementById("icon-"+id);
-          if(!s||!i)return;
-          s.classList.toggle("hidden");
-          const isOpen=!s.classList.contains("hidden");
-          i.style.transform=isOpen?"rotate(90deg)":"rotate(0deg)";
-          const open=JSON.parse(localStorage.getItem("bbdc-sidebar-sections")||"[]");
-          const updated=isOpen?[...new Set([...open,id])]:open.filter(x=>x!==id);
-          localStorage.setItem("bbdc-sidebar-sections",JSON.stringify(updated));
-          localStorage.setItem("sidebar-open-section",id);
-        };
-
-        const open=JSON.parse(localStorage.getItem("bbdc-sidebar-sections")||"[]");
-        const sections=open.length?open:["overview-nav"];
-        if(!sections.includes("overview-nav"))sections.push("overview-nav");
-        sections.forEach(id=>{
-          const s=document.getElementById(id),i=document.getElementById("icon-"+id);
-          if(s&&i){s.classList.remove("hidden");i.style.transform="rotate(90deg)"}
+        document.querySelectorAll("[data-bb-target]").forEach(button=>{
+          const target=$(button.dataset.bbTarget),caret=button.querySelector(".bb-caret");
+          button.addEventListener("click",()=>{
+            target?.classList.toggle("is-collapsed");
+            if(caret)caret.style.transform=target?.classList.contains("is-collapsed")?"rotate(-90deg)":"rotate(0deg)";
+          });
         });
-        localStorage.setItem("bbdc-sidebar-sections",JSON.stringify(sections));
-
-        const current=window.location.pathname;
-        document.querySelectorAll("#sidebar-placeholder a[href]").forEach(a=>{
-          if(a.getAttribute("href")===current){
-            a.classList.add("bg-blue-50","text-[#187ABA]");
-            a.setAttribute("aria-current","page");
-          }
-        });
-      }catch(e){console.warn(e)}
+      }catch(e){console.warn("Bloomberg sidebar unavailable",e)}
     }
-    async function loadChat(){try{const r=await fetch("/bdc/bbdc/includes/orion-chat.html",{cache:"no-store"});if(!r.ok)return;const box=$("orion-chat-include");box.innerHTML=await r.text();box.querySelectorAll("script").forEach(old=>{const s=document.createElement("script");if(old.src)s.src=old.src;else s.textContent=old.textContent;document.body.appendChild(s);old.remove()})}catch(e){console.warn(e)}}
+
+    async function loadChat(){
+      try{
+        const r=await fetch("/bdc/bbdc/includes/orion-chat.html",{cache:"no-store"});
+        if(!r.ok)return;
+        const box=$("orion-chat-include");box.innerHTML=await r.text();
+        box.querySelectorAll("script").forEach(old=>{const s=document.createElement("script");if(old.src)s.src=old.src;else s.textContent=old.textContent;document.body.appendChild(s);old.remove()});
+      }catch(e){console.warn("Chat unavailable",e)}
+    }
+
     const clean=v=>String(v??"").replace(/^\uFEFF/,"").trim();
     function num(v){let s=clean(v);if(!s||s==="-")return null;const neg=/^\(.*\)$/.test(s);s=s.replace(/[,$%x()]/gi,"").replace(/,/g,"");const n=Number(s);return Number.isFinite(n)?(neg?-n:n):null}
-    const money=v=>v===null?"—":(v<0?"(":"")+"$"+Math.abs(v).toLocaleString("en-US",{maximumFractionDigits:0})+(v<0?")":"");
-    const pct=v=>v===null?"—":v.toFixed(1)+"%"; const ratio=v=>v===null?"—":v.toFixed(2)+"x"; const count=v=>v===null?"—":v.toLocaleString("en-US",{maximumFractionDigits:0});
+    const pct=v=>v===null?"—":v.toFixed(1)+"%";
     function findRow(label){return rows.find(r=>clean(r[0])===label)||[]}
     function snapshot(label){const r=findRow(label);return{raw:clean(r[1]),value:num(r[1]),note:clean(r[2])}}
     function section(title){const start=rows.findIndex(r=>clean(r[0])===title);if(start<0)return[];const headers=(rows[start+1]||[]).map(clean),out=[];for(let i=start+2;i<rows.length;i++){const r=rows[i]||[];if(!r.some(v=>clean(v)))break;const item={};headers.forEach((h,j)=>item[h]=clean(r[j]));out.push(item)}return out}
     function esc(v){return clean(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
-    function bar(label,value,detail,color){return`<div><div class="flex justify-between gap-3 text-[10px]"><span class="font-semibold text-slate-700">${esc(label)}</span><span class="text-slate-500">${esc(detail)}</span></div><div class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden"><div class="h-full rounded-full" style="width:${Math.min(value,100)}%;background:${color}"></div></div></div>`}
-    function doughnut(id,data,labelKey){new Chart($(id),{type:"doughnut",data:{labels:data.map(r=>r[labelKey]),datasets:[{data:data.map(r=>num(r["Fair Value"])),backgroundColor:COLORS,borderWidth:2,borderColor:"#fff"}]},options:{maintainAspectRatio:false,cutout:"67%",plugins:{legend:{position:"bottom",labels:{boxWidth:10,usePointStyle:true,font:{family:"Poppins",size:12}}},tooltip:{callbacks:{label:c=>` ${c.label}: ${money(c.raw)}`}}}}})}
+    function bar(label,value,detail,color){const width=Number.isFinite(value)?Math.min(Math.max(value,0),100):0;return`<div><div class="bar-line"><span class="bar-label">${esc(label)}</span><span class="bar-detail">${esc(detail)}</span></div><div class="bar-track"><div class="bar-fill" style="width:${width}%;background:${color}"></div></div></div>`}
+
+    function chartDefaults(){
+      Chart.defaults.color="#9a9a9a";Chart.defaults.font.family=FONT;Chart.defaults.font.size=10;Chart.defaults.borderColor="#2b2b2b";
+    }
+    function doughnut(id,data,labelKey){
+      new Chart($(id),{type:"doughnut",data:{labels:data.map(r=>r[labelKey]),datasets:[{data:data.map(r=>num(r["Fair Value"])),backgroundColor:COLORS,borderWidth:1,borderColor:"#0c0c0c",hoverBorderColor:"#fff"}]},options:{maintainAspectRatio:false,cutout:"63%",plugins:{legend:{position:"bottom",labels:{boxWidth:8,boxHeight:8,usePointStyle:false,padding:10,color:"#aaa",font:{family:FONT,size:9}}},tooltip:{backgroundColor:"#151515",borderColor:"#555",borderWidth:1,titleColor:"#f2a000",bodyColor:"#fff",callbacks:{label:c=>` ${c.label}: ${c.raw?.toLocaleString?.()??c.raw}`}}}}});
+    }
+
     function render(){
       const fv=snapshot("Total Investments, at Fair Value"),cost=snapshot("Total Investments, at Cost"),unrealized=snapshot("Net Unrealized Appreciation / (Depreciation)"),companies=snapshot("Number of Portfolio Companies"),instruments=snapshot("Number of Investment Instruments"),coupon=snapshot("Wtd. Avg. Cash Coupon on Debt (by FV)"),largest=snapshot("Largest Single Company Exposure (FV)"),largestPct=snapshot("Largest Exposure as % of Portfolio FV"),pik=snapshot("Instruments with a PIK Component"),median=snapshot("Median Company Investment (FV)"),avg=snapshot("Average Investment per Company (FV)");
-      $("fv").textContent=fv.raw;$("cost").textContent=cost.raw;$("unrealized").textContent=unrealized.raw;$("unrealized").classList.toggle("negative",unrealized.value<0);$("unrealized").classList.toggle("positive",unrealized.value>0);$("unrealized-sub").textContent=cost.value?pct(unrealized.value/cost.value*100)+" of cost":"Fair value less cost";$("companies").textContent=companies.raw;$("instruments").textContent=instruments.raw+" investment instruments";$("coupon").textContent=coupon.raw;$("largest").textContent=largest.raw;$("largest-pct").textContent=largestPct.raw+" of portfolio fair value";
-      $("credit-profile").innerHTML=bar("Debt fair value",76.6,"76.6% of portfolio",COLORS[0])+bar("Equity fair value",23.4,"23.4% of portfolio",COLORS[1])+bar("PIK-bearing instruments",pik.value/instruments.value*100,`${pik.raw} of ${instruments.raw} instruments`,COLORS[4])+`<div class="grid grid-cols-2 gap-3 pt-2"><div class="rounded-xl bg-slate-50 p-3"><div class="text-[10px] uppercase text-slate-500">Average company FV</div><div class="mt-1 text-sm font-semibold">${avg.raw}</div></div><div class="rounded-xl bg-slate-50 p-3"><div class="text-[10px] uppercase text-slate-500">Median company FV</div><div class="mt-1 text-sm font-semibold">${median.raw}</div></div></div>`;
+      $("fv").textContent=fv.raw;$("cost").textContent=cost.raw;$("unrealized").textContent=unrealized.raw;$("unrealized").classList.toggle("negative",unrealized.value<0);$("unrealized").classList.toggle("positive",unrealized.value>0);$("unrealized-sub").textContent=cost.value?pct(unrealized.value/cost.value*100)+" OF COST":"FAIR VALUE LESS COST";$("companies").textContent=companies.raw;$("instruments").textContent=instruments.raw+" INVESTMENT INSTRUMENTS";$("coupon").textContent=coupon.raw;$("largest").textContent=largest.raw;$("largest-pct").textContent=largestPct.raw+" OF PORTFOLIO FAIR VALUE";
+      const instrumentCount=instruments.value||1,pikPct=(pik.value||0)/instrumentCount*100;
+      $("credit-profile").innerHTML=bar("Debt fair value",76.6,"76.6% OF PORTFOLIO",COLORS[0])+bar("Equity fair value",23.4,"23.4% OF PORTFOLIO",COLORS[1])+bar("PIK-bearing instruments",pikPct,`${pik.raw} OF ${instruments.raw} INSTRUMENTS`,COLORS[3])+`<div class="mini-grid"><div class="mini-stat"><div class="mini-label">Average Company FV</div><div class="mini-value">${esc(avg.raw)}</div></div><div class="mini-stat"><div class="mini-label">Median Company FV</div><div class="mini-value">${esc(median.raw)}</div></div></div>`;
 
       const assets=section("PORTFOLIO COMPOSITION — BY ASSET TYPE (instrument level)").filter(r=>r["Asset Type"]!=="Total"),classes=section("PORTFOLIO COMPOSITION — BY CLASSIFICATION (instrument level)").filter(r=>r["Classification"]!=="Total"),types=section("PORTFOLIO COMPOSITION — BY INVESTMENT TYPE").filter(r=>r["Investment Type"]!=="Total"),industries=section("INDUSTRY BREAKDOWN (company level, sorted by fair value)").filter(r=>r["Industry"]!=="Total"),top=section("TOP 10 PORTFOLIO COMPANIES (by fair value)").filter(r=>r["Portfolio Company"]!=="Top 10 Total"),hedges=section("HEDGES & OTHER INSTRUMENTS (excluded from Schedule of Investments totals)");
       doughnut("asset-chart",assets,"Asset Type");doughnut("class-chart",classes,"Classification");
-      new Chart($("industry-chart"),{type:"bar",data:{labels:industries.slice(0,10).map(r=>r["Industry"]),datasets:[{data:industries.slice(0,10).map(r=>num(r["Fair Value"])),backgroundColor:"#187aba",borderRadius:5}]},options:{indexAxis:"y",maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>" "+money(c.raw)}}},scales:{x:{grid:{color:"#edf2f6"},title:{display:true,text:"Fair value ($MM)",color:"#64748b",font:{family:"Poppins",size:11,weight:"600"}},ticks:{font:{family:"Poppins",size:11},minRotation:0,maxRotation:0,callback:v=>"$"+Math.round(v/1000)}},y:{grid:{display:false},ticks:{font:{family:"Poppins",size:12}}}}}});
+      new Chart($("industry-chart"),{type:"bar",data:{labels:industries.slice(0,10).map(r=>r["Industry"]),datasets:[{data:industries.slice(0,10).map(r=>num(r["Fair Value"])),backgroundColor:"#f2a000",borderColor:"#ffc24a",borderWidth:1,borderRadius:0,barPercentage:.72}]},options:{indexAxis:"y",maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:"#151515",borderColor:"#555",borderWidth:1,titleColor:"#f2a000",bodyColor:"#fff",callbacks:{label:c=>" $"+Number(c.raw).toLocaleString()+" MM"}}},scales:{x:{grid:{color:"#262626"},border:{color:"#444"},title:{display:true,text:"FAIR VALUE ($MM)",color:"#777",font:{family:FONT,size:9,weight:"600"}},ticks:{color:"#8a8a8a",font:{family:FONT,size:9},callback:v=>"$"+Math.round(v/1000)}},y:{grid:{display:false},border:{color:"#444"},ticks:{color:"#bcbcbc",font:{family:FONT,size:9}}}}}});
       $("types-body").innerHTML=types.map(r=>`<tr><td class="strong">${esc(r["Investment Type"])}</td><td class="num">${esc(r["Fair Value"])}</td><td class="num">${esc(r["% of Portfolio FV"])}</td><td class="num">${esc(r["# Instruments"])}</td></tr>`).join("");
       $("top-body").innerHTML=top.map(r=>`<tr><td class="strong">${esc(r["Portfolio Company"])}</td><td>${esc(r["Industry"])}</td><td><span class="chip">${esc(r["Classification"])}</span></td><td class="num">${esc(r["Cost"])}</td><td class="num">${esc(r["Fair Value"])}</td><td class="num">${esc(r["% of Portfolio FV"])}</td><td class="num">${esc(r["FV / Cost"])}</td></tr>`).join("");
       $("industry-body").innerHTML=industries.map(r=>`<tr><td class="strong">${esc(r["Industry"])}</td><td class="num">${esc(r["Cost"])}</td><td class="num">${esc(r["Fair Value"])}</td><td class="num">${esc(r["% of Portfolio FV"])}</td><td class="num">${esc(r["# Companies"])}</td></tr>`).join("");
       $("hedges-body").innerHTML=hedges.map(r=>`<tr><td class="strong">${esc(r["Instrument"])}</td><td class="num">${esc(r["Notional"])}</td><td class="num">${esc(r["Value / Unrealized"])}</td><td>${esc(r["Note"])}</td></tr>`).join("");
-      const title=clean(rows[0]?.[0]),subtitle=clean(rows[1]?.[0]);$("as-of").textContent=subtitle;$("status").textContent="Overview loaded";$("notes").textContent=`${title}. Figures are extracted from BBDC's Q1 2026 Form 10-Q Schedule of Investments. The CSV combines snapshot metrics and multiple supporting tables; this page parses each section separately.`;
+      const title=clean(rows[0]?.[0]),subtitle=clean(rows[1]?.[0]);$("as-of").textContent=subtitle.toUpperCase();$("status").textContent="OVERVIEW LOADED";$("notes").textContent=`${title}. FIGURES EXTRACTED FROM BBDC'S Q1 2026 FORM 10-Q SCHEDULE OF INVESTMENTS. SNAPSHOT METRICS AND SUPPORTING TABLES ARE PARSED FROM THE SHARED BBDC OVERVIEW DATASET.`;
     }
-    async function loadData(){try{const r=await fetch(CSV_URL,{cache:"no-store"});if(!r.ok)throw new Error(r.status);const parsed=Papa.parse(await r.text(),{header:false,skipEmptyLines:false});rows=parsed.data;if(!rows.length)throw new Error("No rows");render()}catch(e){console.error(e);$("status").textContent="Data unavailable";$("error").textContent=`The overview CSV could not be loaded from ${CSV_URL}. Confirm the exact file name and path.`;$("error").style.display="block"}}
-    loadSidebar();loadData();loadChat();
+
+    async function loadData(){
+      try{const r=await fetch(CSV_URL,{cache:"no-store"});if(!r.ok)throw new Error(r.status);const parsed=Papa.parse(await r.text(),{header:false,skipEmptyLines:false});rows=parsed.data;if(!rows.length)throw new Error("No rows");render()}
+      catch(e){console.error(e);$("status").textContent="DATA UNAVAILABLE";$("error").textContent=`OVERVIEW DATA COULD NOT BE LOADED FROM ${CSV_URL}.`;$("error").style.display="block"}
+    }
+
+    chartDefaults();updateClock();setInterval(updateClock,1000);loadSidebar();loadData();loadChat();
   </script>
 </body>
 </html>
