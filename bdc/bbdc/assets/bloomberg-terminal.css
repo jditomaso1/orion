@@ -1,0 +1,237 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap");
+
+:root{
+  --bb-black:#050505;
+  --bb-panel:#0c0c0c;
+  --bb-panel-2:#121212;
+  --bb-panel-3:#1a1a1a;
+  --bb-line:#373737;
+  --bb-line-soft:#252525;
+  --bb-amber:#f2a000;
+  --bb-amber-2:#ffc24a;
+  --bb-yellow:#ffe100;
+  --bb-white:#f2f2f2;
+  --bb-text:#cecece;
+  --bb-muted:#858585;
+  --bb-green:#18c26e;
+  --bb-red:#ff5050;
+  --bb-cyan:#5ecbff;
+  --bb-blue:#2878ff;
+}
+
+html{background:var(--bb-black)!important}
+body.bb-terminal-page{
+  --navy:var(--bb-white);--blue:var(--bb-amber);--green:var(--bb-green);--amber:var(--bb-yellow);
+  --red:var(--bb-red);--bg:var(--bb-black);--surface:var(--bb-panel);--line:var(--bb-line);
+  --border:var(--bb-line);--muted:var(--bb-muted);--navy-soft:#b5b5b5;
+  --coh-navy:var(--bb-white);--coh-text:var(--bb-text);--coh-copy:#bcbcbc;--coh-muted:var(--bb-muted);
+  --coh-blue:var(--bb-amber);--coh-bg:var(--bb-black);--coh-line:var(--bb-line);
+  --coh-soft-line:var(--bb-line-soft);--coh-panel:var(--bb-panel);
+  margin:0!important;min-height:100vh!important;background:var(--bb-black)!important;color:var(--bb-text)!important;
+  font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace!important;font-size:12px!important;line-height:1.45!important;
+  scrollbar-color:#555 #111;scrollbar-width:thin;
+}
+body.bb-terminal-page *{box-sizing:border-box}
+body.bb-terminal-page ::selection{background:var(--bb-amber);color:#050505}
+
+body.bb-terminal-page #sidebar,
+body.bb-terminal-page #sidebar-placeholder{
+  width:232px!important;background:#050505!important;border-right:1px solid #4a4a4a!important;
+  box-shadow:none!important;overflow:visible!important;
+}
+body.bb-terminal-page main{
+  margin-left:232px!important;min-width:0!important;min-height:100vh!important;padding-top:46px!important;
+  background:var(--bb-black)!important;color:var(--bb-text)!important;
+}
+body.bb-terminal-page main>.wrap,
+body.bb-terminal-page main .wrap,
+body.bb-terminal-page main>.inner,
+body.bb-terminal-page main .inner{max-width:1700px!important}
+
+.bb-terminal-ribbon{
+  position:fixed;z-index:42;top:0;left:232px;right:0;height:32px;display:flex;align-items:center;
+  justify-content:space-between;gap:14px;padding:0 12px;background:#050505;border-bottom:1px solid #4a4a4a;
+  color:#969696;font:500 10px/1 "IBM Plex Mono","Roboto Mono",Consolas,monospace;letter-spacing:.04em;
+}
+.bb-ribbon-left,.bb-ribbon-right{display:flex;align-items:center;gap:10px;min-width:0}
+.bb-ribbon-security{color:#fff;font-weight:700;white-space:nowrap}.bb-ribbon-code{padding:3px 6px;background:var(--bb-amber);color:#050505;font-weight:700}
+.bb-ribbon-title{overflow:hidden;color:#777;text-overflow:ellipsis;white-space:nowrap}.bb-ribbon-live{color:var(--bb-green);white-space:nowrap}
+.bb-ribbon-clock{color:var(--bb-amber-2);white-space:nowrap}.bb-ribbon-classic{padding:3px 6px;border:1px solid #555;color:var(--bb-cyan)!important;text-decoration:none!important;white-space:nowrap}
+.bb-ribbon-classic:hover{background:#1d2830!important;color:#fff!important}
+
+body.bb-terminal-page main .eyebrow{
+  margin:0 0 4px!important;color:var(--bb-amber)!important;font:700 9px/1.4 "IBM Plex Mono","Roboto Mono",Consolas,monospace!important;
+  letter-spacing:.14em!important;text-transform:uppercase!important;
+}
+body.bb-terminal-page main h1,
+body.bb-terminal-page main .page-title,
+body.bb-terminal-page main h1.page-title{
+  margin:3px 0 4px!important;color:var(--bb-white)!important;font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace!important;
+  font-size:20px!important;line-height:1.2!important;font-weight:700!important;letter-spacing:.02em!important;text-transform:uppercase!important;
+}
+body.bb-terminal-page main h2,
+body.bb-terminal-page main h3{color:var(--bb-amber-2)!important;font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace!important}
+body.bb-terminal-page main .subtitle,
+body.bb-terminal-page main .page-sub,
+body.bb-terminal-page main .sub{color:#8c8c8c!important;font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace!important;font-size:10px!important;line-height:1.5!important}
+body.bb-terminal-page main header,
+body.bb-terminal-page main .header,
+body.bb-terminal-page main .header-row{border-radius:0!important}
+
+body.bb-terminal-page main .card,
+body.bb-terminal-page main .panel,
+body.bb-terminal-page main .kpi,
+body.bb-terminal-page main .chart-card,
+body.bb-terminal-page main .table-card,
+body.bb-terminal-page main .source-item,
+body.bb-terminal-page main .field,
+body.bb-terminal-page main .side,
+body.bb-terminal-page main .position-box,
+body.bb-terminal-page main .metric-card,
+body.bb-terminal-page main .loading,
+body.bb-terminal-page main .status,
+body.bb-terminal-page main [class*="bg-white"],
+body.bb-terminal-page main [class*="bg-slate-50"],
+body.bb-terminal-page main [class*="bg-gray-50"]{
+  background:var(--bb-panel)!important;color:var(--bb-text)!important;border-color:var(--bb-line)!important;
+  border-radius:0!important;box-shadow:none!important;
+}
+body.bb-terminal-page main .card:hover,
+body.bb-terminal-page main .panel:hover{border-color:#515151!important}
+body.bb-terminal-page main .kpis,
+body.bb-terminal-page main .grid,
+body.bb-terminal-page main .grid2,
+body.bb-terminal-page main .chart-grid,
+body.bb-terminal-page main .section-grid,
+body.bb-terminal-page main .credit-grid{gap:1px!important;background:#383838!important;border:1px solid #383838!important}
+body.bb-terminal-page main .kpi,
+body.bb-terminal-page main .kpis>.card,
+body.bb-terminal-page main .kpis>article{min-height:94px!important;padding:10px!important;background:var(--bb-panel)!important}
+body.bb-terminal-page main .kpi-label,
+body.bb-terminal-page main article label,
+body.bb-terminal-page main .label{
+  color:#969696!important;font:700 9px/1.35 "IBM Plex Mono","Roboto Mono",Consolas,monospace!important;
+  letter-spacing:.055em!important;text-transform:uppercase!important;
+}
+body.bb-terminal-page main .kpi-value,
+body.bb-terminal-page main .summary b,
+body.bb-terminal-page main .metric-value,
+body.bb-terminal-page main .position-value{
+  color:var(--bb-white)!important;font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace!important;font-size:19px!important;font-weight:600!important;
+}
+body.bb-terminal-page main .kpi-detail,
+body.bb-terminal-page main .kpi-note,
+body.bb-terminal-page main .card-subtitle,
+body.bb-terminal-page main .panel-sub,
+body.bb-terminal-page main .metric-note,
+body.bb-terminal-page main small{color:#707070!important;font-size:9px!important;line-height:1.45!important}
+
+body.bb-terminal-page main .panel-title,
+body.bb-terminal-page main .card-title,
+body.bb-terminal-page main .section-title,
+body.bb-terminal-page main .table-title{
+  color:var(--bb-amber-2)!important;font:700 10px/1.4 "IBM Plex Mono","Roboto Mono",Consolas,monospace!important;
+  letter-spacing:.055em!important;text-transform:uppercase!important;
+}
+body.bb-terminal-page main .section-head,
+body.bb-terminal-page main .panel-head,
+body.bb-terminal-page main .table-head,
+body.bb-terminal-page main .table-heading{
+  background:#171717!important;border-color:var(--bb-line)!important;border-radius:0!important;
+}
+body.bb-terminal-page main p,
+body.bb-terminal-page main li,
+body.bb-terminal-page main .summary,
+body.bb-terminal-page main .note,
+body.bb-terminal-page main .footnote,
+body.bb-terminal-page main .footer-note{color:#aaa!important}
+
+body.bb-terminal-page main .tabs,
+body.bb-terminal-page main .toggle,
+body.bb-terminal-page main .scenario-bar,
+body.bb-terminal-page main .controls,
+body.bb-terminal-page main .toolbar{
+  background:#111!important;border:1px solid var(--bb-line)!important;border-radius:0!important;box-shadow:none!important;
+}
+body.bb-terminal-page main .tab,
+body.bb-terminal-page main .toggle button,
+body.bb-terminal-page main .scenario-btn,
+body.bb-terminal-page main button,
+body.bb-terminal-page main .btn,
+body.bb-terminal-page main .control,
+body.bb-terminal-page main .action{
+  border-radius:0!important;color:#aaa!important;font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace!important;font-size:10px!important;
+}
+body.bb-terminal-page main .tab:hover,
+body.bb-terminal-page main button:hover{background:#292929!important;color:#fff!important}
+body.bb-terminal-page main .tab.active,
+body.bb-terminal-page main .toggle button.active,
+body.bb-terminal-page main .scenario-btn.active,
+body.bb-terminal-page main button.active{
+  background:var(--bb-amber)!important;color:#050505!important;border-color:var(--bb-amber)!important;font-weight:700!important;
+}
+body.bb-terminal-page main input,
+body.bb-terminal-page main select,
+body.bb-terminal-page main textarea{
+  background:#0a0a0a!important;color:#fff!important;border:1px solid #505050!important;border-radius:0!important;
+  font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace!important;font-size:10px!important;
+}
+body.bb-terminal-page main input::placeholder,
+body.bb-terminal-page main textarea::placeholder{color:#666!important}
+
+body.bb-terminal-page main .table-wrap,
+body.bb-terminal-page main .table-scroll{border-color:var(--bb-line)!important;border-radius:0!important;scrollbar-color:#555 #111;scrollbar-width:thin}
+body.bb-terminal-page main table{background:var(--bb-panel)!important;color:var(--bb-text)!important;border-collapse:collapse!important;font:400 10px/1.4 "IBM Plex Mono","Roboto Mono",Consolas,monospace!important;font-variant-numeric:tabular-nums}
+body.bb-terminal-page main th{
+  background:#202020!important;color:#b8b8b8!important;border-color:#4a4a4a!important;border-radius:0!important;
+  font:600 9px/1.35 "IBM Plex Mono","Roboto Mono",Consolas,monospace!important;letter-spacing:.04em!important;text-transform:uppercase!important;
+}
+body.bb-terminal-page main td{background:var(--bb-panel)!important;color:#c5c5c5!important;border-color:var(--bb-line-soft)!important;font-size:10px!important}
+body.bb-terminal-page main tbody tr:nth-child(even) td{background:#101010!important}
+body.bb-terminal-page main tbody tr:hover td{background:#28220c!important;color:#fff!important}
+body.bb-terminal-page main td:first-child,
+body.bb-terminal-page main th:first-child{background:inherit!important}
+body.bb-terminal-page main .section-row td{background:#24200e!important;color:var(--bb-amber-2)!important}
+body.bb-terminal-page main .metric,
+body.bb-terminal-page main .company,
+body.bb-terminal-page main .strong{color:#fff!important;font-weight:600!important}
+
+body.bb-terminal-page main a{color:var(--bb-cyan)!important}
+body.bb-terminal-page main a:hover{color:#fff!important}
+body.bb-terminal-page main .pill,
+body.bb-terminal-page main .badge,
+body.bb-terminal-page main .tag,
+body.bb-terminal-page main .chip,
+body.bb-terminal-page main .count,
+body.bb-terminal-page main .ticker{
+  border:1px solid #555!important;border-radius:0!important;background:#191919!important;color:var(--bb-cyan)!important;
+  font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace!important;font-size:9px!important;
+}
+body.bb-terminal-page main .good,
+body.bb-terminal-page main .positive{color:var(--bb-green)!important}
+body.bb-terminal-page main .bad,
+body.bb-terminal-page main .negative,
+body.bb-terminal-page main .risk{color:var(--bb-red)!important}
+body.bb-terminal-page main .watch{color:var(--bb-yellow)!important}
+body.bb-terminal-page main .source-pill,
+body.bb-terminal-page main .status{border-color:#355d47!important;background:#0d2116!important;color:var(--bb-green)!important}
+body.bb-terminal-page main .source-note,
+body.bb-terminal-page main .sources,
+body.bb-terminal-page main .method,
+body.bb-terminal-page main .footnote{
+  background:#0b0b0b!important;border-color:#353535!important;border-radius:0!important;color:#777!important;
+}
+body.bb-terminal-page main canvas{filter:saturate(.95) contrast(1.03)}
+
+body.bb-terminal-page .bb-page-stamp{
+  display:inline-flex;align-items:center;gap:7px;margin:0 0 10px;padding:4px 7px;border-left:3px solid var(--bb-amber);
+  background:#242424;color:#c8c8c8;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+}
+body.bb-terminal-page .bb-page-stamp span{color:#777;font-weight:400}
+
+@media(max-width:850px){
+  body.bb-terminal-page #sidebar,body.bb-terminal-page #sidebar-placeholder{display:none!important}
+  body.bb-terminal-page main{margin-left:0!important;padding-top:44px!important}
+  .bb-terminal-ribbon{left:0}.bb-ribbon-title,.bb-ribbon-clock{display:none}
+}
+@media(max-width:560px){.bb-ribbon-classic{display:none}.bb-terminal-ribbon{padding:0 8px}}

@@ -1,0 +1,291 @@
+{
+  "generatedAt": "2026-08-27",
+  "custom": [
+    {
+      "original": "bdc/bbdc/overview/overview.html",
+      "alternate": "bdc/bbdc/overview/overview-bloomberg.html"
+    }
+  ],
+  "generated": [
+    {
+      "original": "bdc/bbdc/index.html",
+      "alternate": "bdc/bbdc/index-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/briefing/daily-brief.html",
+      "alternate": "bdc/bbdc/briefing/daily-brief-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/briefing/ask-orion.html",
+      "alternate": "bdc/bbdc/briefing/ask-orion-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/overview/financials.html",
+      "alternate": "bdc/bbdc/overview/financials-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/overview/comparables.html",
+      "alternate": "bdc/bbdc/overview/comparables-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/overview/news.html",
+      "alternate": "bdc/bbdc/overview/news-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/portfolio/summary/summary.html",
+      "alternate": "bdc/bbdc/portfolio/summary/summary-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/portfolio/positions/positions.html",
+      "alternate": "bdc/bbdc/portfolio/positions/positions-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/portfolio/construction/construction.html",
+      "alternate": "bdc/bbdc/portfolio/construction/construction-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/portfolio/raroc/raroc.html",
+      "alternate": "bdc/bbdc/portfolio/raroc/raroc-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/portfolio/quality/quality.html",
+      "alternate": "bdc/bbdc/portfolio/quality/quality-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/portfolio/activity/activity.html",
+      "alternate": "bdc/bbdc/portfolio/activity/activity-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/portfolio/trends/trends.html",
+      "alternate": "bdc/bbdc/portfolio/trends/trends-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/portfolio/neural-network/neural-network.html",
+      "alternate": "bdc/bbdc/portfolio/neural-network/neural-network-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/index.html",
+      "alternate": "bdc/bbdc/credit-intelligence/index-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/portfolio-companies.html",
+      "alternate": "bdc/bbdc/credit-intelligence/portfolio-companies-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/credit-watchlist.html",
+      "alternate": "bdc/bbdc/credit-intelligence/credit-watchlist-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/shadow-ratings.html",
+      "alternate": "bdc/bbdc/credit-intelligence/shadow-ratings-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/monitoring-alerts.html",
+      "alternate": "bdc/bbdc/credit-intelligence/monitoring-alerts-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/index.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/index-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/industry.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/industry-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/financials.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/financials-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/liquidity.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/liquidity-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/projections.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/projections-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/capital-structure.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/capital-structure-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/organizational-structure.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/organizational-structure-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/valuation.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/valuation-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/credit-agreement.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/credit-agreement-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/compliance.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/compliance-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/shadow-rating.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/shadow-rating-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/monitoring.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/monitoring-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/news.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/news-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/sec-filings.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/sec-filings-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/sources.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/sources-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/investment-memo.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/investment-memo-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/tear-sheet.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/coherus-oncology/tear-sheet-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/index.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/index-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/industry.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/industry-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/financials.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/financials-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/liquidity.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/liquidity-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/projections.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/projections-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/capital-structure.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/capital-structure-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/organizational-structure.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/organizational-structure-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/valuation.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/valuation-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/credit-agreement.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/credit-agreement-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/compliance.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/compliance-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/shadow-rating.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/shadow-rating-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/monitoring.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/monitoring-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/news.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/news-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/sec-filings.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/sec-filings-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/sources.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/sources-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/investment-memo.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/investment-memo-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/tear-sheet.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/tear-sheet-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/index.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/index-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/industry.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/industry-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/financials.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/financials-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/liquidity.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/liquidity-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/projections.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/projections-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/capital-structure.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/capital-structure-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/organizational-structure.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/organizational-structure-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/valuation.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/valuation-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/credit-agreement.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/credit-agreement-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/compliance.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/compliance-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/shadow-rating.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/shadow-rating-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/monitoring.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/monitoring-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/news.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/news-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/sec-filings.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/sec-filings-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/sources.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/sources-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/investment-memo.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/investment-memo-bloomberg.html"
+    },
+    {
+      "original": "bdc/bbdc/credit-intelligence/companies/herbalife/tear-sheet.html",
+      "alternate": "bdc/bbdc/credit-intelligence/companies/herbalife/tear-sheet-bloomberg.html"
+    }
+  ]
+}

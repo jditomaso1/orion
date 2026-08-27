@@ -1,0 +1,118 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root=path.resolve(import.meta.dirname,'..');
+const bbdcRoot='bdc/bbdc';
+const companyTabs=[
+  'index.html','industry.html','financials.html','liquidity.html','projections.html','capital-structure.html',
+  'organizational-structure.html','valuation.html','credit-agreement.html','compliance.html','shadow-rating.html',
+  'monitoring.html','news.html','sec-filings.html','sources.html','investment-memo.html','tear-sheet.html'
+];
+const companyTabMeta={
+  'index.html':['OV','Credit Overview'],'industry.html':['BI','Industry'],'financials.html':['FA','Financials'],
+  'liquidity.html':['LQ','Liquidity'],'projections.html':['PR','Projections'],'capital-structure.html':['CS','Capital Structure'],
+  'organizational-structure.html':['OS','Org Structure'],'valuation.html':['VL','Valuation'],'credit-agreement.html':['CA','Credit Agreement'],
+  'compliance.html':['CP','Compliance'],'shadow-rating.html':['RT','Shadow Rating'],'monitoring.html':['MN','Alerts'],
+  'news.html':['CN','News'],'sec-filings.html':['SF','SEC Filings'],'sources.html':['SO','Sources'],
+  'investment-memo.html':['IM','Investment Memo'],'tear-sheet.html':['TS','Tear Sheet']
+};
+const companyMeta={
+  'coherus-oncology':['CHRS','Coherus Oncology'],'ocular-therapeutix':['OCUL','Ocular Therapeutix'],'herbalife':['HLF','Herbalife']
+};
+const companies=['coherus-oncology','ocular-therapeutix','herbalife'];
+const routes=[
+  `${bbdcRoot}/index.html`,
+  `${bbdcRoot}/briefing/daily-brief.html`,`${bbdcRoot}/briefing/ask-orion.html`,
+  `${bbdcRoot}/overview/overview.html`,`${bbdcRoot}/overview/financials.html`,`${bbdcRoot}/overview/comparables.html`,`${bbdcRoot}/overview/news.html`,
+  `${bbdcRoot}/portfolio/summary/summary.html`,`${bbdcRoot}/portfolio/positions/positions.html`,
+  `${bbdcRoot}/portfolio/construction/construction.html`,`${bbdcRoot}/portfolio/raroc/raroc.html`,
+  `${bbdcRoot}/portfolio/quality/quality.html`,`${bbdcRoot}/portfolio/activity/activity.html`,
+  `${bbdcRoot}/portfolio/trends/trends.html`,`${bbdcRoot}/portfolio/neural-network/neural-network.html`,
+  `${bbdcRoot}/credit-intelligence/index.html`,`${bbdcRoot}/credit-intelligence/portfolio-companies.html`,
+  `${bbdcRoot}/credit-intelligence/credit-watchlist.html`,`${bbdcRoot}/credit-intelligence/shadow-ratings.html`,
+  `${bbdcRoot}/credit-intelligence/monitoring-alerts.html`,
+  ...companies.flatMap(company=>companyTabs.map(file=>`${bbdcRoot}/credit-intelligence/companies/${company}/${file}`))
+];
+
+const altPath=original=>original.replace(/\.html$/, '-bloomberg.html');
+const routeMap=new Map(routes.map(original=>[original,altPath(original)]));
+const customPage=`${bbdcRoot}/overview/overview.html`;
+const themeAssets='\n<link rel="stylesheet" href="/bdc/bbdc/assets/bloomberg-terminal.css?v=20260827-suite">\n<script src="/bdc/bbdc/assets/bloomberg-terminal.js?v=20260827-suite"></script>\n';
+
+function rewriteLinks(html,source){
+  const sourceDir=path.posix.dirname(source);
+  return html.replace(/(["'])([^"'<>]*?\.html(?:[?#][^"'<>]*)?)(\1)/g,(match,quote,url)=>{
+    if(/^(?:https?:)?\/\//i.test(url)||url.startsWith('mailto:')||url.startsWith('javascript:'))return match;
+    const suffixIndex=url.search(/[?#]/),bare=suffixIndex>=0?url.slice(0,suffixIndex):url,suffix=suffixIndex>=0?url.slice(suffixIndex):'';
+    const absolute=bare.startsWith('/');
+    const resolved=path.posix.normalize(absolute?bare.slice(1):path.posix.join(sourceDir,bare));
+    const alternate=routeMap.get(resolved);if(!alternate)return match;
+    let next=absolute?'/'+alternate:path.posix.relative(sourceDir,alternate);
+    if(!absolute&&bare.startsWith('./')&&!next.startsWith('.'))next='./'+next;
+    return quote+next+suffix+quote;
+  });
+}
+
+function addBodyMetadata(html,original){
+  return html.replace(/<body([^>]*)>/i,(match,attrs)=>{
+    let next=attrs;
+    if(/\bclass\s*=/.test(next))next=next.replace(/class\s*=\s*(["'])(.*?)\1/i,(m,q,value)=>`class=${q}${value} bb-terminal-page${q}`);
+    else next+=' class="bb-terminal-page"';
+    next+=` data-bb-original="/${original}"`;
+    return `<body${next}>`;
+  });
+}
+
+function transform(html,original){
+  let next=html;
+  next=next.replace(/\/bdc\/bbdc\/sidebar(?:2)?\.html(?:\?[^'"\s)]*)?/g,'/bdc/bbdc/sidebar-bloomberg.html?v=20260827-suite');
+  next=next.replace(/\/bdc\/bbdc\/credit-intelligence\/companies\/coherus-oncology\/coherus-system\.js(?:\?[^'"\s>]*)?/g,'/bdc/bbdc/credit-intelligence/companies/coherus-oncology/coherus-system-bloomberg.js?v=20260827-suite');
+  next=rewriteLinks(next,original);
+  next=next.replace(/(\/bdc\/bbdc\/credit-intelligence\/companies\/\$\{[^}]+\}\/index)\.html/g,'$1-bloomberg.html');
+  next=addBodyMetadata(next,original);
+  next=next.replace(/<title>([\s\S]*?)<\/title>/i,(m,title)=>{
+    const clean=title.replace(/^\s*Orion\s*[|•]\s*/i,'').replace(/\s*[|•]\s*Orion\s*$/i,'').trim();
+    return `<title>Orion Terminal • ${clean}</title>`;
+  });
+  if(!next.includes('/bdc/bbdc/assets/bloomberg-terminal.css'))next=next.replace(/<\/head>/i,themeAssets+'</head>');
+  return next.split('\n').map(line=>line.replace(/[ \t]+$/,'')).join('\n');
+}
+
+const created=[];
+for(const original of routes){
+  if(original===customPage)continue;
+  const sourcePath=path.join(root,original),target=altPath(original),targetPath=path.join(root,target);
+  if(!fs.existsSync(sourcePath))throw new Error(`Missing source page: ${original}`);
+  const html=fs.readFileSync(sourcePath,'utf8');
+  fs.mkdirSync(path.dirname(targetPath),{recursive:true});
+  fs.writeFileSync(targetPath,transform(html,original));
+  created.push({original,alternate:target});
+}
+
+const originalSystem=path.join(root,bbdcRoot,'credit-intelligence/companies/coherus-oncology/coherus-system.js');
+const bloombergSystem=path.join(root,bbdcRoot,'credit-intelligence/companies/coherus-oncology/coherus-system-bloomberg.js');
+const systemSource=fs.readFileSync(originalSystem,'utf8');
+const systemOutput=systemSource.replace(
+  "const file=(location.pathname.split('/').pop()||'index.html').toLowerCase();",
+  "const file=(location.pathname.split('/').pop()||'index.html').toLowerCase().replace(/-bloomberg(?=\\.html$)/,'');"
+);
+if(systemOutput===systemSource)throw new Error('Could not patch Coherus page detection');
+fs.writeFileSync(bloombergSystem,systemOutput);
+
+const manifest={generatedAt:'2026-08-27',custom:[{original:customPage,alternate:altPath(customPage)}],generated:created};
+fs.writeFileSync(path.join(root,bbdcRoot,'bloomberg-pages.json'),JSON.stringify(manifest,null,2)+'\n');
+const sidebarPath=path.join(root,bbdcRoot,'sidebar-bloomberg.html');
+let sidebar=rewriteLinks(fs.readFileSync(sidebarPath,'utf8'),`${bbdcRoot}/sidebar-bloomberg.html`);
+const companyNavigation=companies.map(company=>{
+  const [ticker,label]=companyMeta[company],id=`bb-company-${company}`;
+  const links=companyTabs.map(file=>{const [key,name]=companyTabMeta[file];return `          <a href="/${altPath(`${bbdcRoot}/credit-intelligence/companies/${company}/${file}`)}"><span class="bb-key">${key}</span><span>${name}</span></a>`}).join('\n');
+  return `        <div class="bb-nav-subgroup">\n          <button class="bb-nav-subhead" type="button" data-bb-target="${id}"><span>${ticker} · ${label}</span><span class="bb-caret">▼</span></button>\n          <div id="${id}" class="bb-nav-list nested is-collapsed">\n${links}\n          </div>\n        </div>`;
+}).join('\n');
+const companyStart='        <div class="bb-divider"></div>';
+const creditEnd='\n      </div>\n    </section>\n  </nav>';
+const companyStartIndex=sidebar.indexOf(companyStart),creditEndIndex=sidebar.indexOf(creditEnd,companyStartIndex);
+if(companyStartIndex<0||creditEndIndex<0)throw new Error('Could not locate terminal company navigation block');
+sidebar=sidebar.slice(0,companyStartIndex)+`${companyStart}\n${companyNavigation}`+sidebar.slice(creditEndIndex);
+sidebar=sidebar.replace(/<a id="bb-classic-link" class="bb-mode-link" href="[^"]+">/,'<a id="bb-classic-link" class="bb-mode-link" href="/bdc/bbdc/overview/overview.html">');
+fs.writeFileSync(sidebarPath,sidebar);
+console.log(`Generated ${created.length} alternate pages plus the existing custom overview.`);
