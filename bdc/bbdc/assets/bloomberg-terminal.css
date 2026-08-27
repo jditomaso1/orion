@@ -223,6 +223,22 @@ body.bb-terminal-page main .footnote{
 }
 body.bb-terminal-page main canvas{filter:saturate(.95) contrast(1.03)}
 
+/* Neural-network labels need explicit terminal contrast because the original
+   visualization defines its own dark foreground variables. */
+body.bb-terminal-page #bbdc-neural-field{
+  --foreground:#fff;--muted-foreground:#d7d7d7;color:#fff!important;
+}
+body.bb-terminal-page #bbdc-neural-field .node-label,
+body.bb-terminal-page #bbdc-neural-field .input-label{
+  fill:#fff!important;stroke:#050505!important;stroke-width:4px!important;paint-order:stroke!important;
+  font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace!important;font-weight:700!important;
+}
+body.bb-terminal-page #bbdc-neural-field .node-readout,
+body.bb-terminal-page #bbdc-neural-field .node-readout strong,
+body.bb-terminal-page #bbdc-neural-field .node-readout .text-muted{
+  color:#fff!important;
+}
+
 body.bb-terminal-page .bb-page-stamp{
   display:inline-flex;align-items:center;gap:7px;margin:0 0 10px;padding:4px 7px;border-left:3px solid var(--bb-amber);
   background:#242424;color:#c8c8c8;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
