@@ -75,7 +75,7 @@
     const current=location.pathname;
     sidebar.querySelectorAll('a[href]').forEach(link=>{
       let path;try{path=new URL(link.href,location.origin).pathname}catch(e){return}
-      const active=path===current;link.toggleAttribute('aria-current',active);if(active){
+      const active=path===current;if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');if(active){
         let parent=link.parentElement;
         while(parent&&parent!==sidebar){if(parent.classList?.contains('bb-nav-list')){parent.classList.remove('is-collapsed');const trigger=sidebar.querySelector(`[data-bb-target="${parent.id}"]`);if(trigger){trigger.setAttribute('aria-expanded','true');const caret=trigger.querySelector('.bb-caret');if(caret)caret.style.transform='rotate(0deg)'}}parent=parent.parentElement}
       }
@@ -85,11 +85,15 @@
   function setupSidebar(sidebar){
     if(!sidebar||sidebar.dataset.bbReady)return;sidebar.dataset.bbReady='true';
     let saved={};try{saved=JSON.parse(localStorage.getItem('bbdc-bloomberg-sidebar')||'{}')}catch(e){}
+    let legacyOpen=[];try{legacyOpen=JSON.parse(localStorage.getItem('bbdc-sidebar-sections')||'[]')}catch(e){}
     sidebar.querySelectorAll('[data-bb-target]').forEach(button=>{
       const target=document.getElementById(button.dataset.bbTarget);if(!target)return;
-      if(saved[button.dataset.bbTarget]===false)target.classList.add('is-collapsed');
+      const targetId=button.dataset.bbTarget,legacyManaged=target.classList.contains('hidden')||legacyOpen.includes(targetId);
+      if(legacyManaged)target.classList.toggle('is-collapsed',!legacyOpen.includes(targetId));
+      target.classList.remove('hidden');
+      if(typeof saved[targetId]==='boolean')target.classList.toggle('is-collapsed',!saved[targetId]);
       const sync=()=>{const collapsed=target.classList.contains('is-collapsed');button.setAttribute('aria-expanded',String(!collapsed));const caret=button.querySelector('.bb-caret');if(caret)caret.style.transform=collapsed?'rotate(-90deg)':'rotate(0deg)'};
-      sync();button.addEventListener('click',event=>{event.preventDefault();target.classList.toggle('is-collapsed');saved[button.dataset.bbTarget]=!target.classList.contains('is-collapsed');localStorage.setItem('bbdc-bloomberg-sidebar',JSON.stringify(saved));sync()});
+      sync();button.addEventListener('click',event=>{event.preventDefault();target.classList.toggle('is-collapsed');saved[targetId]=!target.classList.contains('is-collapsed');localStorage.setItem('bbdc-bloomberg-sidebar',JSON.stringify(saved));sync()});
     });
     markActive(sidebar);
   }
@@ -98,7 +102,7 @@
     if(!host||host.querySelector('.bb-sidebar')||host.dataset.bbLoading)return;
     host.dataset.bbLoading='true';
     try{
-      const response=await fetch('/bdc/bbdc/sidebar-bloomberg.html?v=20260827-suite',{cache:'no-store'});
+      const response=await fetch('/bdc/bbdc/sidebar-bloomberg.html?v=20260831-nav-hierarchy',{cache:'no-store'});
       if(!response.ok)throw new Error(String(response.status));
       host.innerHTML=await response.text();scan();
     }catch(error){console.warn('Terminal navigation unavailable',error)}

@@ -15,17 +15,26 @@
   .bb-security-name{color:#fff;font-weight:700;letter-spacing:.04em}
   .bb-go{padding:2px 5px;background:#167d43;color:#fff;font-size:10px;font-weight:700}
   .bb-nav{flex:1;overflow-y:auto;padding:8px 0 12px;scrollbar-color:#555 #111;scrollbar-width:thin}
-  .bb-nav-group{border-bottom:1px solid #222}
+  .bb-nav-group{border-bottom:1px solid #2d2d2d}
   .bb-nav-head{width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;border:0;background:#0b0b0b;color:#f2a000;font:700 10px/1.2 "IBM Plex Mono","Roboto Mono",Consolas,monospace;letter-spacing:.11em;text-transform:uppercase;cursor:pointer;text-align:left}
   .bb-nav-head:hover{background:#1b1b1b;color:#ffd16b}
+  .bb-nav-root{padding:9px 11px;background:#151515;color:#f2a000;border-top:1px solid #333;border-bottom:1px solid #333}
+  .bb-nav-tree{padding:2px 0 7px;background:#050505}
   .bb-caret{color:#777;font-size:10px;transition:transform .12s ease}
   .bb-nav-list{padding:3px 0 6px}
   .bb-nav-list.is-collapsed{display:none}
   .bb-nav-subgroup{border-top:1px solid #232323}
+  .bb-nav-subgroup:first-child{border-top:0}
   .bb-nav-subhead{width:100%;display:flex;align-items:center;justify-content:space-between;padding:7px 11px 7px 16px;border:0;background:#101010;color:#d7d7d7;font:600 10px/1.2 "IBM Plex Mono","Roboto Mono",Consolas,monospace;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;text-align:left}
   .bb-nav-subhead:hover{background:#202020;color:#fff}
-  .bb-nav-list.nested{padding:2px 0 6px;background:#080808}
-  .bb-nav-list.nested a{grid-template-columns:31px 1fr;padding-left:17px;font-size:10px}
+  .bb-nav-section-head{background:#0b0b0b;color:#bdbdbd}
+  .bb-nav-list.nested{margin-left:11px;padding:2px 0 6px;border-left:1px solid #303030;background:#080808}
+  .bb-nav-list.nested a{grid-template-columns:31px 1fr;padding-left:11px;font-size:10px}
+  .bb-nav-tier-group{border-top:1px solid #2a2a2a}
+  .bb-nav-tier-head{padding-left:12px;background:#0e0e0e;color:#f2a000}
+  .bb-company-group{border-top:1px solid #202020}
+  .bb-company-head{padding-left:12px;background:#090909;color:#d7d7d7}
+  .bb-company-links{background:#060606!important}
   .bb-nav a{display:grid;grid-template-columns:28px 1fr;gap:4px;align-items:center;padding:5px 10px;color:#c9c9c9;text-decoration:none;border-left:3px solid transparent;line-height:1.25}
   .bb-nav a:hover{background:#202020;color:#fff;border-left-color:#f2a000}
   .bb-nav a[aria-current="page"]{background:#f2a000;color:#050505;border-left-color:#ffe4a3;font-weight:700}
@@ -52,111 +61,122 @@
   </div>
 
   <nav class="bb-nav">
-    <section class="bb-nav-group">
-      <button class="bb-nav-head" type="button" data-bb-target="bb-monitor"><span>Monitor</span><span class="bb-caret">▼</span></button>
-      <div id="bb-monitor" class="bb-nav-list">
-        <a href="/bdc/bbdc/briefing/daily-brief-bloomberg.html"><span class="bb-key">01</span><span>Daily Brief</span></a>
-        <a href="/bdc/bbdc/briefing/ask-orion-bloomberg.html"><span class="bb-key">02</span><span>Ask Orion</span></a>
-      </div>
-    </section>
-
-    <section class="bb-nav-group">
-      <button class="bb-nav-head" type="button" data-bb-target="bb-overview"><span>Fund Analysis</span><span class="bb-caret">▼</span></button>
-      <div id="bb-overview" class="bb-nav-list">
-        <a href="/bdc/bbdc/overview/overview-bloomberg.html" aria-current="page"><span class="bb-key">OV</span><span>Overview</span></a>
-        <a href="/bdc/bbdc/overview/financials-bloomberg.html"><span class="bb-key">FA</span><span>Financials</span></a>
-        <a href="/bdc/bbdc/overview/comparables-bloomberg.html"><span class="bb-key">RV</span><span>Comparables</span></a>
-        <a href="/bdc/bbdc/overview/news-bloomberg.html"><span class="bb-key">CN</span><span>News</span></a>
-      </div>
-    </section>
-
-    <section class="bb-nav-group">
-      <button class="bb-nav-head" type="button" data-bb-target="bb-portfolio"><span>Portfolio</span><span class="bb-caret">▼</span></button>
-      <div id="bb-portfolio" class="bb-nav-list">
-        <a href="/bdc/bbdc/portfolio/summary/summary-bloomberg.html"><span class="bb-key">PS</span><span>Summary</span></a>
-        <a href="/bdc/bbdc/portfolio/positions/positions-bloomberg.html"><span class="bb-key">POS</span><span>Positions</span></a>
-        <a href="/bdc/bbdc/portfolio/construction/construction-bloomberg.html"><span class="bb-key">PC</span><span>Construction</span></a>
-        <a href="/bdc/bbdc/portfolio/raroc/raroc-bloomberg.html"><span class="bb-key">RR</span><span>RAROC</span></a>
-        <a href="/bdc/bbdc/portfolio/quality/quality-bloomberg.html"><span class="bb-key">PQ</span><span>Quality</span></a>
-        <a href="/bdc/bbdc/portfolio/activity/activity-bloomberg.html"><span class="bb-key">PA</span><span>Activity</span></a>
-        <a href="/bdc/bbdc/portfolio/trends/trends-bloomberg.html"><span class="bb-key">TR</span><span>Trends</span></a>
-        <a href="/bdc/bbdc/portfolio/neural-network/neural-network-bloomberg.html"><span class="bb-key">NN</span><span>Neural Network</span></a>
-      </div>
-    </section>
-
-    <section class="bb-nav-group">
-      <button class="bb-nav-head" type="button" data-bb-target="bb-credit"><span>Credit Intelligence</span><span class="bb-caret">▼</span></button>
-      <div id="bb-credit" class="bb-nav-list">
-        <a href="/bdc/bbdc/credit-intelligence/index-bloomberg.html"><span class="bb-key">CD</span><span>Credit Dashboard</span></a>
-        <a href="/bdc/bbdc/credit-intelligence/portfolio-companies-bloomberg.html"><span class="bb-key">CO</span><span>All Companies</span></a>
-        <a href="/bdc/bbdc/credit-intelligence/credit-watchlist-bloomberg.html"><span class="bb-key">WL</span><span>Watchlist</span></a>
-        <a href="/bdc/bbdc/credit-intelligence/shadow-ratings-bloomberg.html"><span class="bb-key">SR</span><span>Shadow Ratings</span></a>
-        <a href="/bdc/bbdc/credit-intelligence/monitoring-alerts-bloomberg.html"><span class="bb-key">AL</span><span>Monitoring &amp; Alerts</span></a>
-        <div class="bb-divider"></div>
+    <section class="bb-nav-group bb-nav-root-group">
+      <button class="bb-nav-head bb-nav-root" type="button" data-bb-target="bbdc-nav" aria-controls="bbdc-nav"><span>BBDC</span><span class="bb-caret">▼</span></button>
+      <div id="bbdc-nav" class="bb-nav-list bb-nav-tree">
         <div class="bb-nav-subgroup">
-          <button class="bb-nav-subhead" type="button" data-bb-target="bb-company-coherus-oncology"><span>CHRS · Coherus Oncology</span><span class="bb-caret">▼</span></button>
-          <div id="bb-company-coherus-oncology" class="bb-nav-list nested is-collapsed">
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/index-bloomberg.html"><span class="bb-key">OV</span><span>Credit Overview</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/industry-bloomberg.html"><span class="bb-key">BI</span><span>Industry</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/financials-bloomberg.html"><span class="bb-key">FA</span><span>Financials</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/liquidity-bloomberg.html"><span class="bb-key">LQ</span><span>Liquidity</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/projections-bloomberg.html"><span class="bb-key">PR</span><span>Projections</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/capital-structure-bloomberg.html"><span class="bb-key">CS</span><span>Capital Structure</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/organizational-structure-bloomberg.html"><span class="bb-key">OS</span><span>Org Structure</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/valuation-bloomberg.html"><span class="bb-key">VL</span><span>Valuation</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/credit-agreement-bloomberg.html"><span class="bb-key">CA</span><span>Credit Agreement</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/compliance-bloomberg.html"><span class="bb-key">CP</span><span>Compliance</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/shadow-rating-bloomberg.html"><span class="bb-key">RT</span><span>Shadow Rating</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/monitoring-bloomberg.html"><span class="bb-key">MN</span><span>Alerts</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/news-bloomberg.html"><span class="bb-key">CN</span><span>News</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/sec-filings-bloomberg.html"><span class="bb-key">SF</span><span>SEC Filings</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/sources-bloomberg.html"><span class="bb-key">SO</span><span>Sources</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/investment-memo-bloomberg.html"><span class="bb-key">IM</span><span>Investment Memo</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/tear-sheet-bloomberg.html"><span class="bb-key">TS</span><span>Tear Sheet</span></a>
+          <button class="bb-nav-subhead bb-nav-section-head" type="button" data-bb-target="briefing-nav" aria-controls="briefing-nav"><span>Briefing</span><span class="bb-caret">▼</span></button>
+          <div id="briefing-nav" class="bb-nav-list nested is-collapsed">
+          <a href="/bdc/bbdc/briefing/daily-brief-bloomberg.html"><span class="bb-key">01</span><span>Daily Brief</span></a>
+          <a href="/bdc/bbdc/briefing/ask-orion-bloomberg.html"><span class="bb-key">02</span><span>Ask Orion</span></a>
           </div>
         </div>
         <div class="bb-nav-subgroup">
-          <button class="bb-nav-subhead" type="button" data-bb-target="bb-company-ocular-therapeutix"><span>OCUL · Ocular Therapeutix</span><span class="bb-caret">▼</span></button>
-          <div id="bb-company-ocular-therapeutix" class="bb-nav-list nested is-collapsed">
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/index-bloomberg.html"><span class="bb-key">OV</span><span>Credit Overview</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/industry-bloomberg.html"><span class="bb-key">BI</span><span>Industry</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/financials-bloomberg.html"><span class="bb-key">FA</span><span>Financials</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/liquidity-bloomberg.html"><span class="bb-key">LQ</span><span>Liquidity</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/projections-bloomberg.html"><span class="bb-key">PR</span><span>Projections</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/capital-structure-bloomberg.html"><span class="bb-key">CS</span><span>Capital Structure</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/organizational-structure-bloomberg.html"><span class="bb-key">OS</span><span>Org Structure</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/valuation-bloomberg.html"><span class="bb-key">VL</span><span>Valuation</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/credit-agreement-bloomberg.html"><span class="bb-key">CA</span><span>Credit Agreement</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/compliance-bloomberg.html"><span class="bb-key">CP</span><span>Compliance</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/shadow-rating-bloomberg.html"><span class="bb-key">RT</span><span>Shadow Rating</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/monitoring-bloomberg.html"><span class="bb-key">MN</span><span>Alerts</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/news-bloomberg.html"><span class="bb-key">CN</span><span>News</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/sec-filings-bloomberg.html"><span class="bb-key">SF</span><span>SEC Filings</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/sources-bloomberg.html"><span class="bb-key">SO</span><span>Sources</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/investment-memo-bloomberg.html"><span class="bb-key">IM</span><span>Investment Memo</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/tear-sheet-bloomberg.html"><span class="bb-key">TS</span><span>Tear Sheet</span></a>
+          <button class="bb-nav-subhead bb-nav-section-head" type="button" data-bb-target="overview-nav" aria-controls="overview-nav"><span>Overview</span><span class="bb-caret">▼</span></button>
+          <div id="overview-nav" class="bb-nav-list nested is-collapsed">
+          <a href="/bdc/bbdc/overview/overview-bloomberg.html" aria-current="page"><span class="bb-key">OV</span><span>Overview</span></a>
+          <a href="/bdc/bbdc/overview/financials-bloomberg.html"><span class="bb-key">FA</span><span>Financials</span></a>
+          <a href="/bdc/bbdc/overview/comparables-bloomberg.html"><span class="bb-key">RV</span><span>Comparables</span></a>
+          <a href="/bdc/bbdc/overview/news-bloomberg.html"><span class="bb-key">CN</span><span>News</span></a>
           </div>
         </div>
         <div class="bb-nav-subgroup">
-          <button class="bb-nav-subhead" type="button" data-bb-target="bb-company-herbalife"><span>HLF · Herbalife</span><span class="bb-caret">▼</span></button>
-          <div id="bb-company-herbalife" class="bb-nav-list nested is-collapsed">
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/index-bloomberg.html"><span class="bb-key">OV</span><span>Credit Overview</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/industry-bloomberg.html"><span class="bb-key">BI</span><span>Industry</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/financials-bloomberg.html"><span class="bb-key">FA</span><span>Financials</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/liquidity-bloomberg.html"><span class="bb-key">LQ</span><span>Liquidity</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/projections-bloomberg.html"><span class="bb-key">PR</span><span>Projections</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/capital-structure-bloomberg.html"><span class="bb-key">CS</span><span>Capital Structure</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/organizational-structure-bloomberg.html"><span class="bb-key">OS</span><span>Org Structure</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/valuation-bloomberg.html"><span class="bb-key">VL</span><span>Valuation</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/credit-agreement-bloomberg.html"><span class="bb-key">CA</span><span>Credit Agreement</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/compliance-bloomberg.html"><span class="bb-key">CP</span><span>Compliance</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/shadow-rating-bloomberg.html"><span class="bb-key">RT</span><span>Shadow Rating</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/monitoring-bloomberg.html"><span class="bb-key">MN</span><span>Alerts</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/news-bloomberg.html"><span class="bb-key">CN</span><span>News</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/sec-filings-bloomberg.html"><span class="bb-key">SF</span><span>SEC Filings</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/sources-bloomberg.html"><span class="bb-key">SO</span><span>Sources</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/investment-memo-bloomberg.html"><span class="bb-key">IM</span><span>Investment Memo</span></a>
-          <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/tear-sheet-bloomberg.html"><span class="bb-key">TS</span><span>Tear Sheet</span></a>
+          <button class="bb-nav-subhead bb-nav-section-head" type="button" data-bb-target="portfolio-nav" aria-controls="portfolio-nav"><span>Portfolio</span><span class="bb-caret">▼</span></button>
+          <div id="portfolio-nav" class="bb-nav-list nested is-collapsed">
+          <a href="/bdc/bbdc/portfolio/summary/summary-bloomberg.html"><span class="bb-key">PS</span><span>Summary</span></a>
+          <a href="/bdc/bbdc/portfolio/positions/positions-bloomberg.html"><span class="bb-key">POS</span><span>Positions</span></a>
+          <a href="/bdc/bbdc/portfolio/construction/construction-bloomberg.html"><span class="bb-key">PC</span><span>Construction</span></a>
+          <a href="/bdc/bbdc/portfolio/raroc/raroc-bloomberg.html"><span class="bb-key">RR</span><span>RAROC</span></a>
+          <a href="/bdc/bbdc/portfolio/quality/quality-bloomberg.html"><span class="bb-key">PQ</span><span>Quality</span></a>
+          <a href="/bdc/bbdc/portfolio/activity/activity-bloomberg.html"><span class="bb-key">PA</span><span>Activity</span></a>
+          <a href="/bdc/bbdc/portfolio/trends/trends-bloomberg.html"><span class="bb-key">TR</span><span>Trends</span></a>
+          <a href="/bdc/bbdc/portfolio/neural-network/neural-network-bloomberg.html"><span class="bb-key">NN</span><span>Neural Network</span></a>
+          </div>
+        </div>
+        <div class="bb-nav-subgroup">
+          <button class="bb-nav-subhead bb-nav-section-head" type="button" data-bb-target="credits-nav" aria-controls="credits-nav"><span>Credits</span><span class="bb-caret">▼</span></button>
+          <div id="credits-nav" class="bb-nav-list nested is-collapsed">
+            <div class="bb-nav-subgroup bb-nav-tier-group">
+              <button class="bb-nav-subhead bb-nav-tier-head" type="button" data-bb-target="portfolio-credit-nav" aria-controls="portfolio-credit-nav"><span>Portfolio Credit</span><span class="bb-caret">▼</span></button>
+              <div id="portfolio-credit-nav" class="bb-nav-list nested is-collapsed">
+              <a href="/bdc/bbdc/credit-intelligence/index-bloomberg.html"><span class="bb-key">CD</span><span>Credit Dashboard</span></a>
+              <a href="/bdc/bbdc/credit-intelligence/portfolio-companies-bloomberg.html"><span class="bb-key">CO</span><span>All Companies</span></a>
+              <a href="/bdc/bbdc/credit-intelligence/credit-watchlist-bloomberg.html"><span class="bb-key">WL</span><span>Watchlist</span></a>
+              <a href="/bdc/bbdc/credit-intelligence/shadow-ratings-bloomberg.html"><span class="bb-key">SR</span><span>Shadow Ratings</span></a>
+              <a href="/bdc/bbdc/credit-intelligence/monitoring-alerts-bloomberg.html"><span class="bb-key">AL</span><span>Monitoring & Alerts</span></a>
+              </div>
+            </div>
+            <div class="bb-nav-subgroup bb-nav-tier-group">
+              <button class="bb-nav-subhead bb-nav-tier-head" type="button" data-bb-target="credit-analysis-nav" aria-controls="credit-analysis-nav"><span>Credit Analysis</span><span class="bb-caret">▼</span></button>
+              <div id="credit-analysis-nav" class="bb-nav-list nested is-collapsed">
+              <div class="bb-nav-subgroup bb-company-group">
+                <button class="bb-nav-subhead bb-company-head" type="button" data-bb-target="coherus-nav" aria-controls="coherus-nav"><span>Coherus</span><span class="bb-caret">▼</span></button>
+                <div id="coherus-nav" class="bb-nav-list nested bb-company-links is-collapsed">
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/index-bloomberg.html"><span class="bb-key">OV</span><span>Credit Overview</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/industry-bloomberg.html"><span class="bb-key">BI</span><span>Industry</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/financials-bloomberg.html"><span class="bb-key">FA</span><span>Financials</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/liquidity-bloomberg.html"><span class="bb-key">LQ</span><span>Liquidity</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/projections-bloomberg.html"><span class="bb-key">PR</span><span>Projections</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/capital-structure-bloomberg.html"><span class="bb-key">CS</span><span>Capital Structure</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/organizational-structure-bloomberg.html"><span class="bb-key">OS</span><span>Org Structure</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/valuation-bloomberg.html"><span class="bb-key">VL</span><span>Valuation</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/credit-agreement-bloomberg.html"><span class="bb-key">CA</span><span>Credit Agreement</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/compliance-bloomberg.html"><span class="bb-key">CP</span><span>Compliance</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/shadow-rating-bloomberg.html"><span class="bb-key">RT</span><span>Shadow Rating</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/monitoring-bloomberg.html"><span class="bb-key">MN</span><span>Alerts</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/news-bloomberg.html"><span class="bb-key">CN</span><span>News</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/sec-filings-bloomberg.html"><span class="bb-key">SF</span><span>SEC Filings</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/sources-bloomberg.html"><span class="bb-key">SO</span><span>Sources</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/investment-memo-bloomberg.html"><span class="bb-key">IM</span><span>Investment Memo</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/tear-sheet-bloomberg.html"><span class="bb-key">TS</span><span>Tear Sheet</span></a>
+                </div>
+              </div>
+              <div class="bb-nav-subgroup bb-company-group">
+                <button class="bb-nav-subhead bb-company-head" type="button" data-bb-target="ocular-nav" aria-controls="ocular-nav"><span>Ocular</span><span class="bb-caret">▼</span></button>
+                <div id="ocular-nav" class="bb-nav-list nested bb-company-links is-collapsed">
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/index-bloomberg.html"><span class="bb-key">OV</span><span>Credit Overview</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/industry-bloomberg.html"><span class="bb-key">BI</span><span>Industry</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/financials-bloomberg.html"><span class="bb-key">FA</span><span>Financials</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/liquidity-bloomberg.html"><span class="bb-key">LQ</span><span>Liquidity</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/projections-bloomberg.html"><span class="bb-key">PR</span><span>Projections</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/capital-structure-bloomberg.html"><span class="bb-key">CS</span><span>Capital Structure</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/organizational-structure-bloomberg.html"><span class="bb-key">OS</span><span>Org Structure</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/valuation-bloomberg.html"><span class="bb-key">VL</span><span>Valuation</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/credit-agreement-bloomberg.html"><span class="bb-key">CA</span><span>Credit Agreement</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/compliance-bloomberg.html"><span class="bb-key">CP</span><span>Compliance</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/shadow-rating-bloomberg.html"><span class="bb-key">RT</span><span>Shadow Rating</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/monitoring-bloomberg.html"><span class="bb-key">MN</span><span>Alerts</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/news-bloomberg.html"><span class="bb-key">CN</span><span>News</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/sec-filings-bloomberg.html"><span class="bb-key">SF</span><span>SEC Filings</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/sources-bloomberg.html"><span class="bb-key">SO</span><span>Sources</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/investment-memo-bloomberg.html"><span class="bb-key">IM</span><span>Investment Memo</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/ocular-therapeutix/tear-sheet-bloomberg.html"><span class="bb-key">TS</span><span>Tear Sheet</span></a>
+                </div>
+              </div>
+              <div class="bb-nav-subgroup bb-company-group">
+                <button class="bb-nav-subhead bb-company-head" type="button" data-bb-target="herbalife-nav" aria-controls="herbalife-nav"><span>Herbalife</span><span class="bb-caret">▼</span></button>
+                <div id="herbalife-nav" class="bb-nav-list nested bb-company-links is-collapsed">
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/index-bloomberg.html"><span class="bb-key">OV</span><span>Credit Overview</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/industry-bloomberg.html"><span class="bb-key">BI</span><span>Industry</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/financials-bloomberg.html"><span class="bb-key">FA</span><span>Financials</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/liquidity-bloomberg.html"><span class="bb-key">LQ</span><span>Liquidity</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/projections-bloomberg.html"><span class="bb-key">PR</span><span>Projections</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/capital-structure-bloomberg.html"><span class="bb-key">CS</span><span>Capital Structure</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/organizational-structure-bloomberg.html"><span class="bb-key">OS</span><span>Org Structure</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/valuation-bloomberg.html"><span class="bb-key">VL</span><span>Valuation</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/credit-agreement-bloomberg.html"><span class="bb-key">CA</span><span>Credit Agreement</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/compliance-bloomberg.html"><span class="bb-key">CP</span><span>Compliance</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/shadow-rating-bloomberg.html"><span class="bb-key">RT</span><span>Shadow Rating</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/monitoring-bloomberg.html"><span class="bb-key">MN</span><span>Alerts</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/news-bloomberg.html"><span class="bb-key">CN</span><span>News</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/sec-filings-bloomberg.html"><span class="bb-key">SF</span><span>SEC Filings</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/sources-bloomberg.html"><span class="bb-key">SO</span><span>Sources</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/investment-memo-bloomberg.html"><span class="bb-key">IM</span><span>Investment Memo</span></a>
+                  <a href="/bdc/bbdc/credit-intelligence/companies/herbalife/tear-sheet-bloomberg.html"><span class="bb-key">TS</span><span>Tear Sheet</span></a>
+                </div>
+              </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

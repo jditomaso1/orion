@@ -18,8 +18,8 @@
     @media(max-width:900px){.summary{grid-template-columns:1fr 1fr}}
   </style>
 
-<link rel="stylesheet" href="/bdc/bbdc/assets/bloomberg-terminal.css?v=20260827-suite">
-<script src="/bdc/bbdc/assets/bloomberg-terminal.js?v=20260827-suite"></script>
+<link rel="stylesheet" href="/bdc/bbdc/assets/bloomberg-terminal.css?v=20260831-nav-hierarchy">
+<script src="/bdc/bbdc/assets/bloomberg-terminal.js?v=20260831-nav-hierarchy"></script>
 </head>
 <body class="bb-terminal-page" data-bb-original="/bdc/bbdc/credit-intelligence/credit-watchlist.html">
   <aside id="sidebar"></aside>
@@ -59,7 +59,7 @@
     <section class="sources"><a href="/bdc/bbdc/portfolio/positions/positions-bloomberg.html">Full BBDC position schedule →</a><a href="/bdc/bbdc/portfolio/quality/quality-bloomberg.html">Portfolio quality screen →</a></section>
   </main>
 
-  <script src="/bdc/bbdc/credit-intelligence/public-credit-data.js?v=20260720-watchlist-fit-final"></script>
+  <script src="/bdc/bbdc/credit-intelligence/public-credit-data-bloomberg.js?v=20260831-nav-hierarchy"></script>
   <script>
     const e=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     document.getElementById('watch-rows').innerHTML=ORION_PUBLIC_CREDITS.map(c=>`<tr><td><a class="company" href="/bdc/bbdc/credit-intelligence/companies/${e(c.slug)}/index-bloomberg.html">${e(c.company)}</a></td><td><span class="pill ${c.direction.startsWith('Deteriorating')?'risk':c.direction==='Improving'?'good':'watch'}">${e(c.direction)}</span></td><td class="action">${e(c.status)}</td><td>${e(c.fairValue)}</td><td>${e(c.mark)}</td><td>${e(c.portfolio)}</td><td class="conclusion-cell">${e(c.conclusion)}</td><td>${e(c.confidence)}</td></tr>`).join('');

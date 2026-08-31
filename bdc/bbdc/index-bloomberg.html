@@ -92,8 +92,8 @@
     }
   </style>
 
-<link rel="stylesheet" href="/bdc/bbdc/assets/bloomberg-terminal.css?v=20260827-suite">
-<script src="/bdc/bbdc/assets/bloomberg-terminal.js?v=20260827-suite"></script>
+<link rel="stylesheet" href="/bdc/bbdc/assets/bloomberg-terminal.css?v=20260831-nav-hierarchy">
+<script src="/bdc/bbdc/assets/bloomberg-terminal.js?v=20260831-nav-hierarchy"></script>
 </head>
 
 <body class="bg-gray-50 text-gray-900 bb-terminal-page" data-bb-original="/bdc/bbdc/index.html">
@@ -103,7 +103,7 @@
   <script>
     async function injectSidebar() {
       // BBDC BDC sidebar
-      const res = await fetch("/bdc/bbdc/sidebar-bloomberg.html?v=20260827-suite");
+      const res = await fetch("/bdc/bbdc/sidebar-bloomberg.html?v=20260831-nav-hierarchy");
       document.getElementById("sidebar-placeholder").innerHTML = await res.text();
 
       // allow sidebar.html to call toggleSection()

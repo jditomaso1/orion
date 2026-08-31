@@ -219,8 +219,8 @@
 <style id="orion-readability-standard">main .card-subtitle,main .panel-sub,main .page-sub,main .sub,main .kpi-detail,main .kpi-note,main .source-note,main .note,main .footer-note{font-size:12px!important;line-height:1.55!important}main .panel-title,main .card-title,main .title{font-size:14px!important}main .kpi-label,main .tag,main .chip{font-size:10px!important}main table{font-size:12px!important}main th{font-size:11px!important}main td{font-size:12px!important}main .company,main .headline{font-size:12px!important}main button,main select,main input,main .control,main .download,main .action,main .btn{font-size:12px!important}</style>
 <style id="portfolio-column-widths">main table{min-width:1880px!important}main th:nth-child(1),main td:nth-child(1){width:240px;min-width:240px}main th:nth-child(2),main td:nth-child(2){width:280px;min-width:280px}main th:nth-child(3),main td:nth-child(3){width:240px;min-width:240px}main th:nth-child(n+4),main td:nth-child(n+4){min-width:140px}</style>
 
-<link rel="stylesheet" href="/bdc/bbdc/assets/bloomberg-terminal.css?v=20260827-suite">
-<script src="/bdc/bbdc/assets/bloomberg-terminal.js?v=20260827-suite"></script>
+<link rel="stylesheet" href="/bdc/bbdc/assets/bloomberg-terminal.css?v=20260831-nav-hierarchy">
+<script src="/bdc/bbdc/assets/bloomberg-terminal.js?v=20260831-nav-hierarchy"></script>
 </head>
 
 <body class="bb-terminal-page" data-bb-original="/bdc/bbdc/portfolio/summary/summary.html">
@@ -325,7 +325,7 @@
 
     async function injectSidebar() {
       try {
-        const response = await fetch("/bdc/bbdc/sidebar-bloomberg.html?v=20260827-suite", { cache: "no-store" });
+        const response = await fetch("/bdc/bbdc/sidebar-bloomberg.html?v=20260831-nav-hierarchy", { cache: "no-store" });
         if (!response.ok) throw new Error(`Sidebar returned ${response.status}`);
         $("sidebar-placeholder").innerHTML = await response.text();
 

@@ -155,15 +155,43 @@
 
     async function loadSidebar(){
       try{
-        const r=await fetch("/bdc/bbdc/sidebar-bloomberg.html",{cache:"no-store"});
+        const r=await fetch("/bdc/bbdc/sidebar-bloomberg.html?v=20260831-nav-hierarchy",{cache:"no-store"});
         if(!r.ok)throw new Error(r.status);
-        $("sidebar-placeholder").innerHTML=await r.text();
-        document.querySelectorAll("[data-bb-target]").forEach(button=>{
+        const sidebar=$("sidebar-placeholder");sidebar.innerHTML=await r.text();
+        let saved={};try{saved=JSON.parse(localStorage.getItem("bbdc-bloomberg-sidebar")||"{}")}catch(e){}
+        let legacyOpen=[];try{legacyOpen=JSON.parse(localStorage.getItem("bbdc-sidebar-sections")||"[]")}catch(e){}
+        const sync=button=>{
           const target=$(button.dataset.bbTarget),caret=button.querySelector(".bb-caret");
-          button.addEventListener("click",()=>{
+          if(!target)return;
+          const collapsed=target.classList.contains("is-collapsed");
+          button.setAttribute("aria-expanded",String(!collapsed));
+          if(caret)caret.style.transform=collapsed?"rotate(-90deg)":"rotate(0deg)";
+        };
+        sidebar.querySelectorAll("[data-bb-target]").forEach(button=>{
+          const targetId=button.dataset.bbTarget,target=$(targetId);
+          if(legacyOpen.includes(targetId))target?.classList.remove("is-collapsed");
+          target?.classList.remove("hidden");
+          if(typeof saved[targetId]==="boolean")target?.classList.toggle("is-collapsed",!saved[targetId]);
+          sync(button);button.addEventListener("click",event=>{
+            event.preventDefault();
             target?.classList.toggle("is-collapsed");
-            if(caret)caret.style.transform=target?.classList.contains("is-collapsed")?"rotate(-90deg)":"rotate(0deg)";
+            saved[targetId]=!target?.classList.contains("is-collapsed");
+            localStorage.setItem("bbdc-bloomberg-sidebar",JSON.stringify(saved));
+            sync(button);
           });
+        });
+        sidebar.querySelectorAll("a[href]").forEach(link=>{
+          const active=new URL(link.href,location.origin).pathname===location.pathname;
+          if(active)link.setAttribute("aria-current","page");else link.removeAttribute("aria-current");
+          if(!active)return;
+          let parent=link.parentElement;
+          while(parent&&parent!==sidebar){
+            if(parent.classList?.contains("bb-nav-list")){
+              parent.classList.remove("is-collapsed");
+              const button=sidebar.querySelector(`[data-bb-target="${parent.id}"]`);if(button)sync(button);
+            }
+            parent=parent.parentElement;
+          }
         });
       }catch(e){console.warn("Bloomberg sidebar unavailable",e)}
     }

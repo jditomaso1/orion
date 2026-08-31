@@ -15,8 +15,8 @@
     @media(max-width:767px){#sidebar-placeholder{display:none}main{margin-left:0;padding:14px}}
   </style>
 
-<link rel="stylesheet" href="/bdc/bbdc/assets/bloomberg-terminal.css?v=20260827-suite">
-<script src="/bdc/bbdc/assets/bloomberg-terminal.js?v=20260827-suite"></script>
+<link rel="stylesheet" href="/bdc/bbdc/assets/bloomberg-terminal.css?v=20260831-nav-hierarchy">
+<script src="/bdc/bbdc/assets/bloomberg-terminal.js?v=20260831-nav-hierarchy"></script>
 </head>
 <body class="bb-terminal-page" data-bb-original="/bdc/bbdc/briefing/ask-orion.html">
   <div id="sidebar-placeholder"></div>
@@ -27,7 +27,7 @@
   <script>
     (async function(){
       try{
-        const response=await fetch("/bdc/bbdc/sidebar-bloomberg.html?v=20260827-suite",{cache:"no-store"});
+        const response=await fetch("/bdc/bbdc/sidebar-bloomberg.html?v=20260831-nav-hierarchy",{cache:"no-store"});
         if(!response.ok)return;
         const holder=document.getElementById("sidebar-placeholder");
         holder.innerHTML=await response.text();
