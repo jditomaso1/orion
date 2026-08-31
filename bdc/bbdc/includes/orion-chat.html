@@ -25,6 +25,99 @@
 #bbdc-orion-panel{position:fixed;z-index:49;right:0;top:0;width:min(430px,100vw);height:100vh;background:#fff;border-left:1px solid #dbe5ec;box-shadow:-18px 0 50px rgba(0,43,81,.15);display:flex;flex-direction:column;transform:translateX(105%);transition:transform .28s ease;font-family:Poppins,sans-serif;color:#172033}
 #bbdc-orion-panel.open{transform:translateX(0)}#bbdc-orion-scrim.open{opacity:1;pointer-events:auto}.oc-head{display:flex;justify-content:space-between;gap:12px;padding:19px 20px 15px;border-bottom:1px solid #e5edf3}.oc-eyebrow{font-size:9px;font-weight:700;letter-spacing:.13em;color:#64748b}.oc-title{font-size:20px;font-weight:700;margin-top:3px}.oc-context{font-size:11px;color:#64748b}.oc-head button{border:0;background:#f1f5f9;width:30px;height:30px;border-radius:50%;font-size:21px;color:#52657d;cursor:pointer}.oc-scope{display:flex;align-items:center;padding:10px 20px;border-bottom:1px solid #e5edf3;background:#f8fbfd;color:#36536e;font-size:10px;font-weight:600}.oc-scope>span:first-child{display:inline-block;flex:0 0 7px;width:7px;height:7px;margin-right:7px;border-radius:50%;background:#3eb661}.oc-messages{flex:1;overflow:auto;padding:18px 18px 8px;background:#f4f7fa}.oc-row{display:flex;margin-bottom:12px}.oc-row.user{justify-content:flex-end}.oc-bubble{max-width:88%;padding:11px 13px;border-radius:14px;font-size:11px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}.oc-row.orion .oc-bubble{background:#fff;border:1px solid #dbe5ec;border-bottom-left-radius:5px;color:#34445a}.oc-row.user .oc-bubble{background:#187aba;color:#fff;border-bottom-right-radius:5px}.oc-source{display:block;margin-top:8px;padding-top:7px;border-top:1px solid #e8eef3;color:#187aba;font-size:9px}.oc-prompts{display:flex;flex-wrap:nowrap;gap:6px;overflow:hidden;padding:8px 18px 12px;background:#f4f7fa}.oc-prompts button{flex:1 1 0;min-width:0;white-space:nowrap;border:1px solid #cfe0ec;border-radius:999px;background:#fff;color:#36536e;padding:5px 6px;font:500 10px Poppins,sans-serif;cursor:pointer}.oc-form{display:flex;align-items:flex-end;gap:8px;padding:13px 16px 8px;border-top:1px solid #e5edf3;background:#fff}.oc-form textarea{flex:1;resize:none;max-height:110px;border:1px solid #d7e2ea;border-radius:13px;padding:10px 11px;outline:none;font:400 11px Poppins,sans-serif;color:#172033}.oc-form textarea:focus{border-color:#187aba;box-shadow:0 0 0 3px rgba(24,122,186,.09)}.oc-form button{border:0;border-radius:11px;background:#063b66;color:#fff;padding:10px 14px;font:600 11px Poppins,sans-serif;cursor:pointer}.oc-disclaimer{text-align:center;padding:2px 16px 11px;background:#fff;color:#94a3b8;font-size:8px}@media(max-width:767px){#bbdc-ask-orion{right:14px;top:14px}}
 </style>
+<style>
+/* Bloomberg terminal treatment. These selectors activate only on the
+   alternate Bloomberg pages; the classic Orion chat remains unchanged. */
+body.bb-terminal-page #bbdc-ask-orion{
+  position:fixed;top:47px;right:16px;z-index:45;display:inline-flex;align-items:center;min-height:31px;
+  padding:0 10px 0 0;border:1px solid #f2a000;border-radius:0;background:#050505;color:#ffc24a;
+  box-shadow:0 0 0 1px rgba(242,160,0,.08);font:700 10px/1 "IBM Plex Mono","Roboto Mono",Consolas,monospace;
+  letter-spacing:.075em;text-transform:uppercase;
+}
+body.bb-terminal-page #bbdc-ask-orion::before{
+  content:"AO";align-self:stretch;display:inline-flex;align-items:center;margin-right:9px;padding:0 7px;
+  background:#f2a000;color:#050505;font-weight:700;letter-spacing:.04em;
+}
+body.bb-terminal-page #bbdc-ask-orion:hover{background:#241a08;color:#fff;border-color:#ffc24a}
+body.bb-terminal-page #bbdc-ask-orion:focus-visible,
+body.bb-terminal-page #bbdc-orion-panel button:focus-visible,
+body.bb-terminal-page #bbdc-orion-panel textarea:focus-visible{outline:1px solid #ffe100;outline-offset:2px}
+
+body.bb-terminal-page #bbdc-orion-scrim{background:rgba(0,0,0,.7);backdrop-filter:blur(1px)}
+body.bb-terminal-page #bbdc-orion-panel{
+  top:32px;height:calc(100vh - 32px);width:min(460px,100vw);background:#050505;color:#cecece;
+  border-left:1px solid #f2a000;box-shadow:-22px 0 52px rgba(0,0,0,.7),inset 3px 0 0 rgba(242,160,0,.12);
+  font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-head{
+  padding:15px 16px 13px;background:#0b0b0b;border-bottom:1px solid #444;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-eyebrow{
+  color:#f2a000;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-title{
+  margin-top:4px;color:#fff;font-size:18px;line-height:1.2;font-weight:700;letter-spacing:.035em;text-transform:uppercase;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-context{margin-top:3px;color:#5ecbff;font-size:10px}
+body.bb-terminal-page #bbdc-orion-panel .oc-head button{
+  width:30px;height:30px;border:1px solid #555;border-radius:0;background:#171717;color:#fff;
+  font:400 20px/1 "IBM Plex Mono","Roboto Mono",Consolas,monospace;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-head button:hover{background:#2b210a;border-color:#f2a000;color:#ffc24a}
+body.bb-terminal-page #bbdc-orion-panel .oc-scope{
+  padding:9px 16px;background:#141414;color:#aaa;border-bottom:1px solid #393939;
+  font-size:9px;font-weight:600;letter-spacing:.035em;text-transform:uppercase;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-scope>span:first-child{
+  width:7px;height:7px;flex-basis:7px;border-radius:0;background:#18c26e;box-shadow:0 0 7px rgba(24,194,110,.45);
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-messages{
+  padding:16px 15px 8px;background:#070707;scrollbar-color:#555 #111;scrollbar-width:thin;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-row{margin-bottom:10px}
+body.bb-terminal-page #bbdc-orion-panel .oc-bubble{
+  max-width:91%;padding:10px 11px;border-radius:0;font-size:10px;line-height:1.6;
+  font-family:"IBM Plex Mono","Roboto Mono",Consolas,monospace;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-row.orion .oc-bubble{
+  background:#111;color:#d3d3d3;border:1px solid #383838;border-left:3px solid #f2a000;border-radius:0;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-row.user .oc-bubble{
+  background:#f2a000;color:#050505;border:1px solid #ffc24a;border-radius:0;font-weight:600;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-source{
+  margin-top:8px;padding-top:7px;border-top:1px solid #393939;color:#5ecbff;font-size:8px;letter-spacing:.025em;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-prompts{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;padding:1px;background:#393939;border-top:1px solid #393939;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-prompts button{
+  min-height:36px;padding:6px;border:0;border-radius:0;background:#111;color:#ffc24a;
+  font:600 9px/1.35 "IBM Plex Mono","Roboto Mono",Consolas,monospace;text-transform:uppercase;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-prompts button:hover{background:#2b210a;color:#fff}
+body.bb-terminal-page #bbdc-orion-panel .oc-form{
+  gap:7px;padding:11px 13px 8px;background:#0b0b0b;border-top:1px solid #444;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-form textarea{
+  min-height:39px;padding:10px;border:1px solid #505050;border-radius:0;background:#050505;color:#fff;
+  outline:0;font:400 10px/1.5 "IBM Plex Mono","Roboto Mono",Consolas,monospace;caret-color:#f2a000;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-form textarea::placeholder{color:#686868}
+body.bb-terminal-page #bbdc-orion-panel .oc-form textarea:focus{border-color:#f2a000;box-shadow:inset 3px 0 0 #f2a000}
+body.bb-terminal-page #bbdc-orion-panel .oc-form button{
+  min-height:39px;padding:9px 14px;border:1px solid #f2a000;border-radius:0;background:#f2a000;color:#050505;
+  font:700 10px/1 "IBM Plex Mono","Roboto Mono",Consolas,monospace;letter-spacing:.05em;text-transform:uppercase;
+}
+body.bb-terminal-page #bbdc-orion-panel .oc-form button:hover{background:#ffc24a;border-color:#ffc24a}
+body.bb-terminal-page #bbdc-orion-panel .oc-disclaimer{
+  padding:3px 14px 9px;background:#0b0b0b;color:#6f6f6f;font-size:8px;letter-spacing:.025em;
+}
+@media(max-width:767px){
+  body.bb-terminal-page #bbdc-ask-orion{top:40px;right:8px}
+  body.bb-terminal-page #bbdc-orion-panel{top:32px;height:calc(100vh - 32px)}
+}
+</style>
 <script>
 (()=>{const cfg=window.ORION_CHAT_CONFIG||{};const btn=document.getElementById('bbdc-ask-orion'),panel=document.getElementById('bbdc-orion-panel'),close=document.getElementById('bbdc-orion-close'),scrim=document.getElementById('bbdc-orion-scrim'),messages=document.getElementById('bbdc-orion-messages'),form=document.getElementById('bbdc-orion-form'),input=document.getElementById('bbdc-orion-input'),prompts=document.getElementById('bbdc-orion-prompts');const page=(cfg.page||document.querySelector('h1')?.textContent||document.title||'BBDC').trim(),isDaily=/daily brief/i.test(page);document.getElementById('bbdc-orion-context').textContent=page;document.getElementById('bbdc-orion-scope').textContent='Focused on '+page;if(isDaily){prompts.innerHTML='<button type="button">Attention required</button><button type="button">What changed?</button><button type="button">Recommended actions</button>';document.querySelector('.oc-disclaimer').textContent='Daily Brief prototype · Preset answers use the verified briefing package.';}else if(cfg.prompts){prompts.innerHTML=cfg.prompts.map(p=>'<button type="button">'+p+'</button>').join('');document.querySelector('.oc-disclaimer').textContent=cfg.disclaimer||'Focused prototype · Answers use data displayed on this page.';}if(cfg.scope)document.getElementById('bbdc-orion-scope').textContent=cfg.scope;
 const open=()=>{panel.classList.add('open');scrim.classList.add('open');panel.setAttribute('aria-hidden','false');setTimeout(()=>input.focus(),280);if(!messages.dataset.ready){typeReply(cfg.intro||`I’m focused on ${page}. Ask me about the information displayed on this page.`);messages.dataset.ready='1'}};const shut=()=>{panel.classList.remove('open');scrim.classList.remove('open');panel.setAttribute('aria-hidden','true')};btn.onclick=open;close.onclick=shut;scrim.onclick=shut;document.addEventListener('keydown',e=>{if(e.key==='Escape')shut()});
