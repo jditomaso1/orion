@@ -30,6 +30,7 @@ for(const entry of entries){
     if(!html.includes('bb-terminal-page'))errors.push(`Missing terminal body class: ${entry.alternate}`);
     if(!html.includes(`data-bb-original="/${entry.original}"`))errors.push(`Incorrect classic-page mapping: ${entry.alternate}`);
     if(/\/bdc\/bbdc\/sidebar(?:2)?\.html/.test(html))errors.push(`Still loads classic sidebar: ${entry.alternate}`);
+    if(entry.original.includes('/coherus-oncology/')&&!html.includes('/coherus-oncology/coherus-bloomberg.css'))errors.push(`Missing Coherus terminal readability stylesheet: ${entry.alternate}`);
   }
   for(const match of html.matchAll(internalHtml)){
     const resolved=resolveInternal(entry.alternate,match[2]);if(!resolved)continue;

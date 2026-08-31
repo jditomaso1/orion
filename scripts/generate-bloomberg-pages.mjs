@@ -38,7 +38,13 @@ const altPath=original=>original.replace(/\.html$/, '-bloomberg.html');
 const routeMap=new Map(routes.map(original=>[original,altPath(original)]));
 const customPage=`${bbdcRoot}/overview/overview.html`;
 const terminalVersion='20260831-nav-hierarchy';
-const themeAssets=`\n<link rel="stylesheet" href="/bdc/bbdc/assets/bloomberg-terminal.css?v=${terminalVersion}">\n<script src="/bdc/bbdc/assets/bloomberg-terminal.js?v=${terminalVersion}"></script>\n`;
+const coherusReadabilityVersion='20260831-readable-2';
+const themeAssets=original=>{
+  const coherusStyles=original.includes('/coherus-oncology/')
+    ? `\n<link rel="stylesheet" href="/bdc/bbdc/credit-intelligence/companies/coherus-oncology/coherus-bloomberg.css?v=${coherusReadabilityVersion}">`
+    : '';
+  return `\n<link rel="stylesheet" href="/bdc/bbdc/assets/bloomberg-terminal.css?v=${terminalVersion}">${coherusStyles}\n<script src="/bdc/bbdc/assets/bloomberg-terminal.js?v=${terminalVersion}"></script>\n`;
+};
 
 function rewriteLinks(html,source){
   const sourceDir=path.posix.dirname(source);
@@ -76,7 +82,7 @@ function transform(html,original){
     const clean=title.replace(/^\s*Orion\s*[|•]\s*/i,'').replace(/\s*[|•]\s*Orion\s*$/i,'').trim();
     return `<title>Orion Terminal • ${clean}</title>`;
   });
-  if(!next.includes('/bdc/bbdc/assets/bloomberg-terminal.css'))next=next.replace(/<\/head>/i,themeAssets+'</head>');
+  if(!next.includes('/bdc/bbdc/assets/bloomberg-terminal.css'))next=next.replace(/<\/head>/i,themeAssets(original)+'</head>');
   return next.split('\n').map(line=>line.replace(/[ \t]+$/,'')).join('\n');
 }
 

@@ -1,0 +1,101 @@
+/* Coherus-only readability adjustments for the Bloomberg terminal pages. */
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main{
+  --coh-terminal-copy:#c9c9c9;
+  --coh-terminal-strong:#f2f2f2;
+  --coh-terminal-muted:#929292;
+}
+
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .thesis{
+  background:#0c0c0c!important;
+  border-left-color:var(--bb-amber)!important;
+}
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .thesis-label,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .section-number{
+  color:var(--bb-amber-2)!important;
+}
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .thesis-text,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .verdict-text,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .narrative-body,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .insight-body{
+  color:#d5d5d5!important;
+  font-size:12px!important;
+  line-height:1.7!important;
+  font-weight:400!important;
+}
+
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .scenario-copy,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .memo-analysis,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .summary-copy,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .monitor-copy,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .risk-copy,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .insight-value,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .insight-note,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .card-value,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .scenario-note,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .alert-copy,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .alert-action,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .event-note,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .flow-node p{
+  color:var(--coh-terminal-copy)!important;
+}
+
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .scenario-name,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .scenario-head,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .memo-title,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .summary-title,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .monitor-name,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .risk-title,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .insight-title{
+  color:var(--coh-terminal-strong)!important;
+}
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .scenario-name,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .scenario-head{
+  color:var(--bb-cyan)!important;
+}
+
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .metric-name{
+  color:#a6a6a6!important;
+  font-size:11px!important;
+  line-height:1.45!important;
+}
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .metric-value{
+  color:var(--coh-terminal-strong)!important;
+  font-size:13px!important;
+  line-height:1.5!important;
+  font-weight:600!important;
+  letter-spacing:0!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .metric-note{
+  color:var(--coh-terminal-muted)!important;
+  font-size:9px!important;
+  line-height:1.45!important;
+  font-weight:400!important;
+}
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .kpis .kpi-value.small,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .kpis .card .kpi-value.small{
+  font-size:13px!important;
+  line-height:1.4!important;
+}
+
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .recommendation{
+  background:#0c0c0c!important;
+  border-left-color:var(--bb-amber)!important;
+}
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .recommendation .section-title{
+  font-size:12px!important;
+  line-height:1.4!important;
+}
+
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .source,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .source-link,
+body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .link{
+  color:var(--bb-cyan)!important;
+}
+
+@media(max-width:650px){
+  body.bb-terminal-page[data-bb-original*="/coherus-oncology/"] main .metric-value{
+    text-align:left!important;
+  }
+}
