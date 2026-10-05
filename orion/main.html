@@ -79,6 +79,7 @@
   <script>
     // Private desktop-only writer. The original API remains on port 8000.
     window.ORION_API_BASE = "https://orion-api-v2.onrender.com";
+    window.ORION_AUTH_API_BASE = "https://api.private-credit.ai";
     window.orionApiFetch = function (path, options = {}) {
       return fetch(`${window.ORION_API_BASE}${path}`, {
         credentials: "include",
@@ -400,7 +401,7 @@
 
     async function loadCompanies() {
       try {
-        const res = await window.orionApiFetch("/companies");
+        const res = await fetch(`${window.ORION_AUTH_API_BASE}/capmarkets/companies`, { credentials: "include" });
         if (!res.ok) throw new Error(`API returned ${res.status}`);
         const companies = await res.json();
 
@@ -458,7 +459,7 @@
         }
 
         try {
-          const res = await window.orionApiFetch(`/company-files/${companyId}`);
+          const res = await fetch(`${window.ORION_AUTH_API_BASE}/capmarkets/company-files/${encodeURIComponent(companyId)}`, { credentials: "include" });
           if (!res.ok) throw new Error(`API returned ${res.status}`);
           const files = await res.json();
 
