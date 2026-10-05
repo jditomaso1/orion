@@ -81,6 +81,7 @@
     window.ORION_API_BASE = "https://orion-api-v2.onrender.com";
     window.orionApiFetch = function (path, options = {}) {
       return fetch(`${window.ORION_API_BASE}${path}`, {
+        credentials: "include",
         ...options
       });
     };
@@ -425,10 +426,7 @@
       try {
         const response = await fetchWithRetry(`${API_BASE}/health`, { cache: "no-store" });
         if (!response.ok) throw new Error(`Health check returned ${response.status}`);
-        const health = await response.json();
-        if (health.access_mode !== "local_owner") {
-          throw new Error("The desktop API is not in local-owner mode.");
-        }
+        await response.json();
         setIngestorStatus("Orion Drive API: ready", "ready");
         await loadCompanies();
       } catch (error) {
