@@ -80,11 +80,32 @@
     // Private desktop-only writer. The original API remains on port 8000.
     window.ORION_API_BASE = "https://orion-api-v2.onrender.com";
     window.ORION_AUTH_API_BASE = "https://api.private-credit.ai";
-    window.orionApiFetch = function (path, options = {}) {
-      return fetch(`${window.ORION_API_BASE}${path}`, {
+    window.ORION_SIGNIN_URL = "/orion/signin/signin.html?next=%2Forion%2Fmain.html";
+    window.ORION_ACCESS_URL = "/orion/access.html";
+    window.orionAuthRedirect = function (response) {
+      if (response.status === 401) {
+        window.location.replace(window.ORION_SIGNIN_URL);
+        return true;
+      }
+      if (response.status === 402 || response.status === 403) {
+        window.location.replace(window.ORION_ACCESS_URL);
+        return true;
+      }
+      return false;
+    };
+    window.orionApiFetch = async function (path, options = {}) {
+      let url = `${window.ORION_API_BASE}${path}`;
+      if (path === "/ask-orion") {
+        url = `${window.ORION_AUTH_API_BASE}/capmarkets/ask-orion`;
+      } else if (path === "/summarize-file" || path.startsWith("/vector-visualization/")) {
+        url = `${window.ORION_AUTH_API_BASE}/capmarkets/distiller${path}`;
+      }
+      const response = await fetch(url, {
         credentials: "include",
         ...options
       });
+      window.orionAuthRedirect(response);
+      return response;
     };
   </script>
 
@@ -402,6 +423,7 @@
     async function loadCompanies() {
       try {
         const res = await fetch(`${window.ORION_AUTH_API_BASE}/capmarkets/companies`, { credentials: "include" });
+        if (window.orionAuthRedirect(res)) return false;
         if (!res.ok) throw new Error(`API returned ${res.status}`);
         const companies = await res.json();
 
@@ -414,6 +436,7 @@
           opt.textContent = c.name;
           select.appendChild(opt);
         });
+        return true;
       } catch (err) {
         console.error("Error loading companies:", err);
         const select = document.getElementById("companyFolder");
@@ -428,8 +451,9 @@
         const response = await fetchWithRetry(`${API_BASE}/health`, { cache: "no-store" });
         if (!response.ok) throw new Error(`Health check returned ${response.status}`);
         await response.json();
+        const loaded = await loadCompanies();
+        if (!loaded) return;
         setIngestorStatus("Orion Drive API: ready", "ready");
-        await loadCompanies();
       } catch (error) {
         console.error("Desktop ingestor unavailable:", error);
         setIngestorStatus("Orion Drive API: offline", "offline");
@@ -460,6 +484,7 @@
 
         try {
           const res = await fetch(`${window.ORION_AUTH_API_BASE}/capmarkets/company-files/${encodeURIComponent(companyId)}`, { credentials: "include" });
+          if (window.orionAuthRedirect(res)) return;
           if (!res.ok) throw new Error(`API returned ${res.status}`);
           const files = await res.json();
 
