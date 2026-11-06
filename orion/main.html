@@ -466,13 +466,65 @@
       startOrion();
     });
 
+    function renderDocumentResults(results) {
+      const outputEl = document.getElementById("output");
+      const embeddingEl = document.getElementById("embeddingOutput");
+      const matrixEl = document.getElementById("vectorMatrix");
+      const asciiEl = document.getElementById("asciiBlock");
+      const summaryOnly = results.map(({ embedding_preview, ...rest }) => rest);
+      const embeddingOnly = results.map(result => ({
+        file_id: result.file_id,
+        file_name: result.file_name,
+        embedding_preview: result.embedding_preview
+      }));
+
+      outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
+
+      if (embeddingEl) {
+        let text = JSON.stringify(embeddingOnly, null, 2);
+        const firstVector = embeddingOnly[0]?.embedding_preview?.first_50_values;
+        const secondVector = embeddingOnly[1]?.embedding_preview?.first_50_values;
+        if (Array.isArray(firstVector) && Array.isArray(secondVector)) {
+          const similarity = cosineSimilarity(firstVector, secondVector);
+          if (similarity !== null) {
+            text = `Drift (cosine similarity of first 50 dims): ${similarity.toFixed(4)}\n\n${text}`;
+          }
+        }
+        embeddingEl.textContent = text;
+      }
+
+      const vid = embeddingOnly[0]?.embedding_preview?.vector_id;
+
+      if (matrixEl) {
+        matrixEl.innerHTML = vid ? vectorIdToMatrix(vid) : "";
+      }
+
+      if (asciiEl) {
+        asciiEl.textContent = vid ? vectorIdToAsciiBlock(vid) : "";
+      }
+    }
+
+    function clearDocumentResults() {
+      ["output", "embeddingOutput", "vectorMatrix", "asciiBlock"].forEach(id => {
+        document.getElementById(id).textContent = "";
+      });
+    }
+
     // 2) Load files for selected company (on button click)
     document.addEventListener("DOMContentLoaded", () => {
       const loadFilesBtn = document.getElementById("loadFiles");
       const selectAll = document.getElementById("selectAllFiles");
       const summarizeBtn = document.getElementById("summarize");
 
+      document.getElementById("companyFolder").addEventListener("change", () => {
+        document.getElementById("fileList").textContent = "";
+        selectAll.checked = false;
+        window.clearVectorGenome();
+      });
+
       loadFilesBtn.onclick = async () => {
+        window.clearVectorGenome();
+        selectAll.checked = false;
         const companyId = document.getElementById("companyFolder").value;
         const fileListDiv = document.getElementById("fileList");
         fileListDiv.innerHTML = "";
@@ -602,39 +654,9 @@
 
           clearInterval(loader);
 
-          const summaryOnly = results.map(({ embedding_preview, ...rest }) => rest);
-          const embeddingOnly = results.map(result => ({
-            file_id: result.file_id,
-            file_name: result.file_name,
-            embedding_preview: result.embedding_preview
-          }));
-
-          outputEl.textContent = JSON.stringify(summaryOnly, null, 2);
-
-          if (embeddingEl) {
-            let text = JSON.stringify(embeddingOnly, null, 2);
-            const firstVector = embeddingOnly[0]?.embedding_preview?.first_50_values;
-            const secondVector = embeddingOnly[1]?.embedding_preview?.first_50_values;
-            if (Array.isArray(firstVector) && Array.isArray(secondVector)) {
-              const similarity = cosineSimilarity(firstVector, secondVector);
-              if (similarity !== null) {
-                text = `Drift (cosine similarity of first 50 dims): ${similarity.toFixed(4)}\n\n${text}`;
-              }
-            }
-            embeddingEl.textContent = text;
-          }
-
-          const vid = embeddingOnly[0]?.embedding_preview?.vector_id;
-      
-          if (matrixEl) {
-            matrixEl.innerHTML = vid ? vectorIdToMatrix(vid) : "";
-          }
-      
-          if (asciiEl) {
-            asciiEl.textContent = vid ? vectorIdToAsciiBlock(vid) : "";
-          }
+          renderDocumentResults(results);
           if (results[0]) {
-            await window.loadVectorGenome(results[0].file_id, results[0].file_name);
+            await window.loadVectorGenome(results[0].file_id, results[0].file_name, false);
           }
         } catch (err) {
           clearInterval(loader);
@@ -685,6 +707,8 @@
     }
 
     function clearVectorGenome() {
+      ++vectorGenomeState.requestEpoch;
+      clearDocumentResults();
       vectorGenomeState.values = [];
       vectorGenomeState.fileName = "";
       vectorGenomeState.vectorId = "";
@@ -703,8 +727,9 @@
     }
     window.clearVectorGenome = clearVectorGenome;
 
-    async function loadVectorGenome(fileId, fileName) {
+    async function loadVectorGenome(fileId, fileName, populateResults = true) {
       const requestEpoch = ++vectorGenomeState.requestEpoch;
+      if (populateResults) clearDocumentResults();
       document.getElementById("vectorGenomeFile").textContent = fileName || "Selected document";
       setVectorGenomeEmpty("Loading vector genome…", "Retrieving all stored embedding coordinates from Pinecone.");
 
@@ -726,6 +751,7 @@
         if (!response.ok) throw new Error(`Vector endpoint returned ${response.status}`);
 
         const payload = await response.json();
+        if (requestEpoch !== vectorGenomeState.requestEpoch) return;
         const values = Array.isArray(payload.values)
           ? payload.values.map(Number).filter(Number.isFinite)
           : [];
@@ -733,6 +759,22 @@
           throw new Error("The stored vector is incomplete.");
         }
 
+        if (populateResults) {
+          const stored = payload.stored_result;
+          renderDocumentResults([{
+            file_id: fileId,
+            file_name: payload.file_name || fileName,
+            ...(stored || { summary: "Stored extraction unavailable for this document." }),
+            embedding_preview: {
+              ...(stored?.embedding_preview || {}),
+              vector_id: payload.vector_id,
+              dims: values.length,
+              first_50_values: values.slice(0, 50),
+              head: values.slice(0, 64),
+              cached: true
+            }
+          }]);
+        }
         vectorGenomeState.values = values;
         vectorGenomeState.fileName = payload.file_name || fileName || "Selected document";
         vectorGenomeState.vectorId = payload.vector_id || "";
@@ -744,6 +786,7 @@
         drawVectorGenomeStrip();
         startVectorGenomeAnimation();
       } catch (error) {
+        if (requestEpoch !== vectorGenomeState.requestEpoch) return;
         console.error("Vector genome failed:", error);
         vectorGenomeState.values = [];
         setVectorGenomeEmpty(
