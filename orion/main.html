@@ -28,17 +28,22 @@
       line-height: 1.3;
       /* padding: 10px; */
     }
-    .asciiBlock {
+    #asciiBlock {
       background: #020;
       color: #0f0;
       font-family: ui-monospace, Menlo, Monaco, Consolas, "Courier New", monospace;
-      white-space: pre;
-      border-radius: 10px;
-      display: inline-block;
-      padding: 8px 14px;      /* equal padding top/bottom + sides */
       font-size: 13px;
-      line-height: 1.1;
-      box-sizing: border-box; /* padding counted inside the box */
+      line-height: 1.6;
+      letter-spacing: 0;
+      font-variant-ligatures: none;
+      white-space: pre;
+      display: block;
+      width: max-content;
+      max-width: 100%;
+      overflow: auto;
+      padding: 16px;
+      border-radius: 10px;
+      box-sizing: border-box;
     }
     .vector-genome-stage {
       background:
